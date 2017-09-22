@@ -1,0 +1,39 @@
+{
+  "name": "react-conform",
+  "version": "0.0.1",
+  "description": "React form.",
+  "source": "src/index.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "flow": "flow",
+    "test": "mocha --compilers js:babel-register",
+    "test:coverage": "instanbul cover _mocha -- --compilers js:babel-register",
+    "build": "webpack",
+    "prepublish": "npm run test && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kettanaito/npm-template.git"
+  },
+  "keywords": [
+    "npm",
+    "template"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-preset-env": "^1.6.0",
+    "chai": "^4.1.2",
+    "eslint": "^4.6.1",
+    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-import": "^2.7.0",
+    "flow": "^0.2.3",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.0",
+    "webpack": "^3.5.5"
+  }
+}

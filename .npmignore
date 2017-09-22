@@ -1,0 +1,13 @@
+# Sources
+src
+
+# Configurations
+.babelrc
+.travis.yml
+.flowconfig
+npm-*
+
+# Misc
+docs
+test
+coverage
