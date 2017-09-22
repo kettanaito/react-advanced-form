@@ -5,7 +5,7 @@
   "source": "src/index.js",
   "main": "lib/index.js",
   "scripts": {
-    "flow": "flow",
+    "start": "NODE_ENV=development webpack",
     "test": "mocha --compilers js:babel-register",
     "test:coverage": "instanbul cover _mocha -- --compilers js:babel-register",
     "build": "webpack",
@@ -21,19 +21,30 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "awesome-typescript-loader": "^3.2.3",
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.2",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-preset-env": "^1.6.0",
     "chai": "^4.1.2",
     "eslint": "^4.6.1",
     "eslint-config-airbnb-base": "^12.0.0",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.7.0",
-    "flow": "^0.2.3",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
+    "source-map-loader": "^0.2.1",
+    "typescript": "^2.5.2",
     "webpack": "^3.5.5"
+  },
+  "dependencies": {
+    "@types/immutable": "^3.8.7",
+    "@types/react": "^16.0.5",
+    "@types/react-dom": "^15.5.4"
+  },
+  "peerDependencies": {
+    "immutable": "^3.8.1",
+    "react": "^15.6.1"
   }
 }
