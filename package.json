@@ -5,46 +5,50 @@
   "source": "src/index.js",
   "main": "lib/index.js",
   "scripts": {
-    "start": "NODE_ENV=development webpack",
+    "start": "storybook",
     "test": "mocha --compilers js:babel-register",
     "test:coverage": "instanbul cover _mocha -- --compilers js:babel-register",
     "build": "webpack",
-    "prepublish": "npm run test && npm run build"
+    "prepublishOnly": "npm run test && npm run build",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kettanaito/npm-template.git"
   },
   "keywords": [
-    "npm",
-    "template"
+    "form",
+    "react-form"
   ],
   "license": "MIT",
   "devDependencies": {
+    "@storybook/addon-actions": "^3.2.14",
+    "@storybook/addon-links": "^3.2.14",
+    "@storybook/react": "^3.2.14",
     "awesome-typescript-loader": "^3.2.3",
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
     "eslint": "^4.6.1",
     "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-import-resolver-webpack": "^0.8.3",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-react": "^7.4.0",
+    "immutable": "^3.8.2",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
-    "source-map-loader": "^0.2.1",
-    "typescript": "^2.5.2",
-    "webpack": "^3.5.5"
-  },
-  "dependencies": {
-    "@types/immutable": "^3.8.7",
-    "@types/react": "^16.0.5",
-    "@types/react-dom": "^15.5.4"
-  },
-  "peerDependencies": {
-    "immutable": "^3.8.1",
-    "react": "^15.6.1"
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "storybook": "^1.0.0",
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.8.2"
   }
 }

@@ -5,8 +5,12 @@ const packageJson = require('./package.json');
 const DEVELOPMENT = (process.env.NODE_ENV === 'development');
 
 module.exports = {
-  watch: DEVELOPMENT,
+  cache: true,
   entry: path.resolve(__dirname, packageJson.source),
+  externals: {
+    react: 'React',
+    immutable: 'immutable'
+  },
   output: {
     path: __dirname,
     filename: packageJson.main,
@@ -17,31 +21,29 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(j|t)sx?$/i,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: ['babel-loader', 'awesome-typescript-loader', 'eslint-loader']
+        use: ['babel-loader', 'eslint-loader']
       },
-      {
-        test: /\.js$/,
-        enforce: 'pre',
-        use: 'source-map-loader'
-      }
+      // {
+      //   test: /\.tsx?$/,
+      //   exclude: /node_modules/,
+      //   use: ['babel-loader', 'awesome-typescript-loader']
+      // },
+      // {
+      //   test: /\.tsx?$/,
+      //   exclude: /node_modules/,
+      //   enforce: 'pre',
+      //   use: 'source-map-loader'
+      // }
     ]
   },
-  externals: {
-    react: 'React',
-    immutable: 'immutable'
-  },
-  devtool: 'source-map',
+  devtool: DEVELOPMENT && 'source-map',
   resolve: {
-    extensions: [
-      '.ts',
-      '.tsx',
-      './index.ts',
-      './index.tsx',
-      '.jsx',
-      '.js',
-      '.json'
-    ]
+    extensions: ['.jsx', '.js',]
+  },
+  devServer: {
+    contentBase: path.resolve(__dirname, 'test'),
+    port: 9004
   }
 };
