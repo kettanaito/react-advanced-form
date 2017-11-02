@@ -44,28 +44,76 @@ export default class Form extends Component {
   }
 
   /**
-   * Handle field blur.
+   * Set the props Object to the field with the provided name.
    */
-  handleFieldBlur = ({ fieldProps }) => {
-    /* Validate the field */
-    const { name, value, rule, onBlur } = fieldProps;
+  updateFieldProps = ({ name, props, afterUpdate }) => {
+    const { fields } = this.state;
 
+    const nextFields = fields.mergeIn([name], fromJS(props));
+    return this.setState({ fields: nextFields }, afterUpdate);
+  }
+
+  /**
+   * Validate a single field.
+   */
+  validateField = async (fieldProps) => {
+    let isFieldValid = true;
+    const { value, rule, asyncRule } = fieldProps;
+
+    /* Validate the format */
     if (rule) {
       const { fields } = this.state;
 
-      const wasFieldValid = fields.getIn([name, 'valid']);
-
       /* Test the RegExp against the field's value */
-      const isFieldValid = rule.test(value);
+      isFieldValid = rule.test(value);
+    }
 
-      /* Update the state only when there are changes */
-      if (isFieldValid !== wasFieldValid) {
-        const nextFields = fields.setIn([name, 'valid'], isFieldValid);
-        this.setState({ fields: nextFields });
+    /* Invalid format - no need to continue validating */
+    if (!isFieldValid) return isFieldValid;
+
+    /* Async client-side validation */
+    if (asyncRule) {
+      try {
+        await asyncRule({
+          value,
+          fieldProps,
+          formProps: this.props
+        });
+      } catch(error) {
+        isFieldValid = false;
       }
     }
 
-    /* Invoke custom blur handler */
+    return isFieldValid;
+  }
+
+  /**
+   * Handle field blur.
+   */
+  handleFieldBlur = async ({ fieldProps }) => {
+    const { name, onBlur } = fieldProps;
+
+    /* Make field disabled during the validation */
+    this.updateFieldProps({
+      name,
+      props: {
+        disabled: true
+      }
+    });
+
+    /* Validate the field */
+    const isFieldValid = await this.validateField(fieldProps);
+
+    /* Enable field back, update its props */
+    this.updateFieldProps({
+      name,
+      props: {
+        disabled: false,
+        valid: isFieldValid
+      }
+    });
+
+    /* Invoke client event handler */
     if (onBlur) onBlur();
   }
 
@@ -73,15 +121,17 @@ export default class Form extends Component {
    * Handle field change.
    */
   handleFieldChange = ({ event, fieldProps, nextValue }) => {
-    const { fields } = this.state;
-
-    /* Update the value of the changed field */
-    const nextFields = fields.setIn([fieldProps.name, 'value'], nextValue);
-
-    this.setState({ fields: nextFields }, () => {
-      if (fieldProps.onChange) {
-        /* Call client-side onChange handler function */
-        fieldProps.onChange(event, nextValue, fieldProps, this.props);
+    /* Update the value of the changed field in the state */
+    this.updateFieldProps({
+      name: fieldProps.name,
+      props: {
+        value: nextValue
+      },
+      afterUpdate: () => {
+          if (fieldProps.onChange) {
+            /* Call client-side onChange handler function */
+            fieldProps.onChange(event, nextValue, fieldProps, this.props);
+          }
       }
     });
   }
@@ -146,16 +196,16 @@ export default class Form extends Component {
         /* Clone props for further mutations */
         let clonedProps = Object.assign({}, initialProps);
 
-        /* Check if Child's type is supported (is field) */
+        /* Check if Child's type is the Field */
         if (Child.type === Field) {
-          const fieldValue = fields.getIn([fieldName, 'value']);
-          const isFieldValid = fields.getIn([fieldName, 'valid']);
+          const fieldProps = fields.get(fieldName).toJS();
+          const { value, disabled, valid } = fieldProps;
 
           clonedProps = {
             ...clonedProps,
-            value: fieldValue,
-            valid: isFieldValid,
-            disabled: isSubmitting || initialProps.disabled
+            value,
+            valid,
+            disabled: disabled || isSubmitting || initialProps.disabled
           };
         }
 

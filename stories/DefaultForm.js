@@ -32,7 +32,15 @@ export default class DefaultForm extends Component {
         <div className="field-group">
           <Field
             name="username"
-            rule={/^AB\d+$/} />
+            rule={/^AB\d+$/}
+            asyncRule={({ fieldProps }) => {
+              return fetch('http://demo9102997.mockable.io/validate/productId', {
+                method: 'POST',
+                body: JSON.stringify({
+                  userName: fieldProps.value
+                })
+              });
+            }} />
           <Field
             name="password" />
         </div>

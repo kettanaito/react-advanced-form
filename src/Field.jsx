@@ -19,6 +19,7 @@ export default class Field extends Component {
 
     /* Validation */
     rule: PropTypes.instanceOf(RegExp),
+    asyncRule: PropTypes.func,
     valid: PropTypes.bool.isRequired,
 
     /* States */
@@ -29,6 +30,7 @@ export default class Field extends Component {
   static defaultProps = {
     type: 'text',
     required: false,
+    disabled: false,
     valid: true
   }
 

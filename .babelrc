@@ -9,6 +9,7 @@
     "react"
   ],
   "plugins": [
-    "transform-export-extensions"
+    "transform-export-extensions",
+    "transform-async-to-generator"
   ]
 }
