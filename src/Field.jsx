@@ -62,6 +62,7 @@ export default class Field extends Component {
       value,
 
       /* State */
+      required,
       disabled
     } = this.props;
 
@@ -69,6 +70,7 @@ export default class Field extends Component {
       <input
         {...{ type }}
         {...{ disabled }}
+        {...{ required }}
         value={value}
         onBlur={this.handleBlur}
         onChange={this.handleChange} />
