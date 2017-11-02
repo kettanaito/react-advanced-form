@@ -26,11 +26,13 @@ export default class Form extends Component {
   }
 
   static childContextTypes = {
+    handleFieldBlur: PropTypes.func,
     handleFieldChange: PropTypes.func
   }
 
   getChildContext() {
     return {
+      handleFieldBlur: this.handleFieldBlur,
       handleFieldChange: this.handleFieldChange
     };
   }
@@ -38,6 +40,32 @@ export default class Form extends Component {
   state = {
     fields: fromJS(mapChildrenToFields(this.props.children)),
     isSubmitting: false
+  }
+
+  /**
+   * Handle field blur.
+   */
+  handleFieldBlur = ({ fieldProps }) => {
+    /* Validate the field */
+    const { name, value, rule, onBlur } = fieldProps;
+
+    if (rule) {
+      const { fields } = this.state;
+
+      const wasFieldValid = fields.getIn([name, 'valid']);
+
+      /* Test the RegExp against the field's value */
+      const isFieldValid = rule.test(value);
+
+      /* Update the state only when there are changes */
+      if (isFieldValid !== wasFieldValid) {
+        const nextFields = fields.setIn([name, 'valid'], isFieldValid);
+        this.setState({ fields: nextFields });
+      }
+    }
+
+    /* Invoke custom blur handler */
+    if (onBlur) onBlur();
   }
 
   /**
@@ -112,18 +140,20 @@ export default class Form extends Component {
 
         /* Store initial props of the element */
         const { props: initialProps } = Child;
-        const { children } = initialProps;
+        const { name: fieldName, children } = initialProps;
 
         /* Clone props for further mutations */
         let clonedProps = Object.assign({}, initialProps);
 
         /* Check if Child's type is supported (is field) */
         if (Child.type === Field) {
-          const fieldValue = fields.getIn([initialProps.name, 'value']);
+          const fieldValue = fields.getIn([fieldName, 'value']);
+          const isFieldValid = fields.getIn([fieldName, 'valid']);
 
           clonedProps = {
             ...clonedProps,
             value: fieldValue,
+            valid: isFieldValid,
             disabled: isSubmitting || initialProps.disabled
           };
         }

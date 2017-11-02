@@ -30,8 +30,11 @@ export default class DefaultForm extends Component {
         onSubmitStart={this.handleSubmitStart}
         onSubmitEnd={this.handleSubmitEnd}>
         <div className="field-group">
-          <Field name="username" />
-          <Field name="password" />
+          <Field
+            name="username"
+            rule={/^AB\d+$/} />
+          <Field
+            name="password" />
         </div>
         <button type="submit">Submit</button>
       </Form>
