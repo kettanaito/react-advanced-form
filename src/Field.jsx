@@ -2,22 +2,27 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 export default class Field extends Component {
+  static contextTypes = {
+    handleFieldBlur: PropTypes.func,
+    handleFieldChange: PropTypes.func
+  }
+
   static propTypes = {
+    /* General */
+    id: PropTypes.string,
+    className: PropTypes.string,
+
     /* Specific */
     type: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     value: PropTypes.string,
 
     /* Validation */
-    required: PropTypes.bool,
     rule: PropTypes.instanceOf(RegExp),
     valid: PropTypes.bool.isRequired,
 
-    /* General */
-    id: PropTypes.string,
-    className: PropTypes.string,
-
     /* States */
+    required: PropTypes.bool,
     disabled: PropTypes.bool
   }
 
@@ -25,11 +30,6 @@ export default class Field extends Component {
     type: 'text',
     required: false,
     valid: true
-  }
-
-  static contextTypes = {
-    handleFieldBlur: PropTypes.func,
-    handleFieldChange: PropTypes.func
   }
 
   handleBlur = (event) => {

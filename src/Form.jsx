@@ -7,7 +7,20 @@ import { mapChildrenToFields } from './utils/fields';
 import Field from './Field';
 
 export default class Form extends Component {
+  static childContextTypes = {
+    handleFieldBlur: PropTypes.func,
+    handleFieldChange: PropTypes.func
+  }
+
+  getChildContext() {
+    return {
+      handleFieldBlur: this.handleFieldBlur,
+      handleFieldChange: this.handleFieldChange
+    };
+  }
+
   static propTypes = {
+    /* General */
     id: PropTypes.string,
     className: PropTypes.string,
 
@@ -23,18 +36,6 @@ export default class Form extends Component {
 
   static defaultProps = {
     action: () => new Promise(resolve => resolve())
-  }
-
-  static childContextTypes = {
-    handleFieldBlur: PropTypes.func,
-    handleFieldChange: PropTypes.func
-  }
-
-  getChildContext() {
-    return {
-      handleFieldBlur: this.handleFieldBlur,
-      handleFieldChange: this.handleFieldChange
-    };
   }
 
   state = {
