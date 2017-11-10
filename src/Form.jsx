@@ -31,6 +31,16 @@ export default class Form extends Component {
     isSubmitting: false
   }
 
+  /**
+   * Context types accepted by form
+   */
+  static contextTypes = {
+    rules: PropTypes.object
+  }
+
+  /**
+   * Context types passed by the Form to children
+   */
   static childContextTypes = {
     fields: PropTypes.instanceOf(Map),
     registerInput: PropTypes.func,
@@ -52,31 +62,38 @@ export default class Form extends Component {
    */
   updateFieldProps = ({ name, props, afterUpdate }) => {
     const { fields } = this.state;
-
     const nextFields = fields.mergeIn([name], fromJS(props));
+
     return this.setState({ fields: nextFields }, afterUpdate);
   }
 
   /**
-   * Register the field which is not accessible by direct children traversing.
+   * Register the field in the state (context) explicitly.
+   * Passing fields in context gives a benefit of removing an explicit traversing the children
+   * tree, deconstructing and constructing each appropriate child with the attached handler props.
+   * However, fields present in the composite components are still unkown to the Form. This method
+   * is a handler for each unkown field registration attempt.
    */
   registerInput = (fieldProps) => {
     const { name } = fieldProps;
-
     return this.updateFieldProps({ name, props: fieldProps });
   }
 
   /**
    * Validate a single field.
+   * Validation of each field is a complex process consisting of several steps.
+   * It is important to resolve the validation immediately once the field becomes invalid.
    */
   validateField = async (fieldProps) => {
     let isFieldValid = true;
-    const { value, rule, asyncRule } = fieldProps;
+    const { name: fieldName, value, rule, asyncRule } = fieldProps;
 
-    /* Validate the format */
+    /**
+     * Format validation.
+     * The first step of validation is to ensure a proper format.
+     * This is the most basic validation, therefore it should pass first.
+     */
     if (rule) {
-      const { fields } = this.state;
-
       /* Test the RegExp against the field's value */
       isFieldValid = rule.test(value);
     }
@@ -84,7 +101,11 @@ export default class Form extends Component {
     /* Invalid format - no need to continue validating */
     if (!isFieldValid) return isFieldValid;
 
-    /* Async client-side validation */
+    /**
+     * Field: Asynchronous validation.
+     * Each field may have an async rule. The latter is a function which returns a Promise, which is
+     * being executed right after.
+     */
     if (asyncRule) {
       try {
         await asyncRule({
@@ -97,60 +118,99 @@ export default class Form extends Component {
       }
     }
 
+    /**
+     * Form-level validation.
+     * The last level of validation is a form-wide validation provided by "rules" property of the Form.
+     * The latter property is also inherited from the context passed by FormProvider.
+     */
+    const { rules: contextRules } = this.context;
+    const { rules: customFormRules } = this.props;
+    const formRules = customFormRules || contextRules;
+    if (!formRules) return isFieldValid;
+
+    const formRule = formRules[fieldName];
+    if (!formRule) return isFieldValid;
+
+    if (formRules.hasOwnProperty(fieldName)) {
+      isFieldValid = formRule(value, this.props);
+    }
+
     return isFieldValid;
+  }
+
+  /**
+   * Determines if the provided field needs validation.
+   */
+  shouldValidateField = ({ name, rule, asyncRule }) => {
+    const { rules: contextRules } = this.context;
+    const { rules: customFormRules } = this.props;
+    const formRules = customFormRules || contextRules;
+
+    return (
+      rule ||
+      asyncRule ||
+      formRules
+    );
   }
 
   /**
    * Handle field blur.
    */
   handleFieldBlur = async ({ fieldProps }) => {
-    const { name, onBlur } = fieldProps;
+    const { name, valid, disabled: prevDisabled, onBlur } = fieldProps;
+    const shouldValidateField = this.shouldValidateField(fieldProps);
+    let isFieldValid = valid;
 
-    /* Make field disabled during the validation */
-    this.updateFieldProps({
-      name,
-      props: {
-        disabled: true
-      }
-    });
+    if (shouldValidateField) {
+      /* Make field disabled during the validation */
+      this.updateFieldProps({
+        name,
+        props: {
+          disabled: true
+        }
+      });
 
-    /* Validate the field */
-    const isFieldValid = await this.validateField(fieldProps);
+      /* Validate the field */
+      isFieldValid = await this.validateField(fieldProps);
+    }
 
     /* Enable field back, update its props */
     this.updateFieldProps({
       name,
       props: {
-        disabled: false,
+        disabled: prevDisabled,
         valid: isFieldValid
+      },
+      afterUpdate: () => {
+        /* Invoke custom onBlur handler */
+        if (onBlur) onBlur();
       }
     });
-
-    /* Invoke client event handler */
-    if (onBlur) onBlur();
   }
 
   /**
    * Handle field change.
    */
   handleFieldChange = ({ event, fieldProps, nextValue }) => {
+    const { name, onChange } = fieldProps;
+
     /* Update the value of the changed field in the state */
     this.updateFieldProps({
-      name: fieldProps.name,
+      name,
       props: {
         value: nextValue
       },
       afterUpdate: () => {
-          if (fieldProps.onChange) {
-            /* Call client-side onChange handler function */
-            fieldProps.onChange(event, nextValue, fieldProps, this.props);
-          }
+        if (onChange) {
+          /* Call client-side onChange handler function */
+          onChange(event, nextValue, fieldProps, this.props);
+        }
       }
     });
   }
 
   /**
-   * Handle form submit
+   * Handle form submit.
    */
   handleFormSubmit = (event) => {
     event.preventDefault();
@@ -158,14 +218,14 @@ export default class Form extends Component {
     const { fields } = this.state;
     const { action, onSubmitStart, onSubmit, onSubmitFailed, onSubmitEnd } = this.props;
 
-    const formArgs = [fields, this.props];
+    const callbackArgs = [fields, this.props];
 
     /**
      * Event: Submit has started.
      * The submit is consideres started immediately when the submit button is pressed.
      * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
-    if (onSubmitStart) onSubmitStart(...formArgs);
+    if (onSubmitStart) onSubmitStart(...callbackArgs);
     this.setState({ isSubmitting: true });
 
     /**
@@ -173,70 +233,21 @@ export default class Form extends Component {
      * Form's action is a function which returns a Promise. You should pass a WS call, or async action
      * as a prop to the form in order for it to work.
      */
-    action(...formArgs)
+    action(...callbackArgs)
       .then(() => {
-        if (onSubmit) onSubmit(...formArgs);
+        if (onSubmit) onSubmit(...callbackArgs);
       })
       .catch(() => {
-        if (onSubmitFailed) onSubmitFailed(...formArgs);
+        if (onSubmitFailed) onSubmitFailed(...callbackArgs);
       })
       .then(() => {
         /**
          * Event: Submit has ended.
          * Called each time after the submit, regardless of the submit status (success/failure).
          */
-        if (onSubmitEnd) onSubmitEnd(...formArgs);
+        if (onSubmitEnd) onSubmitEnd(...callbackArgs);
         this.setState({ isSubmitting: false });
       });
-  }
-
-  /**
-   * Render children.
-   */
-  renderChildren = () => {
-    const { fields, isSubmitting } = this.state;
-    const { children: formChildren } = this.props;
-
-    const parseChildren = (anyChildren) => {
-      return Children.toArray(anyChildren).reduce((nodes, Child) => {
-        /* When is not valid React element, do not parse */
-        if (!React.isValidElement(Child)) return nodes;
-
-        /* Store initial props of the element */
-        const { props: initialProps } = Child;
-        const { name: fieldName, children } = initialProps;
-
-        /* Clone props for further mutations */
-        let clonedProps = Object.assign({}, initialProps);
-
-        /* Check if Child's type is the Field */
-        if (Child.type === Field) {
-          const fieldProps = fields.get(fieldName).toJS();
-          const { value, disabled, valid } = fieldProps;
-
-          clonedProps = {
-            ...clonedProps,
-            value,
-            valid,
-            disabled: disabled || isSubmitting || initialProps.disabled
-          };
-        }
-
-        /* Parse children recursively */
-        let nextChildren = children;
-
-        if (nextChildren) {
-          if (Array.isArray(children) || React.isValidElement(children)) {
-            nextChildren = parseChildren(children);
-          }
-        }
-
-        const clonedElement = React.cloneElement(Child, clonedProps, nextChildren);
-        return nodes.concat(clonedElement);
-      }, []);
-    };
-
-    return parseChildren(formChildren);
   }
 
   render() {

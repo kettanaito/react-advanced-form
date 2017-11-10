@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Field } from '../src';
+import { FormProvider, Form, Field } from '../src';
 
 const CompositeField = () => (
   <div>
@@ -31,28 +31,35 @@ export default class DefaultForm extends Component {
 
   render() {
     return (
-      <Form
-        id="default-form-example"
-        action={this.handleFormAction}
-        onSubmitStart={this.handleSubmitStart}
-        onSubmitEnd={this.handleSubmitEnd}>
-        <div className="field-group">
-          <Field
-            name="username"
-            rule={/^AB\d+$/}
-            asyncRule={({ fieldProps }) => {
-              return fetch('http://demo9102997.mockable.io/validate/productId', {
-                method: 'POST',
-                body: JSON.stringify({
-                  userName: fieldProps.value
-                })
-              });
-            }} />
-          <Field name="password" />
-          <CompositeField />
-        </div>
-        <button type="submit">Submit</button>
-      </Form>
+      <FormProvider
+        rules={{
+          name: {
+            username: value => (value === 'ab123')
+          }
+        }}>
+        <Form
+          id="default-form-example"
+          action={this.handleFormAction}
+          onSubmitStart={this.handleSubmitStart}
+          onSubmitEnd={this.handleSubmitEnd}>
+          <div className="field-group">
+            <Field
+              name="username"
+              rule={/^AB\d+$/}
+              asyncRule={({ fieldProps }) => {
+                return fetch('http://demo9102997.mockable.io/validate/productId', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    userName: fieldProps.value
+                  })
+                });
+              }} />
+            <Field name="password" />
+            <CompositeField />
+          </div>
+          <button type="submit">Submit</button>
+        </Form>
+      </FormProvider>
     );
   }
 }

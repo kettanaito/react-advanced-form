@@ -5,4 +5,4 @@ import { storiesOf } from '@storybook/react';
 import DefaultForm from './DefaultForm';
 
 storiesOf('Form', module)
-  .add('Default form', () => <DefaultForm />);
+  .add('Default form', () => (<DefaultForm />));
