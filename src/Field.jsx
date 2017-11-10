@@ -49,21 +49,18 @@ export default class Field extends Component {
   }
 
   handleBlur = (event) => {
-    const { handleFieldBlur } = this.context;
-
-    handleFieldBlur({
+    this.context.handleFieldBlur({
       event,
       fieldProps: this.props
     });
   }
 
   handleChange = (event) => {
-    const { handleFieldChange } = this.context;
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
 
     /* Call parental change handler */
-    handleFieldChange({
+    this.context.handleFieldChange({
       event,
       fieldProps: this.props,
       nextValue,
