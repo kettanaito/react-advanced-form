@@ -1,4 +1,4 @@
-import { fromJS } from 'immutable';
+import { fromJS, Map } from 'immutable';
 import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
 import { mapChildrenToFields } from './utils/fields';
@@ -7,18 +7,6 @@ import { mapChildrenToFields } from './utils/fields';
 import Field from './Field';
 
 export default class Form extends Component {
-  static childContextTypes = {
-    handleFieldBlur: PropTypes.func,
-    handleFieldChange: PropTypes.func
-  }
-
-  getChildContext() {
-    return {
-      handleFieldBlur: this.handleFieldBlur,
-      handleFieldChange: this.handleFieldChange
-    };
-  }
-
   static propTypes = {
     /* General */
     id: PropTypes.string,
@@ -43,6 +31,22 @@ export default class Form extends Component {
     isSubmitting: false
   }
 
+  static childContextTypes = {
+    fields: PropTypes.instanceOf(Map),
+    registerInput: PropTypes.func,
+    handleFieldBlur: PropTypes.func,
+    handleFieldChange: PropTypes.func
+  }
+
+  getChildContext() {
+    return {
+      fields: this.state.fields,
+      registerInput: this.registerInput,
+      handleFieldBlur: this.handleFieldBlur,
+      handleFieldChange: this.handleFieldChange
+    };
+  }
+
   /**
    * Set the props Object to the field with the provided name.
    */
@@ -51,6 +55,15 @@ export default class Form extends Component {
 
     const nextFields = fields.mergeIn([name], fromJS(props));
     return this.setState({ fields: nextFields }, afterUpdate);
+  }
+
+  /**
+   * Register the field which is not accessible by direct children traversing.
+   */
+  registerInput = (fieldProps) => {
+    const { name } = fieldProps;
+
+    return this.updateFieldProps({ name, props: fieldProps });
   }
 
   /**
@@ -233,9 +246,9 @@ export default class Form extends Component {
       <form
         {...{ id }}
         {...{ className }}
-        onSubmit={this.handleFormSubmit}
+        onSubmit={ this.handleFormSubmit }
         noValidate>
-        {this.renderChildren()}
+        { children }
       </form>
     );
   }

@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import { Form, Field } from '../src';
 
+const CompositeField = () => (
+  <div>
+    <Field name="address" value="Baker" />
+    <Field name="street" value="12/c" />
+  </div>
+);
+
 export default class DefaultForm extends Component {
   handleFormAction = () => {
     console.log('action');
@@ -41,8 +48,8 @@ export default class DefaultForm extends Component {
                 })
               });
             }} />
-          <Field
-            name="password" />
+          <Field name="password" />
+          <CompositeField />
         </div>
         <button type="submit">Submit</button>
       </Form>

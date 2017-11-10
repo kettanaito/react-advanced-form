@@ -1,8 +1,11 @@
+import { Map } from 'immutable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 export default class Field extends Component {
   static contextTypes = {
+    fields: PropTypes.instanceOf(Map),
+    registerInput: PropTypes.func,
     handleFieldBlur: PropTypes.func,
     handleFieldChange: PropTypes.func
   }
@@ -34,6 +37,17 @@ export default class Field extends Component {
     valid: true
   }
 
+  componentDidMount() {
+    const { fields } = this.context;
+    const { name } = this.props;
+
+    if (fields.get(name)) return;
+
+    setTimeout(() => {
+      this.context.registerInput(this.props, this.context.fields);
+    }, 0);
+  }
+
   handleBlur = (event) => {
     const { handleFieldBlur } = this.context;
 
@@ -58,24 +72,17 @@ export default class Field extends Component {
   }
 
   render() {
-    const {
-      type,
-      name,
-      value,
-
-      /* State */
-      required,
-      disabled
-    } = this.props;
+    const { type, name } = this.props;
+    const fieldProps = this.context.fields.get(name) || Map();
 
     return (
       <input
         {...{ type }}
-        {...{ disabled }}
-        {...{ required }}
-        value={value}
-        onBlur={this.handleBlur}
-        onChange={this.handleChange} />
+        disabled={ fieldProps.get('disabled') }
+        required={ fieldProps.get('required') }
+        value={ fieldProps.get('value') || '' }
+        onBlur={ this.handleBlur }
+        onChange={ this.handleChange } />
     );
   }
 }
