@@ -3,13 +3,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 export default class Field extends Component {
-  static contextTypes = {
-    fields: PropTypes.instanceOf(Map),
-    registerInput: PropTypes.func,
-    handleFieldBlur: PropTypes.func,
-    handleFieldChange: PropTypes.func
-  }
-
   static propTypes = {
     /* General */
     id: PropTypes.string,
@@ -35,6 +28,13 @@ export default class Field extends Component {
     required: false,
     disabled: false,
     valid: true
+  }
+
+  static contextTypes = {
+    fields: PropTypes.instanceOf(Map),
+    registerInput: PropTypes.func,
+    handleFieldBlur: PropTypes.func,
+    handleFieldChange: PropTypes.func
   }
 
   componentDidMount() {
