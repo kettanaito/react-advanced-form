@@ -1,6 +1,7 @@
 import { Map } from 'immutable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { isset } from './utils';
 
 export default class Field extends Component {
   static propTypes = {
@@ -11,12 +12,12 @@ export default class Field extends Component {
     /* Specific */
     type: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
     value: PropTypes.string,
 
     /* Validation */
     rule: PropTypes.instanceOf(RegExp),
     asyncRule: PropTypes.func,
-    valid: PropTypes.bool.isRequired,
 
     /* States */
     required: PropTypes.bool,
@@ -26,19 +27,21 @@ export default class Field extends Component {
   static defaultProps = {
     type: 'text',
     required: false,
-    disabled: false,
-    valid: true
+    disabled: false
   }
 
   static contextTypes = {
     fields: PropTypes.instanceOf(Map),
-    mapFieldToState: PropTypes.func,
-    handleFieldBlur: PropTypes.func,
-    handleFieldChange: PropTypes.func
+    templates: PropTypes.object.isRequired,
+    mapFieldToState: PropTypes.func.isRequired,
+    handleFieldBlur: PropTypes.func.isRequired,
+    handleFieldChange: PropTypes.func.isRequired
   }
 
   componentDidMount() {
     const { fields } = this.context;
+
+    console.log('| | Field @ componentDidMount. Need to map field to state');
 
     /**
      * Map the field to Form's state to notify the latter of the new registered field.
@@ -51,16 +54,12 @@ export default class Field extends Component {
     }, 0);
   }
 
-  handleBlur = (event) => {
-    this.context.handleFieldBlur({
-      event,
-      fieldProps: this.props
-    });
-  }
-
   handleChange = (event) => {
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
+
+    console.log(' ');
+    console.log('| | Field @ handleChange', this.props.name, nextValue);
 
     /* Call parental change handler */
     this.context.handleFieldChange({
@@ -71,18 +70,49 @@ export default class Field extends Component {
     });
   }
 
+  handleBlur = (event) => {
+    const { value } = event.currentTarget;
+    console.log('| | Field @ handleBlur', this.props.name, value);
+
+    const fieldProps = Object.assign({}, this.props, { value });
+
+    this.context.handleFieldBlur({
+      event,
+      fieldProps
+    });
+  }
+
   render() {
-    const { type, name } = this.props;
-    const fieldProps = this.context.fields.get(name) || Map();
+    const { fields, templates } = this.context;
+    const { name, type, placeholder } = this.props;
+
+    const fieldProps = fields.get(name) || Map();
+    const FieldTemplate = templates.Input;
+
+    const fieldValue = fieldProps.get('value') || '';
+    const validInContext = fieldProps.get('valid');
+    const fieldValid = isset(validInContext) ? validInContext : true;
+
+    const fieldProps2 = {
+      type,
+      name,
+      placeholder,
+
+      /* Validation */
+      value: fieldValue,
+      valid: fieldValid,
+
+      /* State */
+      disabled: fieldProps.get('disabled'),
+      required: fieldProps.get('required'),
+
+      /* Event handlers */
+      onChange: this.handleChange,
+      onBlur: this.handleBlur,
+    };
 
     return (
-      <input
-        {...{ type }}
-        disabled={ fieldProps.get('disabled') }
-        required={ fieldProps.get('required') }
-        value={ fieldProps.get('value') || '' }
-        onBlur={ this.handleBlur }
-        onChange={ this.handleChange } />
+      <FieldTemplate fieldProps={ fieldProps2 } />
     );
   }
 }

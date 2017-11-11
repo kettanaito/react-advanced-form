@@ -1,6 +1,7 @@
 import { fromJS, Map } from 'immutable';
 import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
+import { TValidationRules } from './FormProvider';
 
 /* Children components */
 import Field from './Field';
@@ -31,17 +32,19 @@ export default class Form extends Component {
   }
 
   /**
-   * Context types accepted by form
+   * Context types accepted by the form
    */
   static contextTypes = {
-    rules: PropTypes.object
+    rules: TValidationRules,
+    templates: PropTypes.object
   }
 
   /**
-   * Context types passed by the Form to children
+   * Context types passed from the Form to its children
    */
   static childContextTypes = {
     fields: PropTypes.instanceOf(Map),
+    templates: PropTypes.object,
     mapFieldToState: PropTypes.func,
     handleFieldBlur: PropTypes.func,
     handleFieldChange: PropTypes.func
@@ -50,6 +53,7 @@ export default class Form extends Component {
   getChildContext() {
     return {
       fields: this.state.fields,
+      templates: this.context.templates,
       mapFieldToState: this.mapFieldToState,
       handleFieldBlur: this.handleFieldBlur,
       handleFieldChange: this.handleFieldChange
@@ -57,17 +61,20 @@ export default class Form extends Component {
   }
 
   /**
-   * Set the props Object to the field with the provided name.
+   * Updates the props of the field stored in the {state.fields} Map.
    */
-  updateFieldProps = ({ name, props, afterUpdate }) => {
+  updateField = ({ name, props, afterUpdate }) => {
     const { fields } = this.state;
     const nextFields = fields.mergeIn([name], fromJS(props));
+
+    console.warn('Form @ updateField', name);
+    console.log('nextFields:', nextFields.toJS());
 
     return this.setState({ fields: nextFields }, afterUpdate);
   }
 
   /**
-   * Register the field in the state (context) explicitly.
+   * Map the field to the state (context) explicitly.
    * Passing fields in context gives a benefit of removing an explicit traversing the children
    * tree, deconstructing and constructing each appropriate child with the attached handler props.
    * However, fields present in the composite components are still unkown to the Form. This method
@@ -75,7 +82,10 @@ export default class Form extends Component {
    */
   mapFieldToState = (fieldProps) => {
     const { name } = fieldProps;
-    return this.updateFieldProps({ name, props: fieldProps });
+
+    console.warn('Form @ mapFieldToState', name, fieldProps);
+
+    return this.updateField({ name, props: fieldProps });
   }
 
   /**
@@ -85,7 +95,12 @@ export default class Form extends Component {
    */
   validateField = async (fieldProps) => {
     let isFieldValid = true;
-    const { name: fieldName, value, rule, asyncRule } = fieldProps;
+    const { name: fieldName, value, rule, asyncRule, required } = fieldProps;
+
+    console.warn('Form @ validateField', fieldName, value);
+
+    /* Allow non-required fields to be empty */
+    if (!value) return !required
 
     /**
      * Format validation.
@@ -93,8 +108,11 @@ export default class Form extends Component {
      * This is the most basic validation, therefore it should pass first.
      */
     if (rule) {
+      console.log('Field has "rule":', rule);
       /* Test the RegExp against the field's value */
       isFieldValid = rule.test(value);
+
+      console.log('valid:', isFieldValid);
     }
 
     /* Invalid format - no need to continue validating */
@@ -106,6 +124,8 @@ export default class Form extends Component {
      * being executed right after.
      */
     if (asyncRule) {
+      console.log('Field has "asyncRule"');
+
       try {
         await asyncRule({
           value,
@@ -116,6 +136,8 @@ export default class Form extends Component {
         isFieldValid = false;
       }
     }
+
+    console.log('valid 3:', isFieldValid);
 
     /**
      * Form-level validation.
@@ -130,8 +152,11 @@ export default class Form extends Component {
     const formRule = formRules[fieldName];
     if (!formRule) return isFieldValid;
 
-    if (formRules.hasOwnProperty(fieldName)) {
+    if (formRule) {
+      console.log('Field has "formRule":', formRule);
       isFieldValid = formRule(value, this.props);
+
+      console.log('valid:', isFieldValid);
     }
 
     return isFieldValid;
@@ -160,9 +185,13 @@ export default class Form extends Component {
     const shouldValidateField = this.shouldValidateField(fieldProps);
     let isFieldValid = valid;
 
+    console.warn('Form @ handleFieldBlur', name, fieldProps.value);
+
     if (shouldValidateField) {
+      console.log('Should validate field! Making it disabled');
+
       /* Make field disabled during the validation */
-      this.updateFieldProps({
+      this.updateField({
         name,
         props: {
           disabled: true
@@ -173,8 +202,10 @@ export default class Form extends Component {
       isFieldValid = await this.validateField(fieldProps);
     }
 
+    console.log('Validation is finished! Field valid:', isFieldValid);
+
     /* Enable field back, update its props */
-    this.updateFieldProps({
+    this.updateField({
       name,
       props: {
         disabled: prevDisabled,
@@ -193,8 +224,10 @@ export default class Form extends Component {
   handleFieldChange = ({ event, fieldProps, nextValue }) => {
     const { name, onChange } = fieldProps;
 
+    console.warn('Form @ handleFieldChange', name, nextValue);
+
     /* Update the value of the changed field in the state */
-    this.updateFieldProps({
+    this.updateField({
       name,
       props: {
         value: nextValue

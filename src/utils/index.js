@@ -1,3 +1,3 @@
 export function isset(variable) {
-  return (variable !== 'undefined') && (variable !== null);
+  return (typeof variable !== 'undefined') && (variable !== null);
 }
