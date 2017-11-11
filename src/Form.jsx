@@ -1,7 +1,6 @@
 import { fromJS, Map } from 'immutable';
 import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
-import { mapChildrenToFields } from './utils/fields';
 
 /* Children components */
 import Field from './Field';
@@ -27,7 +26,7 @@ export default class Form extends Component {
   }
 
   state = {
-    fields: fromJS(mapChildrenToFields(this.props.children)),
+    fields: Map(),
     isSubmitting: false
   }
 
@@ -43,7 +42,7 @@ export default class Form extends Component {
    */
   static childContextTypes = {
     fields: PropTypes.instanceOf(Map),
-    registerInput: PropTypes.func,
+    mapFieldToState: PropTypes.func,
     handleFieldBlur: PropTypes.func,
     handleFieldChange: PropTypes.func
   }
@@ -51,7 +50,7 @@ export default class Form extends Component {
   getChildContext() {
     return {
       fields: this.state.fields,
-      registerInput: this.registerInput,
+      mapFieldToState: this.mapFieldToState,
       handleFieldBlur: this.handleFieldBlur,
       handleFieldChange: this.handleFieldChange
     };
@@ -74,7 +73,7 @@ export default class Form extends Component {
    * However, fields present in the composite components are still unkown to the Form. This method
    * is a handler for each unkown field registration attempt.
    */
-  registerInput = (fieldProps) => {
+  mapFieldToState = (fieldProps) => {
     const { name } = fieldProps;
     return this.updateFieldProps({ name, props: fieldProps });
   }

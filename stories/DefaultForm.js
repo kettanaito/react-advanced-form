@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { FormProvider, Form, Field } from '../src';
 
-const CompositeField = () => (
+const FieldComposite = () => (
   <div>
     <Field name="address" value="Baker" />
     <Field name="street" value="12/c" />
@@ -55,7 +55,7 @@ export default class DefaultForm extends Component {
                 });
               }} />
             <Field name="password" />
-            <CompositeField />
+            <FieldComposite />
           </div>
           <button type="submit">Submit</button>
         </Form>

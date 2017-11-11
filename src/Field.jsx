@@ -32,19 +32,22 @@ export default class Field extends Component {
 
   static contextTypes = {
     fields: PropTypes.instanceOf(Map),
-    registerInput: PropTypes.func,
+    mapFieldToState: PropTypes.func,
     handleFieldBlur: PropTypes.func,
     handleFieldChange: PropTypes.func
   }
 
   componentDidMount() {
     const { fields } = this.context;
-    const { name } = this.props;
 
-    if (fields.get(name)) return;
-
+    /**
+     * Map the field to Form's state to notify the latter of the new registered field.
+     * Timeout is required because {componentDidMount} happens at the same time for all
+     * fields inside the composite component. Thus, each field is updating the state
+     * based on its value upon the composite mount. This causes issues of missing fields.
+     */
     setTimeout(() => {
-      this.context.registerInput(this.props, this.context.fields);
+      this.context.mapFieldToState(this.props, this.context.fields);
     }, 0);
   }
 
