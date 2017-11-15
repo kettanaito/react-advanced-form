@@ -2,6 +2,19 @@ import React, { Component } from 'react';
 import { FormProvider, Form, Field } from '../src';
 import MyInput from './templates/MyInput';
 
+/* Form UI templates */
+const formTemplates = {
+  Input: MyInput
+};
+
+/* Form validation rules */
+const formRules = {
+  name: {
+    username: value => (value === 'ab123')
+  }
+};
+
+/* Composite field example */
 const FieldsComposition = () => (
   <div style={{ display: 'flex' }}>
     <Field name="address" value="Baker" />
@@ -30,15 +43,7 @@ export default class DefaultForm extends Component {
 
   render() {
     return (
-      <FormProvider
-        templates={{
-          Input: MyInput
-        }}
-        rules={{
-          name: {
-            username: value => (value === 'ab123')
-          }
-        }}>
+      <FormProvider templates={ formTemplates } rules={ formRules }>
         <Form
           id="default-form-example"
           action={this.handleFormAction}
@@ -50,7 +55,7 @@ export default class DefaultForm extends Component {
               <Field
                 name="username"
                 placeholder="correct: AB123"
-                rule={/^AB\d+$/}
+                rule={/^AB\d{3}$/}
                 asyncRule={({ fieldProps }) => {
                   return fetch('http://demo9102997.mockable.io/validate/productId', {
                     method: 'POST',

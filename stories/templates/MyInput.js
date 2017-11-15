@@ -14,16 +14,17 @@ export default class MyInput extends React.Component {
   }
 
   render() {
-    const { fieldProps } = this.props;
-    const { valid } = fieldProps;
+    const { fieldHandlers, valid } = this.props;
 
     console.log('| | | MyInput @ render');
 
     return (
       <div className="form-group" style={{ marginBottom: '1rem' }}>
+        {/* <Field style={ inputStyles } /> */}
+
         <input
           style={ inputStyles }
-          {...fieldProps} />
+          {...fieldHandlers} />
 
         { !valid && (
           <p style={{ color: 'red', marginTop: 0 }}>The field is invalid.</p>
