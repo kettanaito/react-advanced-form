@@ -1,7 +1,7 @@
 import { Map } from 'immutable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { isset } from './utils';
+import { isset } from '../utils';
 
 export default class Field extends Component {
   static propTypes = {
@@ -94,7 +94,7 @@ export default class Field extends Component {
     /* Props inherited from the context */
     const { fields, templates } = this.context;
 
-    const FieldTemplate = templates.Input; // TODO Dynamic template assignment
+    const FieldTemplate = templates[this.constructor.name];
 
     /* Props passed to <Field /> on the client usage */
     const { name, type, placeholder } = this.props;

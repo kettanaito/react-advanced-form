@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { TValidationRules } from './FormProvider';
 
 /* Children components */
-import Field from './Field';
+import Field from './Fields/Field';
 
 export default class Form extends Component {
   static propTypes = {

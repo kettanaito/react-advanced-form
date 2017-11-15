@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { FormProvider, Form, Field } from '../src';
 import MyInput from './templates/MyInput';
+import MySelect from './templates/MySelect';
 
 /* Form UI templates */
 const formTemplates = {
-  Input: MyInput
+  Input: MyInput,
+  Select: MySelect
 };
 
 /* Form validation rules */
@@ -17,8 +19,8 @@ const formRules = {
 /* Composite field example */
 const FieldsComposition = () => (
   <div style={{ display: 'flex' }}>
-    <Field name="address" value="Baker" />
-    <Field name="street" value="12/c" />
+    <Field.Input name="address" value="Baker" />
+    <Field.Input name="street" value="12/c" />
   </div>
 );
 
@@ -50,9 +52,11 @@ export default class DefaultForm extends Component {
           onSubmitStart={this.handleSubmitStart}
           onSubmitEnd={this.handleSubmitEnd}>
           <div className="field-group">
+            <Field.Select name="choice" />
+
             <label>
               Non-required field (rule + async rule)
-              <Field
+              <Field.Input
                 name="username"
                 placeholder="correct: AB123"
                 rule={/^AB\d{3}$/}
@@ -67,7 +71,7 @@ export default class DefaultForm extends Component {
             </label>
             <label>
               Required field (no add. validation)
-              <Field name="password" required />
+              <Field.Input name="password" required />
             </label>
             <label>
               Composite field:

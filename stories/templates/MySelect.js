@@ -1,7 +1,7 @@
 import React from 'react';
 
-const inputStyles = {
-  border: '1px solid #ccc',
+const selectStyles = {
+  border: '1px solid blue',
   borderRadius: '3px',
   margin: 0,
   padding: '.45rem .65rem',
@@ -12,15 +12,14 @@ export default class MyInput extends React.Component {
   render() {
     const { fieldHandlers, valid } = this.props;
 
-    console.log('| | | MyInput @ render');
-
     return (
       <div className="form-group" style={{ marginBottom: '1rem' }}>
-        {/* <Field style={ inputStyles } /> */}
+        {/* <Field style={ selectStyles } /> */}
 
-        <input
-          style={ inputStyles }
-          {...fieldHandlers} />
+        <select style={ selectStyles } {...fieldHandlers}>
+          <option>Foo</option>
+          <option>Two</option>
+        </select>
 
         { !valid && (
           <p style={{ color: 'red', marginTop: 0 }}>The field is invalid.</p>
