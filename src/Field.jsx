@@ -34,6 +34,7 @@ export default class Field extends Component {
     fields: PropTypes.instanceOf(Map),
     templates: PropTypes.object.isRequired,
     mapFieldToState: PropTypes.func.isRequired,
+    handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
     handleFieldChange: PropTypes.func.isRequired
   }
@@ -70,6 +71,13 @@ export default class Field extends Component {
     });
   }
 
+  handleFocus = (event) => {
+    this.context.handleFieldFocus({
+      event,
+      fieldProps: this.props
+    });
+  }
+
   handleBlur = (event) => {
     const { value } = event.currentTarget;
     console.log('| | Field @ handleBlur', this.props.name, value);
@@ -83,36 +91,44 @@ export default class Field extends Component {
   }
 
   render() {
+    /* Props inherited from the context */
     const { fields, templates } = this.context;
+
+    const FieldTemplate = templates.Input; // TODO Dynamic template assignment
+
+    /* Props passed to <Field /> on the client usage */
     const { name, type, placeholder } = this.props;
 
     const fieldProps = fields.get(name) || Map();
-    const FieldTemplate = templates.Input;
-
     const fieldValue = fieldProps.get('value') || '';
     const validInContext = fieldProps.get('valid');
     const fieldValid = isset(validInContext) ? validInContext : true;
+    const fieldFocused = fieldProps.get('focused') || false;
 
-    const fieldProps2 = {
+    const fieldHandlers = {
       type,
       name,
       placeholder,
-
-      /* Validation */
       value: fieldValue,
-      valid: fieldValid,
 
       /* State */
       disabled: fieldProps.get('disabled'),
       required: fieldProps.get('required'),
 
       /* Event handlers */
+      onFocus: this.handleFocus,
       onChange: this.handleChange,
-      onBlur: this.handleBlur,
+      onBlur: this.handleBlur
+    };
+
+    const internalProps = {
+      /* State */
+      focused: fieldFocused,
+      valid: fieldValid,
     };
 
     return (
-      <FieldTemplate fieldProps={ fieldProps2 } />
+      <FieldTemplate fieldHandlers={ fieldHandlers } {...internalProps} />
     );
   }
 }

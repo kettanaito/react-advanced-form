@@ -46,6 +46,7 @@ export default class Form extends Component {
     fields: PropTypes.instanceOf(Map),
     templates: PropTypes.object,
     mapFieldToState: PropTypes.func,
+    handleFieldFocus: PropTypes.func,
     handleFieldBlur: PropTypes.func,
     handleFieldChange: PropTypes.func
   }
@@ -55,6 +56,7 @@ export default class Form extends Component {
       fields: this.state.fields,
       templates: this.context.templates,
       mapFieldToState: this.mapFieldToState,
+      handleFieldFocus: this.handleFieldFocus,
       handleFieldBlur: this.handleFieldBlur,
       handleFieldChange: this.handleFieldChange
     };
@@ -62,10 +64,13 @@ export default class Form extends Component {
 
   /**
    * Updates the props of the field stored in the {state.fields} Map.
+   * @param {string} name The name of the field.
+   * @param {object} fieldProps
+   * @param {function} afterUpdate Callback to execute after state update.
    */
-  updateField = ({ name, props, afterUpdate }) => {
+  updateField = ({ name, fieldProps, afterUpdate }) => {
     const { fields } = this.state;
-    const nextFields = fields.mergeIn([name], fromJS(props));
+    const nextFields = fields.mergeIn([name], fromJS(fieldProps));
 
     console.warn('Form @ updateField', name);
     console.log('nextFields:', nextFields.toJS());
@@ -85,13 +90,16 @@ export default class Form extends Component {
 
     console.warn('Form @ mapFieldToState', name, fieldProps);
 
-    return this.updateField({ name, props: fieldProps });
+    return this.updateField({ name, fieldProps });
   }
 
   /**
    * Validate a single field.
    * Validation of each field is a complex process consisting of several steps.
    * It is important to resolve the validation immediately once the field becomes invalid.
+   *
+   * @param {object} fieldProps
+   * @return {boolean}
    */
   validateField = async (fieldProps) => {
     let isFieldValid = true;
@@ -164,6 +172,8 @@ export default class Form extends Component {
 
   /**
    * Determines if the provided field needs validation.
+   * @param {object} fieldProps
+   * @return {boolean}
    */
   shouldValidateField = ({ name, rule, asyncRule }) => {
     const { rules: contextRules } = this.context;
@@ -177,8 +187,22 @@ export default class Form extends Component {
     );
   }
 
+  handleFieldFocus = ({ fieldProps }) => {
+    const { name } = fieldProps;
+
+    console.warn('Form @ handleFieldFocus', name, fieldProps);
+
+    this.updateField({
+      name,
+      fieldProps: {
+        focused: true
+      }
+    });
+  }
+
   /**
    * Handle field blur.
+   * @param {object} fieldProps
    */
   handleFieldBlur = async ({ fieldProps }) => {
     const { name, valid, disabled: prevDisabled, onBlur } = fieldProps;
@@ -193,7 +217,7 @@ export default class Form extends Component {
       /* Make field disabled during the validation */
       this.updateField({
         name,
-        props: {
+        fieldProps: {
           disabled: true
         }
       });
@@ -207,7 +231,8 @@ export default class Form extends Component {
     /* Enable field back, update its props */
     this.updateField({
       name,
-      props: {
+      fieldProps: {
+        focused: false,
         disabled: prevDisabled,
         valid: isFieldValid
       },
@@ -229,7 +254,7 @@ export default class Form extends Component {
     /* Update the value of the changed field in the state */
     this.updateField({
       name,
-      props: {
+      fieldProps: {
         value: nextValue
       },
       afterUpdate: () => {
