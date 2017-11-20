@@ -7,6 +7,9 @@ import { TValidationRules } from './FormProvider';
 import Field from './Fields/Field';
 
 export default class Form extends Component {
+  /**
+   * Props.
+   */
   static propTypes = {
     /* General */
     id: PropTypes.string,
@@ -26,25 +29,26 @@ export default class Form extends Component {
     action: () => new Promise(resolve => resolve())
   }
 
+  /**
+   * State.
+   */
   state = {
     fields: Map(),
     isSubmitting: false
   }
 
   /**
-   * Context types accepted by the form
+   * Context which is accepted by Form.
    */
   static contextTypes = {
-    rules: TValidationRules,
-    templates: PropTypes.object
+    rules: TValidationRules
   }
 
   /**
-   * Context types passed from the Form to its children
+   * Context which Form passes to Fields.
    */
   static childContextTypes = {
     fields: PropTypes.instanceOf(Map),
-    templates: PropTypes.object,
     mapFieldToState: PropTypes.func,
     handleFieldFocus: PropTypes.func,
     handleFieldBlur: PropTypes.func,
@@ -54,7 +58,6 @@ export default class Form extends Component {
   getChildContext() {
     return {
       fields: this.state.fields,
-      templates: this.context.templates,
       mapFieldToState: this.mapFieldToState,
       handleFieldFocus: this.handleFieldFocus,
       handleFieldBlur: this.handleFieldBlur,

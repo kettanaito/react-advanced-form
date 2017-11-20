@@ -1,4 +1,5 @@
 import React from 'react';
+import { Field } from '../../src';
 
 const inputStyles = {
   border: '1px solid #ccc',
@@ -8,9 +9,9 @@ const inputStyles = {
   fontSize: '14px'
 };
 
-export default class MyInput extends React.Component {
+export default class MyCustomInput extends React.Component {
   render() {
-    const { fieldHandlers, valid } = this.props;
+    const { valid, ...fieldProps } = this.props;
 
     console.log('| | | MyInput @ render');
 
@@ -18,13 +19,11 @@ export default class MyInput extends React.Component {
       <div className="form-group" style={{ marginBottom: '1rem' }}>
         {/* <Field style={ inputStyles } /> */}
 
-        <input
-          style={ inputStyles }
-          {...fieldHandlers} />
+        <Field.Input {...fieldProps} style={ inputStyles } />
 
-        { !valid && (
+        {/* { !valid && (
           <p style={{ color: 'red', marginTop: 0 }}>The field is invalid.</p>
-        ) }
+        ) } */}
       </div>
     );
   }

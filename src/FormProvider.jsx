@@ -13,21 +13,18 @@ export const TValidationRules = PropTypes.shape({
 
 export default class FormProvider extends Component {
   static propTypes = {
-    rules: TValidationRules,
-    templates: PropTypes.object.isRequired
+    rules: TValidationRules
   }
 
   static childContextTypes = {
-    rules: TValidationRules,
-    templates: PropTypes.object.isRequired
+    rules: TValidationRules
   }
 
   getChildContext() {
-    const { rules, templates } = this.props;
+    const { rules } = this.props;
 
     return {
-      rules,
-      templates
+      rules
     };
   }
 

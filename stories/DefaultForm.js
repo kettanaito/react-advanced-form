@@ -3,12 +3,6 @@ import { FormProvider, Form, Field } from '../src';
 import MyInput from './templates/MyInput';
 import MySelect from './templates/MySelect';
 
-/* Form UI templates */
-const formTemplates = {
-  Input: MyInput,
-  Select: MySelect
-};
-
 /* Form validation rules */
 const formRules = {
   name: {
@@ -45,15 +39,27 @@ export default class DefaultForm extends Component {
 
   render() {
     return (
-      <FormProvider templates={ formTemplates } rules={ formRules }>
+      <FormProvider rules={ formRules }>
         <Form
           id="default-form-example"
           action={this.handleFormAction}
           onSubmitStart={this.handleSubmitStart}
           onSubmitEnd={this.handleSubmitEnd}>
           <div className="field-group">
-            <Field.Select name="choice" />
+            {/* Select */}
+            {/* <label>
+              Select example:
+              <Field.Select name="choice">
+                <option>Foo</option>
+                <option>Two</option>
+              </Field.Select>
+            </label> */}
 
+            {/* Input */}
+            <label>
+              Custom HOC field:
+              <MyInput name="my-styled-input" value="Styled!" />
+            </label>
             <label>
               Non-required field (rule + async rule)
               <Field.Input

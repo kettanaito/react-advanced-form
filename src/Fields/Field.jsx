@@ -10,8 +10,8 @@ export default class Field extends Component {
     className: PropTypes.string,
 
     /* Specific */
-    type: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
     placeholder: PropTypes.string,
     value: PropTypes.string,
 
@@ -32,7 +32,6 @@ export default class Field extends Component {
 
   static contextTypes = {
     fields: PropTypes.instanceOf(Map),
-    templates: PropTypes.object.isRequired,
     mapFieldToState: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -71,6 +70,11 @@ export default class Field extends Component {
     });
   }
 
+  /**
+   * Handle field focus.
+   * Bubble up to the Form to mutate the state of this particular field,
+   * setting its "focus" property to the respective value.
+   */
   handleFocus = (event) => {
     this.context.handleFieldFocus({
       event,
@@ -78,6 +82,9 @@ export default class Field extends Component {
     });
   }
 
+  /**
+   * Handle field blur.
+   */
   handleBlur = (event) => {
     const { value } = event.currentTarget;
     console.log('| | Field @ handleBlur', this.props.name, value);
@@ -91,44 +98,37 @@ export default class Field extends Component {
   }
 
   render() {
-    /* Props inherited from the context */
-    const { fields, templates } = this.context;
-
-    const FieldTemplate = templates[this.constructor.name];
-
     /* Props passed to <Field /> on the client usage */
-    const { name, type, placeholder } = this.props;
+    const { name, rule, asyncRule, ...directProps } = this.props;
 
-    const fieldProps = fields.get(name) || Map();
-    const fieldValue = fieldProps.get('value') || '';
-    const validInContext = fieldProps.get('valid');
-    const fieldValid = isset(validInContext) ? validInContext : true;
-    const fieldFocused = fieldProps.get('focused') || false;
+    /* Get the Map of all fields in the Form */
+    const { fields } = this.context;
 
-    const fieldHandlers = {
-      type,
-      name,
-      placeholder,
-      value: fieldValue,
+    /* Get the current Field's props */
+    const fieldContext = fields.get(name) || Map();
 
-      /* State */
-      disabled: fieldProps.get('disabled'),
-      required: fieldProps.get('required'),
+    /* Handle composite props (with fallbacks) */
+    const validInContext = fieldContext.get('valid');
 
-      /* Event handlers */
-      onFocus: this.handleFocus,
+    const inputProps = {
+      value: fieldContext.get('value') || '',
+      required: fieldContext.get('required'),
+      disabled: fieldContext.get('disabled'),
+    };
+
+    const contextProps = {
+      valid: isset(validInContext) ? validInContext : true,
+      focused: fieldContext.get('focused') || false
+    };
+
+    const eventHandlers = {
       onChange: this.handleChange,
+      onFocus: this.handleFocus,
       onBlur: this.handleBlur
     };
 
-    const internalProps = {
-      /* State */
-      focused: fieldFocused,
-      valid: fieldValid,
-    };
-
     return (
-      <FieldTemplate fieldHandlers={ fieldHandlers } {...internalProps} />
+      <input {...directProps} {...inputProps} {...eventHandlers} />
     );
   }
 }

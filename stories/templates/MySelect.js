@@ -8,7 +8,7 @@ const selectStyles = {
   fontSize: '14px'
 };
 
-export default class MyInput extends React.Component {
+export default class MyCustomSelect extends React.Component {
   render() {
     const { fieldHandlers, valid } = this.props;
 
@@ -16,10 +16,7 @@ export default class MyInput extends React.Component {
       <div className="form-group" style={{ marginBottom: '1rem' }}>
         {/* <Field style={ selectStyles } /> */}
 
-        <select style={ selectStyles } {...fieldHandlers}>
-          <option>Foo</option>
-          <option>Two</option>
-        </select>
+        <select style={ selectStyles } {...fieldHandlers} />
 
         { !valid && (
           <p style={{ color: 'red', marginTop: 0 }}>The field is invalid.</p>
