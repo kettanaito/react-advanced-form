@@ -25,15 +25,17 @@ export default class DefaultForm extends Component {
     });
   }
 
-  handleSubmitStart = (fields, formProps) => {
+  handleSubmitStart = ({ fields, serialized, formProps }) => {
     console.warn('handleSubmitStart');
     console.log('fields', fields.toJS());
+    console.log('serialized', serialized.toJS());
     console.log('formProps', formProps);
   }
 
-  handleSubmitEnd = (fields, formProps) => {
+  handleSubmitEnd = ({ fields, serialized, formProps }) => {
     console.warn('handleSubmitEnd');
     console.log('fields', fields.toJS());
+    console.log('serialized', serialized.toJS());
     console.log('formProps', formProps);
   }
 

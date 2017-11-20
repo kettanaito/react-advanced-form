@@ -2,6 +2,7 @@ import { fromJS, Map } from 'immutable';
 import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
 import { TValidationRules } from './FormProvider';
+import { serialize } from './utils';
 
 /* Children components */
 import Field from './Fields/Field';
@@ -278,14 +279,20 @@ export default class Form extends Component {
     const { fields } = this.state;
     const { action, onSubmitStart, onSubmit, onSubmitFailed, onSubmitEnd } = this.props;
 
-    const callbackArgs = [fields, this.props];
+    const serialized = serialize(fields);
+
+    const callbackArgs = {
+      fields,
+      serialized,
+      formProps: this.props
+    };
 
     /**
      * Event: Submit has started.
      * The submit is consideres started immediately when the submit button is pressed.
      * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
-    if (onSubmitStart) onSubmitStart(...callbackArgs);
+    if (onSubmitStart) onSubmitStart(callbackArgs);
     this.setState({ isSubmitting: true });
 
     /**
@@ -293,19 +300,19 @@ export default class Form extends Component {
      * Form's action is a function which returns a Promise. You should pass a WS call, or async action
      * as a prop to the form in order for it to work.
      */
-    action(...callbackArgs)
+    action(callbackArgs)
       .then(() => {
-        if (onSubmit) onSubmit(...callbackArgs);
+        if (onSubmit) onSubmit(callbackArgs);
       })
       .catch(() => {
-        if (onSubmitFailed) onSubmitFailed(...callbackArgs);
+        if (onSubmitFailed) onSubmitFailed(callbackArgs);
       })
       .then(() => {
         /**
          * Event: Submit has ended.
          * Called each time after the submit, regardless of the submit status (success/failure).
          */
-        if (onSubmitEnd) onSubmitEnd(...callbackArgs);
+        if (onSubmitEnd) onSubmitEnd(callbackArgs);
         this.setState({ isSubmitting: false });
       });
   }
