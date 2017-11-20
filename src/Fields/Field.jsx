@@ -101,7 +101,7 @@ export default class Field extends Component {
     /* Props passed to <Field /> on the client usage */
     const { name, rule, asyncRule, ...directProps } = this.props;
 
-    /* Get the Map of all fields in the Form */
+    /* Get the Map of all fields from the Form's context */
     const { fields } = this.context;
 
     /* Get the current Field's props */
@@ -110,17 +110,31 @@ export default class Field extends Component {
     /* Handle composite props (with fallbacks) */
     const validInContext = fieldContext.get('valid');
 
+    /**
+     * Input props.
+     * Props passed directly to the Field's element. Do not add
+     * properties which are not natively supported by that element.
+     */
     const inputProps = {
       value: fieldContext.get('value') || '',
       required: fieldContext.get('required'),
       disabled: fieldContext.get('disabled'),
     };
 
+    /**
+     * Context props.
+     * Props which describe the Field but are not assigned to
+     * the Field's element directly. Useful for HOC styling.
+     */
     const contextProps = {
       valid: isset(validInContext) ? validInContext : true,
       focused: fieldContext.get('focused') || false
     };
 
+    /**
+     * Event handlers assigned to the Field's element directly.
+     * Those handle changes which mutate the internal state/context.
+     */
     const eventHandlers = {
       onChange: this.handleChange,
       onFocus: this.handleFocus,
