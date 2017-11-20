@@ -1,0 +1,8 @@
+/**
+ * Serializes the provided fields Object into a { fieldName: value } pair.
+ */
+export default function serialize(fields) {
+  return fields.mapEntries(([fieldName, fieldProps]) => {
+    return [fieldName, fieldProps.get('value')];
+  });
+}
