@@ -44,7 +44,8 @@ export default class Field extends Component {
 
   getProp(propName) {
     const { fields } = this.context;
-    return fields.getIn([this.props.name, propName]) || this.props[propName];
+    const contextValue = fields.getIn([this.props.name, propName]);
+    return isset(contextValue) ? contextValue : this.props[propName];
   }
 
   componentDidMount() {
