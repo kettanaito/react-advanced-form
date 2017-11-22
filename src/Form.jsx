@@ -72,14 +72,27 @@ export default class Form extends Component {
    * @param {object} fieldProps
    * @param {function} afterUpdate Callback to execute after state update.
    */
-  updateField = ({ name, fieldProps, afterUpdate }) => {
+  updateField = ({ name, fieldProps: directProps, propsPatch = null, afterUpdate }) => {
     const { fields } = this.state;
-    const nextFields = fields.mergeIn([name], fromJS(fieldProps));
+    const fieldProps = directProps || fields.get(name);
 
-    console.warn('Form @ updateField', name);
+    const nextProps = propsPatch ? { ...fieldProps, ...propsPatch } : fieldProps;
+
+    const nextFields = fields.mergeIn([name], fromJS(nextProps));
+
+    console.groupCollapsed(name, '@ updateField');
+    console.log('directProps', directProps);
+    console.log('propsPatch', propsPatch);
+    console.log('fieldProps', fieldProps);
     console.log('nextFields:', nextFields.toJS());
+    console.groupEnd();
 
-    return this.setState({ fields: nextFields }, afterUpdate);
+    return new Promise((resolve) => {
+      this.setState({ fields: nextFields }, () => {
+        if (afterUpdate) afterUpdate();
+        return resolve(nextFields);
+      });
+    });
   }
 
   /**
@@ -89,12 +102,19 @@ export default class Form extends Component {
    * However, fields present in the composite components are still unkown to the Form. This method
    * is a handler for each unkown field registration attempt.
    */
-  mapFieldToState = (fieldProps) => {
-    const { name } = fieldProps;
+  mapFieldToState = ({ fieldProps, fieldComponent }) => {
+    console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
+    console.log('fieldProps', fieldProps);
+    console.groupEnd();
 
-    console.warn('Form @ mapFieldToState', name, fieldProps);
+    const { fields } = this.state;
 
-    return this.updateField({ name, fieldProps });
+    const nextFields = fields.mergeIn([fieldProps.name], fromJS({
+      ...fieldProps,
+      fieldComponent
+    }));
+
+    this.setState({ fields: nextFields });
   }
 
   /**
@@ -109,10 +129,17 @@ export default class Form extends Component {
     let isFieldValid = true;
     const { name: fieldName, value, rule, asyncRule, required } = fieldProps;
 
-    console.warn('Form @ validateField', fieldName, value);
+    console.groupCollapsed(fieldName, '@ validateField');
+    console.log('fieldProps', fieldProps);
+    console.log('value:', value);
 
     /* Allow non-required fields to be empty */
-    if (!value) return !required
+    if (!value) {
+      console.log('valid:', !required);
+      console.groupEnd();
+
+      return !required;
+    }
 
     /**
      * Format validation.
@@ -128,7 +155,11 @@ export default class Form extends Component {
     }
 
     /* Invalid format - no need to continue validating */
-    if (!isFieldValid) return isFieldValid;
+    if (!isFieldValid) {
+      console.groupEnd();
+
+      return isFieldValid;
+    }
 
     /**
      * Field: Asynchronous validation.
@@ -136,7 +167,7 @@ export default class Form extends Component {
      * being executed right after.
      */
     if (asyncRule) {
-      console.log('Field has "asyncRule"');
+      console.log('Field has asynchronous rule, calling...');
 
       try {
         await asyncRule({
@@ -149,7 +180,7 @@ export default class Form extends Component {
       }
     }
 
-    console.log('valid 3:', isFieldValid);
+    console.log('valid:', isFieldValid);
 
     /**
      * Form-level validation.
@@ -158,11 +189,20 @@ export default class Form extends Component {
      */
     const { rules: contextRules } = this.context;
     const { rules: customFormRules } = this.props;
+
     const formRules = customFormRules || contextRules;
-    if (!formRules) return isFieldValid;
+    if (!formRules) {
+      console.groupEnd();
+
+      return isFieldValid;
+    }
 
     const formRule = formRules[fieldName];
-    if (!formRule) return isFieldValid;
+    if (!formRule) {
+      console.groupEnd();
+
+      return isFieldValid;
+    }
 
     if (formRule) {
       console.log('Field has "formRule":', formRule);
@@ -171,7 +211,36 @@ export default class Form extends Component {
       console.log('valid:', isFieldValid);
     }
 
+    console.groupEnd();
+
     return isFieldValid;
+  }
+
+  /**
+   * Validate form.
+   */
+  validateFields = async () => {
+    const { fields } = this.state;
+    let isFormValid = true;
+
+    await fields.forEach(async (immutableField) => {
+      const fieldProps = immutableField.toJS();
+      const isFieldValid = await this.validateField(fieldProps);
+      if (!isFieldValid) {
+        console.log('')
+        isFormValid = isFieldValid;
+      }
+
+      this.updateField({
+        name: fieldProps.name,
+        propsPatch: {
+          valid: isFieldValid
+        }
+      });
+    });
+
+    console.log('isFormValid', isFormValid);
+    return isFormValid;
   }
 
   /**
@@ -191,37 +260,72 @@ export default class Form extends Component {
     );
   }
 
+  /**
+   * Handles field focus.
+   * @param {object} fieldProps
+   */
   handleFieldFocus = ({ fieldProps }) => {
-    const { name } = fieldProps;
+    console.groupCollapsed(fieldProps.name, '@ handleFieldFocus');
+    console.log('fieldProps', fieldProps);
+    console.groupEnd();
 
-    console.warn('Form @ handleFieldFocus', name, fieldProps);
+    console.log('')
 
     this.updateField({
-      name,
-      fieldProps: {
+      name: fieldProps.name,
+      propsPatch: {
         focused: true
       }
     });
   }
 
   /**
-   * Handle field blur.
+   * Handles field change.
+   * @param {Event} event
+   * @param {object} fieldProps
+   * @param {mixed} nextValue
+   */
+  handleFieldChange = ({ event, fieldProps, nextValue }) => {
+    console.groupCollapsed(fieldProps.name, '@ handleFieldChange');
+    console.log('fieldProps', fieldProps);
+    console.log('nextValue', nextValue);
+    console.groupEnd();
+
+    /* Update the value of the changed field in the state */
+    this.updateField({
+      name: fieldProps.name,
+      propsPatch: {
+        value: nextValue
+      },
+      afterUpdate: () => {
+        const { onChange } = fieldProps;
+
+        if (onChange) {
+          /* Call client-side onChange handler function */
+          onChange(event, nextValue, fieldProps, this.props);
+        }
+      }
+    });
+  }
+
+  /**
+   * Handles field blur.
    * @param {object} fieldProps
    */
   handleFieldBlur = async ({ fieldProps }) => {
-    const { name, valid, disabled: prevDisabled, onBlur } = fieldProps;
+    const { valid, disabled: prevDisabled, onBlur } = fieldProps;
     const shouldValidateField = this.shouldValidateField(fieldProps);
     let isFieldValid = valid;
 
-    console.warn('Form @ handleFieldBlur', name, fieldProps.value);
+    console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
+    console.log('fieldProps', fieldProps);
+    console.groupEnd();
 
     if (shouldValidateField) {
-      console.log('Should validate field! Making it disabled');
-
       /* Make field disabled during the validation */
       this.updateField({
-        name,
-        fieldProps: {
+        name: fieldProps.name,
+        propsPatch: {
           disabled: true
         }
       });
@@ -230,12 +334,10 @@ export default class Form extends Component {
       isFieldValid = await this.validateField(fieldProps);
     }
 
-    console.log('Validation is finished! Field valid:', isFieldValid);
-
     /* Enable field back, update its props */
     this.updateField({
-      name,
-      fieldProps: {
+      name: fieldProps.name,
+      propsPatch: {
         focused: false,
         disabled: prevDisabled,
         valid: isFieldValid
@@ -248,33 +350,15 @@ export default class Form extends Component {
   }
 
   /**
-   * Handle field change.
+   * Handles form submit.
+   * @param {Event} event
    */
-  handleFieldChange = ({ event, fieldProps, nextValue }) => {
-    const { name, onChange } = fieldProps;
-
-    console.warn('Form @ handleFieldChange', name, nextValue);
-
-    /* Update the value of the changed field in the state */
-    this.updateField({
-      name,
-      fieldProps: {
-        value: nextValue
-      },
-      afterUpdate: () => {
-        if (onChange) {
-          /* Call client-side onChange handler function */
-          onChange(event, nextValue, fieldProps, this.props);
-        }
-      }
-    });
-  }
-
-  /**
-   * Handle form submit.
-   */
-  handleFormSubmit = (event) => {
+  handleFormSubmit = async (event) => {
     event.preventDefault();
+
+    /* First, ensure all required fields are valid */
+    const isFormValid = await this.validateFields();
+    if (!isFormValid) return;
 
     const { fields } = this.state;
     const { action, onSubmitStart, onSubmit, onSubmitFailed, onSubmitEnd } = this.props;
