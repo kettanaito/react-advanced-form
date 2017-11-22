@@ -29,6 +29,7 @@ export default class Field extends Component {
   static defaultProps = {
     type: 'text',
     valid: keywords.notValidated,
+    value: '',
     required: false,
     disabled: false
   }
@@ -39,6 +40,11 @@ export default class Field extends Component {
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
     handleFieldChange: PropTypes.func.isRequired
+  }
+
+  getProp(propName) {
+    const { fields } = this.context;
+    return fields.getIn([this.props.name, propName]) || this.props[propName];
   }
 
   componentDidMount() {
@@ -64,6 +70,8 @@ export default class Field extends Component {
   handleChange = (event) => {
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
+
+    console.log('is nextValue empty string', nextValue === '');
 
     // console.log(' ');
     // console.log('| | Field @ handleChange', this.props.name, nextValue);
@@ -110,7 +118,7 @@ export default class Field extends Component {
     const fieldContext = fields.get(name) || Map();
 
     /* Handle composite props (with fallbacks) */
-    const validInContext = fieldContext.get('valid');
+    // const validInContext = this.getProp('valid');
 
     /**
      * Input props.
@@ -118,9 +126,9 @@ export default class Field extends Component {
      * properties which are not natively supported by that element.
      */
     const inputProps = {
-      value: fieldContext.get('value') || '',
-      required: fieldContext.get('required'),
-      disabled: fieldContext.get('disabled'),
+      value: this.getProp('value'),
+      required: this.getProp('required'),
+      disabled: this.getProp('disabled'),
     };
 
     /**
@@ -128,10 +136,10 @@ export default class Field extends Component {
      * Props which describe the Field but are not assigned to
      * the Field's element directly. Useful for HOC styling.
      */
-    const contextProps = {
-      valid: isset(validInContext) ? validInContext : true,
-      focused: fieldContext.get('focused') || false
-    };
+    // const contextProps = {
+    //   valid: isset(validInContext) ? validInContext : true,
+    //   focused: this.getProp('focused')
+    // };
 
     /**
      * Event handlers assigned to the Field's element directly.
