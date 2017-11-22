@@ -26,6 +26,7 @@ export default class Field extends Component {
 
   static defaultProps = {
     type: 'text',
+    valid: true,
     required: false,
     disabled: false
   }
@@ -41,7 +42,7 @@ export default class Field extends Component {
   componentDidMount() {
     const { fields } = this.context;
 
-    console.log('| | Field @ componentDidMount. Need to map field to state');
+    // console.log('| | Field @ componentDidMount. Need to map field to state');
 
     /**
      * Map the field to Form's state to notify the latter of the new registered field.
@@ -50,7 +51,11 @@ export default class Field extends Component {
      * based on its value upon the composite mount. This causes issues of missing fields.
      */
     setTimeout(() => {
-      this.context.mapFieldToState(this.props, this.context.fields);
+      this.context.mapFieldToState({
+        fieldProps: this.props,
+        // this.context.fields,
+        fieldComponent: this
+      });
     }, 0);
   }
 
@@ -58,8 +63,8 @@ export default class Field extends Component {
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
 
-    console.log(' ');
-    console.log('| | Field @ handleChange', this.props.name, nextValue);
+    // console.log(' ');
+    // console.log('| | Field @ handleChange', this.props.name, nextValue);
 
     /* Call parental change handler */
     this.context.handleFieldChange({
@@ -87,19 +92,14 @@ export default class Field extends Component {
    */
   handleBlur = (event) => {
     const { value } = event.currentTarget;
-    console.log('| | Field @ handleBlur', this.props.name, value);
-
     const fieldProps = Object.assign({}, this.props, { value });
 
-    this.context.handleFieldBlur({
-      event,
-      fieldProps
-    });
+    this.context.handleFieldBlur({ event, fieldProps });
   }
 
   render() {
     /* Props passed to <Field /> on the client usage */
-    const { name, rule, asyncRule, ...directProps } = this.props;
+    const { name, rule, asyncRule, valid, ...directProps } = this.props;
 
     /* Get the Map of all fields from the Form's context */
     const { fields } = this.context;

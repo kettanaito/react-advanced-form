@@ -13,8 +13,8 @@ const formRules = {
 /* Composite field example */
 const FieldsComposition = () => (
   <div style={{ display: 'flex' }}>
-    <Field.Input name="address" value="Baker" />
-    <Field.Input name="street" value="12/c" />
+    <MyInput name="address" value="Baker" />
+    <MyInput name="street" value="12/c" />
   </div>
 );
 
@@ -30,6 +30,7 @@ export default class DefaultForm extends Component {
     console.log('fields', fields.toJS());
     console.log('serialized', serialized.toJS());
     console.log('formProps', formProps);
+    alert('SUBMITS');
   }
 
   handleSubmitEnd = ({ fields, serialized, formProps }) => {
@@ -59,10 +60,36 @@ export default class DefaultForm extends Component {
 
             {/* Input */}
             <label>
-              Custom HOC field:
-              <MyInput name="my-styled-input" value="Styled!" />
+              Filed with client rule (optional):
+              <MyInput
+                name="my-styled-input"
+                placeholder="i.e. 123"
+                rule={/^\d+$/} />
             </label>
+
             <label>
+              Field (required):
+              <MyInput
+                name="password"
+                required />
+            </label>
+
+            <label>
+              Field (async-rule)
+              <MyInput
+                name="async-rule"
+                asyncRule={({ fieldProps }) => {
+                  return fetch('http://demo9102997.mockable.io/validate/productId', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      userName: fieldProps.value
+                    })
+                  });
+                }}
+                required />
+            </label>
+
+            {/* <label>
               Non-required field (rule + async rule)
               <Field.Input
                 name="username"
@@ -76,11 +103,8 @@ export default class DefaultForm extends Component {
                     })
                   });
                 }} />
-            </label>
-            <label>
-              Required field (no add. validation)
-              <Field.Input name="password" required />
-            </label>
+            </label> */}
+
             <label>
               Composite field:
               <FieldsComposition />
