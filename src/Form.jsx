@@ -75,7 +75,7 @@ export default class Form extends Component {
    */
   updateField = ({ name, fieldProps: directProps, propsPatch = null, afterUpdate }) => {
     const { fields } = this.state;
-    const fieldProps = directProps || fields.get(name);
+    const fieldProps = directProps || fields.get(name) && fields.get(name).toJS();
 
     const nextProps = propsPatch ? { ...fieldProps, ...propsPatch } : fieldProps;
 
@@ -267,7 +267,7 @@ export default class Form extends Component {
    * @return {boolean}
    */
   shouldValidateField = ({ valid }) => {
-    return (valid === keywords.none);
+    return (valid === keywords.notValidated);
   }
 
   /**
