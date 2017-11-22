@@ -1,7 +1,6 @@
 import { Map } from 'immutable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import keywords from '../keywords';
 import { isset } from '../utils';
 
 export default class Field extends Component {
@@ -17,7 +16,8 @@ export default class Field extends Component {
     value: PropTypes.string,
 
     /* Validation */
-    valid: PropTypes.oneOf([PropTypes.bool, keywords.notValidated]),
+    validated: PropTypes.bool,
+    valid: PropTypes.bool,
     rule: PropTypes.instanceOf(RegExp),
     asyncRule: PropTypes.func,
 
@@ -28,7 +28,8 @@ export default class Field extends Component {
 
   static defaultProps = {
     type: 'text',
-    valid: keywords.notValidated,
+    validated: false,
+    valid: true,
     value: '',
     required: false,
     disabled: false
@@ -110,7 +111,7 @@ export default class Field extends Component {
 
   render() {
     /* Props passed to <Field /> on the client usage */
-    const { name, rule, asyncRule, valid, ...directProps } = this.props;
+    const { name, rule, asyncRule, valid, validated, ...directProps } = this.props;
 
     /* Get the Map of all fields from the Form's context */
     const { fields } = this.context;
