@@ -73,7 +73,7 @@ export default class Form extends Component {
    * @param {object} fieldProps
    * @param {function} afterUpdate Callback to execute after state update.
    */
-  updateField = ({ name, fieldProps: directProps, propsPatch = null, afterUpdate }) => {
+  updateField = ({ name, fieldProps: directProps, propsPatch = null }) => {
     const { fields } = this.state;
     const fieldProps = directProps || fields.get(name) && fields.get(name).toJS();
 
@@ -85,12 +85,12 @@ export default class Form extends Component {
     console.log('directProps', directProps);
     console.log('propsPatch', propsPatch);
     console.log('fieldProps', fieldProps);
+    console.log('nextProps', nextProps);
     console.log('nextFields:', nextFields.toJS());
     console.groupEnd();
 
     return new Promise((resolve) => {
       this.setState({ fields: nextFields }, () => {
-        if (afterUpdate) afterUpdate();
         return resolve(nextFields);
       });
     });
@@ -306,14 +306,13 @@ export default class Form extends Component {
       name: fieldProps.name,
       propsPatch: {
         value: nextValue
-      },
-      afterUpdate: () => {
-        const { onChange } = fieldProps;
+      }
+    }).then(() => {
+      const { onChange } = fieldProps;
 
-        if (onChange) {
-          /* Call client-side onChange handler function */
-          onChange(event, nextValue, fieldProps, this.props);
-        }
+      if (onChange) {
+        /* Call client-side onChange handler function */
+        onChange(event, nextValue, fieldProps, this.props);
       }
     });
   }
@@ -351,11 +350,10 @@ export default class Form extends Component {
         focused: false,
         disabled: prevDisabled,
         valid: isFieldValid
-      },
-      afterUpdate: () => {
-        /* Invoke custom onBlur handler */
-        if (onBlur) onBlur();
       }
+    }).then(() => {
+      /* Invoke custom onBlur handler */
+      if (onBlur) onBlur();
     });
   }
 
