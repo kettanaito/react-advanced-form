@@ -230,7 +230,7 @@ export default class Form extends Component {
   /**
    * Validate form.
    */
-  validateFields = async () => {
+  validate = async () => {
     const { fields } = this.state;
     let isFormValid = true;
 
@@ -366,13 +366,17 @@ export default class Form extends Component {
   handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    /* First, ensure all required fields are valid */
-    const isFormValid = await this.validateFields();
+    /**
+     * First, ensure all non-validated fields are validated
+     * and are valid.
+     */
+    const isFormValid = await this.validate();
     if (!isFormValid) return;
 
     const { fields } = this.state;
     const { action, onSubmitStart, onSubmit, onSubmitFailed, onSubmitEnd } = this.props;
 
+    /* Serialize the fields */
     const serialized = serialize(fields);
 
     const callbackArgs = {
