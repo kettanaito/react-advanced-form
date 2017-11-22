@@ -1,6 +1,7 @@
 import { Map } from 'immutable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import keywords from '../keywords';
 import { isset } from '../utils';
 
 export default class Field extends Component {
@@ -26,7 +27,7 @@ export default class Field extends Component {
 
   static defaultProps = {
     type: 'text',
-    valid: true,
+    valid: keywords.none,
     required: false,
     disabled: false
   }
