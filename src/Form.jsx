@@ -142,6 +142,18 @@ export default class Form extends Component {
       return !required;
     }
 
+    /* Assume Field doesn't have any specific validation attached */
+    const { rules: contextRules } = this.context;
+    const { rules: customFormRules } = this.props;
+    const formRules = customFormRules || contextRules;
+    const formRule = formRules && formRules[fieldName];
+
+    if (!rule && !asyncRule && !formRule ) {
+      console.groupEnd();
+
+      return isFieldValid;
+    }
+
     /**
      * Format validation.
      * The first step of validation is to ensure a proper format.
@@ -188,17 +200,15 @@ export default class Form extends Component {
      * The last level of validation is a form-wide validation provided by "rules" property of the Form.
      * The latter property is also inherited from the context passed by FormProvider.
      */
-    const { rules: contextRules } = this.context;
-    const { rules: customFormRules } = this.props;
-
-    const formRules = customFormRules || contextRules;
     if (!formRules) {
       console.groupEnd();
 
       return isFieldValid;
     }
 
-    const formRule = formRules[fieldName];
+    /**
+     * Form-level validation.
+     */
     if (!formRule) {
       console.groupEnd();
 
@@ -228,7 +238,7 @@ export default class Form extends Component {
       const fieldProps = immutableProps.toJS();
       let isFieldValid = fieldProps.valid;
 
-      if (fieldProps.valid === keywords.none) {
+      if (fieldProps.valid === keywords.notValidated) {
         isFieldValid = await this.validateField(fieldProps);
 
         this.updateField({
@@ -250,19 +260,14 @@ export default class Form extends Component {
 
   /**
    * Determines if the provided field needs validation.
+   * By default, each Field has "not-validated" validation status.
+   * This means the Field hasn't yet been validated, so the
+   * validation is required.
    * @param {object} fieldProps
    * @return {boolean}
    */
-  shouldValidateField = ({ name, rule, asyncRule }) => {
-    const { rules: contextRules } = this.context;
-    const { rules: customFormRules } = this.props;
-    const formRules = customFormRules || contextRules;
-
-    return (
-      rule ||
-      asyncRule ||
-      formRules
-    );
+  shouldValidateField = ({ valid }) => {
+    return (valid === keywords.none);
   }
 
   /**

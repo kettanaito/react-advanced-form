@@ -27,7 +27,7 @@ export default class Field extends Component {
 
   static defaultProps = {
     type: 'text',
-    valid: keywords.none,
+    valid: keywords.notValidated,
     required: false,
     disabled: false
   }
