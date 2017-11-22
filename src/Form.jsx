@@ -2,7 +2,6 @@ import { fromJS, Map } from 'immutable';
 import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
 import { TValidationRules } from './FormProvider';
-import keywords from './keywords';
 import { serialize } from './utils';
 
 /* Children components */
@@ -238,12 +237,13 @@ export default class Form extends Component {
       const fieldProps = immutableProps.toJS();
       let isFieldValid = fieldProps.valid;
 
-      if (fieldProps.valid === keywords.notValidated) {
+      if (!fieldProps.validated) {
         isFieldValid = await this.validateField(fieldProps);
 
         this.updateField({
           name: fieldProps.name,
           propsPatch: {
+            validated: true,
             valid: isFieldValid
           }
         });
@@ -322,15 +322,14 @@ export default class Form extends Component {
    * @param {object} fieldProps
    */
   handleFieldBlur = async ({ fieldProps }) => {
-    const { valid, disabled: prevDisabled, onBlur } = fieldProps;
-    const shouldValidateField = this.shouldValidateField(fieldProps);
+    const { valid, disabled: prevDisabled, validated, onBlur } = fieldProps;
     let isFieldValid = valid;
 
     console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
     console.log('fieldProps', fieldProps);
     console.groupEnd();
 
-    if (shouldValidateField) {
+    if (!validated) {
       /* Make field disabled during the validation */
       this.updateField({
         name: fieldProps.name,
@@ -349,6 +348,7 @@ export default class Form extends Component {
       propsPatch: {
         focused: false,
         disabled: prevDisabled,
+        validated: true,
         valid: isFieldValid
       }
     }).then(() => {
