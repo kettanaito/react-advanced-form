@@ -2,6 +2,7 @@ import { fromJS, Map } from 'immutable';
 import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
 import { TValidationRules } from './FormProvider';
+import keywords from './keywords';
 import { serialize } from './utils';
 
 /* Children components */
@@ -223,20 +224,24 @@ export default class Form extends Component {
     const { fields } = this.state;
     let isFormValid = true;
 
-    await fields.forEach(async (immutableField) => {
-      const fieldProps = immutableField.toJS();
-      const isFieldValid = await this.validateField(fieldProps);
-      if (!isFieldValid) {
-        console.log('')
-        isFormValid = isFieldValid;
+    await fields.forEach(async (immutableProps) => {
+      const fieldProps = immutableProps.toJS();
+      let isFieldValid = fieldProps.valid;
+
+      if (fieldProps.valid === keywords.none) {
+        isFieldValid = await this.validateField(fieldProps);
+
+        this.updateField({
+          name: fieldProps.name,
+          propsPatch: {
+            valid: isFieldValid
+          }
+        });
       }
 
-      this.updateField({
-        name: fieldProps.name,
-        propsPatch: {
-          valid: isFieldValid
-        }
-      });
+      if (!isFieldValid) {
+        isFormValid = isFieldValid;
+      }
     });
 
     console.log('isFormValid', isFormValid);
