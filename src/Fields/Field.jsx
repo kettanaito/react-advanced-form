@@ -17,6 +17,7 @@ export default class Field extends Component {
     value: PropTypes.string,
 
     /* Validation */
+    valid: PropTypes.oneOf([PropTypes.bool, keywords.notValidated]),
     rule: PropTypes.instanceOf(RegExp),
     asyncRule: PropTypes.func,
 
