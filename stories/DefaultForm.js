@@ -78,7 +78,7 @@ export default class DefaultForm extends Component {
             <label>
               Field (async-rule)
               <MyInput
-                name="asyncRuleField"
+                name="username"
                 asyncRule={({ fieldProps }) => {
                   return fetch('http://demo9102997.mockable.io/validate/productId', {
                     method: 'POST',
