@@ -64,15 +64,16 @@ export default class DefaultForm extends Component {
               <MyInput
                 name="customStyleField"
                 placeholder="i.e. 123"
-                rule={/^\d+$/} />
+                rule={/^\d+$/}
+                value="Preset value" />
             </label>
 
-            <label>
+            {/* <label>
               Field (required):
               <MyInput
                 name="password"
                 required />
-            </label>
+            </label> */}
 
             <label>
               Field (async-rule)
@@ -97,22 +98,6 @@ export default class DefaultForm extends Component {
                   return fields.address && !!fields.address.value;
                 }} />
             </label>
-
-            {/* <label>
-              Non-required field (rule + async rule)
-              <Field.Input
-                name="username"
-                placeholder="correct: AB123"
-                rule={/^AB\d{3}$/}
-                asyncRule={({ fieldProps }) => {
-                  return fetch('http://demo9102997.mockable.io/validate/productId', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                      userName: fieldProps.value
-                    })
-                  });
-                }} />
-            </label> */}
 
             <label>
               Composite field:

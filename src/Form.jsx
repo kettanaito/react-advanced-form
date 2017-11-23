@@ -1,11 +1,11 @@
 import { fromJS, Map } from 'immutable';
 import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
-import { TValidationRules } from './FormProvider';
-import { fieldUtils, serialize } from './utils';
 
-/* Children components */
+/* Own modules */
+import { TValidationRules } from './FormProvider';
 import Field from './Fields/Field';
+import { fieldUtils, serialize } from './utils';
 
 export default class Form extends Component {
   /**
@@ -49,11 +49,11 @@ export default class Form extends Component {
    * Context which Form passes to Fields.
    */
   static childContextTypes = {
-    fields: PropTypes.instanceOf(Map),
-    mapFieldToState: PropTypes.func,
-    handleFieldFocus: PropTypes.func,
-    handleFieldBlur: PropTypes.func,
-    handleFieldChange: PropTypes.func
+    fields: PropTypes.instanceOf(Map).isRequired,
+    mapFieldToState: PropTypes.func.isRequired,
+    handleFieldFocus: PropTypes.func.isRequired,
+    handleFieldBlur: PropTypes.func.isRequired,
+    handleFieldChange: PropTypes.func.isRequired
   }
 
   getChildContext() {
@@ -101,6 +101,8 @@ export default class Form extends Component {
    * tree, deconstructing and constructing each appropriate child with the attached handler props.
    * However, fields present in the composite components are still unkown to the Form. This method
    * is a handler for each unkown field registration attempt.
+   * @param {object} fieldProps
+   * @param {ReactComponent} fieldComponent
    */
   mapFieldToState = ({ fieldProps, fieldComponent }) => {
     console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
@@ -121,7 +123,6 @@ export default class Form extends Component {
    * Validate a single field.
    * Validation of each field is a complex process consisting of several steps.
    * It is important to resolve the validation immediately once the field becomes invalid.
-   *
    * @param {object} fieldProps
    * @return {boolean}
    */
@@ -267,18 +268,6 @@ export default class Form extends Component {
   }
 
   /**
-   * Determines if the provided field needs validation.
-   * By default, each Field has "not-validated" validation status.
-   * This means the Field hasn't yet been validated, so the
-   * validation is required.
-   * @param {object} fieldProps
-   * @return {boolean}
-   */
-  shouldValidateField = ({ valid }) => {
-    return (valid === keywords.notValidated);
-  }
-
-  /**
    * Handles field focus.
    * @param {object} fieldProps
    */
@@ -286,8 +275,6 @@ export default class Form extends Component {
     console.groupCollapsed(fieldProps.name, '@ handleFieldFocus');
     console.log('fieldProps', fieldProps);
     console.groupEnd();
-
-    console.log('')
 
     this.updateField({
       name: fieldProps.name,
@@ -406,9 +393,15 @@ export default class Form extends Component {
      */
     action(callbackArgs)
       .then(() => {
+        /**
+         * Event: Submit has passed.
+         */
         if (onSubmit) onSubmit(callbackArgs);
       })
       .catch(() => {
+        /**
+         * Event: Submit has failed.
+         */
         if (onSubmitFailed) onSubmitFailed(callbackArgs);
       })
       .then(() => {
