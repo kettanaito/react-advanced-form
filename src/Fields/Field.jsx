@@ -5,7 +5,7 @@ import { isset } from '../utils';
 
 export const defaultProps = {
   type: 'text',
-  valid: true,
+  expected: true,
   value: '',
   required: false,
   disabled: false
@@ -120,7 +120,7 @@ export default class Field extends Component {
 
   render() {
     /* Props passed to <Field /> on the client usage */
-    const { name, rule, asyncRule, valid, validated, ...directProps } = this.props;
+    const { name, rule, asyncRule, valid, invalid, expected, validated, ...directProps } = this.props;
 
     /**
      * Input props.

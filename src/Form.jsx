@@ -76,9 +76,18 @@ export default class Form extends Component {
     const { fields } = this.state;
     const fieldProps = directProps || fields.get(name) && fields.get(name).toJS();
 
-    const nextProps = propsPatch ? { ...fieldProps, ...propsPatch } : fieldProps;
+    const nextProps = propsPatch ? {
+      ...fieldProps,
+      ...propsPatch
+    } : fieldProps;
 
-    const nextFields = fields.mergeIn([name], fromJS(nextProps));
+    /* Update the validity state of the field */
+    const validState = fieldUtils.updateValidState(nextProps);
+
+    const nextFields = fields.mergeIn([name], fromJS({
+      ...nextProps,
+      ...validState
+    }));
 
     console.groupCollapsed(name, '@ updateField');
     console.log('directProps', directProps);
@@ -127,7 +136,7 @@ export default class Form extends Component {
    * @return {boolean}
    */
   validateField = async (fieldProps) => {
-    let isFieldValid = true;
+    let hasExpectedValue = true;
     const { name: fieldName, value, rule, asyncRule } = fieldProps;
 
     /* Resolve resolvable props */
@@ -144,7 +153,7 @@ export default class Form extends Component {
 
     /* Allow non-required fields to be empty */
     if (!value) {
-      console.log('valid:', !required);
+      console.log('expected:', !required);
       console.groupEnd();
 
       return !required;
@@ -159,7 +168,7 @@ export default class Form extends Component {
     if (!rule && !asyncRule && !formRule ) {
       console.groupEnd();
 
-      return isFieldValid;
+      return hasExpectedValue;
     }
 
     /**
@@ -170,16 +179,16 @@ export default class Form extends Component {
     if (rule) {
       console.log('Field has "rule":', rule);
       /* Test the RegExp against the field's value */
-      isFieldValid = rule.test(value);
+      hasExpectedValue = rule.test(value);
 
-      console.log('valid:', isFieldValid);
+      console.log('hasExpectedValue:', hasExpectedValue);
     }
 
     /* Invalid format - no need to continue validating */
-    if (!isFieldValid) {
+    if (!hasExpectedValue) {
       console.groupEnd();
 
-      return isFieldValid;
+      return hasExpectedValue;
     }
 
     /**
@@ -197,11 +206,11 @@ export default class Form extends Component {
           formProps: this.props
         });
       } catch(error) {
-        isFieldValid = false;
+        hasExpectedValue = false;
       }
     }
 
-    console.log('valid:', isFieldValid);
+    console.log('hasExpectedValue:', hasExpectedValue);
 
     /**
      * Form-level validation.
@@ -211,7 +220,7 @@ export default class Form extends Component {
     if (!formRules) {
       console.groupEnd();
 
-      return isFieldValid;
+      return hasExpectedValue;
     }
 
     /**
@@ -220,19 +229,19 @@ export default class Form extends Component {
     if (!formRule) {
       console.groupEnd();
 
-      return isFieldValid;
+      return hasExpectedValue;
     }
 
     if (formRule) {
       console.log('Field has "formRule":', formRule);
-      isFieldValid = formRule(value, this.props);
+      hasExpectedValue = formRule(value, this.props);
 
-      console.log('valid:', isFieldValid);
+      console.log('hasExpectedValue:', hasExpectedValue);
     }
 
     console.groupEnd();
 
-    return isFieldValid;
+    return hasExpectedValue;
   }
 
   /**
@@ -244,22 +253,22 @@ export default class Form extends Component {
 
     await fields.forEach(async (immutableProps) => {
       const fieldProps = immutableProps.toJS();
-      let isFieldValid = fieldProps.valid;
+      let hasExpectedValue = fieldProps.expected;
 
       if (fieldUtils.shouldValidateField({ fieldProps })) {
-        isFieldValid = await this.validateField(fieldProps);
+        hasExpectedValue = await this.validateField(fieldProps);
 
         this.updateField({
           name: fieldProps.name,
           propsPatch: {
             validated: true,
-            valid: isFieldValid
+            expected: hasExpectedValue
           }
         });
       }
 
-      if (!isFieldValid) {
-        isFormValid = isFieldValid;
+      if (!hasExpectedValue) {
+        isFormValid = hasExpectedValue;
       }
     });
 
@@ -317,8 +326,8 @@ export default class Form extends Component {
    * @param {object} fieldProps
    */
   handleFieldBlur = async ({ fieldProps }) => {
-    const { valid, disabled: prevDisabled, validated, onBlur } = fieldProps;
-    let isFieldValid = valid;
+    const { expected, disabled: prevDisabled, validated, onBlur } = fieldProps;
+    let hasExpectedValue = expected;
 
     console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
     console.log('fieldProps', fieldProps);
@@ -334,17 +343,17 @@ export default class Form extends Component {
       });
 
       /* Validate the field */
-      isFieldValid = await this.validateField(fieldProps);
+      hasExpectedValue = await this.validateField(fieldProps);
     }
 
-    /* Enable field back, update its props */
+    /* Make field enabled, update its props */
     this.updateField({
       name: fieldProps.name,
       propsPatch: {
         focused: false,
         disabled: prevDisabled,
         validated: true,
-        valid: isFieldValid
+        expected: hasExpectedValue
       }
     }).then(() => {
       /* Invoke custom onBlur handler */

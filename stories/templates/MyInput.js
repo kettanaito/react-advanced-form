@@ -13,14 +13,19 @@ class MyCustomInput extends React.Component {
   render() {
     const { name, fieldProps, ...restProps } = this.props;
 
+    // const valid = !!fieldProps.value && fieldProps.validated && fieldProps.expected;
+    // const invalid = fieldProps.validated && !fieldProps.expected;
+
     return (
       <div className="form-group" style={{ marginBottom: '1rem' }}>
         <div style={{ display: 'flex' }}>
           <Field.Input name={ name } {...restProps} style={ inputStyles } />
-          { fieldProps.validated && fieldProps.valid && <span style={{ color: 'green' }}>✓</span>}
+          { fieldProps.valid && (
+            <span style={{ color: 'green' }}>✓</span>
+          ) }
         </div>
 
-        { !fieldProps.valid && (
+        { fieldProps.invalid && (
           <p style={{ color: 'red', marginTop: '4px' }}>Please provide a proper value.</p>
         ) }
       </div>
