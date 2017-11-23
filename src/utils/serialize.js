@@ -3,6 +3,7 @@
  */
 export default function serialize(fields) {
   return fields.mapEntries(([fieldName, fieldProps]) => {
-    return [fieldName, fieldProps.get('value')];
+    const fieldValue = fieldProps.get('value');
+    if (fieldValue !== '') return [fieldName, fieldValue];
   });
 }
