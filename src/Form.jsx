@@ -162,10 +162,12 @@ export default class Form extends Component {
     /* Assume Field doesn't have any specific validation attached */
     const { rules: contextRules } = this.context;
     const { rules: customFormRules } = this.props;
-    const formRules = customFormRules || contextRules;
-    const formRule = formRules && formRules[fieldName];
+    const formRules = customFormRules || contextRules || {};
+    const formTypeRule = formRules.type && formRules.type[fieldName];
+    const formNameRule = formRules.name && formRules.name[fieldName];
+    const hasFormRules = formTypeRule || formNameRule;
 
-    if (!rule && !asyncRule && !formRule ) {
+    if (!rule && !asyncRule && !hasFormRules ) {
       console.groupEnd();
 
       return hasExpectedValue;
@@ -182,13 +184,26 @@ export default class Form extends Component {
       hasExpectedValue = rule.test(value);
 
       console.log('hasExpectedValue:', hasExpectedValue);
+      if (!hasExpectedValue) return hasExpectedValue;
     }
 
-    /* Invalid format - no need to continue validating */
-    if (!hasExpectedValue) {
+    /**
+     * Form-level validation.
+     * The last level of validation is a form-wide validation provided by "rules" property of the Form.
+     * The latter property is also inherited from the context passed by FormProvider.
+     */
+    if (hasFormRules) {
       console.groupEnd();
 
-      return hasExpectedValue;
+      /**
+       * Form-level validation.
+       */
+      const isValidByType = formTypeRule ? formTypeRule(value, fieldProps, this.props) : true;
+      const isValidByName = formNameRule ? formNameRule(value, fieldProps, this.props) : true;
+      hasExpectedValue = isValidByType && isValidByName;
+
+      console.log('hasExpectedValue:', hasExpectedValue);
+      if (!hasExpectedValue) return hasExpectedValue;
     }
 
     /**
@@ -211,33 +226,6 @@ export default class Form extends Component {
     }
 
     console.log('hasExpectedValue:', hasExpectedValue);
-
-    /**
-     * Form-level validation.
-     * The last level of validation is a form-wide validation provided by "rules" property of the Form.
-     * The latter property is also inherited from the context passed by FormProvider.
-     */
-    if (!formRules) {
-      console.groupEnd();
-
-      return hasExpectedValue;
-    }
-
-    /**
-     * Form-level validation.
-     */
-    if (!formRule) {
-      console.groupEnd();
-
-      return hasExpectedValue;
-    }
-
-    if (formRule) {
-      console.log('Field has "formRule":', formRule);
-      hasExpectedValue = formRule(value, this.props);
-
-      console.log('hasExpectedValue:', hasExpectedValue);
-    }
 
     console.groupEnd();
 
