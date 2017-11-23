@@ -2,7 +2,7 @@ import { fromJS, Map } from 'immutable';
 import React, { Children, Component } from 'react';
 import PropTypes from 'prop-types';
 import { TValidationRules } from './FormProvider';
-import { serialize } from './utils';
+import { fieldUtils, serialize } from './utils';
 
 /* Children components */
 import Field from './Fields/Field';
@@ -127,10 +127,18 @@ export default class Form extends Component {
    */
   validateField = async (fieldProps) => {
     let isFieldValid = true;
-    const { name: fieldName, value, rule, asyncRule, required } = fieldProps;
+    const { name: fieldName, value, rule, asyncRule } = fieldProps;
+
+    /* Resolve resolvable props */
+    const required = fieldUtils.resolveProp({
+      propName: 'required',
+      fieldProps,
+      fields: this.state.fields
+    });
 
     console.groupCollapsed(fieldName, '@ validateField');
     console.log('fieldProps', fieldProps);
+    console.log('required:', required);
     console.log('value:', value);
 
     /* Allow non-required fields to be empty */
@@ -237,7 +245,7 @@ export default class Form extends Component {
       const fieldProps = immutableProps.toJS();
       let isFieldValid = fieldProps.valid;
 
-      if (!fieldProps.validated) {
+      if (fieldUtils.shouldValidateField({ fieldProps })) {
         isFieldValid = await this.validateField(fieldProps);
 
         this.updateField({

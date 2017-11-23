@@ -3,6 +3,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { isset } from '../utils';
 
+const defaultProps = {
+  type: 'text',
+  validated: false,
+  valid: true,
+  value: '',
+  required: false,
+  disabled: false
+};
+
 export default class Field extends Component {
   static propTypes = {
     /* General */
@@ -22,18 +31,11 @@ export default class Field extends Component {
     asyncRule: PropTypes.func,
 
     /* States */
-    required: PropTypes.bool,
-    disabled: PropTypes.bool
+    required: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
+    disabled: PropTypes.oneOfType([PropTypes.func, PropTypes.bool])
   }
 
-  static defaultProps = {
-    type: 'text',
-    validated: false,
-    valid: true,
-    value: '',
-    required: false,
-    disabled: false
-  }
+  static defaultProps = defaultProps
 
   static contextTypes = {
     fields: PropTypes.instanceOf(Map),
@@ -46,12 +48,27 @@ export default class Field extends Component {
   getProp(propName) {
     const { fields } = this.context;
     const contextValue = fields.getIn([this.props.name, propName]);
-    return isset(contextValue) ? contextValue : this.props[propName];
+    const propValue = isset(contextValue) ? contextValue : this.props[propName];
+
+    // if (propName === 'required') {
+    //   console.log('propValue', propValue);
+    //   console.log('typeof propValue', typeof propValue);
+    //   console.log('typeof propValue !== function', typeof propValue !== 'function');
+    // }
+
+    if (typeof propValue !== 'function') return propValue;
+
+    /* Resolve a prop value which is function */
+    const resolvedPropValue = propValue({
+      fieldProps: this.props,
+      fields: fields.toJS()
+    });
+
+    console.log('resolvedPropValue', resolvedPropValue);
+    return isset(resolvedPropValue) ? resolvedPropValue : defaultProps[propName];
   }
 
   componentDidMount() {
-    const { fields } = this.context;
-
     // console.log('| | Field @ componentDidMount. Need to map field to state');
 
     /**
@@ -63,7 +80,6 @@ export default class Field extends Component {
     setTimeout(() => {
       this.context.mapFieldToState({
         fieldProps: this.props,
-        // this.context.fields,
         fieldComponent: this
       });
     }, 0);
@@ -72,8 +88,6 @@ export default class Field extends Component {
   handleChange = (event) => {
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
-
-    console.log('is nextValue empty string', nextValue === '');
 
     // console.log(' ');
     // console.log('| | Field @ handleChange', this.props.name, nextValue);
