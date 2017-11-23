@@ -3,9 +3,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { isset } from '../utils';
 
-const defaultProps = {
+export const defaultProps = {
   type: 'text',
-  validated: false,
   valid: true,
   value: '',
   required: false,
@@ -38,7 +37,7 @@ export default class Field extends Component {
   static defaultProps = defaultProps
 
   static contextTypes = {
-    fields: PropTypes.instanceOf(Map),
+    fields: PropTypes.instanceOf(Map).isRequired,
     mapFieldToState: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -49,12 +48,6 @@ export default class Field extends Component {
     const { fields } = this.context;
     const contextValue = fields.getIn([this.props.name, propName]);
     const propValue = isset(contextValue) ? contextValue : this.props[propName];
-
-    // if (propName === 'required') {
-    //   console.log('propValue', propValue);
-    //   console.log('typeof propValue', typeof propValue);
-    //   console.log('typeof propValue !== function', typeof propValue !== 'function');
-    // }
 
     if (typeof propValue !== 'function') return propValue;
 
@@ -69,8 +62,7 @@ export default class Field extends Component {
   }
 
   componentDidMount() {
-    // console.log('| | Field @ componentDidMount. Need to map field to state');
-
+    console.warn('Field @ mount');
     /**
      * Map the field to Form's state to notify the latter of the new registered field.
      * Timeout is required because {componentDidMount} happens at the same time for all
@@ -79,7 +71,10 @@ export default class Field extends Component {
      */
     setTimeout(() => {
       this.context.mapFieldToState({
-        fieldProps: this.props,
+        fieldProps: {
+          ...this.props,
+          validated: false
+        },
         fieldComponent: this
       });
     }, 0);
@@ -127,15 +122,6 @@ export default class Field extends Component {
     /* Props passed to <Field /> on the client usage */
     const { name, rule, asyncRule, valid, validated, ...directProps } = this.props;
 
-    /* Get the Map of all fields from the Form's context */
-    const { fields } = this.context;
-
-    /* Get the current Field's props */
-    const fieldContext = fields.get(name) || Map();
-
-    /* Handle composite props (with fallbacks) */
-    // const validInContext = this.getProp('valid');
-
     /**
      * Input props.
      * Props passed directly to the Field's element. Do not add
@@ -146,16 +132,6 @@ export default class Field extends Component {
       required: this.getProp('required'),
       disabled: this.getProp('disabled'),
     };
-
-    /**
-     * Context props.
-     * Props which describe the Field but are not assigned to
-     * the Field's element directly. Useful for HOC styling.
-     */
-    // const contextProps = {
-    //   valid: isset(validInContext) ? validInContext : true,
-    //   focused: this.getProp('focused')
-    // };
 
     /**
      * Event handlers assigned to the Field's element directly.

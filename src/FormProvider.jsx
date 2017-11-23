@@ -21,10 +21,8 @@ export default class FormProvider extends Component {
   }
 
   getChildContext() {
-    const { rules } = this.props;
-
     return {
-      rules
+      rules: this.props.rules
     };
   }
 

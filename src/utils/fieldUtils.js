@@ -1,5 +1,8 @@
 /**
  * Resolves the given prop name of the field.
+ * @param {string} propName
+ * @param {object} fieldProps
+ * @param {Map} fields
  */
 export function resolveProp({ propName, fieldProps, fields }) {
   console.groupCollapsed(fieldProps.name, `@ resolveProp "${ propName }"`);
@@ -28,6 +31,7 @@ export function resolveProp({ propName, fieldProps, fields }) {
 
 /**
  * Determines whether a Field with the provided props should be validated.
+ * @param {object} fieldProps
  */
 export function shouldValidateField({ fieldProps }) {
   return !fieldProps.validated || (typeof fieldProps.required === 'function');

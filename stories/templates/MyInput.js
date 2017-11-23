@@ -1,5 +1,5 @@
 import React from 'react';
-import { Field } from '../../src';
+import { Field, withContext } from '../../src';
 
 const inputStyles = {
   border: '1px solid #ccc',
@@ -9,29 +9,23 @@ const inputStyles = {
   fontSize: '14px'
 };
 
-export default function MyCustomInput(props) {
-  const { name, ...fieldProps } = props;
+class MyCustomInput extends React.Component {
+  render() {
+    const { name, fieldProps, ...restProps } = this.props;
 
-  return (
-    <div className="form-group" style={{ marginBottom: '1rem' }}>
-      {/* <Field style={ inputStyles } /> */}
+    return (
+      <div className="form-group" style={{ marginBottom: '1rem' }}>
+        <div style={{ display: 'flex' }}>
+          <Field.Input name={ name } {...restProps} style={ inputStyles } />
+          { fieldProps.validated && fieldProps.valid && <span style={{ color: 'green' }}>✓</span>}
+        </div>
 
-      <Field.Input name={ name } {...fieldProps} style={ inputStyles } />
-
-      <Field.Condition forField={ name } when={({ valid }) => !valid}>
-        <p style={{ color: 'red' }}>Please provide a proper value!</p>
-      </Field.Condition>
-
-      {/* <Field.Condition
-        forField={ name }
-        render={(fieldProps) => {
-          if (!fieldProps.valid) return (<p>Please pass a correct value.</p>);
-          if (fieldProps.value === 'foo') return (<p>Entered some foo!</p>);
-        }} /> */}
-
-      {/* { !valid && (
-        <p style={{ color: 'red', marginTop: 0 }}>The field is invalid.</p>
-      ) } */}
-    </div>
-  );
+        { !fieldProps.valid && (
+          <p style={{ color: 'red', marginTop: '4px' }}>Please provide a proper value.</p>
+        ) }
+      </div>
+    );
+  }
 }
+
+export default withContext(MyCustomInput);
