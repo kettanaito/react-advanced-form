@@ -62,7 +62,7 @@ export default class DefaultForm extends Component {
             <label>
               Filed with client rule (optional):
               <MyInput
-                name="my-styled-input"
+                name="customStyleField"
                 placeholder="i.e. 123"
                 rule={/^\d+$/} />
             </label>
@@ -77,7 +77,7 @@ export default class DefaultForm extends Component {
             <label>
               Field (async-rule)
               <MyInput
-                name="async-rule"
+                name="asyncRuleField"
                 asyncRule={({ fieldProps }) => {
                   return fetch('http://demo9102997.mockable.io/validate/productId', {
                     method: 'POST',
@@ -87,6 +87,15 @@ export default class DefaultForm extends Component {
                   });
                 }}
                 required />
+            </label>
+
+            <label>
+              Field with resolvable prop (required)
+              <MyInput
+                name="resolvableField"
+                required={({ fields }) => {
+                  return fields.address && !!fields.address.value;
+                }} />
             </label>
 
             {/* <label>
