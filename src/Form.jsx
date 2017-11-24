@@ -71,9 +71,10 @@ export default class Form extends React.Component {
    * @param {object} fieldProps
    * @param {function} afterUpdate Callback to execute after state update.
    */
-  updateField = ({ name, fieldProps: directProps, propsPatch = null }) => {
+  updateField = ({ fieldPath, fieldProps: directProps, propsPatch = null }) => {
     const { fields } = this.state;
-    const fieldProps = directProps || fields.get(name) && fields.get(name).toJS();
+    const fieldProps = fieldUtils.getFieldProps(fieldPath, fields, directProps);
+    // const fieldProps = directProps || fields.getIn(name) && fields.get(name).toJS();
 
     const nextProps = propsPatch ? {
       ...fieldProps,
@@ -81,9 +82,9 @@ export default class Form extends React.Component {
     } : fieldProps;
 
     /* Update the validity state of the field */
-    const nextFields = fields.mergeIn([name], fromJS(nextProps));
+    const nextFields = fields.mergeIn(fieldProps.fieldPath, fromJS(nextProps));
 
-    console.groupCollapsed(name, '@ updateField');
+    console.groupCollapsed(fieldProps.name, '@ updateField');
     console.log('directProps', directProps);
     console.log('propsPatch', propsPatch);
     console.log('fieldProps', fieldProps);
@@ -110,6 +111,7 @@ export default class Form extends React.Component {
   mapFieldToState = async ({ fieldProps }) => {
     console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
     console.log('fieldProps', fieldProps);
+    console.log('fieldGroup', fieldProps.fieldGroup);
     console.groupEnd();
 
     const { fields } = this.state;
@@ -118,7 +120,7 @@ export default class Form extends React.Component {
     const shouldValidate = isset(fieldProps.value) && (fieldProps.value !== '');
     if (shouldValidate) this.validateField({ fieldProps });
 
-    const nextFields = fields.mergeIn([fieldProps.name], fromJS(fieldProps));
+    const nextFields = fields.mergeIn(fieldProps.fieldPath, fromJS(fieldProps));
 
     this.setState({ fields: nextFields });
   }
@@ -133,7 +135,7 @@ export default class Form extends React.Component {
     console.groupEnd();
 
     this.updateField({
-      name: fieldProps.name,
+      fieldPath: fieldProps.fieldPath,
       propsPatch: {
         focused: true
       }
@@ -161,9 +163,10 @@ export default class Form extends React.Component {
 
     /* Update the value of the changed field in the state */
     this.updateField({
-      name: fieldProps.name,
+      fieldPath: fieldProps.fieldPath,
       propsPatch: {
-        value: nextValue
+        value: nextValue,
+        validated: false
       }
     }).then(({ nextProps }) => {
       const { onChange } = fieldProps;
@@ -180,16 +183,17 @@ export default class Form extends React.Component {
    * @param {object} fieldProps
    */
   handleFieldBlur = async ({ event, fieldProps }) => {
-    const { disabled: prevDisabled, validated, onBlur } = fieldProps;
+    const { fieldPath, disabled: prevDisabled, validated, onBlur } = fieldProps;
 
     console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
     console.log('fieldProps', fieldProps);
+    console.log('should validate', !validated);
     console.groupEnd();
 
     if (!validated) {
       /* Make field disabled during the validation */
       this.updateField({
-        name: fieldProps.name,
+        fieldPath,
         propsPatch: {
           disabled: true
         }
@@ -201,7 +205,7 @@ export default class Form extends React.Component {
 
     /* Make field enabled, update its props */
     this.updateField({
-      name: fieldProps.name,
+      fieldPath,
       propsPatch: {
         focused: false,
         disabled: prevDisabled
@@ -229,8 +233,6 @@ export default class Form extends React.Component {
       formRules: customFormRules || contextFormRules || {}
     });
 
-    console.log('validateField @ hasExpectedValue', hasExpectedValue);
-
     /* Update the validity state of the field */
     const propsPatch = {
       validated: true,
@@ -248,7 +250,7 @@ export default class Form extends React.Component {
 
     /* Update the field in the state */
     this.updateField({
-      name: fieldProps.name,
+      fieldPath: fieldProps.fieldPath,
       propsPatch: {
         ...propsPatch,
         ...nextValidState
@@ -265,15 +267,29 @@ export default class Form extends React.Component {
   validate = async () => {
     const { fields } = this.state;
 
-    const vmap = fields.reduce((promises, immutableProps) => {
-      const fieldProps = immutableProps.toJS();
+    const vmap = fieldUtils.traverse(fields, (immutableField) => {
+      const fieldProps = immutableField.toJS();
 
       if (fieldUtils.shouldValidateField({ fieldProps })) {
-        return promises.concat(this.validateField({ fieldProps }));
+        return this.validateField({ fieldProps });
       }
 
-      return promises.concat(fieldProps.expected);
-    }, []);
+      return fieldProps.expected;
+    });
+
+    console.warn('VMAP', vmap);
+
+    // const vmap = fields.reduce((promises, immutableProps) => {
+    //   let fieldProps = immutableProps;
+
+    //   fieldProps = fieldProps.toJS();
+
+    //   if (fieldUtils.shouldValidateField({ fieldProps })) {
+    //     return promises.concat(this.validateField({ fieldProps }));
+    //   }
+
+    //   return promises.concat(fieldProps.expected);
+    // }, []);
 
     return Promise.all(vmap).then((foo) => {
       const shouldSubmit = !foo.some(expected => !expected);

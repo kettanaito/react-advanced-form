@@ -1,3 +1,19 @@
+export function getFieldPath({ name, fieldGroup }) {
+  const fieldPath = fieldGroup ? [fieldGroup, name] : [name];
+
+  // console.groupCollapsed(name, '@ getFieldPath');
+  // console.log('fieldGroup', fieldGroup);
+  // console.log('fieldPath', fieldPath);
+  // console.groupEnd();
+
+  return fieldPath;
+}
+
+export function getFieldProps(fieldPath, fields, fallbackProps) {
+  const contextProps = fields.getIn(fieldPath);
+  return contextProps ? contextProps.toJS() : fallbackProps;
+}
+
 /**
  * Resolves the given prop name of the field.
  * @param {string} propName
@@ -5,7 +21,7 @@
  * @param {Map} fields
  */
 export function resolveProp({ propName, fieldProps, fields }) {
-  console.groupCollapsed(fieldProps.name, `@ resolveProp "${propName}"`);
+  console.groupCollapsed(`fieldUtils @ resolveProp "${propName}"`, fieldProps.name);
   console.log('fieldProps', fieldProps);
 
   const propValue = fieldProps[propName];
@@ -34,7 +50,17 @@ export function resolveProp({ propName, fieldProps, fields }) {
  * @param {object} fieldProps
  */
 export function shouldValidateField({ fieldProps }) {
-  return !fieldProps.validated || (typeof fieldProps.required === 'function');
+  const isValidated = fieldProps.validated;
+  const isDynamicRequired = (typeof fieldProps.required === 'function');
+  const shouldValidate = !isValidated || isDynamicRequired;
+
+  console.groupCollapsed('fieldUtils @ shouldValidateField', fieldProps.name);
+  console.log('was validated before:', fieldProps.validated);
+  console.log('"required" prop is dynamic (func):', isDynamicRequired);
+  console.log('should validate:', shouldValidate);
+  console.groupEnd();
+
+  return shouldValidate;
 }
 
 /**
@@ -46,7 +72,7 @@ export function shouldValidateField({ fieldProps }) {
  */
 export async function isExpected({ fieldProps, fields, formProps, formRules = {} }) {
   let hasExpectedValue = true;
-  const { name: fieldName, value, rule, asyncRule } = fieldProps;
+  const { name, value, rule, asyncRule } = fieldProps;
 
   /* Resolve resolvable props */
   const required = resolveProp({
@@ -55,7 +81,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     fields
   });
 
-  console.groupCollapsed(fieldName, '@ validateField');
+  console.groupCollapsed('fieldUtils @ isExpected', name);
   console.log('fieldProps', fieldProps);
   console.log('required:', required);
   console.log('value:', value);
@@ -69,8 +95,8 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   }
 
   /* Assume Field doesn't have any specific validation attached */
-  const formTypeRule = formRules.type && formRules.type[fieldName];
-  const formNameRule = formRules.name && formRules.name[fieldName];
+  const formTypeRule = formRules.type && formRules.type[name];
+  const formNameRule = formRules.name && formRules.name[name];
   const hasFormRules = formTypeRule || formNameRule;
 
   if (!rule && !asyncRule && !hasFormRules) {
@@ -160,7 +186,7 @@ export function updateValidState({ fieldProps }) {
     invalid: validated && !expected
   };
 
-  console.groupCollapsed(name, '@ updateValidState');
+  console.groupCollapsed('fieldUtils @ updateValidState', name);
   console.log('value', value);
   console.log('validated', validated);
   console.log('expected', expected);
@@ -168,4 +194,21 @@ export function updateValidState({ fieldProps }) {
   console.groupEnd();
 
   return validState;
+}
+
+export function traverse(fields, iterator) {
+  return fields.reduce((entries, field) => {
+    console.log('iterating through', field.toJS());
+    console.log('entries:', entries);
+
+    const isGroup = !field.has('name');
+
+    if (isGroup) {
+      console.log('IS A GROUP! GO DEEPER');
+      return entries.concat(traverse(field, iterator));
+    }
+
+    // validate
+    return entries.concat(iterator(field));
+  }, []);
 }

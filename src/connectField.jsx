@@ -19,21 +19,27 @@ export default function connectField(WrappedComponent) {
     static displayName = `ConnectedField(${getComponentName(WrappedComponent)})`;
 
     static contextTypes = {
+      fieldGroup: PropTypes.string,
       fields: PropTypes.instanceOf(Map).isRequired
     }
 
     render() {
-      const { fields } = this.context;
-      const { name } = this.props;
+      const { fields, fieldGroup } = this.context;
+      const directProps = this.props;
+      const { name } = directProps;
 
-      const fieldProps = fields.has(name) ? fields.get(name).toJS() : defaultProps;
+      const fieldPath = [name];
+      if (fieldGroup) fieldPath.unshift(fieldGroup);
+
+      const fieldProps = fields.hasIn(fieldPath) ? fields.getIn(fieldPath).toJS() : defaultProps;
+
       const { focused, disabled, expected, valid, invalid } = fieldProps;
 
       /* Grab the value from context props when available, to present actual data in the components tree */
-      const value = fields.has(name) ? fields.getIn([name, 'value']) : this.props.value;
+      const value = fields.hasIn(fieldPath) ? fields.getIn([...fieldPath, 'value']) : directProps.value;
 
       const props = {
-        ...this.props,
+        ...directProps,
         focused,
         disabled,
         expected,
