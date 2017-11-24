@@ -93,7 +93,7 @@ export default class Form extends React.Component {
 
     return new Promise((resolve) => {
       this.setState({ fields: nextFields }, () => {
-        return resolve(nextFields);
+        return resolve({ nextFields, nextProps });
       });
     });
   }
@@ -161,12 +161,12 @@ export default class Form extends React.Component {
       propsPatch: {
         value: nextValue
       }
-    }).then(() => {
+    }).then(({ nextProps }) => {
       const { onChange } = fieldProps;
 
       if (onChange) {
         /* Call client-side onChange handler function */
-        onChange(event, nextValue, fieldProps, this.props);
+        onChange({ event, nextValue, fieldProps: nextProps, formProps: this.props });
       }
     });
   }
@@ -175,7 +175,7 @@ export default class Form extends React.Component {
    * Handles field blur.
    * @param {object} fieldProps
    */
-  handleFieldBlur = async ({ fieldProps }) => {
+  handleFieldBlur = async ({ event, fieldProps }) => {
     const { disabled: prevDisabled, validated, onBlur } = fieldProps;
 
     console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
@@ -202,9 +202,9 @@ export default class Form extends React.Component {
         focused: false,
         disabled: prevDisabled
       }
-    }).then(() => {
+    }).then(({ nextProps }) => {
       /* Invoke custom onBlur handler */
-      if (onBlur) onBlur();
+      if (onBlur) onBlur({ event, fieldProps: nextProps, formProps: this.props });
     });
   }
 
