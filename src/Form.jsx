@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 /* Own modules */
 import { TValidationRules } from './FormProvider';
 import Field from './Fields/Field';
-import { fieldUtils, serialize } from './utils';
+import { isset, fieldUtils, serialize } from './utils';
 
 export default class Form extends Component {
   /**
@@ -100,7 +100,7 @@ export default class Form extends Component {
   }
 
   /**
-   * Map the field to the state (context) explicitly.
+   * Maps the field to the state (context) explicitly.
    * Passing fields in context gives a benefit of removing an explicit traversing the children
    * tree, deconstructing and constructing each appropriate child with the attached handler props.
    * However, fields present in the composite components are still unkown to the Form. This method
@@ -108,12 +108,16 @@ export default class Form extends Component {
    * @param {object} fieldProps
    * @param {ReactComponent} fieldComponent
    */
-  mapFieldToState = ({ fieldProps, fieldComponent }) => {
+  mapFieldToState = async ({ fieldProps, fieldComponent }) => {
     console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
     console.log('fieldProps', fieldProps);
     console.groupEnd();
 
     const { fields } = this.state;
+
+    /* Validate the field when it has initial value */
+    const shouldValidate = isset(fieldProps.value) && (fieldProps.value !== '');
+    if (shouldValidate) this.validateField({ fieldProps });
 
     const nextFields = fields.mergeIn([fieldProps.name], fromJS({
       ...fieldProps,
@@ -198,9 +202,7 @@ export default class Form extends Component {
       name: fieldProps.name,
       propsPatch: {
         focused: false,
-        disabled: prevDisabled,
-        // validated: true,
-        // expected: hasExpectedValue
+        disabled: prevDisabled
       }
     }).then(() => {
       /* Invoke custom onBlur handler */
@@ -213,7 +215,7 @@ export default class Form extends Component {
    * @param {object} fieldProps
    * @return {boolean}
    */
-  validateField = async ({ fieldProps }) => {
+  validateField = async ({ fieldProps, returnValidState = false }) => {
     const { fields } = this.state;
     const { rules: customFormRules } = this.props;
     const { rules: contextFormRules } = this.context;
@@ -239,6 +241,8 @@ export default class Form extends Component {
         ...propsPatch
       }
     });
+
+    if (returnValidState) return nextValidState;
 
     /* Update the field in the state */
     this.updateField({

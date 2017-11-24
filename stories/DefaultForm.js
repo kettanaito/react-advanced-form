@@ -62,10 +62,10 @@ export default class DefaultForm extends Component {
             <label>
               Filed with client rule (optional):
               <MyInput
-                name="customStyleField"
+                name="numbersOnly"
                 placeholder="i.e. 123"
                 rule={/^\d+$/}
-                value="Preset value" />
+                value="Initial value" />
             </label>
 
             {/* <label>
