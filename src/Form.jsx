@@ -82,12 +82,7 @@ export default class Form extends Component {
     } : fieldProps;
 
     /* Update the validity state of the field */
-    // const validState = fieldUtils.updateValidState(nextProps);
-
-    const nextFields = fields.mergeIn([name], fromJS({
-      ...nextProps,
-      // ...validState
-    }));
+    const nextFields = fields.mergeIn([name], fromJS(nextProps));
 
     console.groupCollapsed(name, '@ updateField');
     console.log('directProps', directProps);

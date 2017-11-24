@@ -1,7 +1,7 @@
 import { Map } from 'immutable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { isset } from '../utils';
+import { isset, fieldUtils } from '../utils';
 
 export const defaultProps = {
   type: 'text',
@@ -51,14 +51,13 @@ export default class Field extends Component {
 
     if (typeof propValue !== 'function') return propValue;
 
-    /* Resolve a prop value which is function */
-    const resolvedPropValue = propValue({
+    const resolvedPropValue = fieldUtils.resolveProp({
+      propName,
       fieldProps: this.props,
       fields: fields.toJS()
     });
 
-    console.log('resolvedPropValue', resolvedPropValue);
-    return isset(resolvedPropValue) ? resolvedPropValue : defaultProps[propName];
+    return resolvedPropValue || defaultProps[propName];
   }
 
   componentDidMount() {
