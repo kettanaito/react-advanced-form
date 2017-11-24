@@ -34,7 +34,11 @@ export default function connectField(WrappedComponent) {
 
       const props = {
         ...this.props,
-        fieldProps: { focused, disabled, expected, valid, invalid },
+        focused,
+        disabled,
+        expected,
+        valid,
+        invalid,
         value
       };
 

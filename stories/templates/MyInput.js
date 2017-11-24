@@ -11,8 +11,7 @@ const inputStyles = {
 
 class MyCustomInput extends React.Component {
   render() {
-    const { name, fieldProps, ...restProps } = this.props;
-    const { valid, invalid } = fieldProps;
+    const { name, valid, invalid, ...restProps } = this.props;
 
     return (
       <div className="form-group" style={{ marginBottom: '1rem' }}>
