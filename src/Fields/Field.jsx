@@ -44,6 +44,11 @@ export default class Field extends Component {
     handleFieldChange: PropTypes.func.isRequired
   }
 
+  /**
+   * Get prop.
+   * Gets the given prop name from the context first, otherwise tries to resolve the prop.
+   * In case both return undefined, fallbacks to the default prop value.
+   */
   getProp(propName) {
     const { fields } = this.context;
     const contextValue = fields.getIn([this.props.name, propName]);
@@ -51,12 +56,7 @@ export default class Field extends Component {
 
     if (typeof propValue !== 'function') return propValue;
 
-    const resolvedPropValue = fieldUtils.resolveProp({
-      propName,
-      fieldProps: this.props,
-      fields: fields.toJS()
-    });
-
+    const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps: this.props, fields });
     return resolvedPropValue || defaultProps[propName];
   }
 
