@@ -27,7 +27,16 @@ export default function connectField(WrappedComponent) {
       const { name } = this.props;
 
       const fieldProps = fields.has(name) ? fields.get(name).toJS() : defaultProps;
-      const props = Object.assign({}, this.props, { fieldProps });
+      const { focused, disabled, expected, valid, invalid } = fieldProps;
+
+      /* Grab the value from context props when available, to present actual data in the components tree */
+      const value = fields.has(name) ? fields.getIn([name, 'value']) : this.props.value;
+
+      const props = {
+        ...this.props,
+        fieldProps: { focused, disabled, expected, valid, invalid },
+        value
+      };
 
       return React.createElement(WrappedComponent, props);
     }
