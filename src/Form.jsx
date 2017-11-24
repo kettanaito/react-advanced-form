@@ -108,7 +108,7 @@ export default class Form extends Component {
    * @param {object} fieldProps
    * @param {ReactComponent} fieldComponent
    */
-  mapFieldToState = ({ fieldProps, fieldComponent }) => {
+  mapFieldToState = async ({ fieldProps, fieldComponent }) => {
     console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
     console.log('fieldProps', fieldProps);
     console.groupEnd();
@@ -121,6 +121,21 @@ export default class Form extends Component {
     }));
 
     this.setState({ fields: nextFields });
+
+    /**
+     * Validate field if it has prefilled value
+     */
+    if (!!fieldProps.value && fieldUtils.shouldValidateField({ fieldProps })) {
+      const expected = await this.validateField(fieldProps);
+
+      this.updateField({
+        name: fieldProps.name,
+        propsPatch: {
+          validated: true,
+          expected
+        }
+      });
+    }
   }
 
   /**
