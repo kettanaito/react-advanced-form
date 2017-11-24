@@ -105,9 +105,9 @@ export default class Form extends React.Component {
    * However, fields present in the composite components are still unkown to the Form. This method
    * is a handler for each unkown field registration attempt.
    * @param {object} fieldProps
-   * @param {ReactComponent} fieldComponent
+   * @param {ReactComponent} ref
    */
-  mapFieldToState = async ({ fieldProps, fieldComponent }) => {
+  mapFieldToState = async ({ fieldProps }) => {
     console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
     console.log('fieldProps', fieldProps);
     console.groupEnd();
@@ -118,10 +118,7 @@ export default class Form extends React.Component {
     const shouldValidate = isset(fieldProps.value) && (fieldProps.value !== '');
     if (shouldValidate) this.validateField({ fieldProps });
 
-    const nextFields = fields.mergeIn([fieldProps.name], fromJS({
-      ...fieldProps,
-      fieldComponent
-    }));
+    const nextFields = fields.mergeIn([fieldProps.name], fromJS(fieldProps));
 
     this.setState({ fields: nextFields });
   }

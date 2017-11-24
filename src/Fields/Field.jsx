@@ -69,13 +69,12 @@ export default class Field extends React.Component {
      * based on its value upon the composite mount. This causes issues of missing fields.
      */
     setTimeout(() => {
-      this.context.mapFieldToState({
-        fieldProps: {
-          ...this.props,
-          validated: false
-        },
-        fieldComponent: this
-      });
+      const fieldProps = {
+        ...this.props,
+        validated: false
+      };
+
+      this.context.mapFieldToState({ fieldProps });
     }, 0);
   }
 
