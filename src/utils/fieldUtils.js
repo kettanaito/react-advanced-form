@@ -5,7 +5,7 @@
  * @param {Map} fields
  */
 export function resolveProp({ propName, fieldProps, fields }) {
-  console.groupCollapsed(fieldProps.name, `@ resolveProp "${ propName }"`);
+  console.groupCollapsed(fieldProps.name, `@ resolveProp "${propName}"`);
   console.log('fieldProps', fieldProps);
 
   const propValue = fieldProps[propName];
@@ -23,7 +23,7 @@ export function resolveProp({ propName, fieldProps, fields }) {
     return resolvedPropValue;
   }
 
-  console.log(`prop "${ propName }" is not a function, return as is:`, propValue);
+  console.log(`prop "${propName}" is not a function, return as is:`, propValue);
   console.groupEnd();
 
   return propValue;
@@ -44,7 +44,7 @@ export function shouldValidateField({ fieldProps }) {
  * @param {object} fieldProps
  * @return {boolean}
  */
-export async function hasExpectedValue({ fieldProps, fields, formProps, formRules = {} }) {
+export async function isExpected({ fieldProps, fields, formProps, formRules = {} }) {
   let hasExpectedValue = true;
   const { name: fieldName, value, rule, asyncRule } = fieldProps;
 
@@ -73,7 +73,7 @@ export async function hasExpectedValue({ fieldProps, fields, formProps, formRule
   const formNameRule = formRules.name && formRules.name[fieldName];
   const hasFormRules = formTypeRule || formNameRule;
 
-  if (!rule && !asyncRule && !hasFormRules ) {
+  if (!rule && !asyncRule && !hasFormRules) {
     console.groupEnd();
 
     return hasExpectedValue;
@@ -134,7 +134,7 @@ export async function hasExpectedValue({ fieldProps, fields, formProps, formRule
         fieldProps,
         formProps
       });
-    } catch(error) {
+    } catch (error) {
       hasExpectedValue = false;
     }
   }

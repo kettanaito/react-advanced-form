@@ -26,6 +26,8 @@ module.exports = {
     'consistent-return': 0,
     'array-callback-return': 0,
     'import/no-extraneous-dependencies': 0,
-    'arrow-body-style': 0
+    'arrow-body-style': 0,
+    'object-curly-newline': 0,
+    'no-mixed-operators': 0
   }
 };

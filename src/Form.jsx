@@ -1,13 +1,12 @@
 import { fromJS, Map } from 'immutable';
-import React, { Children, Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 /* Own modules */
 import { TValidationRules } from './FormProvider';
-import Field from './Fields/Field';
 import { isset, fieldUtils, serialize } from './utils';
 
-export default class Form extends Component {
+export default class Form extends React.Component {
   /**
    * Props.
    */
@@ -23,7 +22,7 @@ export default class Form extends Component {
     onSumbitStart: PropTypes.func,
     onSumbit: PropTypes.func,
     onSumbitFailed: PropTypes.func,
-    onSumbitEnd: PropTypes.func,
+    onSumbitEnd: PropTypes.func
   }
 
   static defaultProps = {
@@ -177,8 +176,7 @@ export default class Form extends Component {
    * @param {object} fieldProps
    */
   handleFieldBlur = async ({ fieldProps }) => {
-    const { expected, disabled: prevDisabled, validated, onBlur } = fieldProps;
-    let hasExpectedValue = expected;
+    const { disabled: prevDisabled, validated, onBlur } = fieldProps;
 
     console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
     console.log('fieldProps', fieldProps);
@@ -220,7 +218,7 @@ export default class Form extends Component {
     const { rules: customFormRules } = this.props;
     const { rules: contextFormRules } = this.context;
 
-    const hasExpectedValue = await fieldUtils.hasExpectedValue({
+    const hasExpectedValue = await fieldUtils.isExpected({
       fieldProps,
       fields,
       formProps: this.props,

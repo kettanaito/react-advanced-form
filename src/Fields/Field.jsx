@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { isset, fieldUtils } from '../utils';
 
@@ -11,7 +11,7 @@ export const defaultProps = {
   disabled: false
 };
 
-export default class Field extends Component {
+export default class Field extends React.Component {
   static propTypes = {
     /* General */
     id: PropTypes.string,
@@ -129,7 +129,7 @@ export default class Field extends Component {
     const inputProps = {
       value: this.getProp('value'),
       required: this.getProp('required'),
-      disabled: this.getProp('disabled'),
+      disabled: this.getProp('disabled')
     };
 
     /**

@@ -24,18 +24,7 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: ['babel-loader', 'eslint-loader']
-      },
-      // {
-      //   test: /\.tsx?$/,
-      //   exclude: /node_modules/,
-      //   use: ['babel-loader', 'awesome-typescript-loader']
-      // },
-      // {
-      //   test: /\.tsx?$/,
-      //   exclude: /node_modules/,
-      //   enforce: 'pre',
-      //   use: 'source-map-loader'
-      // }
+      }
     ]
   },
   devtool: DEVELOPMENT && 'source-map',
