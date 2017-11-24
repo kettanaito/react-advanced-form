@@ -82,11 +82,11 @@ export default class Form extends Component {
     } : fieldProps;
 
     /* Update the validity state of the field */
-    const validState = fieldUtils.updateValidState(nextProps);
+    // const validState = fieldUtils.updateValidState(nextProps);
 
     const nextFields = fields.mergeIn([name], fromJS({
       ...nextProps,
-      ...validState
+      // ...validState
     }));
 
     console.groupCollapsed(name, '@ updateField');
@@ -126,142 +126,6 @@ export default class Form extends Component {
     }));
 
     this.setState({ fields: nextFields });
-  }
-
-  /**
-   * Validate a single field.
-   * Validation of each field is a complex process consisting of several steps.
-   * It is important to resolve the validation immediately once the field becomes invalid.
-   * @param {object} fieldProps
-   * @return {boolean}
-   */
-  validateField = async (fieldProps) => {
-    let hasExpectedValue = true;
-    const { name: fieldName, value, rule, asyncRule } = fieldProps;
-
-    /* Resolve resolvable props */
-    const required = fieldUtils.resolveProp({
-      propName: 'required',
-      fieldProps,
-      fields: this.state.fields
-    });
-
-    console.groupCollapsed(fieldName, '@ validateField');
-    console.log('fieldProps', fieldProps);
-    console.log('required:', required);
-    console.log('value:', value);
-
-    /* Allow non-required fields to be empty */
-    if (!value) {
-      console.log('expected:', !required);
-      console.groupEnd();
-
-      return !required;
-    }
-
-    /* Assume Field doesn't have any specific validation attached */
-    const { rules: contextRules } = this.context;
-    const { rules: customFormRules } = this.props;
-    const formRules = customFormRules || contextRules || {};
-    const formTypeRule = formRules.type && formRules.type[fieldName];
-    const formNameRule = formRules.name && formRules.name[fieldName];
-    const hasFormRules = formTypeRule || formNameRule;
-
-    if (!rule && !asyncRule && !hasFormRules ) {
-      console.groupEnd();
-
-      return hasExpectedValue;
-    }
-
-    /**
-     * Format validation.
-     * The first step of validation is to ensure a proper format.
-     * This is the most basic validation, therefore it should pass first.
-     */
-    if (rule) {
-      console.log('Field has "rule":', rule);
-      /* Test the RegExp against the field's value */
-      hasExpectedValue = rule.test(value);
-
-      console.log('hasExpectedValue:', hasExpectedValue);
-      if (!hasExpectedValue) return hasExpectedValue;
-    }
-
-    /**
-     * Form-level validation.
-     * The last level of validation is a form-wide validation provided by "rules" property of the Form.
-     * The latter property is also inherited from the context passed by FormProvider.
-     */
-    if (hasFormRules) {
-      console.groupEnd();
-
-      /**
-       * Form-level validation.
-       */
-      const isValidByType = formTypeRule ? formTypeRule(value, fieldProps, this.props) : true;
-      const isValidByName = formNameRule ? formNameRule(value, fieldProps, this.props) : true;
-      hasExpectedValue = isValidByType && isValidByName;
-
-      console.log('hasExpectedValue:', hasExpectedValue);
-      if (!hasExpectedValue) return hasExpectedValue;
-    }
-
-    /**
-     * Field: Asynchronous validation.
-     * Each field may have an async rule. The latter is a function which returns a Promise, which is
-     * being executed right after.
-     */
-    if (asyncRule) {
-      console.log('Field has asynchronous rule, calling...');
-
-      try {
-        await asyncRule({
-          value,
-          fieldProps,
-          formProps: this.props
-        });
-      } catch(error) {
-        hasExpectedValue = false;
-      }
-    }
-
-    console.log('hasExpectedValue:', hasExpectedValue);
-
-    console.groupEnd();
-
-    return hasExpectedValue;
-  }
-
-  /**
-   * Validate form.
-   */
-  validate = async () => {
-    const { fields } = this.state;
-    let isFormValid = true;
-
-    await fields.forEach(async (immutableProps) => {
-      const fieldProps = immutableProps.toJS();
-      let hasExpectedValue = fieldProps.expected;
-
-      if (fieldUtils.shouldValidateField({ fieldProps })) {
-        hasExpectedValue = await this.validateField(fieldProps);
-
-        this.updateField({
-          name: fieldProps.name,
-          propsPatch: {
-            validated: true,
-            expected: hasExpectedValue
-          }
-        });
-      }
-
-      if (!hasExpectedValue) {
-        isFormValid = hasExpectedValue;
-      }
-    });
-
-    console.log('isFormValid', isFormValid);
-    return isFormValid;
   }
 
   /**
@@ -331,7 +195,7 @@ export default class Form extends Component {
       });
 
       /* Validate the field */
-      hasExpectedValue = await this.validateField(fieldProps);
+      await this.validateField({ fieldProps });
     }
 
     /* Make field enabled, update its props */
@@ -340,12 +204,79 @@ export default class Form extends Component {
       propsPatch: {
         focused: false,
         disabled: prevDisabled,
-        validated: true,
-        expected: hasExpectedValue
+        // validated: true,
+        // expected: hasExpectedValue
       }
     }).then(() => {
       /* Invoke custom onBlur handler */
       if (onBlur) onBlur();
+    });
+  }
+
+  /**
+   * Validates a single field.
+   * @param {object} fieldProps
+   * @return {boolean}
+   */
+  validateField = async ({ fieldProps }) => {
+    const { fields } = this.state;
+    const { rules: customFormRules } = this.props;
+    const { rules: contextFormRules } = this.context;
+
+    const hasExpectedValue = await fieldUtils.hasExpectedValue({
+      fieldProps,
+      fields,
+      formProps: this.props,
+      formRules: customFormRules || contextFormRules || {}
+    });
+
+    console.log('validateField @ hasExpectedValue', hasExpectedValue);
+
+    /* Update the validity state of the field */
+    const propsPatch = {
+      validated: true,
+      expected: hasExpectedValue
+    };
+
+    const nextValidState = fieldUtils.updateValidState({
+      fieldProps: {
+        ...fieldProps,
+        ...propsPatch
+      }
+    });
+
+    /* Update the field in the state */
+    this.updateField({
+      name: fieldProps.name,
+      propsPatch: {
+        ...propsPatch,
+        ...nextValidState
+      }
+    });
+
+    return hasExpectedValue;
+  }
+
+  /**
+   * Validates the form.
+   * Sequentially goes field by field calling a dedicated field validation method.
+   */
+  validate = async () => {
+    const { fields } = this.state;
+
+    const vmap = fields.reduce((promises, immutableProps) => {
+      const fieldProps = immutableProps.toJS();
+
+      if (fieldUtils.shouldValidateField({ fieldProps })) {
+        return promises.concat(this.validateField({ fieldProps }));
+      }
+
+      return promises.concat(fieldProps.expected);
+    }, []);
+
+    return Promise.all(vmap).then((foo) => {
+      const shouldSubmit = !foo.some(expected => !expected);
+      return shouldSubmit;
     });
   }
 
@@ -356,12 +287,11 @@ export default class Form extends Component {
   handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    /**
-     * First, ensure all non-validated fields are validated
-     * and are valid.
-     */
-    const isFormValid = await this.validate();
-    if (!isFormValid) return;
+    /* Ensure form should submit (has no unexpected field values) */
+    const shouldSubmit = await this.validate();
+    console.warn('shouldSubmit?', shouldSubmit);
+
+    if (!shouldSubmit) return;
 
     const { fields } = this.state;
     const { action, onSubmitStart, onSubmit, onSubmitFailed, onSubmitEnd } = this.props;
