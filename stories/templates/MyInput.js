@@ -11,14 +11,14 @@ const inputStyles = {
 
 class MyCustomInput extends React.Component {
   render() {
-    const { name, valid, invalid, ...restProps } = this.props;
+    const { valid, invalid, ...restProps } = this.props;
 
     return (
       <div className="form-group" style={{ marginBottom: '1rem' }}>
         <div style={{ display: 'flex' }}>
-          <Field.Input name={ name } {...restProps} style={ inputStyles } />
+          <Field.Input {...this.props} style={ inputStyles } />
           { valid && (
-            <span style={{ color: 'green' }}>✓</span>
+            <span style={{ color: 'green', marginTop: '6px' }}>✓</span>
           ) }
         </div>
 
