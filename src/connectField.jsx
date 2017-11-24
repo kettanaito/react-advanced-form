@@ -1,5 +1,5 @@
 /**
- * Context decorator.
+ * Connect field.
  * A decorator for custom components for styling over default Field.
  * This decorator will allow to access the field's props from the Form's context
  * from within the custom styling components without having them to subscribe to
@@ -14,9 +14,9 @@ function getComponentName(component) {
   return component.displayName || component.name || 'Component';
 }
 
-export default function withContext(WrappedComponent) {
-  class ContextWrapper extends React.Component {
-    static displayName = `withContext(${getComponentName(WrappedComponent)})`;
+export default function connectField(WrappedComponent) {
+  class CustomFieldWrapper extends React.Component {
+    static displayName = `ConnectedField(${getComponentName(WrappedComponent)})`;
 
     static contextTypes = {
       fields: PropTypes.instanceOf(Map).isRequired
@@ -33,5 +33,5 @@ export default function withContext(WrappedComponent) {
     }
   }
 
-  return ContextWrapper;
+  return CustomFieldWrapper;
 }
