@@ -130,7 +130,7 @@ export default class Form extends React.Component {
    * Handles field focus.
    * @param {object} fieldProps
    */
-  handleFieldFocus = ({ fieldProps }) => {
+  handleFieldFocus = ({ event, fieldProps }) => {
     console.groupCollapsed(fieldProps.name, '@ handleFieldFocus');
     console.log('fieldProps', fieldProps);
     console.groupEnd();
@@ -139,6 +139,13 @@ export default class Form extends React.Component {
       name: fieldProps.name,
       propsPatch: {
         focused: true
+      }
+    }).then(({ nextProps }) => {
+      const { onFocus } = fieldProps;
+
+      if (onFocus) {
+        /* Invoke custom onFocus handler */
+        onFocus({ event, fieldProps: nextProps, formProps: this.props });
       }
     });
   }

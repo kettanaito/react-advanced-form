@@ -64,6 +64,7 @@ export default class DefaultForm extends Component {
               <MyInput
                 onBlur={ args => console.log(args) }
                 onChange={ args => console.log(args) }
+                onFocus={ args => console.log(args) }
                 name="numbersOnly"
                 placeholder="i.e. 123"
                 rule={/^\d+$/}
