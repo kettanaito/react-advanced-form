@@ -62,9 +62,6 @@ export default class DefaultForm extends Component {
             <label>
               Filed with client rule (optional):
               <MyInput
-                onBlur={ args => console.log(args) }
-                onChange={ args => console.log(args) }
-                onFocus={ args => console.log(args) }
                 name="numbersOnly"
                 placeholder="i.e. 123"
                 rule={/^\d+$/}
@@ -105,6 +102,13 @@ export default class DefaultForm extends Component {
             <label>
               Composite field:
               <FieldsComposition />
+            </label>
+
+            <label>
+              Field groups
+              <Field.Group name="billingAddress">
+                <MyInput name="firstName" required />
+              </Field.Group>
             </label>
           </div>
           <button type="submit">Submit</button>

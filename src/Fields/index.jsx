@@ -8,3 +8,5 @@ export class Input extends Field {
 export class Select extends Field {
   static displayName = 'Field.Select';
 }
+
+export Group from './Group';

@@ -37,6 +37,7 @@ export default class Field extends React.Component {
   static defaultProps = defaultProps
 
   static contextTypes = {
+    fieldGroup: PropTypes.string,
     fields: PropTypes.instanceOf(Map).isRequired,
     mapFieldToState: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
@@ -51,13 +52,26 @@ export default class Field extends React.Component {
    */
   getProp(propName) {
     const { fields } = this.context;
-    const contextValue = fields.getIn([this.props.name, propName]);
+
+    const contextValue = fields.getIn([...this.fieldPath, propName]);
     const propValue = isset(contextValue) ? contextValue : this.props[propName];
 
     if (typeof propValue !== 'function') return propValue;
 
-    const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps: this.props, fields });
+    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, fields, this.props);
+    const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps, fields });
     return resolvedPropValue || defaultProps[propName];
+  }
+
+  constructor(props, context) {
+    super(props, context);
+
+    const { fieldGroup } = context;
+
+    this.fieldPath = fieldUtils.getFieldPath({
+      ...props,
+      fieldGroup
+    });
   }
 
   componentDidMount() {
@@ -68,9 +82,13 @@ export default class Field extends React.Component {
      * fields inside the composite component. Thus, each field is updating the state
      * based on its value upon the composite mount. This causes issues of missing fields.
      */
+    const { fieldGroup } = this.context;
+
     setTimeout(() => {
       const fieldProps = {
         ...this.props,
+        fieldGroup,
+        fieldPath: this.fieldPath,
         validated: false
       };
 
@@ -82,10 +100,12 @@ export default class Field extends React.Component {
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
 
+    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
+
     /* Call parental change handler */
     this.context.handleFieldChange({
       event,
-      fieldProps: this.props,
+      fieldProps,
       nextValue,
       prevValue
     });
@@ -97,9 +117,11 @@ export default class Field extends React.Component {
    * setting its "focus" property to the respective value.
    */
   handleFocus = (event) => {
+    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
+
     this.context.handleFieldFocus({
       event,
-      fieldProps: this.props
+      fieldProps
     });
   }
 
@@ -108,7 +130,9 @@ export default class Field extends React.Component {
    */
   handleBlur = (event) => {
     const { value } = event.currentTarget;
-    const fieldProps = Object.assign({}, this.props, { value });
+
+    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
+    fieldProps.value = value;
 
     this.context.handleFieldBlur({ event, fieldProps });
   }
