@@ -14,7 +14,7 @@ export function resolveProp({ propName, fieldProps, fields }) {
     console.log('prop is a function, should resolve...');
     console.log('fields', fields);
 
-    const resolvedPropValue = propValue({ fieldProps, fields: fields.toJS() });
+    const resolvedPropValue = propValue({ fieldProps, fields });
 
     console.log('resolved prop value:', resolvedPropValue);
 
@@ -52,7 +52,7 @@ export async function hasExpectedValue({ fieldProps, fields, formProps, formRule
   const required = resolveProp({
     propName: 'required',
     fieldProps,
-    fields
+    fields: fields.toJS()
   });
 
   console.groupCollapsed(fieldName, '@ validateField');
