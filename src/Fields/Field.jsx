@@ -82,9 +82,6 @@ export default class Field extends React.Component {
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
 
-    // console.log(' ');
-    // console.log('| | Field @ handleChange', this.props.name, nextValue);
-
     /* Call parental change handler */
     this.context.handleFieldChange({
       event,
@@ -118,31 +115,27 @@ export default class Field extends React.Component {
 
   render() {
     /* Props passed to <Field /> on the client usage */
-    const { name, rule, asyncRule, valid, invalid, expected, validated, ...directProps } = this.props;
-
-    /**
-     * Input props.
-     * Props passed directly to the Field's element. Do not add
-     * properties which are not natively supported by that element.
-     */
-    const inputProps = {
-      value: this.getProp('value'),
-      required: this.getProp('required'),
-      disabled: this.getProp('disabled')
-    };
-
-    /**
-     * Event handlers assigned to the Field's element directly.
-     * Those handle changes which mutate the internal state/context.
-     */
-    const eventHandlers = {
-      onChange: this.handleChange,
-      onFocus: this.handleFocus,
-      onBlur: this.handleBlur
-    };
+    const {
+      name,
+      type,
+      id,
+      className,
+      style
+    } = this.props;
 
     return (
-      <input {...directProps} {...inputProps} {...eventHandlers} />
+      <input
+        name={ name }
+        type={ type }
+        id={ id }
+        className={ className }
+        style={ style }
+        value={ this.getProp('value') }
+        required={ this.getProp('required') }
+        disabled={ this.getProp('disabled') }
+        onChange={ this.handleChange }
+        onFocus={ this.handleFocus }
+        onBlur={ this.handleBlur } />
     );
   }
 }
