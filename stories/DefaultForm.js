@@ -62,6 +62,8 @@ export default class DefaultForm extends Component {
             <label>
               Filed with client rule (optional):
               <MyInput
+                onBlur={ args => console.log(args) }
+                onChange={ args => console.log(args) }
                 name="numbersOnly"
                 placeholder="i.e. 123"
                 rule={/^\d+$/}
