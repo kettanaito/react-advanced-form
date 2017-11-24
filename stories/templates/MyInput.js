@@ -1,5 +1,5 @@
 import React from 'react';
-import { Field, withContext } from '../../src';
+import { Field, connectField } from '../../src';
 
 const inputStyles = {
   border: '1px solid #ccc',
@@ -12,20 +12,18 @@ const inputStyles = {
 class MyCustomInput extends React.Component {
   render() {
     const { name, fieldProps, ...restProps } = this.props;
-
-    // const valid = !!fieldProps.value && fieldProps.validated && fieldProps.expected;
-    // const invalid = fieldProps.validated && !fieldProps.expected;
+    const { valid, invalid } = fieldProps;
 
     return (
       <div className="form-group" style={{ marginBottom: '1rem' }}>
         <div style={{ display: 'flex' }}>
           <Field.Input name={ name } {...restProps} style={ inputStyles } />
-          { fieldProps.valid && (
+          { valid && (
             <span style={{ color: 'green' }}>✓</span>
           ) }
         </div>
 
-        { fieldProps.invalid && (
+        { invalid && (
           <p style={{ color: 'red', marginTop: '4px' }}>Please provide a proper value.</p>
         ) }
       </div>
@@ -33,4 +31,4 @@ class MyCustomInput extends React.Component {
   }
 }
 
-export default withContext(MyCustomInput);
+export default connectField(MyCustomInput);
