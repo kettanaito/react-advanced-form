@@ -81,9 +81,9 @@ export default class Form extends React.Component {
     } : fieldProps;
 
     /* Update the validity state of the field */
-    const nextFields = fields.mergeIn(fieldProps.fieldPath, fromJS(nextProps));
+    const nextFields = fields.mergeIn([fieldProps.fieldPath], fromJS(nextProps));
 
-    // console.groupCollapsed(fieldProps.name, '@ updateField');
+    // console.groupCollapsed(fieldProps.fieldPath, '@ updateField');
     // console.log('directProps', directProps);
     // console.log('propsPatch', propsPatch);
     // console.log('fieldProps', fieldProps);
@@ -107,9 +107,8 @@ export default class Form extends React.Component {
    * @param {object} fieldProps
    */
   mapFieldToState = async ({ fieldProps }) => {
-    // console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
+    // console.groupCollapsed(fieldProps.fieldPath, '@ mapFieldToState');
     // console.log('fieldProps', fieldProps);
-    // console.log('fieldGroup', fieldProps.fieldGroup);
     // console.groupEnd();
 
     /* Validate the field when it has initial value */
@@ -117,7 +116,7 @@ export default class Form extends React.Component {
     if (shouldValidate) this.validateField({ fieldProps });
 
     this.setState(prevState => ({
-      fields: prevState.fields.mergeIn(fieldProps.fieldPath, fromJS(fieldProps))
+      fields: prevState.fields.mergeIn([fieldProps.fieldPath], fromJS(fieldProps))
     }));
   }
 
@@ -264,17 +263,17 @@ export default class Form extends React.Component {
    * Sequentially goes field by field calling a dedicated field validation method.
    */
   validate = async () => {
-    const pendingValidations = fieldUtils.traverse(this.state.fields, (immutableField) => {
+    const pendingValidations = this.state.fields.reduce((validations, immutableField) => {
       const fieldProps = immutableField.toJS();
 
       /* When field needs validation, do so */
       if (fieldUtils.shouldValidateField({ fieldProps })) {
-        return this.validateField({ fieldProps });
+        return validations.concat(this.validateField({ fieldProps }));
       }
 
       /* Otherwise return the current expected status of the field */
-      return fieldProps.expected;
-    });
+      return validations.concat(fieldProps.expected);
+    }, []);
 
     /* Await for all validation promises to resolve before returning */
     return Promise.all(pendingValidations).then((validatedFields) => {
@@ -304,7 +303,7 @@ export default class Form extends React.Component {
 
     const callbackArgs = {
       fields,
-      serialized,
+      serialized: serialized.toJS(),
       formProps: this.props
     };
 

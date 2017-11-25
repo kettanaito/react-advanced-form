@@ -53,7 +53,7 @@ export default class Field extends React.Component {
   getProp(propName) {
     const { fields } = this.context;
 
-    const contextValue = fields.getIn([...this.fieldPath, propName]);
+    const contextValue = fields.getIn([this.fieldPath, propName]);
     const propValue = isset(contextValue) ? contextValue : this.props[propName];
 
     if (typeof propValue !== 'function') return propValue;
@@ -82,13 +82,16 @@ export default class Field extends React.Component {
      * fields inside the composite component. Thus, each field is updating the state
      * based on its value upon the composite mount. This causes issues of missing fields.
      */
+    const { fieldGroup } = this.context;
+
     setTimeout(() => {
       const fieldProps = {
         ...this.props,
-        fieldGroup: this.context.fieldGroup,
         fieldPath: this.fieldPath,
         validated: false
       };
+
+      if (fieldGroup) fieldProps.fieldGroup = fieldGroup;
 
       this.context.mapFieldToState({ fieldProps });
     }, 0);
