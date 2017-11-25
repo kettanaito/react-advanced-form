@@ -1,6 +1,6 @@
 {
   "name": "react-conform",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "React form.",
   "source": "src/index.js",
   "main": "lib/index.js",
