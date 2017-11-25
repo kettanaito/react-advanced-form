@@ -11,18 +11,27 @@ export const TValidationRules = PropTypes.shape({
   name: PropTypes.object // name-specific field validation rules
 });
 
+export const TValidationMessages = PropTypes.shape({
+  general: PropTypes.object, // general validation messages
+  type: PropTypes.object, // type-specific validation messages
+  name: PropTypes.object // name-specific validation messages
+});
+
 export default class FormProvider extends React.Component {
   static propTypes = {
-    rules: TValidationRules
+    rules: TValidationRules,
+    messages: TValidationMessages
   }
 
   static childContextTypes = {
-    rules: TValidationRules
+    rules: TValidationRules,
+    messages: TValidationMessages
   }
 
   getChildContext() {
     return {
-      rules: this.props.rules
+      rules: this.props.rules,
+      messages: this.props.messages
     };
   }
 
