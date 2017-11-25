@@ -42,7 +42,7 @@ export default class Form extends React.Component {
    */
   static contextTypes = {
     rules: TValidationRules,
-    messages: TValidationMessages
+    messages: PropTypes.instanceOf(Map)
   }
 
   /**
@@ -225,18 +225,25 @@ export default class Form extends React.Component {
     const { rules: customFormRules } = this.props;
     const { rules: contextFormRules } = this.context;
 
-    const hasExpectedValue = await fieldUtils.isExpected({
+    const expectedStatus = await fieldUtils.isExpected({
       fieldProps,
       fields,
       formProps: this.props,
       formRules: customFormRules || contextFormRules || {}
     });
+    const { expected, reason } = expectedStatus;
 
     /* Update the validity state of the field */
     const propsPatch = {
       validated: true,
-      expected: hasExpectedValue
+      expected
     };
+
+    /* Get the validation message based on the reason */
+    if (!expected) {
+      const errorMessage = fieldUtils.resolveErrorMessage(reason, this.context.messages, fieldProps);
+      propsPatch.error = errorMessage;
+    }
 
     const nextValidState = fieldUtils.updateValidState({
       fieldProps: {
@@ -256,7 +263,7 @@ export default class Form extends React.Component {
       }
     });
 
-    return hasExpectedValue;
+    return expected;
   }
 
   /**

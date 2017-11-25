@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { fromJS, Map } from 'immutable';
 
 export const TValidationRules = PropTypes.shape({
   type: PropTypes.object, // type-specific field validation rules
@@ -23,6 +24,10 @@ export default class FormProvider extends React.Component {
     messages: TValidationMessages
   }
 
+  static defaultProps = {
+    messages: Map()
+  }
+
   static childContextTypes = {
     rules: TValidationRules,
     messages: TValidationMessages
@@ -31,7 +36,7 @@ export default class FormProvider extends React.Component {
   getChildContext() {
     return {
       rules: this.props.rules,
-      messages: this.props.messages
+      messages: fromJS(this.props.messages)
     };
   }
 

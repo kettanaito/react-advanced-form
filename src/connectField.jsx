@@ -29,7 +29,7 @@ export default function connectField(WrappedComponent) {
 
       const fieldPath = fieldUtils.getFieldPath({ name, fieldGroup });
       const fieldProps = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath]).toJS() : defaultProps;
-      const { focused, disabled, expected, valid, invalid } = fieldProps;
+      const { focused, disabled, expected, valid, invalid, error } = fieldProps;
 
       /* Grab the value from context props when available, to present actual data in the components tree */
       const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
@@ -42,6 +42,7 @@ export default function connectField(WrappedComponent) {
         expected,
         valid,
         invalid,
+        error,
         value
       };
 
