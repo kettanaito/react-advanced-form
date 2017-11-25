@@ -195,3 +195,18 @@ export function traverse(fields, iterator) {
     return entries.concat(iterator(field));
   }, []);
 }
+
+/**
+ * Serializes the provided Map of fields.
+ * @param {Map} fields
+ * @return {object}
+ */
+export function serializeFields(fields) {
+  return fields.reduceRight((all, field, fieldName) => {
+    /* Ignore real field with empty value */
+    if (field.has('value') && (field.get('value') === '')) return all;
+
+    all[fieldName] = field.has('value') ? field.get('value') : serializeFields(field);
+    return all;
+  }, {});
+}

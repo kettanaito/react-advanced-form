@@ -28,7 +28,7 @@ export default class DefaultForm extends Component {
   handleSubmitStart = ({ fields, serialized, formProps }) => {
     console.warn('handleSubmitStart');
     console.log('fields', fields.toJS());
-    console.log('serialized', serialized.toJS());
+    console.log('serialized', serialized);
     console.log('formProps', formProps);
     alert('SUBMITS');
   }
@@ -36,7 +36,7 @@ export default class DefaultForm extends Component {
   handleSubmitEnd = ({ fields, serialized, formProps }) => {
     console.warn('handleSubmitEnd');
     console.log('fields', fields.toJS());
-    console.log('serialized', serialized.toJS());
+    console.log('serialized', serialized);
     console.log('formProps', formProps);
   }
 
@@ -65,7 +65,7 @@ export default class DefaultForm extends Component {
                 name="numbersOnly"
                 placeholder="i.e. 123"
                 rule={/^\d+$/}
-                value="Initial value" />
+                value="123" />
             </label>
 
             {/* <label>
@@ -87,6 +87,7 @@ export default class DefaultForm extends Component {
                     })
                   });
                 }}
+                value="ab123"
                 required />
             </label>
 
@@ -94,6 +95,7 @@ export default class DefaultForm extends Component {
               Field with resolvable prop (required)
               <MyInput
                 name="resolvableField"
+                value="Another value"
                 required={({ fields }) => {
                   return fields.address && !!fields.address.value;
                 }} />
@@ -107,7 +109,7 @@ export default class DefaultForm extends Component {
             <label>
               Field groups
               <Field.Group name="billingAddress">
-                <MyInput name="firstName" required />
+                <MyInput name="firstName" value="John" required />
               </Field.Group>
             </label>
           </div>
