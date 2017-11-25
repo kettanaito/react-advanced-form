@@ -30,7 +30,6 @@ export default class DefaultForm extends Component {
     console.log('fields', fields.toJS());
     console.log('serialized', serialized);
     console.log('formProps', formProps);
-    alert('SUBMITS');
   }
 
   handleSubmitEnd = ({ fields, serialized, formProps }) => {
@@ -107,9 +106,18 @@ export default class DefaultForm extends Component {
             </label>
 
             <label>
-              Field groups
+              Billing address
               <Field.Group name="billingAddress">
                 <MyInput name="firstName" value="John" required />
+                <MyInput name="lastName" value="Maverick" required />
+              </Field.Group>
+            </label>
+
+            <label>
+              Delivery address
+              <Field.Group name="deliveryAddress">
+                <MyInput name="firstName" value="Katheline" required />
+                <MyInput name="lastName" value="Stark" required />
               </Field.Group>
             </label>
           </div>

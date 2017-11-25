@@ -41,11 +41,11 @@ export function shouldValidateField({ fieldProps }) {
   const hasDynamicRequired = (typeof fieldProps.required === 'function');
   const shouldValidate = !isValidated || hasDynamicRequired;
 
-  console.groupCollapsed('fieldUtils @ shouldValidateField', fieldProps.name);
-  console.log('was validated before:', fieldProps.validated);
-  console.log('"required" prop is dynamic (func):', hasDynamicRequired);
-  console.log('should validate:', shouldValidate);
-  console.groupEnd();
+  // console.groupCollapsed('fieldUtils @ shouldValidateField', fieldProps.name);
+  // console.log('was validated before:', fieldProps.validated);
+  // console.log('"required" prop is dynamic (func):', hasDynamicRequired);
+  // console.log('should validate:', shouldValidate);
+  // console.groupEnd();
 
   return shouldValidate;
 }
@@ -68,15 +68,15 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     fields
   });
 
-  console.groupCollapsed('fieldUtils @ isExpected', name);
-  console.log('fieldProps', fieldProps);
-  console.log('required:', required);
-  console.log('value:', value);
+  // console.groupCollapsed('fieldUtils @ isExpected', name);
+  // console.log('fieldProps', fieldProps);
+  // console.log('required:', required);
+  // console.log('value:', value);
 
   /* Allow non-required fields to be empty */
   if (!value) {
-    console.log('expected:', !required);
-    console.groupEnd();
+    // console.log('expected:', !required);
+    // console.groupEnd();
 
     return !required;
   }
@@ -87,20 +87,21 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   const hasFormRules = formTypeRule || formNameRule;
 
   if (!rule && !asyncRule && !hasFormRules) {
-    console.groupEnd();
+    // console.groupEnd();
 
     return hasExpectedValue;
   }
 
   /* Format (sync) validation */
   if (rule) {
-    console.log('Field has "rule":', rule);
+    // console.log('Field has "rule":', rule);
+
     /* Test the RegExp against the field's value */
     hasExpectedValue = rule.test(value);
 
-    console.log('hasExpectedValue:', hasExpectedValue);
+    // console.log('hasExpectedValue:', hasExpectedValue);
     if (!hasExpectedValue) {
-      console.groupEnd();
+      // console.groupEnd();
 
       return hasExpectedValue;
     }
@@ -112,7 +113,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
    * The latter property is also inherited from the context passed by FormProvider.
    */
   if (hasFormRules) {
-    console.groupEnd();
+    // console.groupEnd();
 
     /**
      * Form-level validation.
@@ -121,9 +122,9 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     const isValidByName = formNameRule ? formNameRule(value, fieldProps, formProps) : true;
     hasExpectedValue = isValidByType && isValidByName;
 
-    console.log('hasExpectedValue:', hasExpectedValue);
+    // console.log('hasExpectedValue:', hasExpectedValue);
     if (!hasExpectedValue) {
-      console.groupEnd();
+      // console.groupEnd();
 
       return hasExpectedValue;
     }
@@ -136,7 +137,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
    * previous validations is but to ensure the entered value is expected by the remove end-point (if any).
    */
   if (asyncRule) {
-    console.log('Field has asynchronous rule, calling...');
+    // console.log('Field has asynchronous rule, calling...');
 
     try {
       await asyncRule({
@@ -149,9 +150,8 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     }
   }
 
-  console.log('hasExpectedValue:', hasExpectedValue);
-
-  console.groupEnd();
+  // console.log('hasExpectedValue:', hasExpectedValue);
+  // console.groupEnd();
 
   return hasExpectedValue;
 }
@@ -171,12 +171,12 @@ export function updateValidState({ fieldProps }) {
     invalid: validated && !expected
   };
 
-  console.groupCollapsed('fieldUtils @ updateValidState', name);
-  console.log('value', value);
-  console.log('validated', validated);
-  console.log('expected', expected);
-  console.log('validState', validState);
-  console.groupEnd();
+  // console.groupCollapsed('fieldUtils @ updateValidState', name);
+  // console.log('value', value);
+  // console.log('validated', validated);
+  // console.log('expected', expected);
+  // console.log('validState', validState);
+  // console.groupEnd();
 
   return validState;
 }
