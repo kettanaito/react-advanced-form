@@ -10,6 +10,18 @@ const formRules = {
   }
 };
 
+const formMessages = {
+  general: {
+    missing: 'Please fill in the provided field.',
+    invalid: 'The value you provided is invalid.'
+  },
+  name: {
+    firstName: {
+      numbersOnly: 'Only numbers are allowed!'
+    }
+  }
+};
+
 /* Composite field example */
 const FieldsComposition = () => (
   <div style={{ display: 'flex' }}>
@@ -41,7 +53,9 @@ export default class DefaultForm extends Component {
 
   render() {
     return (
-      <FormProvider rules={ formRules }>
+      <FormProvider
+        rules={ formRules }
+        messages={ formMessages }>
         <Form
           id="default-form-example"
           action={this.handleFormAction}
