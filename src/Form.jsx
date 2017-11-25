@@ -4,7 +4,7 @@ import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
 import { TValidationRules } from './FormProvider';
-import { isset, fieldUtils, serialize } from './utils';
+import { isset, fieldUtils } from './utils';
 
 export default class Form extends React.Component {
   /**
@@ -300,7 +300,7 @@ export default class Form extends React.Component {
     const { action, onSubmitStart, onSubmit, onSubmitFailed, onSubmitEnd } = this.props;
 
     /* Serialize the fields */
-    const serialized = serialize(fields);
+    const serialized = fieldUtils.serializeFields(fields);
 
     const callbackArgs = {
       fields,
