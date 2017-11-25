@@ -189,12 +189,9 @@ export function updateValidState({ fieldProps }) {
  * @return {object}
  */
 export function serializeFields(fields) {
-  return fields.reduceRight((all, field, fieldName) => {
-    /* Ignore real field with empty value */
-    if (field.has('value') && (field.get('value') === '')) return all;
+  return fields.reduceRight((serialized, fieldProps, fieldName) => {
+    if (fieldProps.get('value') === '') return serialized;
 
-    const value = field.has('value') ? field.get('value') : serializeFields(field);
-
-    return all.setIn(field.get('fieldPath').split('.'), value);
+    return serialized.setIn(fieldProps.get('fieldPath').split('.'), fieldProps.get('value'));
   }, Map());
 }
