@@ -1,3 +1,5 @@
+import { Map } from 'immutable';
+
 /**
  * Gets the reference path of the field within the form's state/context.
  * Field's path includes field's group, when the latter is wrapping the field in the markup.
@@ -5,18 +7,18 @@
  * @param {?string} fieldGroup
  */
 export function getFieldPath({ name, fieldGroup }) {
-  return fieldGroup ? [fieldGroup, name] : [name];
+  return fieldGroup ? `${fieldGroup}.${name}` : name;
 }
 
 /**
  * Returns the props of the given field based on the presence of the latter in the form's state/context.
  * In case the field is not yet registered in the form's state, returns the fallback props provided.
- * @param {Array<string>} fieldPath
+ * @param {string} fieldPath
  * @param {Map} fields
  * @param {object} fallbackProps
  */
 export function getFieldProps(fieldPath, fields, fallbackProps) {
-  const contextProps = fields.getIn(fieldPath);
+  const contextProps = fields.getIn([fieldPath]);
   return contextProps ? contextProps.toJS() : fallbackProps;
 }
 
@@ -182,21 +184,6 @@ export function updateValidState({ fieldProps }) {
 }
 
 /**
- * Traverses the given immutable fields applying the iterator function to each field, regardless its depth.
- * @param {Map} fields
- * @param {Function: mixed} iterator
- */
-export function traverse(fields, iterator) {
-  return fields.reduce((entries, field) => {
-    /* When current entry doesn't have a "name" prop, means it's a field group */
-    if (!field.has('name')) return entries.concat(traverse(field, iterator));
-
-    /* When the entry is a field, apply the iterator function and glue the result to the reduced array */
-    return entries.concat(iterator(field));
-  }, []);
-}
-
-/**
  * Serializes the provided Map of fields.
  * @param {Map} fields
  * @return {object}
@@ -206,7 +193,8 @@ export function serializeFields(fields) {
     /* Ignore real field with empty value */
     if (field.has('value') && (field.get('value') === '')) return all;
 
-    all[fieldName] = field.has('value') ? field.get('value') : serializeFields(field);
-    return all;
-  }, {});
+    const value = field.has('value') ? field.get('value') : serializeFields(field);
+
+    return all.setIn(field.get('fieldPath').split('.'), value);
+  }, Map());
 }

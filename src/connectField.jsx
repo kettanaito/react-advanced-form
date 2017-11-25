@@ -28,11 +28,11 @@ export default function connectField(WrappedComponent) {
       const { name } = directProps;
 
       const fieldPath = fieldUtils.getFieldPath({ name, fieldGroup });
-      const fieldProps = fields.hasIn(fieldPath) ? fields.getIn(fieldPath).toJS() : defaultProps;
+      const fieldProps = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath]).toJS() : defaultProps;
       const { focused, disabled, expected, valid, invalid } = fieldProps;
 
       /* Grab the value from context props when available, to present actual data in the components tree */
-      const value = fields.hasIn(fieldPath) ? fields.getIn([...fieldPath, 'value']) : directProps.value;
+      const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
 
       /* Compose the props passed to the decorated component */
       const newProps = {
