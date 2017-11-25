@@ -1,6 +1,6 @@
-import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Map } from 'immutable';
 import { isset, fieldUtils } from '../utils';
 
 export const defaultProps = {
@@ -24,10 +24,10 @@ export default class Field extends React.Component {
     value: PropTypes.string,
 
     /* Validation */
-    validated: PropTypes.bool,
-    valid: PropTypes.bool,
-    rule: PropTypes.instanceOf(RegExp),
-    asyncRule: PropTypes.func,
+    validated: PropTypes.bool, // whether the field has been validated previously
+    // valid: PropTypes.bool, // whether the field is valid
+    rule: PropTypes.instanceOf(RegExp), // sync validation rule
+    asyncRule: PropTypes.func, // async validation rule (function to return a Promise)
 
     /* States */
     required: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
@@ -65,9 +65,9 @@ export default class Field extends React.Component {
 
   constructor(props, context) {
     super(props, context);
-
     const { fieldGroup } = context;
 
+    /* Compose field's path in the state (in case of being under fieldGroup) */
     this.fieldPath = fieldUtils.getFieldPath({
       ...props,
       fieldGroup
@@ -82,12 +82,10 @@ export default class Field extends React.Component {
      * fields inside the composite component. Thus, each field is updating the state
      * based on its value upon the composite mount. This causes issues of missing fields.
      */
-    const { fieldGroup } = this.context;
-
     setTimeout(() => {
       const fieldProps = {
         ...this.props,
-        fieldGroup,
+        fieldGroup: this.context.fieldGroup,
         fieldPath: this.fieldPath,
         validated: false
       };
@@ -96,6 +94,23 @@ export default class Field extends React.Component {
     }, 0);
   }
 
+  /**
+   * Handles field focus.
+   * Bubbles up to the Form to mutate the state of this particular field,
+   * setting its "focus" property to the respective value.
+   */
+  handleFocus = (event) => {
+    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
+
+    return this.context.handleFieldFocus({
+      event,
+      fieldProps
+    });
+  }
+
+  /**
+   * Handles field's value change.
+   */
   handleChange = (event) => {
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
@@ -112,21 +127,7 @@ export default class Field extends React.Component {
   }
 
   /**
-   * Handle field focus.
-   * Bubble up to the Form to mutate the state of this particular field,
-   * setting its "focus" property to the respective value.
-   */
-  handleFocus = (event) => {
-    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
-
-    this.context.handleFieldFocus({
-      event,
-      fieldProps
-    });
-  }
-
-  /**
-   * Handle field blur.
+   * Handles field blur.
    */
   handleBlur = (event) => {
     const { value } = event.currentTarget;
@@ -134,18 +135,11 @@ export default class Field extends React.Component {
     const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
     fieldProps.value = value;
 
-    this.context.handleFieldBlur({ event, fieldProps });
+    return this.context.handleFieldBlur({ event, fieldProps });
   }
 
   render() {
-    /* Props passed to <Field /> on the client usage */
-    const {
-      name,
-      type,
-      id,
-      className,
-      style
-    } = this.props;
+    const { name, type, id, className, style } = this.props;
 
     return (
       <input
@@ -157,8 +151,8 @@ export default class Field extends React.Component {
         value={ this.getProp('value') }
         required={ this.getProp('required') }
         disabled={ this.getProp('disabled') }
-        onChange={ this.handleChange }
         onFocus={ this.handleFocus }
+        onChange={ this.handleChange }
         onBlur={ this.handleBlur } />
     );
   }
