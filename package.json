@@ -42,6 +42,7 @@
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-react": "^7.4.0",
+    "feather-icons": "^4.0.1",
     "immutable": "^3.8.2",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
