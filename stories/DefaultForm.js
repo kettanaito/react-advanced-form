@@ -6,18 +6,18 @@ import MySelect from './templates/MySelect';
 /* Form validation rules */
 const formRules = {
   name: {
+    firstName: value => /^\w+$/.test(value),
     username: value => (value === 'ab123')
   }
 };
 
 const formMessages = {
-  general: {
-    missing: 'Please fill in the provided field.',
-    invalid: 'The value you provided is invalid.'
-  },
   name: {
+    numbersOnly: {
+      invalid: 'Only numbers are allowed!'
+    },
     firstName: {
-      numbersOnly: 'Only numbers are allowed!'
+      invalid: 'A name must contain letters.'
     }
   }
 };

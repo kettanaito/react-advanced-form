@@ -76,12 +76,8 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   // console.log('value:', value);
 
   /* Allow non-required fields to be empty */
-  if (!value) {
-    // console.log('expected:', !required);
-    // console.groupEnd();
-
-    return !required;
-  }
+  if (!value && required) return { expected: false, reason: 'missing' };
+  if (!value && !required) return { expected: true };
 
   /* Assume Field doesn't have any specific validation attached */
   const formTypeRule = formRules.type && formRules.type[name];
@@ -91,7 +87,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   if (!rule && !asyncRule && !hasFormRules) {
     // console.groupEnd();
 
-    return hasExpectedValue;
+    return { expected: true };
   }
 
   /* Format (sync) validation */
@@ -105,7 +101,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     if (!hasExpectedValue) {
       // console.groupEnd();
 
-      return hasExpectedValue;
+      return { expected: false, reason: 'invalid' };
     }
   }
 
@@ -128,7 +124,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     if (!hasExpectedValue) {
       // console.groupEnd();
 
-      return hasExpectedValue;
+      return { expected: false, reason: 'invalid' };
     }
   }
 
@@ -155,7 +151,17 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   // console.log('hasExpectedValue:', hasExpectedValue);
   // console.groupEnd();
 
-  return hasExpectedValue;
+  return { expected: hasExpectedValue };
+}
+
+export function resolveErrorMessage(reason, messages, { name: fieldName }) {
+  const nameMessage = messages.getIn(['name', fieldName, reason]);
+  if (nameMessage) return nameMessage;
+
+  const typeMessage = messages.getIn(['type', fieldName, reason]);
+  if (typeMessage) return typeMessage;
+
+  return messages.getIn(['general', reason]);
 }
 
 /**
