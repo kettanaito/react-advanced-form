@@ -75,7 +75,7 @@ export default class Field extends React.Component {
   }
 
   componentDidMount() {
-    console.warn('Field @ mount');
+    // console.warn('Field @ mount');
     /**
      * Map the field to Form's state to notify the latter of the new registered field.
      * Timeout is required because {componentDidMount} happens at the same time for all

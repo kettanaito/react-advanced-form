@@ -83,13 +83,13 @@ export default class Form extends React.Component {
     /* Update the validity state of the field */
     const nextFields = fields.mergeIn(fieldProps.fieldPath, fromJS(nextProps));
 
-    console.groupCollapsed(fieldProps.name, '@ updateField');
-    console.log('directProps', directProps);
-    console.log('propsPatch', propsPatch);
-    console.log('fieldProps', fieldProps);
-    console.log('nextProps', nextProps);
-    console.log('nextFields:', nextFields.toJS());
-    console.groupEnd();
+    // console.groupCollapsed(fieldProps.name, '@ updateField');
+    // console.log('directProps', directProps);
+    // console.log('propsPatch', propsPatch);
+    // console.log('fieldProps', fieldProps);
+    // console.log('nextProps', nextProps);
+    // console.log('nextFields:', nextFields.toJS());
+    // console.groupEnd();
 
     return new Promise((resolve) => {
       this.setState({ fields: nextFields }, () => {
@@ -107,10 +107,10 @@ export default class Form extends React.Component {
    * @param {object} fieldProps
    */
   mapFieldToState = async ({ fieldProps }) => {
-    console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
-    console.log('fieldProps', fieldProps);
-    console.log('fieldGroup', fieldProps.fieldGroup);
-    console.groupEnd();
+    // console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
+    // console.log('fieldProps', fieldProps);
+    // console.log('fieldGroup', fieldProps.fieldGroup);
+    // console.groupEnd();
 
     /* Validate the field when it has initial value */
     const shouldValidate = isset(fieldProps.value) && (fieldProps.value !== '');
@@ -127,9 +127,9 @@ export default class Form extends React.Component {
    * @param {object} fieldProps
    */
   handleFieldFocus = ({ event, fieldProps }) => {
-    console.groupCollapsed(fieldProps.name, '@ handleFieldFocus');
-    console.log('fieldProps', fieldProps);
-    console.groupEnd();
+    // console.groupCollapsed(fieldProps.name, '@ handleFieldFocus');
+    // console.log('fieldProps', fieldProps);
+    // console.groupEnd();
 
     this.updateField({
       fieldPath: fieldProps.fieldPath,
@@ -153,10 +153,10 @@ export default class Form extends React.Component {
    * @param {mixed} nextValue
    */
   handleFieldChange = ({ event, fieldProps, nextValue }) => {
-    console.groupCollapsed(fieldProps.name, '@ handleFieldChange');
-    console.log('fieldProps', fieldProps);
-    console.log('nextValue', nextValue);
-    console.groupEnd();
+    // console.groupCollapsed(fieldProps.name, '@ handleFieldChange');
+    // console.log('fieldProps', fieldProps);
+    // console.log('nextValue', nextValue);
+    // console.groupEnd();
 
     /* Update the value of the changed field in the state */
     this.updateField({
@@ -183,10 +183,10 @@ export default class Form extends React.Component {
   handleFieldBlur = async ({ event, fieldProps }) => {
     const { fieldPath, disabled: prevDisabled, validated, onBlur } = fieldProps;
 
-    console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
-    console.log('fieldProps', fieldProps);
-    console.log('should validate', !validated);
-    console.groupEnd();
+    // console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
+    // console.log('fieldProps', fieldProps);
+    // console.log('should validate', !validated);
+    // console.groupEnd();
 
     if (!validated) {
       /* Make field disabled during the validation */
@@ -292,7 +292,7 @@ export default class Form extends React.Component {
 
     /* Ensure form should submit (has no unexpected field values) */
     const shouldSubmit = await this.validate();
-    console.warn('shouldSubmit?', shouldSubmit);
+    // console.warn('shouldSubmit?', shouldSubmit);
 
     if (!shouldSubmit) return;
 
