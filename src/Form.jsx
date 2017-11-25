@@ -1,8 +1,8 @@
-import { fromJS, Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { fromJS, Map } from 'immutable';
 
-/* Own modules */
+/* Internal modules */
 import { TValidationRules } from './FormProvider';
 import { isset, fieldUtils, serialize } from './utils';
 
@@ -16,13 +16,13 @@ export default class Form extends React.Component {
     className: PropTypes.string,
 
     /* Specific */
-    action: PropTypes.func.isRequired,
+    action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
 
     /* Events */
-    onSumbitStart: PropTypes.func,
-    onSumbit: PropTypes.func,
-    onSumbitFailed: PropTypes.func,
-    onSumbitEnd: PropTypes.func
+    onSumbitStart: PropTypes.func, // form should submit, submit started
+    onSumbit: PropTypes.func, // form submit went successfully
+    onSumbitFailed: PropTypes.func, // form submit failed
+    onSumbitEnd: PropTypes.func // form has finished submit (regardless of the result)
   }
 
   static defaultProps = {
@@ -34,7 +34,7 @@ export default class Form extends React.Component {
    */
   state = {
     fields: Map(),
-    isSubmitting: false
+    submitting: false
   }
 
   /**
@@ -68,13 +68,12 @@ export default class Form extends React.Component {
   /**
    * Updates the props of the field stored in the {state.fields} Map.
    * @param {string} name The name of the field.
-   * @param {object} fieldProps
-   * @param {function} afterUpdate Callback to execute after state update.
+   * @param {object} fieldProps A directly specified nextProps of the field.
+   * @param {object} propsPath A partical Object of the props to merge into the existing field props.
    */
   updateField = ({ fieldPath, fieldProps: directProps, propsPatch = null }) => {
     const { fields } = this.state;
     const fieldProps = fieldUtils.getFieldProps(fieldPath, fields, directProps);
-    // const fieldProps = directProps || fields.getIn(name) && fields.get(name).toJS();
 
     const nextProps = propsPatch ? {
       ...fieldProps,
@@ -106,7 +105,6 @@ export default class Form extends React.Component {
    * However, fields present in the composite components are still unkown to the Form. This method
    * is a handler for each unkown field registration attempt.
    * @param {object} fieldProps
-   * @param {ReactComponent} ref
    */
   mapFieldToState = async ({ fieldProps }) => {
     console.groupCollapsed(fieldProps.name, '@ mapFieldToState');
@@ -114,19 +112,18 @@ export default class Form extends React.Component {
     console.log('fieldGroup', fieldProps.fieldGroup);
     console.groupEnd();
 
-    const { fields } = this.state;
-
     /* Validate the field when it has initial value */
     const shouldValidate = isset(fieldProps.value) && (fieldProps.value !== '');
     if (shouldValidate) this.validateField({ fieldProps });
 
-    const nextFields = fields.mergeIn(fieldProps.fieldPath, fromJS(fieldProps));
-
-    this.setState({ fields: nextFields });
+    this.setState(prevState => ({
+      fields: prevState.fields.mergeIn(fieldProps.fieldPath, fromJS(fieldProps))
+    }));
   }
 
   /**
    * Handles field focus.
+   * @param {Event} event
    * @param {object} fieldProps
    */
   handleFieldFocus = ({ event, fieldProps }) => {
@@ -180,6 +177,7 @@ export default class Form extends React.Component {
 
   /**
    * Handles field blur.
+   * @param {Event} event
    * @param {object} fieldProps
    */
   handleFieldBlur = async ({ event, fieldProps }) => {
@@ -217,8 +215,9 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Validates a single field.
+   * Validates a single provided field.
    * @param {object} fieldProps
+   * @param {boolean} returnValidState When "true", does not perform the state update, but returns the next valid state.
    * @return {boolean}
    */
   validateField = async ({ fieldProps, returnValidState = false }) => {
@@ -265,34 +264,21 @@ export default class Form extends React.Component {
    * Sequentially goes field by field calling a dedicated field validation method.
    */
   validate = async () => {
-    const { fields } = this.state;
-
-    const vmap = fieldUtils.traverse(fields, (immutableField) => {
+    const pendingValidations = fieldUtils.traverse(this.state.fields, (immutableField) => {
       const fieldProps = immutableField.toJS();
 
+      /* When field needs validation, do so */
       if (fieldUtils.shouldValidateField({ fieldProps })) {
         return this.validateField({ fieldProps });
       }
 
+      /* Otherwise return the current expected status of the field */
       return fieldProps.expected;
     });
 
-    console.warn('VMAP', vmap);
-
-    // const vmap = fields.reduce((promises, immutableProps) => {
-    //   let fieldProps = immutableProps;
-
-    //   fieldProps = fieldProps.toJS();
-
-    //   if (fieldUtils.shouldValidateField({ fieldProps })) {
-    //     return promises.concat(this.validateField({ fieldProps }));
-    //   }
-
-    //   return promises.concat(fieldProps.expected);
-    // }, []);
-
-    return Promise.all(vmap).then((foo) => {
-      const shouldSubmit = !foo.some(expected => !expected);
+    /* Await for all validation promises to resolve before returning */
+    return Promise.all(pendingValidations).then((validatedFields) => {
+      const shouldSubmit = !validatedFields.some(expected => !expected);
       return shouldSubmit;
     });
   }
@@ -328,34 +314,31 @@ export default class Form extends React.Component {
      * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
     if (onSubmitStart) onSubmitStart(callbackArgs);
-    this.setState({ isSubmitting: true });
+    this.setState({ submitting: true });
 
     /**
      * Perform the action.
      * Form's action is a function which returns a Promise. You should pass a WS call, or async action
      * as a prop to the form in order for it to work.
      */
-    action(callbackArgs)
-      .then(() => {
-        /**
-         * Event: Submit has passed.
-         */
-        if (onSubmit) onSubmit(callbackArgs);
-      })
-      .catch(() => {
-        /**
-         * Event: Submit has failed.
-         */
-        if (onSubmitFailed) onSubmitFailed(callbackArgs);
-      })
-      .then(() => {
-        /**
-         * Event: Submit has ended.
-         * Called each time after the submit, regardless of the submit status (success/failure).
-         */
-        if (onSubmitEnd) onSubmitEnd(callbackArgs);
-        this.setState({ isSubmitting: false });
-      });
+    action(callbackArgs).then(() => {
+      /**
+       * Event: Submit has passed.
+       */
+      if (onSubmit) onSubmit(callbackArgs);
+    }).catch(() => {
+      /**
+       * Event: Submit has failed.
+       */
+      if (onSubmitFailed) onSubmitFailed(callbackArgs);
+    }).then(() => {
+      /**
+       * Event: Submit has ended.
+       * Called each time after the submit, regardless of the submit status (success/failure).
+       */
+      if (onSubmitEnd) onSubmitEnd(callbackArgs);
+      this.setState({ submitting: false });
+    });
   }
 
   render() {
