@@ -7,17 +7,38 @@ import MySelect from './templates/MySelect';
 const formRules = {
   name: {
     firstName: value => /^\w+$/.test(value),
-    username: value => (value === 'ab123')
+    // username: value => (value === 'ab123')
   }
 };
 
 const formMessages = {
+  general: {
+    missing: 'Please provide the required field',
+    invalid: 'Please provide a proper value',
+    async: {
+      defaultResolver: ({ payload }) => {
+        if (payload.statusCode === 'ERROR') return 'WS: The value is invalid';
+      }
+    }
+  },
   name: {
     numbersOnly: {
-      invalid: 'Only numbers are allowed!'
+      invalid: 'Only numbers are allowed!',
+      async: {
+        customResolver: ({ res }) => {
+          if (res.statusCode === 'FAILURE') return 'Validation failed';
+        }
+      }
     },
     firstName: {
       invalid: 'A name must contain letters.'
+    },
+    username: {
+      async: {
+        customResolver: ({ res, payload, fieldProps, formProps }) => {
+          return payload.statusCode;
+        }
+      }
     }
   }
 };
@@ -109,9 +130,7 @@ export default class DefaultForm extends Component {
               <MyInput
                 name="resolvableField"
                 value="Another value"
-                required={({ fields }) => {
-                  return fields.address && !!fields.address.value;
-                }} />
+                required={({ fields }) => fields.address && !!fields.address.value} />
             </label>
 
             <label>
@@ -135,6 +154,7 @@ export default class DefaultForm extends Component {
               </Field.Group>
             </label>
           </div>
+
           <button type="submit">Submit</button>
         </Form>
       </FormProvider>
