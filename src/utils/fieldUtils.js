@@ -182,17 +182,23 @@ export function getErrorMessage({ validityStatus, messages, fieldProps, formProp
   const { errorType, asyncInfo } = validityStatus;
   const { name: fieldName } = fieldProps;
 
-  /* Name-specific messages has the highest priority */
-  const nameMessage = messages.getIn(['name', fieldName, errorType]);
-  if (nameMessage) return resolveAsyncMessage({ message: nameMessage, asyncInfo, errorType, fieldProps, formProps });
+  const messagePaths = [
+    /* Name-specific messages has the highest priority */
+    ['name', fieldName, errorType],
 
-  /* Type-specific messages has the middle priority */
-  const typeMessage = messages.getIn(['type', fieldName, errorType]);
-  if (typeMessage) return resolveAsyncMessage({ message: typeMessage, asyncInfo, errorType, fieldProps, formProps });
+    /* Type-specific messages has the middle priority */
+    ['type', fieldName, errorType],
 
-  /* General messages serve as the fallback ones */
-  const generalMessage = messages.getIn(['general', errorType]);
-  return resolveAsyncMessage({ message: generalMessage, asyncInfo, errorType, fieldProps, formProps });
+    /* General messages serve as the fallback ones */
+    ['general', errorType]
+  ];
+
+  /* Iterate through each message path and break as soon as the message is found */
+  for (let i = 0; i < messagePaths.length; i++) {
+    const messagePath = messagePaths[i];
+    const message = messages.getIn(messagePath);
+    if (message) return resolveAsyncMessage({ message, asyncInfo, errorType, fieldProps, formProps });
+  }
 }
 
 /**
