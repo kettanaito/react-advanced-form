@@ -95,7 +95,9 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     // console.log('Field has "rule":', rule);
 
     /* Test the RegExp against the field's value */
-    hasExpectedValue = rule.test(value);
+    hasExpectedValue = (typeof rule === 'function')
+      ? rule({ value, fieldProps, formProps })
+      : rule.test(value);
 
     // console.log('hasExpectedValue:', hasExpectedValue);
     if (!hasExpectedValue) {
