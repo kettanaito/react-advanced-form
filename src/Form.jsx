@@ -193,7 +193,10 @@ export default class Form extends React.Component {
       this.updateField({
         fieldPath,
         propsPatch: {
-          disabled: true
+          disabled: true,
+          valid: false,
+          invalid: false,
+          validating: true
         }
       });
 
@@ -206,7 +209,8 @@ export default class Form extends React.Component {
       fieldPath,
       propsPatch: {
         focused: false,
-        disabled: prevDisabled
+        disabled: prevDisabled,
+        validating: false
       }
     }).then(({ nextProps }) => {
       /* Invoke custom onBlur handler */
