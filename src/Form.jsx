@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
-import { TValidationRules, TValidationMessages } from './FormProvider';
+import { TValidationRules } from './FormProvider';
 import { isset, fieldUtils } from './utils';
 
 export default class Form extends React.Component {
