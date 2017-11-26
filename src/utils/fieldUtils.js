@@ -76,7 +76,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   // console.log('value:', value);
 
   /* Allow non-required fields to be empty */
-  if (!value && required) return { expected: false, reason: 'missing' };
+  if (!value && required) return { expected: false, errorType: 'missing' };
   if (!value && !required) return { expected: true };
 
   /* Assume Field doesn't have any specific validation attached */
@@ -101,7 +101,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     if (!hasExpectedValue) {
       // console.groupEnd();
 
-      return { expected: false, reason: 'invalid' };
+      return { expected: false, errorType: 'invalid' };
     }
   }
 
@@ -124,7 +124,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
     if (!hasExpectedValue) {
       // console.groupEnd();
 
-      return { expected: false, reason: 'invalid' };
+      return { expected: false, errorType: 'invalid' };
     }
   }
 
@@ -137,31 +137,62 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   if (asyncRule) {
     // console.log('Field has asynchronous rule, calling...');
 
-    try {
-      await asyncRule({
-        value,
-        fieldProps,
-        formProps
-      });
-    } catch (error) {
-      hasExpectedValue = false;
-    }
+    const res = await asyncRule({ value, fieldProps, formProps });
+
+    return {
+      expected: res.ok,
+      errorType: 'async',
+      asyncInfo: {
+        res,
+        payload: await res.json()
+      }
+    };
   }
 
   // console.log('hasExpectedValue:', hasExpectedValue);
   // console.groupEnd();
-
   return { expected: hasExpectedValue };
 }
 
-export function resolveErrorMessage(reason, messages, { name: fieldName }) {
-  const nameMessage = messages.getIn(['name', fieldName, reason]);
-  if (nameMessage) return nameMessage;
+/**
+ * Returns a bypassed sync message, or resolved async message based on the custom resolvers.
+ */
+function resolveAsyncMessage({ message, asyncInfo, errorType, fieldProps, formProps }) {
+  /* Bypass synchronous messages */
+  if (errorType !== 'async') return message;
 
-  const typeMessage = messages.getIn(['type', fieldName, reason]);
-  if (typeMessage) return typeMessage;
+  let errorMessage;
+  const resolvers = message.toJS();
 
-  return messages.getIn(['general', reason]);
+  for (let asyncErrorType in resolvers) {
+    const resolver = resolvers[asyncErrorType];
+
+    message = resolver({ ...asyncInfo, fieldProps, formProps });
+    if (!message) break;
+  }
+
+  return message;
+}
+
+/**
+ * Returns an error message based on the validity status and provided map of error messages.
+ * @return {string}
+ */
+export function getErrorMessage({ validityStatus, messages, fieldProps, formProps }) {
+  const { errorType, asyncInfo } = validityStatus;
+  const { name: fieldName } = fieldProps;
+
+  /* Name-specific messages has the highest priority */
+  const nameMessage = messages.getIn(['name', fieldName, errorType]);
+  if (nameMessage) return resolveAsyncMessage({ message: nameMessage, asyncInfo, errorType, fieldProps, formProps });
+
+  /* Type-specific messages has the middle priority */
+  const typeMessage = messages.getIn(['type', fieldName, errorType]);
+  if (typeMessage) return resolveAsyncMessage({ message: typeMessage, asyncInfo, errorType, fieldProps, formProps });
+
+  /* General messages serve as the fallback ones */
+  const generalMessage = messages.getIn(['general', errorType]);
+  return resolveAsyncMessage({ message: generalMessage, asyncInfo, errorType, fieldProps, formProps });
 }
 
 /**

@@ -225,13 +225,13 @@ export default class Form extends React.Component {
     const { rules: customFormRules } = this.props;
     const { rules: contextFormRules } = this.context;
 
-    const expectedStatus = await fieldUtils.isExpected({
+    const validityStatus = await fieldUtils.isExpected({
       fieldProps,
       fields,
       formProps: this.props,
       formRules: customFormRules || contextFormRules || {}
     });
-    const { expected, reason } = expectedStatus;
+    const { expected } = validityStatus;
 
     /* Update the validity state of the field */
     const propsPatch = {
@@ -239,9 +239,15 @@ export default class Form extends React.Component {
       expected
     };
 
-    /* Get the validation message based on the reason */
+    /* Get the validation message based on the errorType */
     if (!expected) {
-      const errorMessage = fieldUtils.resolveErrorMessage(reason, this.context.messages, fieldProps);
+      const errorMessage = fieldUtils.getErrorMessage({
+        validityStatus,
+        messages: this.context.messages,
+        fieldProps,
+        formProps: this.props
+      });
+
       propsPatch.error = errorMessage;
     }
 
