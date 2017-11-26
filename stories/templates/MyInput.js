@@ -12,7 +12,7 @@ const inputStyles = {
 
 class MyCustomInput extends React.Component {
   render() {
-    const { valid, invalid, error, ...restProps } = this.props;
+    const { valid, invalid, error, validating, ...restProps } = this.props;
 
     const iconOptions = { width: 16, height: 16 };
 
@@ -32,6 +32,8 @@ class MyCustomInput extends React.Component {
               }} />
           ) }
         </div>
+
+        { validating && <p>Validating...</p> }
 
         { invalid && (
           <p style={{ color: '#cc0000', marginTop: 4 }}>Error: { error }</p>
