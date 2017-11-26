@@ -26,7 +26,10 @@ export default class Field extends React.Component {
     /* Validation */
     validated: PropTypes.bool, // whether the field has been validated previously
     // valid: PropTypes.bool, // whether the field is valid
-    rule: PropTypes.instanceOf(RegExp), // sync validation rule
+    rule: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.instanceOf(RegExp)
+    ]), // sync validation rule
     asyncRule: PropTypes.func, // async validation rule (function to return a Promise)
 
     /* States */

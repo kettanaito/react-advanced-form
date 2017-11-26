@@ -117,7 +117,7 @@ export default class DefaultForm extends Component {
                   return fetch('http://demo9102997.mockable.io/validate/productId', {
                     method: 'POST',
                     body: JSON.stringify({
-                      userName: fieldProps.value
+                      username: fieldProps.value
                     })
                   });
                 }}
@@ -130,6 +130,7 @@ export default class DefaultForm extends Component {
               <MyInput
                 name="resolvableField"
                 value="Another value"
+                rule={({ value }) => value === 'John'}
                 required={({ fields }) => fields.address && !!fields.address.value} />
             </label>
 
