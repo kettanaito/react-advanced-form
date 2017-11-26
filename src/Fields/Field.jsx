@@ -25,7 +25,6 @@ export default class Field extends React.Component {
 
     /* Validation */
     validated: PropTypes.bool, // whether the field has been validated previously
-    // valid: PropTypes.bool, // whether the field is valid
     rule: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.instanceOf(RegExp)
@@ -49,7 +48,6 @@ export default class Field extends React.Component {
   }
 
   /**
-   * Get prop.
    * Gets the given prop name from the context first, otherwise tries to resolve the prop.
    * In case both return undefined, fallbacks to the default prop value.
    */
@@ -71,14 +69,10 @@ export default class Field extends React.Component {
     const { fieldGroup } = context;
 
     /* Compose field's path in the state (in case of being under fieldGroup) */
-    this.fieldPath = fieldUtils.getFieldPath({
-      ...props,
-      fieldGroup
-    });
+    this.fieldPath = fieldUtils.getFieldPath({ ...props, fieldGroup });
   }
 
   componentDidMount() {
-    // console.warn('Field @ mount');
     /**
      * Map the field to Form's state to notify the latter of the new registered field.
      * Timeout is required because {componentDidMount} happens at the same time for all
@@ -94,9 +88,11 @@ export default class Field extends React.Component {
         validated: false
       };
 
+      /* Prevent { fieldGroup: undefined } for fields without a group */
       if (fieldGroup) fieldProps.fieldGroup = fieldGroup;
 
-      this.context.mapFieldToState({ fieldProps });
+      /* Notify the parent Form that a new field has just mounted */
+      return this.context.mapFieldToState({ fieldProps });
     }, 0);
   }
 
@@ -108,10 +104,7 @@ export default class Field extends React.Component {
   handleFocus = (event) => {
     const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
 
-    return this.context.handleFieldFocus({
-      event,
-      fieldProps
-    });
+    return this.context.handleFieldFocus({ event, fieldProps });
   }
 
   /**
@@ -124,23 +117,14 @@ export default class Field extends React.Component {
     const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
 
     /* Call parental change handler */
-    this.context.handleFieldChange({
-      event,
-      fieldProps,
-      nextValue,
-      prevValue
-    });
+    return this.context.handleFieldChange({ event, fieldProps, nextValue, prevValue });
   }
 
   /**
    * Handles field blur.
    */
   handleBlur = (event) => {
-    const { value } = event.currentTarget;
-
     const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
-    fieldProps.value = value;
-
     return this.context.handleFieldBlur({ event, fieldProps });
   }
 
