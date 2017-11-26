@@ -180,8 +180,8 @@ function resolveAsyncMessage({ message, asyncInfo, errorType, fieldProps, formPr
  * Returns an error message based on the validity status and provided map of error messages.
  * @return {string}
  */
-export function getErrorMessage({ validityStatus, messages, fieldProps, formProps }) {
-  const { errorType, asyncInfo } = validityStatus;
+export function getErrorMessage({ validationSummary, messages, fieldProps, formProps }) {
+  const { errorType, asyncInfo } = validationSummary;
   const { name: fieldName } = fieldProps;
 
   const messagePaths = [
@@ -204,13 +204,13 @@ export function getErrorMessage({ validityStatus, messages, fieldProps, formProp
 }
 
 /**
- * Returns whether the field is valid in the given context.
+ * Returns the next state of the field's validity.
  * Field cannot rely on "valid" prop alone. Consider this:
  * - valid when it has value, has been validated and is indeed valid
  * - invalid - when it has been validated, but it's not valid
  * @param {object} fieldProps
  */
-export function updateValidState({ fieldProps }) {
+export function updateValidityState({ fieldProps }) {
   const { name, value, validated, expected } = fieldProps;
 
   const validState = {
@@ -218,7 +218,7 @@ export function updateValidState({ fieldProps }) {
     invalid: validated && !expected
   };
 
-  // console.groupCollapsed('fieldUtils @ updateValidState', name);
+  // console.groupCollapsed('fieldUtils @ updateValidityState', name);
   // console.log('value', value);
   // console.log('validated', validated);
   // console.log('expected', expected);

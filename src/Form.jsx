@@ -71,6 +71,7 @@ export default class Form extends React.Component {
    * @param {string} name The name of the field.
    * @param {object} fieldProps A directly specified nextProps of the field.
    * @param {object} propsPath A partical Object of the props to merge into the existing field props.
+   * @return {Promise<any>}
    */
   updateField = ({ fieldPath, fieldProps: directProps, propsPatch = null }) => {
     const { fields } = this.state;
@@ -92,19 +93,21 @@ export default class Form extends React.Component {
     // console.log('nextFields:', nextFields.toJS());
     // console.groupEnd();
 
-    return new Promise((resolve) => {
-      this.setState({ fields: nextFields }, () => {
-        return resolve({ nextFields, nextProps });
-      });
+    return new Promise((resolve, reject) => {
+      try {
+        this.setState({ fields: nextFields }, () => {
+          return resolve({ nextFields, nextProps });
+        });
+      } catch (error) {
+        return reject(error);
+      }
     });
   }
 
   /**
-   * Maps the field to the state (context) explicitly.
-   * Passing fields in context gives a benefit of removing an explicit traversing the children
+   * Maps the field to the state/context.
+   * Passing fields in context gives a benefit of removing an explicit traversing of children
    * tree, deconstructing and constructing each appropriate child with the attached handler props.
-   * However, fields present in the composite components are still unkown to the Form. This method
-   * is a handler for each unkown field registration attempt.
    * @param {object} fieldProps
    */
   mapFieldToState = async ({ fieldProps }) => {
@@ -140,7 +143,7 @@ export default class Form extends React.Component {
       const { onFocus } = fieldProps;
 
       if (onFocus) {
-        /* Invoke custom onFocus handler */
+        /* Call custom onFocus handler */
         onFocus({ event, fieldProps: nextProps, formProps: this.props });
       }
     });
@@ -163,13 +166,13 @@ export default class Form extends React.Component {
       fieldPath: fieldProps.fieldPath,
       propsPatch: {
         value: nextValue,
-        validated: false
+        validated: false // reset validation status to perform new validation upon change
       }
     }).then(({ nextProps }) => {
       const { onChange } = fieldProps;
 
       if (onChange) {
-        /* Call client-side onChange handler function */
+        /* Call custom onChange handler */
         onChange({ event, nextValue, fieldProps: nextProps, formProps: this.props });
       }
     });
@@ -213,7 +216,7 @@ export default class Form extends React.Component {
         validating: false
       }
     }).then(({ nextProps }) => {
-      /* Invoke custom onBlur handler */
+      /* Call custom onBlur handler */
       if (onBlur) onBlur({ event, fieldProps: nextProps, formProps: this.props });
     });
   }
@@ -221,21 +224,20 @@ export default class Form extends React.Component {
   /**
    * Validates a single provided field.
    * @param {object} fieldProps
-   * @param {boolean} returnValidState When "true", does not perform the state update, but returns the next valid state.
    * @return {boolean}
    */
-  validateField = async ({ fieldProps, returnValidState = false }) => {
+  validateField = async ({ fieldProps }) => {
     const { fields } = this.state;
     const { rules: customFormRules } = this.props;
     const { rules: contextFormRules } = this.context;
 
-    const validityStatus = await fieldUtils.isExpected({
+    const validationSummary = await fieldUtils.isExpected({
       fieldProps,
       fields,
       formProps: this.props,
       formRules: customFormRules || contextFormRules || {}
     });
-    const { expected } = validityStatus;
+    const { expected } = validationSummary;
 
     /* Update the validity state of the field */
     const propsPatch = {
@@ -246,7 +248,7 @@ export default class Form extends React.Component {
     /* Get the validation message based on the errorType */
     if (!expected) {
       const errorMessage = fieldUtils.getErrorMessage({
-        validityStatus,
+        validationSummary,
         messages: this.context.messages,
         fieldProps,
         formProps: this.props
@@ -255,21 +257,19 @@ export default class Form extends React.Component {
       propsPatch.error = errorMessage;
     }
 
-    const nextValidState = fieldUtils.updateValidState({
+    const nextValidityState = fieldUtils.updateValidityState({
       fieldProps: {
         ...fieldProps,
         ...propsPatch
       }
     });
 
-    if (returnValidState) return nextValidState;
-
-    /* Update the field in the state */
+    /* Update the field in the state/context */
     this.updateField({
       fieldPath: fieldProps.fieldPath,
       propsPatch: {
         ...propsPatch,
-        ...nextValidState
+        ...nextValidityState
       }
     });
 
@@ -278,7 +278,8 @@ export default class Form extends React.Component {
 
   /**
    * Validates the form.
-   * Sequentially goes field by field calling a dedicated field validation method.
+   * Calls the validation on each field in parallel, awaiting for all calls
+   * to be resolved before returning the result.
    */
   validate = async () => {
     const pendingValidations = this.state.fields.reduce((validations, immutableField) => {
@@ -319,6 +320,7 @@ export default class Form extends React.Component {
     /* Serialize the fields */
     const serialized = fieldUtils.serializeFields(fields);
 
+    /* Compose a single Object of arguments passed to each custom handler */
     const callbackArgs = {
       fields,
       serialized: serialized.toJS(),
@@ -339,14 +341,10 @@ export default class Form extends React.Component {
      * as a prop to the form in order for it to work.
      */
     action(callbackArgs).then(() => {
-      /**
-       * Event: Submit has passed.
-       */
+      /* Event: Submit has passed */
       if (onSubmit) onSubmit(callbackArgs);
     }).catch(() => {
-      /**
-       * Event: Submit has failed.
-       */
+      /* Event: Submit has failed */
       if (onSubmitFailed) onSubmitFailed(callbackArgs);
     }).then(() => {
       /**
