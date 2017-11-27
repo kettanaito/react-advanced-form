@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Map } from 'immutable';
-import { isset, fieldUtils } from '../utils';
+import { IterableInstance, isset, fieldUtils } from '../utils';
 
 export const defaultProps = {
   type: 'text',
@@ -40,7 +39,7 @@ export default class Field extends React.Component {
 
   static contextTypes = {
     fieldGroup: PropTypes.string,
-    fields: PropTypes.instanceOf(Map).isRequired,
+    fields: IterableInstance,
     mapFieldToState: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,

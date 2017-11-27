@@ -8,7 +8,6 @@ const DEVELOPMENT = (process.env.NODE_ENV === 'development');
 const PRODUCTION = (process.env.NODE_ENV === 'production');
 
 module.exports = {
-  cache: true,
   entry: path.resolve(__dirname, packageJson.source),
   externals: {
     react: 'React',
@@ -30,7 +29,7 @@ module.exports = {
       removeConsole: true,
       mangle: {
         topLevel: true,
-        keepClassName: true
+        keepFnName: true
       }
     })
   ].filter(Boolean),
@@ -45,10 +44,6 @@ module.exports = {
   },
   devtool: DEVELOPMENT && 'source-map',
   resolve: {
-    extensions: ['.jsx', '.js',]
-  },
-  devServer: {
-    contentBase: path.resolve(__dirname, 'test'),
-    port: 9004
+    extensions: ['.jsx', '.js']
   }
 };

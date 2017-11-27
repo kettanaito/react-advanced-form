@@ -7,8 +7,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Map } from 'immutable';
-import { fieldUtils } from './utils';
+import { IterableInstance, fieldUtils } from './utils';
 import { defaultProps } from './Fields/Field';
 
 export default function connectField(WrappedComponent) {
@@ -19,7 +18,7 @@ export default function connectField(WrappedComponent) {
 
     static contextTypes = {
       fieldGroup: PropTypes.string,
-      fields: PropTypes.instanceOf(Map).isRequired
+      fields: IterableInstance
     }
 
     render() {

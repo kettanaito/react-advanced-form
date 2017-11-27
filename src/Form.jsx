@@ -4,7 +4,7 @@ import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
 import { TValidationRules } from './FormProvider';
-import { isset, fieldUtils } from './utils';
+import { IterableInstance, isset, fieldUtils } from './utils';
 
 export default class Form extends React.Component {
   /**
@@ -49,7 +49,7 @@ export default class Form extends React.Component {
    * Context which Form passes to Fields.
    */
   static childContextTypes = {
-    fields: PropTypes.instanceOf(Map).isRequired,
+    fields: IterableInstance,
     mapFieldToState: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
