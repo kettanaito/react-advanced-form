@@ -122,3 +122,34 @@ ReactDOM.render(<App />, container);
 ```
 
 You would usually declare `FormProvider` at the very top of your application components tree (the same way you declare `Provider` from Redux, `ApolloProvider` from Apollo, and so on).
+
+## Manual validation
+Some use cases require to validate the form manually. For that, you can call an internal `validate()` function on a form:
+
+1. Get the reference to the form component:
+```jsx
+<Form ref={ form => this.myForm = form}>
+  <Form.Input name="inputOne" required />
+</Form>
+```
+
+2. Validate the form when you need that, using internal `validate()` method:
+```jsx
+handleManualValidation = () => {
+  this.myForm.validate().then((isFormValid) => {
+    if (isFormValid) {
+      ...
+    } else {
+      ...
+    }
+  });
+}
+```
+
+Form validation has asynchronous nature. That means, `Form.validate()` always returns a Promise, and you should handle it respectively. For the comfort's sake, you may consider [async/await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function):
+```jsx
+handleManualValidation = async () => {
+  const isFormValid = await this.myForm.validate();
+}
+```
+`Form.validate()` should literally never throw, therefore it's safe to use it without explicitly wrapping it in a `try/catch` block.
