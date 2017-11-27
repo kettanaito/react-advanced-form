@@ -9,7 +9,7 @@ Styling your custom fields takes just two steps to accomplish.
 1. Create your custom field component:
 ```jsx
 // MyInput.js
-import { connectField, Field } from '...';
+import { connectField, Field } from 'react-advanced-form';
 
 /**
  * Declare a custom field around the native one.
@@ -42,7 +42,7 @@ export default connectField(MyInput);
 
 2. Include your custom field in the form:
 ```jsx
-import { Form } from '...';
+import { Form } from 'react-advanced-form';
 import MyInput from '../MyInput';
 
 export default function MyForm() {

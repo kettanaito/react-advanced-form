@@ -1,7 +1,7 @@
 {
-  "name": "react-conform",
+  "name": "react-advanced-form",
   "version": "0.5.0",
-  "description": "React form.",
+  "description": "React form without boilerplate. Down with the state management. Embrace custom styling, dynamic props, fields grouping, multi-level validation, flexible API, and much more. Everything you may need.",
   "source": "src/index.js",
   "main": "lib/index.js",
   "scripts": {
