@@ -29,7 +29,8 @@ module.exports = {
     PRODUCTION && new BabelMinifyPlugin({
       removeConsole: true,
       mangle: {
-        topLevel: true
+        topLevel: true,
+        keepClassName: true
       }
     })
   ].filter(Boolean),
