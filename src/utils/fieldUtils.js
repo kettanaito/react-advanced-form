@@ -96,7 +96,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
 
     /* Test the RegExp against the field's value */
     hasExpectedValue = (typeof rule === 'function')
-      ? rule({ value, fieldProps, formProps })
+      ? rule({ value, fieldProps, fields, formProps })
       : rule.test(value);
 
     // console.log('hasExpectedValue:', hasExpectedValue);
@@ -139,7 +139,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   if (asyncRule) {
     // console.log('Field has asynchronous rule, calling...');
 
-    const res = await asyncRule({ value, fieldProps, formProps });
+    const res = await asyncRule({ value, fieldProps, fields, formProps });
 
     return {
       expected: res.ok,
