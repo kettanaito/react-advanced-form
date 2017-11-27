@@ -20,7 +20,7 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "react": "^16.0.0",
+    "react": "^15.0.0",
     "immutable": "^3.8.2"
   },
   "devDependencies": {
