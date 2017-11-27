@@ -6,10 +6,8 @@
   "main": "lib/index.js",
   "scripts": {
     "start": "start-storybook -p 6006",
-    "test": "mocha --compilers js:babel-register",
-    "test:coverage": "instanbul cover _mocha -- --compilers js:babel-register",
     "build": "NODE_ENV=production webpack",
-    "prepublishOnly": "npm run test && npm run build",
+    "prepublishOnly": "npm run build",
     "build-storybook": "build-storybook"
   },
   "repository": {
