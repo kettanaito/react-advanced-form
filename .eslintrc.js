@@ -28,6 +28,8 @@ module.exports = {
     'import/no-extraneous-dependencies': 0,
     'arrow-body-style': 0,
     'object-curly-newline': 0,
-    'no-mixed-operators': 0
+    'no-mixed-operators': 0,
+    'no-plusplus': 0,
+    'import/prefer-default-export': 0
   }
 };
