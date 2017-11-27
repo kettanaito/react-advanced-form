@@ -3,12 +3,15 @@ src
 
 # Configurations
 .babelrc
+.eslintrc*
 .travis.yml
-.flowconfig
 npm-*
+webpack*
+.storybook
 
 # Misc
 docs
 test
 coverage
+stories
 internal
