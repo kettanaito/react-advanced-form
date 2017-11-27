@@ -1,8 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
+const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
 const packageJson = require('./package.json');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const DEVELOPMENT = (process.env.NODE_ENV === 'development');
+const PRODUCTION = (process.env.NODE_ENV === 'production');
 
 module.exports = {
   cache: true,
@@ -18,6 +21,18 @@ module.exports = {
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    }),
+
+    PRODUCTION && new BabelMinifyPlugin({
+      removeConsole: true,
+      mangle: {
+        topLevel: true
+      }
+    })
+  ].filter(Boolean),
   module: {
     rules: [
       {

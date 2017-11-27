@@ -165,15 +165,17 @@ function resolveAsyncMessage({ message, asyncInfo, errorType, fieldProps, formPr
 
   let errorMessage;
   const resolvers = message.toJS();
+  const resolverNames = Object.keys(resolvers);
 
-  for (let asyncErrorType in resolvers) {
-    const resolver = resolvers[asyncErrorType];
+  for (let i = 0; i < resolverNames.length; i++) {
+    const resolverName = resolverNames[i];
+    const resolver = resolvers[resolverName];
 
-    message = resolver({ ...asyncInfo, fieldProps, formProps });
-    if (!message) break;
+    errorMessage = resolver({ ...asyncInfo, fieldProps, formProps });
+    if (!errorMessage) break;
   }
 
-  return message;
+  return errorMessage;
 }
 
 /**
@@ -211,14 +213,14 @@ export function getErrorMessage({ validationSummary, messages, fieldProps, formP
  * @param {object} fieldProps
  */
 export function updateValidityState({ fieldProps }) {
-  const { name, value, validated, expected } = fieldProps;
+  const { value, validated, expected } = fieldProps;
 
   const validState = {
     valid: !!value && validated && expected,
     invalid: validated && !expected
   };
 
-  // console.groupCollapsed('fieldUtils @ updateValidityState', name);
+  // console.groupCollapsed('fieldUtils @ updateValidityState', fieldProps.name);
   // console.log('value', value);
   // console.log('validated', validated);
   // console.log('expected', expected);
@@ -234,7 +236,7 @@ export function updateValidityState({ fieldProps }) {
  * @return {object}
  */
 export function serializeFields(fields) {
-  return fields.reduceRight((serialized, fieldProps, fieldName) => {
+  return fields.reduceRight((serialized, fieldProps) => {
     if (fieldProps.get('value') === '') return serialized;
 
     return serialized.setIn(fieldProps.get('fieldPath').split('.'), fieldProps.get('value'));
