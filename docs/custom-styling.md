@@ -62,6 +62,7 @@ After connecting your custom field component to the Form using `connectField()`,
 * `invalid: boolean` - Tells you whether the field is invalid (has unexpected value). **Note:** `invalid !== !valid`. Read more about this in the [Validation states](./validation-states.md).
 * `error: string` - The error message in case of unsuccessful validation.
 * `validating: boolean` - Tells you that the field is currently being validated.
+* `validated: boolean` - Tells you that the field has been already validated.
 * `focused: boolean` - Represents the focused state of the field.
 * `disabled: boolean` - Represent the disabled state of the field.
 * `value: mixed` - The current value of the field.
