@@ -302,6 +302,13 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Serializes the fields in the Form into a plain Object.
+   */
+  serialize = () => {
+    return fieldUtils.serializeFields(this.state.fields);
+  }
+
+  /**
    * Handles form submit.
    * @param {Event} event
    */
@@ -318,7 +325,7 @@ export default class Form extends React.Component {
     const { action, onSubmitStart, onSubmit, onSubmitFailed, onSubmitEnd } = this.props;
 
     /* Serialize the fields */
-    const serialized = fieldUtils.serializeFields(fields);
+    const serialized = this.serialize();
 
     /* Compose a single Object of arguments passed to each custom handler */
     const callbackArgs = {
