@@ -37,7 +37,7 @@ export default function connectField(WrappedComponent) {
       const newProps = {
         ...directProps,
         focused,
-        disabled,
+        disabled, // doesn't work with dynamic "disabled"
         validated,
         validating,
         expected,

@@ -34,6 +34,7 @@ export default class Form extends React.Component {
    */
   state = {
     fields: Map(),
+    dynamicFields: Map(),
     submitting: false
   }
 
@@ -42,7 +43,7 @@ export default class Form extends React.Component {
    */
   static contextTypes = {
     rules: TValidationRules,
-    messages: PropTypes.instanceOf(Map)
+    messages: IterableInstance
   }
 
   /**
@@ -85,19 +86,30 @@ export default class Form extends React.Component {
     /* Update the validity state of the field */
     const nextFields = fields.mergeIn([fieldProps.fieldPath], fromJS(nextProps));
 
+    const foo = nextFields.map((fieldProps) => {
+      const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
+        return resolver({
+          fieldProps: nextProps,
+          fields: fields.toJS(),
+          formProps: this.props
+        });
+      });
+
+      return fieldProps.merge(resolvedProps);
+    });
+
     // console.groupCollapsed(fieldProps.fieldPath, '@ updateField');
     // console.log('directProps', directProps);
     // console.log('propsPatch', propsPatch);
     // console.log('fieldProps', fieldProps);
     // console.log('nextProps', nextProps);
     // console.log('nextFields:', nextFields.toJS());
+    // console.log('foo:', foo.toJS());
     // console.groupEnd();
 
     return new Promise((resolve, reject) => {
       try {
-        this.setState({ fields: nextFields }, () => {
-          return resolve({ nextFields, nextProps });
-        });
+        this.setState({ fields: foo }, () => resolve({ nextFields, nextProps }));
       } catch (error) {
         return reject(error);
       }
@@ -215,9 +227,16 @@ export default class Form extends React.Component {
         disabled: prevDisabled,
         validating: false
       }
-    }).then(({ nextProps }) => {
+    }).then(({ nextFields, nextProps }) => {
       /* Call custom onBlur handler */
       if (onBlur) onBlur({ event, fieldProps: nextProps, formProps: this.props });
+
+      /* TODO Find more efficient way of updating the fields with dynamic props */
+      nextFields.map((fieldProps) => {
+        if (fieldProps.get('dynamicProps').size > 0) {
+          this.validateField({ fieldProps: fieldProps.toJS() });
+        }
+      });
     });
   }
 

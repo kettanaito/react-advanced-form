@@ -23,10 +23,46 @@ export default class RfqForm extends Component {
     console.log('formProps', formProps);
   }
 
+  renderForms = () => {
+    const forms = [];
+
+    for (let i = 0; i < 5; i++) {
+      forms.push(
+        <Form key={i}>
+          <div style={{ display: 'flex' }}>
+            <label>
+              Product Id:
+              <MyInput
+                name="productId"
+                required={({ fields }) => fields.producerNr && !fields.producerNr.value} />
+            </label>
+
+            <label>
+              Producer Nr:
+              <MyInput
+                name="producerNr"
+                required={({ fields }) => fields.brand && !!fields.brand.value} />
+            </label>
+
+            <label>
+              Brand:
+              <MyInput
+                name="brand"
+                required={({ fields }) => fields.producerNr && !!fields.producerNr.value} />
+            </label>
+          </div>
+        </Form>
+      );
+    }
+
+    return forms;
+  }
+
   render() {
     return (
       <FormProvider rules={ formRules }>
-        <Form
+        { this.renderForms() }
+        {/* <Form
           id="rfq-form-example"
           action={this.handleFormAction}
           onSubmitStart={this.handleSubmitStart}>
@@ -55,7 +91,7 @@ export default class RfqForm extends Component {
 
           </div>
           <button type="submit">Submit</button>
-        </Form>
+        </Form> */}
       </FormProvider>
     );
   }
