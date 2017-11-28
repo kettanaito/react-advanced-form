@@ -7,10 +7,10 @@ export default function shouldValidateField(fieldProps) {
   const required = fieldProps.get('required');
 
   const hasDynamicRequired = (typeof required === 'function');
-  const shouldValidate = !validated || hasDynamicRequired;
+  const shouldValidate = (!validatedSync && required) || hasDynamicRequired;
 
   // console.groupCollapsed('fieldUtils @ shouldValidateField');
-  // console.log('was validated before:', validated);
+  // console.log('was validated before (sync):', validatedSync);
   // console.log('"required" prop is dynamic (func):', hasDynamicRequired);
   // console.log('should validate:', shouldValidate);
   // console.groupEnd();

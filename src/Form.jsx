@@ -237,14 +237,16 @@ export default class Form extends React.Component {
       disabled: prevDisabled,
       required,
       expected,
+      validatedSync,
       validatedAsync,
       onBlur
     } = fieldProps.toJS();
 
-    let shouldValidate = expected && !validatedAsync;
+    let shouldValidate = !validatedSync || (expected && !validatedAsync);
+    const validationType = validatedSync ? 'async' : 'sync';
 
     /* Skip async validation for empty non-required fields */
-    if (!required && !value) {
+    if (!value && !required) {
       shouldValidate = false;
     }
 
@@ -267,7 +269,7 @@ export default class Form extends React.Component {
 
       /* Validate the field */
       await this.validateField({
-        type: 'async',
+        type: validationType,
         fieldProps
       });
     }
@@ -331,6 +333,10 @@ export default class Form extends React.Component {
       [validatedProp]: true,
       expected
     };
+
+    /* Update the corresponding valid property */
+    if (['both', 'sync'].includes(type)) propsPatch.validSync = expected;
+    if (['both', 'async'].includes(type)) propsPatch.validAsync = expected;
 
     /* Get the validation message based on the validation summary */
     if (!expected) {

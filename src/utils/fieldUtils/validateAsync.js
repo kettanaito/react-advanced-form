@@ -4,14 +4,19 @@ export default async function validateAsync({ fieldProps, fields, formProps }) {
 
   if (!asyncRule) return { expected: true };
 
-  const res = await asyncRule({ value, fieldProps: fieldProps.toJS(), fields, formProps });
-  const { valid, ...rest } = res;
+  let expected = false;
+  let extra = {};
+  const res = await asyncRule({ value, fieldProps, fields: fields.toJS(), formProps });
+
+  if (res) {
+    const { valid, ...rest } = res;
+    expected = valid;
+    extra = rest;
+  }
 
   return {
-    expected: valid,
+    expected,
     errorType: 'async',
-    extra: {
-      ...rest
-    }
+    extra
   };
 }
