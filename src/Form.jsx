@@ -86,7 +86,8 @@ export default class Form extends React.Component {
     /* Update the validity state of the field */
     const nextFields = fields.mergeIn([fieldProps.fieldPath], fromJS(nextProps));
 
-    const foo = nextFields.map((fieldProps) => {
+    /* FIXME Compose resolved fields */
+    const nextResolvedFields = nextFields.map((fieldProps) => {
       const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
         return resolver({
           fieldProps: nextProps,
@@ -104,12 +105,12 @@ export default class Form extends React.Component {
     // console.log('fieldProps', fieldProps);
     // console.log('nextProps', nextProps);
     // console.log('nextFields:', nextFields.toJS());
-    // console.log('foo:', foo.toJS());
+    // console.log('nextResolvedFields:', nextResolvedFields.toJS());
     // console.groupEnd();
 
     return new Promise((resolve, reject) => {
       try {
-        this.setState({ fields: foo }, () => resolve({ nextFields, nextProps }));
+        this.setState({ fields: nextResolvedFields }, () => resolve({ nextFields, nextProps }));
       } catch (error) {
         return reject(error);
       }
