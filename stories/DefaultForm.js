@@ -109,9 +109,23 @@ export default class DefaultForm extends Component {
             </label> */}
 
             <label>
-              Field (async-rule)
+              Async rule (optional)
               <MyInput
-                name="username"
+                name="asyncOptional"
+                asyncRule={({ fieldProps }) => {
+                  return fetch('http://demo9102997.mockable.io/validate/productId', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      username: fieldProps.value
+                    })
+                  });
+                }} />
+            </label>
+
+            <label>
+              Async rule (mandatory)
+              <MyInput
+                name="asyncMandatory"
                 asyncRule={({ fieldProps }) => {
                   return fetch('http://demo9102997.mockable.io/validate/productId', {
                     method: 'POST',
@@ -124,14 +138,14 @@ export default class DefaultForm extends Component {
                 required />
             </label>
 
-            <label>
+            {/* <label>
               Field with resolvable prop (required)
               <MyInput
                 name="resolvableField"
                 value="Another value"
                 rule={({ value }) => value === 'John'}
                 required={({ fields }) => fields.address && !!fields.address.value} />
-            </label>
+            </label> */}
 
             <label>
               Composite field:
