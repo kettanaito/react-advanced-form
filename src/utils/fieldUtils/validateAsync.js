@@ -3,13 +3,13 @@ export default async function validateAsync({ fieldProps, fields, formProps }) {
   if (!asyncRule) return { expected: true };
 
   const res = await asyncRule({ value, fieldProps, fields, formProps });
+  const { valid, ...rest } = res;
 
   return {
-    expected: res.ok,
+    expected: valid,
     errorType: 'async',
     extra: {
-      res,
-      payload: await res.json()
+      ...rest
     }
   };
 }
