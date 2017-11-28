@@ -11,7 +11,6 @@ export default function debounce(func, wait, immediate) {
 
     const shouldResolve = (immediate && !timeout);
     clearTimeout(timeout);
-
     timeout = setTimeout(later, wait);
 
     if (shouldResolve) func.apply(context, args);
