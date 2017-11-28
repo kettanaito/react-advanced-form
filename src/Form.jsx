@@ -4,7 +4,7 @@ import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
 import { TValidationRules } from './FormProvider';
-import { IterableInstance, isset, fieldUtils } from './utils';
+import { isset, debounce, validateSync, fieldUtils, IterableInstance } from './utils';
 
 export default class Form extends React.Component {
   /**
@@ -68,6 +68,16 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Getter: Returns the validation rules applicable to the current form.
+   */
+  get formRules() {
+    const { rules: customFormRules } = this.props;
+    const { rules: contextFormRules } = this.context;
+
+    return customFormRules || contextFormRules || {};
+  }
+
+  /**
    * Updates the props of the field stored in the {state.fields} Map.
    * @param {string} name The name of the field.
    * @param {object} fieldProps A directly specified nextProps of the field.
@@ -110,7 +120,10 @@ export default class Form extends React.Component {
 
     return new Promise((resolve, reject) => {
       try {
-        this.setState({ fields: nextResolvedFields }, () => resolve({ nextFields, nextProps }));
+        this.setState({ fields: nextResolvedFields }, () => resolve({
+          nextFields,
+          nextProps
+        }));
       } catch (error) {
         return reject(error);
       }
@@ -157,7 +170,11 @@ export default class Form extends React.Component {
 
       if (onFocus) {
         /* Call custom onFocus handler */
-        onFocus({ event, fieldProps: nextProps, formProps: this.props });
+        onFocus({
+          event,
+          fieldProps: nextProps,
+          formProps: this.props
+        });
       }
     });
   }
@@ -179,14 +196,31 @@ export default class Form extends React.Component {
       fieldPath: fieldProps.fieldPath,
       propsPatch: {
         value: nextValue,
-        validated: false // reset validation status to perform new validation upon change
+        validatedSync: false,
+        validatedAsync: false
       }
     }).then(({ nextProps }) => {
       const { onChange } = fieldProps;
 
+      /* Perform field validation on change */
+      const debouncedSyncValidation = debounce(() => {
+        this.validateField({
+          type: 'sync',
+          fieldProps: nextProps,
+          syncOnly: true
+        });
+      }, 250);
+
+      debouncedSyncValidation();
+
       if (onChange) {
         /* Call custom onChange handler */
-        onChange({ event, nextValue, fieldProps: nextProps, formProps: this.props });
+        onChange({
+          event,
+          nextValue,
+          fieldProps: nextProps,
+          formProps: this.props
+        });
       }
     });
   }
@@ -197,14 +231,29 @@ export default class Form extends React.Component {
    * @param {object} fieldProps
    */
   handleFieldBlur = async ({ event, fieldProps }) => {
-    const { fieldPath, disabled: prevDisabled, validated, onBlur } = fieldProps;
+    const {
+      fieldPath,
+      value,
+      disabled: prevDisabled,
+      required,
+      expected,
+      validatedAsync,
+      onBlur
+    } = fieldProps;
+
+    let shouldValidate = expected && !validatedAsync;
+
+    /* Skip async validation for empty non-required fields */
+    if (!required && !value) {
+      shouldValidate = false;
+    }
 
     // console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
     // console.log('fieldProps', fieldProps);
-    // console.log('should validate', !validated);
+    // console.log('should validate', shouldValidate);
     // console.groupEnd();
 
-    if (!validated) {
+    if (shouldValidate) {
       /* Make field disabled during the validation */
       this.updateField({
         fieldPath,
@@ -217,7 +266,10 @@ export default class Form extends React.Component {
       });
 
       /* Validate the field */
-      await this.validateField({ fieldProps });
+      await this.validateField({
+        type: 'async',
+        fieldProps
+      });
     }
 
     /* Make field enabled, update its props */
@@ -244,31 +296,36 @@ export default class Form extends React.Component {
   /**
    * Validates a single provided field.
    * @param {object} fieldProps
+   * @param {'both'|'async'|'sync'} Validation type.
    * @return {boolean}
    */
-  validateField = async ({ fieldProps }) => {
+  validateField = async ({ type = 'both', fieldProps }) => {
     const { fields } = this.state;
-    const { rules: customFormRules } = this.props;
-    const { rules: contextFormRules } = this.context;
+    const isSyncValidation = (type === 'sync');
+    const validatedProp = isSyncValidation ? 'validatedSync' : 'validatedAsync';
 
-    const validationSummary = await fieldUtils.isExpected({
+    const validationArgs = {
+      type,
       fieldProps,
       fields,
       formProps: this.props,
-      formRules: customFormRules || contextFormRules || {}
-    });
-    const { expected } = validationSummary;
+      formRules: this.formRules
+    };
+
+    /* Perform the respective kind of validation */
+    const validationResult = await fieldUtils.validate(validationArgs);
+    const { expected } = validationResult;
 
     /* Update the validity state of the field */
     const propsPatch = {
-      validated: true,
+      [validatedProp]: true,
       expected
     };
 
-    /* Get the validation message based on the errorType */
+    /* Get the validation message based on the validation summary */
     if (!expected) {
       const errorMessage = fieldUtils.getErrorMessage({
-        validationSummary,
+        validationResult,
         messages: this.context.messages,
         fieldProps,
         formProps: this.props
@@ -277,14 +334,18 @@ export default class Form extends React.Component {
       propsPatch.error = errorMessage;
     }
 
-    const nextValidityState = fieldUtils.updateValidityState({
+    /**
+     * Get next validity state.
+     * Based on the changes fieldProps, the field will aquire new validity states (valid/invalid).
+     */
+    const nextValidityState = fieldUtils.getValidityState({
       fieldProps: {
         ...fieldProps,
         ...propsPatch
       }
     });
 
-    /* Update the field in the state/context */
+    /* Update the field in the state/context to propagate re-render in UI */
     this.updateField({
       fieldPath: fieldProps.fieldPath,
       propsPatch: {
@@ -306,7 +367,7 @@ export default class Form extends React.Component {
       const fieldProps = immutableField.toJS();
 
       /* When field needs validation, do so */
-      if (fieldUtils.shouldValidateField({ fieldProps })) {
+      if (fieldUtils.shouldValidate({ fieldProps })) {
         return validations.concat(this.validateField({ fieldProps }));
       }
 
@@ -316,8 +377,7 @@ export default class Form extends React.Component {
 
     /* Await for all validation promises to resolve before returning */
     return Promise.all(pendingValidations).then((validatedFields) => {
-      const shouldSubmit = !validatedFields.some(expected => !expected);
-      return shouldSubmit;
+      return !validatedFields.some(expected => !expected);
     });
   }
 
