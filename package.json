@@ -12,11 +12,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kettanaito/npm-template.git"
+    "url": "git+https://github.com/kettanaito/react-advanced-form.git"
   },
   "keywords": [
     "form",
-    "react-form"
+    "react-form",
+    "react-advanced-form",
+    "advanced",
+    "dynamic props",
+    "field group",
+    "fields group",
+    "validation",
+    "form validation",
+    "async-validation",
+    "multi-level validation"
   ],
   "license": "MIT",
   "peerDependencies": {
