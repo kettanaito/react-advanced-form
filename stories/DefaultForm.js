@@ -15,8 +15,8 @@ const formMessages = {
     missing: 'Please provide the required field',
     invalid: 'Please provide a proper value',
     async: {
-      defaultResolver: ({ payload }) => {
-        if (payload.statusCode === 'ERROR') return 'WS: The value is invalid';
+      defaultResolver: ({ someProperty }) => {
+        return someProperty;
       }
     }
   },
@@ -132,6 +132,9 @@ export default class DefaultForm extends Component {
                     body: JSON.stringify({
                       username: fieldProps.value
                     })
+                  })
+                  .then(() => {
+                    return { valid: false, someProperty: 'someValue' };
                   });
                 }}
                 value="ab123"
