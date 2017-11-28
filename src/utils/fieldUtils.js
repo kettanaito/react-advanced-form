@@ -11,6 +11,19 @@ export function getFieldPath({ name, fieldGroup }) {
 }
 
 /**
+ * Resolves the given prop name of the field.
+ * @param {string} propName
+ * @param {object} fieldProps
+ * @param {Map} fields
+ */
+export function resolveProp({ propName, fieldProps, fields }) {
+  const propValue = fieldProps[propName];
+  if (typeof propValue !== 'function') return propValue;
+
+  return propValue({ fieldProps, fields: fields.toJS() });
+}
+
+/**
  * Returns the props of the given field based on the presence of the latter in the form's state/context.
  * In case the field is not yet registered in the form's state, returns the fallback props provided.
  * @param {string} fieldPath
@@ -23,15 +36,20 @@ export function getFieldProps(fieldPath, fields, fallbackProps) {
 }
 
 /**
- * Resolves the given prop name of the field.
- * @param {string} propName
- * @param {object} fieldProps
- * @param {Map} fields
+ * Write me
  */
-export function resolveProp({ propName, fieldProps, fields }) {
-  const propValue = fieldProps[propName];
-  if (typeof propValue !== 'function') return propValue;
-  return propValue({ fieldProps, fields: fields.toJS() });
+const dynamicProps = ['required', 'disabled'];
+
+export function getDynamicProps(fieldProps) {
+  return dynamicProps.reduce((props, dynamicProp) => {
+    const propValue = fieldProps[dynamicProp];
+
+    if (typeof propValue === 'function') {
+      props[dynamicProp] = propValue;
+    }
+
+    return props;
+  }, {});
 }
 
 /**
@@ -115,9 +133,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   if (hasFormRules) {
     // console.groupEnd();
 
-    /**
-     * Form-level validation.
-     */
+    /* Form-level validation */
     const isValidByType = formTypeRule ? formTypeRule(value, fieldProps, formProps) : true;
     const isValidByName = formNameRule ? formNameRule(value, fieldProps, formProps) : true;
     hasExpectedValue = isValidByType && isValidByName;

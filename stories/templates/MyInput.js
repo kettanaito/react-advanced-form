@@ -12,16 +12,17 @@ const inputStyles = {
 
 class MyCustomInput extends React.Component {
   render() {
-    const { valid, invalid, error, validating, ...restProps } = this.props;
+    const { valid, invalid, error, validating, disabled } = this.props;
 
     const iconOptions = { width: 16, height: 16 };
 
     const borderColor = (valid && 'green') || (invalid && '#cc0000');
     const iconColor = (valid && 'green') || (invalid && '#cc0000');
     const icon = (valid && feather.icons.check.toSvg(iconOptions)) || (invalid && feather.icons['alert-circle'].toSvg(iconOptions));
+    const opacity = disabled ? '0.5' : 1;
 
     return (
-      <div className="form-group" style={{ marginBottom: '1rem' }}>
+      <div className="form-group" style={{ marginBottom: '1rem', opacity }}>
         <div style={{ display: 'inline-flex', position: 'relative' }}>
           <Field.Input {...this.props} style={{ ...inputStyles, borderColor }} />
           { (valid || invalid) && (

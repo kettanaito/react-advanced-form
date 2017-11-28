@@ -84,6 +84,7 @@ export default class Field extends React.Component {
       const fieldProps = {
         ...this.props,
         fieldPath: this.fieldPath,
+        dynamicProps: fieldUtils.getDynamicProps(this.props),
         validated: false
       };
 
