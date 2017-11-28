@@ -24,7 +24,6 @@ export default class Field extends React.Component {
     value: PropTypes.string,
 
     /* Validation */
-    validated: PropTypes.bool, // whether the field has been validated previously
     rule: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.instanceOf(RegExp)
@@ -89,7 +88,10 @@ export default class Field extends React.Component {
       value: this.props.value || '',
       fieldPath: this.fieldPath,
       dynamicProps: fieldUtils.getDynamicProps(this.props),
-      validated: false
+      validSync: false,
+      validAsync: false,
+      validatedSync: false,
+      validatedAsync: false
     };
 
     /* Prevent { fieldGroup: undefined } for fields without a group */

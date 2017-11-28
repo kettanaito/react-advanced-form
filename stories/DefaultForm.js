@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormProvider, Form, Field } from '../lib';
+import { FormProvider, Form, Condition, Field } from '../lib';
 import MyInput from './templates/MyInput';
 import MySelect from './templates/MySelect';
 
@@ -38,6 +38,9 @@ const formMessages = {
           return payload.statusCode;
         }
       }
+    },
+    zipCode: {
+      missing: 'Please enter a valid zip code.'
     }
   }
 };
@@ -155,23 +158,37 @@ export default class DefaultForm extends Component {
             </label>
 
             <label>
-              Async rule (mandatory)
+              Zip code:
               <MyInput
-                name="asyncMandatory"
+                name="zipCode"
                 asyncRule={({ fieldProps }) => {
-                  return fetch('http://demo9102997.mockable.io/validate/productId', {
+                  console.log('fieldProps', fieldProps);
+
+                  return fetch('http://www.mocky.io/v2/5a1d8ee02e0000fc3848b8f2', {
                     method: 'POST',
                     body: JSON.stringify({
                       username: fieldProps.value
                     })
                   })
-                  .then(() => {
-                    return { valid: false, someProperty: 'someValue' };
-                  });
+                  .then(res => res.json())
+                  .then((response) => {
+                    return {
+                      valid: (response.statusCode === 'SUCCESS'),
+                      someProperty: 'someValue'
+                    };
+                  }).catch(console.log);
                 }}
-                value="ab123"
                 required />
             </label> */}
+
+            <Condition when={({ fields }) => {
+              console.log(fields.zipCode);
+
+              return fields.zipCode && (fields.zipCode.validAsync);
+            }}>
+              <MyInput name="street" value="Baker st." required />
+              <MyInput name="houseNumber" value="12/c" required />
+            </Condition>
 
             {/* <label>
               Field with resolvable prop (required)
