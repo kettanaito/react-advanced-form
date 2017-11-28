@@ -1,7 +1,7 @@
 /**
  * Performs the chain of synchronous validations.
  */
-import { resolveProp } from './resolveProp';
+// import { resolveProp } from './resolveProp';
 
 export default function validateSync({ fieldProps, fields, formProps, formRules }) {
   let isExpected = true;

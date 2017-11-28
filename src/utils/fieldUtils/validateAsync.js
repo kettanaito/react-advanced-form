@@ -12,6 +12,4 @@ export default async function validateAsync({ fieldProps, fields, formProps }) {
       payload: await res.json()
     }
   };
-
-  return { expected: isExpected };
 }

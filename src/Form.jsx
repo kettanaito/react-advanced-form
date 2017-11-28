@@ -4,7 +4,7 @@ import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
 import { TValidationRules } from './FormProvider';
-import { isset, debounce, validateSync, fieldUtils, IterableInstance } from './utils';
+import { isset, debounce, fieldUtils, IterableInstance } from './utils';
 
 export default class Form extends React.Component {
   /**
