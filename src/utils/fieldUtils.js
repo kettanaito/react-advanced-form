@@ -79,7 +79,7 @@ export function shouldValidateField({ fieldProps }) {
  */
 export async function isExpected({ fieldProps, fields, formProps, formRules = {} }) {
   let hasExpectedValue = true;
-  const { name, value, rule, asyncRule } = fieldProps;
+  const { name, type, value, rule, asyncRule } = fieldProps;
 
   /* Resolve resolvable props */
   const required = resolveProp({
@@ -98,7 +98,7 @@ export async function isExpected({ fieldProps, fields, formProps, formRules = {}
   if (!value && !required) return { expected: true };
 
   /* Assume Field doesn't have any specific validation attached */
-  const formTypeRule = formRules.type && formRules.type[name];
+  const formTypeRule = formRules.type && formRules.type[type];
   const formNameRule = formRules.name && formRules.name[name];
   const hasFormRules = formTypeRule || formNameRule;
 
