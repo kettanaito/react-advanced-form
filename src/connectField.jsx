@@ -37,7 +37,19 @@ export default function connectField(WrappedComponent) {
       const directProps = this.props;
 
       const fieldProps = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath]).toJS() : defaultProps;
-      const { focused, disabled, validated, validating, expected, valid, invalid, error } = fieldProps;
+      const {
+        focused,
+        disabled,
+        validatedSync,
+        validatedAsync,
+        validating,
+        expected,
+        valid,
+        validSync,
+        validAsync,
+        invalid,
+        error
+      } = fieldProps;
 
       /* Grab the value from context props when available, to present actual data in the components tree */
       // const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
@@ -47,10 +59,13 @@ export default function connectField(WrappedComponent) {
         ...directProps,
         focused,
         disabled, // doesn't work with dynamic "disabled"
-        validated,
         validating,
+        validatedSync,
+        validatedAsync,
         expected,
         valid,
+        validSync,
+        validAsync,
         invalid,
         error
         // value
