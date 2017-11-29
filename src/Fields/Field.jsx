@@ -41,7 +41,7 @@ export default class Field extends React.Component {
   static contextTypes = {
     fieldGroup: PropTypes.string,
     fields: IterableInstance,
-    mapFieldToState: PropTypes.func.isRequired,
+    registerField: PropTypes.func.isRequired,
     updateField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -101,7 +101,7 @@ export default class Field extends React.Component {
     }
 
     /* Notify the parent Form that a new field has just mounted */
-    return this.context.mapFieldToState(fromJS(fieldProps));
+    return this.context.registerField(fromJS(fieldProps));
   }
 
   componentWillReceiveProps(nextProps) {
