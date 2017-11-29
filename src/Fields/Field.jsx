@@ -71,7 +71,7 @@ export default class Field extends React.Component {
     const { fieldGroup } = this.context;
 
     /* Compose field's path in the state (in case of being under fieldGroup) */
-    this.fieldPath = fieldUtils.getFieldPath({ ...props, fieldGroup });
+    this.fieldPath = fieldUtils.getFieldPath({ ...this.props, fieldGroup });
   }
 
   componentWillMount() {
@@ -85,6 +85,7 @@ export default class Field extends React.Component {
 
     const fieldProps = {
       ...this.props,
+      controllable: isset(this.props.value),
       fieldPath: this.fieldPath,
       dynamicProps: fieldUtils.getDynamicProps(this.props),
       validated: false
@@ -97,6 +98,53 @@ export default class Field extends React.Component {
 
     /* Notify the parent Form that a new field has just mounted */
     return this.context.mapFieldToState(fromJS(fieldProps));
+  }
+
+  // componentWillReceiveProps(nextProps, nextContext) {
+  //   const { fieldProps } = this;
+  //   if (!fieldProps) return;
+
+  //   const nextFieldProps = nextContext.fields.getIn([this.fieldPath]);
+
+  //   const wasPropThere = JSON.stringify(this.props) === JSON.stringify(nextProps);
+
+  //   console.groupCollapsed('componentWillReceiveProps @', this.props.name);
+  //     console.log('wasPropThere', wasPropThere);
+  //     console.log('nextProps value', nextProps.value);
+  //     console.log('prev context value', fieldProps.get('value'));
+  //     console.log('next context value', nextFieldProps.get('value'));
+  //   console.groupEnd();
+
+  //   if (!fieldProps.equals(nextFieldProps)) {
+  //     console.log('Context update, skipping');
+  //     return;
+  //   }
+
+  //   if (wasPropThere) return;
+
+  //   // if (nextProps.value === fieldProps.get('value')) {
+  //   if (fieldProps.equals(nextProps)) {
+  //     console.log('Next value equals context value, skipping');
+  //     return;
+  //   }
+
+  //   console.warn(`Updating the field to "${nextProps.value}"`);
+  //   return this.context.updateField({
+  //     fieldProps,
+  //     propsPatch: nextProps
+  //   });
+  // }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.fieldProps) return;
+    const controllable = this.fieldProps.get('controllable');
+
+    if (controllable && (nextProps.value !== this.props.value)) {
+      // setTimeout(() => {
+        this.context.handleFieldChange({ nextValue: nextProps.value, prevValue: this.props.value, fieldProps: this.fieldProps });
+
+      // }, 0);
+    }
   }
 
   componentWillUpdate(nextProps, nextState, nextContext) {
@@ -122,8 +170,14 @@ export default class Field extends React.Component {
    */
   handleChange = (event) => {
     const { fieldProps } = this;
-    const { value: prevValue } = this.props;
+    const { value: controlledValue, onChange } = this.props;
+
+    const prevValue = fieldProps.get('value');
     const { value: nextValue } = event.currentTarget;
+
+    if (isset(controlledValue) && !onChange) {
+      return console.warn('It seems you are trying to make Input controllable without provide an "onChange" handler.');
+    }
 
     /* Call parental change handler */
     return this.context.handleFieldChange({
@@ -158,7 +212,7 @@ export default class Field extends React.Component {
         id={ id }
         className={ className }
         style={ style }
-        value={ this.fieldProps.get('value') }
+        value={ this.fieldProps.get('controllable') ? this.props.value : this.fieldProps.get('value') }
         required={ this.fieldProps.get('required') }
         disabled={ this.fieldProps.get('disabled') }
         onFocus={ this.handleFocus }

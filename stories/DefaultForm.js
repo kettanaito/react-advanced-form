@@ -52,12 +52,13 @@ const FieldsComposition = () => (
 
 export default class DefaultForm extends Component {
   state = {
-    value: ''
+    value: 1,
+    disabled: false
   }
 
   controlValue = (event) => {
     event.preventDefault();
-    this.setState({ value: 'foo' });
+    this.setState(prevState => ({ value: prevState.value + 1 }));
   }
 
   handleFormAction = () => {
@@ -81,7 +82,7 @@ export default class DefaultForm extends Component {
   }
 
   render() {
-    const { value } = this.state;
+    const { value, disabled } = this.state;
 
     return (
       <FormProvider
@@ -103,28 +104,39 @@ export default class DefaultForm extends Component {
             </label> */}
 
             {/* Input */}
-            {/* <label>
+            <label>
               Filed with client rule (optional):
               <Field.Input
-                name="numbersOnly"
-                placeholder="i.e. 123"
-                value={ value } />
-            </label> */}
+                name="fieldOne"
+                value={ value }
+                disabled={ disabled }
+                onChange={({ nextValue }) => this.setState({ value: nextValue })} />
+            </label>
 
             <label>
               Filed with client rule (optional):
               <MyInput
-                name="somethingElse"
+                name="fieldTwo"
                 rule={/^\d+$/}
-                value={ value } />
+                value={ value }
+                onChange={({ nextValue }) => this.setState({ value: nextValue })} />
             </label>
 
             <label>
+              Filed with client rule (optional):
+              <MyInput
+                name="fieldThree"
+                rule={/^\d+$/}
+                value={ value }
+                onChange={({ nextValue }) => this.setState({ value: nextValue })} />
+            </label>
+
+            {/* <label>
               Field (required):
               <MyInput
                 name="password"
                 required />
-            </label>
+            </label> */}
 {/*
             <label>
               Async rule (optional)
@@ -168,7 +180,7 @@ export default class DefaultForm extends Component {
                 required={({ fields }) => fields.address && !!fields.address.value} />
             </label> */}
 
-            <label>
+            {/* <label>
               Composite field:
               <FieldsComposition />
             </label>
@@ -187,7 +199,7 @@ export default class DefaultForm extends Component {
                 <MyInput name="firstName" value="Katheline" required />
                 <MyInput name="lastName" value="Stark" required />
               </Field.Group>
-            </label>
+            </label> */}
           </div>
 
           <button onClick={ this.controlValue }>Set value</button>
