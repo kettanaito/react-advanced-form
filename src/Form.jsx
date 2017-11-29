@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
-import { TValidationRules } from './FormProvider';
+import { TValidationRules, TValidationMessages } from './FormProvider';
 import { isset, debounce, fieldUtils, IterableInstance } from './utils';
 
 export default class Form extends React.Component {
@@ -17,6 +17,8 @@ export default class Form extends React.Component {
 
     /* Specific */
     action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
+    messages: TValidationMessages,
+    rules: TValidationRules,
 
     /* Events */
     onSumbitStart: PropTypes.func, // form should submit, submit started
@@ -73,10 +75,17 @@ export default class Form extends React.Component {
    * Getter: Returns the validation rules applicable to the current form.
    */
   get formRules() {
-    const { rules: customFormRules } = this.props;
-    const { rules: contextFormRules } = this.context;
+    const { rules: contextRules } = this.context;
+    const { rules: formRules } = this.props;
 
-    return customFormRules || contextFormRules || {};
+    return formRules || contextRules || Map();
+  }
+
+  constructor(props, context) {
+    super(props, context);
+
+    const { messages: customMessage } = this.props;
+    this.formMessages = customMessage ? fromJS(customMessage) : this.context.messages;
   }
 
   /**
@@ -231,18 +240,20 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   handleFieldBlur = async ({ event, fieldProps }) => {
-    const {
-      fieldPath,
-      value,
-      disabled: prevDisabled,
-      required,
-      expected,
-      validatedSync,
-      validatedAsync,
-      onBlur
-    } = fieldProps.toJS();
+    const fieldPath = fieldProps.get('fieldPath');
+    const prevDisabled = fieldProps.get('disabled');
+    const value = fieldProps.get('value');
+    const expected = fieldProps.get('expected');
+    const required = fieldProps.get('required');
+    const asyncRule = fieldProps.get('asyncRule');
+    const validatedSync = fieldProps.get('validatedSync');
+    const validatedAsync = fieldProps.get('validatedAsync');
 
-    let shouldValidate = !validatedSync || (expected && !validatedAsync);
+    /* Determine whether validation is needed */
+    /**
+     *
+     */
+    let shouldValidate = !validatedSync || (expected && !validatedAsync && asyncRule);
     const validationType = validatedSync ? 'async' : 'sync';
 
     /* Skip async validation for empty non-required fields */
@@ -283,12 +294,18 @@ export default class Form extends React.Component {
         validating: false
       }
     }).then(({ nextFields, nextFieldProps }) => {
+      const onBlur = nextFieldProps.get('onBlur');
+
       /* Call custom onBlur handler */
       if (onBlur) {
-        onBlur({ event, fieldProps: nextFieldProps, formProps: this.props });
+        onBlur({
+          event,
+          fieldProps: nextFieldProps,
+          formProps: this.props
+        });
       }
 
-      /* TODO Find more efficient way of updating the fields with dynamic props */
+      // TODO Find more efficient way of updating the fields with dynamic props
       nextFields.map((fieldProps) => {
         if (fieldProps.get('dynamicProps').size > 0) {
           this.validateField({ fieldProps });
@@ -306,7 +323,6 @@ export default class Form extends React.Component {
   validateField = async ({ type = 'both', fieldProps }) => {
     const { fields } = this.state;
     const isSyncValidation = (type === 'sync');
-    const validatedProp = isSyncValidation ? 'validatedSync' : 'validatedAsync';
 
     // console.groupCollapsed(fieldProps.get('name'), '@ validateField');
     // console.log('validation type', type);
@@ -330,19 +346,25 @@ export default class Form extends React.Component {
 
     /* Update the validity state of the field */
     const propsPatch = {
-      [validatedProp]: true,
       expected
     };
 
-    /* Update the corresponding valid property */
-    if (['both', 'sync'].includes(type)) propsPatch.validSync = expected;
-    if (['both', 'async'].includes(type)) propsPatch.validAsync = expected;
+    /* Update the corresponding validation properties */
+    if (['both', 'sync'].includes(type)) {
+      propsPatch.validatedSync = true;
+      propsPatch.validSync = expected;
+    }
+
+    if (['both', 'async'].includes(type)) {
+      propsPatch.validatedAsync = true;
+      propsPatch.validAsync = expected;
+    }
 
     /* Get the validation message based on the validation summary */
     if (!expected) {
       const errorMessage = fieldUtils.getErrorMessage({
         validationResult,
-        messages: this.context.messages,
+        messages: this.formMessages,
         fieldProps,
         formProps: this.props
       });
@@ -370,6 +392,9 @@ export default class Form extends React.Component {
     return expected;
   }
 
+  /**
+   * Validates the field in debounce mode.
+   */
   debounceValidateField = debounce(this.validateField, 300)
 
   /**
