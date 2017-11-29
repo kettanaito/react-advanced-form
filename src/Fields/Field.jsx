@@ -83,11 +83,12 @@ export default class Field extends React.Component {
      * based on its value upon the composite mount. This causes issues of missing fields.
      */
     const { fieldGroup } = this.context;
+    const { value, initialValue } = this.props;
 
     const fieldProps = {
       ...this.props,
-      controllable: isset(this.props.value),
-      value: this.props.value || '',
+      controllable: isset(value),
+      value: value || initialValue || '',
       fieldPath: this.fieldPath,
       dynamicProps: fieldUtils.getDynamicProps(this.props),
       validSync: false,
