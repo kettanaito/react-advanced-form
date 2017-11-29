@@ -322,7 +322,6 @@ export default class Form extends React.Component {
    */
   validateField = async ({ type = 'both', fieldProps }) => {
     const { fields } = this.state;
-    const isSyncValidation = (type === 'sync');
 
     // console.groupCollapsed(fieldProps.get('name'), '@ validateField');
     // console.log('validation type', type);
