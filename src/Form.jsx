@@ -301,7 +301,7 @@ export default class Form extends React.Component {
    * @param {'both'|'async'|'sync'} Validation type.
    * @return {boolean}
    */
-  validateField = async ({ type = 'both', fieldProps, timeout = 300 }) => {
+  validateField = async ({ type = 'both', fieldProps }) => {
     const { fields } = this.state;
     const isSyncValidation = (type === 'sync');
     const validatedProp = isSyncValidation ? 'validatedSync' : 'validatedAsync';

@@ -33,9 +33,8 @@ export default function connectField(WrappedComponent) {
 
     render() {
       const { fieldPath } = this;
-      const { fields, fieldGroup } = this.context;
+      const { fields } = this.context;
       const directProps = this.props;
-      const { name } = directProps;
 
       const fieldProps = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath]).toJS() : defaultProps;
       const { focused, disabled, validated, validating, expected, valid, invalid, error } = fieldProps;
@@ -53,7 +52,7 @@ export default function connectField(WrappedComponent) {
         expected,
         valid,
         invalid,
-        error,
+        error
         // value
       };
 

@@ -135,6 +135,7 @@ export default class Field extends React.Component {
     const prevValue = contextProps.get('value');
 
     if (contextProps.get('controllable') && !this.props.onChange) {
+      /* eslint-disable-next-line no-console */
       return console.warn('Cannot update the Field.Input which has a controllable value without an "onChange" handler provided.');
     }
 
