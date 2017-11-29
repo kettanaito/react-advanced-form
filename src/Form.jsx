@@ -114,15 +114,15 @@ export default class Form extends React.Component {
       return fieldProps.merge(resolvedProps);
     });
 
-    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
-    // console.log('directFieldProps', directFieldProps);
-    // console.log('propsPatch', propsPatch);
-    // console.log('fieldProps', fieldProps.toJS());
-    // console.log('nextFieldProps', nextFieldProps.toJS());
-    // console.log('next value:', nextFieldProps.get('value'));
-    // console.log('nextFields:', nextFields.toJS());
-    // console.log('nextResolvedFields:', nextResolvedFields.toJS());
-    // console.groupEnd();
+    console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
+    console.log('directFieldProps', directFieldProps);
+    console.log('propsPatch', propsPatch);
+    console.log('fieldProps', fieldProps.toJS());
+    console.log('nextFieldProps', nextFieldProps.toJS());
+    console.log('next value:', nextFieldProps.get('value'));
+    console.log('nextFields:', nextFields.toJS());
+    console.log('nextResolvedFields:', nextResolvedFields.toJS());
+    console.groupEnd();
 
     return new Promise((resolve, reject) => {
       try {
@@ -191,7 +191,7 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    * @param {mixed} nextValue
    */
-  handleFieldChange = ({ event, fieldProps, nextValue }) => {
+  handleFieldChange = ({ event, fieldProps, nextValue, prevValue }) => {
     // console.groupCollapsed(fieldProps.name, '@ handleFieldChange');
     // console.log('fieldProps', fieldProps);
     // console.log('nextValue', nextValue);
@@ -218,7 +218,8 @@ export default class Form extends React.Component {
         onChange({
           event,
           nextValue,
-          fieldProps: nextProps.toJS(),
+          prevValue,
+          fieldProps: nextFieldProps.toJS(),
           formProps: this.props
         });
       }

@@ -60,7 +60,9 @@ export default function connectField(WrappedComponent) {
       const { focused, disabled, validated, validating, expected, valid, invalid, error } = fieldProps;
 
       /* Grab the value from context props when available, to present actual data in the components tree */
-      const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
+      // const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
+
+      // const value = fields.hasIn([fieldPath]) && !directProps.value ? fields.getIn([fieldPath, 'value']) : directProps.value;
 
       /* Compose the props passed to the decorated component */
       const newProps = {
@@ -73,7 +75,7 @@ export default function connectField(WrappedComponent) {
         valid,
         invalid,
         error,
-        value
+        // value
       };
 
       return React.createElement(WrappedComponent, newProps);
