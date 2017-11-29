@@ -42,6 +42,7 @@ export default class Field extends React.Component {
     fieldGroup: PropTypes.string,
     fields: IterableInstance,
     registerField: PropTypes.func.isRequired,
+    unregisterField: PropTypes.func.isRequired,
     updateField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -113,8 +114,18 @@ export default class Field extends React.Component {
     }
   }
 
+  /**
+   * Ensures "this.contextProps" are updated after the component's update.
+   */
   componentWillUpdate(nextProps, nextState, nextContext) {
     this.contextProps = nextContext.fields.getIn([this.fieldPath]);
+  }
+
+  /**
+   * Deletes the field's bindings from the Form on unmounting.
+   */
+  componentWillUnmount() {
+    this.context.unregisterField(this.contextProps);
   }
 
   /**

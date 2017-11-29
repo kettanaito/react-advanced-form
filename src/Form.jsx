@@ -54,6 +54,7 @@ export default class Form extends React.Component {
   static childContextTypes = {
     fields: IterableInstance,
     registerField: PropTypes.func.isRequired,
+    unregisterField: PropTypes.func.isRequired,
     updateField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -64,6 +65,7 @@ export default class Form extends React.Component {
     return {
       fields: this.state.fields,
       registerField: this.registerField,
+      unregisterField: this.unregisterField,
       updateField: this.updateField,
       handleFieldFocus: this.handleFieldFocus,
       handleFieldBlur: this.handleFieldBlur,
@@ -161,6 +163,16 @@ export default class Form extends React.Component {
 
     this.setState(prevState => ({
       fields: prevState.fields.mergeIn([fieldProps.get('fieldPath')], fieldProps)
+    }));
+  }
+
+  /**
+   * Removes the field's bindings from the Form's state/context.
+   * @param {Map} fieldProps
+   */
+  unregisterField = (fieldProps) => {
+    this.setState(prevState => ({
+      fields: prevState.fields.deleteIn([fieldProps.get('fieldPath')])
     }));
   }
 
