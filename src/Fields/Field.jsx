@@ -6,7 +6,7 @@ import { IterableInstance, isset, fieldUtils } from '../utils';
 export const defaultProps = {
   type: 'text',
   expected: true,
-  value: '',
+  // value: '',
   required: false,
   disabled: false
 };
@@ -61,7 +61,7 @@ export default class Field extends React.Component {
     if (typeof propValue !== 'function') return propValue;
 
     // const fieldProps = fieldUtils.getFieldProps(this.fieldPath, fields, this.props);
-    const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps: this.fieldProps, fields });
+    const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps: this.contextProps, fields });
     return resolvedPropValue || defaultProps[propName];
   }
 
@@ -86,6 +86,7 @@ export default class Field extends React.Component {
     const fieldProps = {
       ...this.props,
       controllable: isset(this.props.value),
+      value: this.props.value || '',
       fieldPath: this.fieldPath,
       dynamicProps: fieldUtils.getDynamicProps(this.props),
       validated: false
@@ -100,55 +101,17 @@ export default class Field extends React.Component {
     return this.context.mapFieldToState(fromJS(fieldProps));
   }
 
-  // componentWillReceiveProps(nextProps, nextContext) {
-  //   const { fieldProps } = this;
-  //   if (!fieldProps) return;
-
-  //   const nextFieldProps = nextContext.fields.getIn([this.fieldPath]);
-
-  //   const wasPropThere = JSON.stringify(this.props) === JSON.stringify(nextProps);
-
-  //   console.groupCollapsed('componentWillReceiveProps @', this.props.name);
-  //     console.log('wasPropThere', wasPropThere);
-  //     console.log('nextProps value', nextProps.value);
-  //     console.log('prev context value', fieldProps.get('value'));
-  //     console.log('next context value', nextFieldProps.get('value'));
-  //   console.groupEnd();
-
-  //   if (!fieldProps.equals(nextFieldProps)) {
-  //     console.log('Context update, skipping');
-  //     return;
-  //   }
-
-  //   if (wasPropThere) return;
-
-  //   // if (nextProps.value === fieldProps.get('value')) {
-  //   if (fieldProps.equals(nextProps)) {
-  //     console.log('Next value equals context value, skipping');
-  //     return;
-  //   }
-
-  //   console.warn(`Updating the field to "${nextProps.value}"`);
-  //   return this.context.updateField({
-  //     fieldProps,
-  //     propsPatch: nextProps
-  //   });
-  // }
-
   componentWillReceiveProps(nextProps) {
-    if (!this.fieldProps) return;
-    const controllable = this.fieldProps.get('controllable');
+    if (!this.contextProps) return;
+    const controllable = this.contextProps.get('controllable');
 
     if (controllable && (nextProps.value !== this.props.value)) {
-      // setTimeout(() => {
-        this.context.handleFieldChange({ nextValue: nextProps.value, prevValue: this.props.value, fieldProps: this.fieldProps });
-
-      // }, 0);
+      this.context.handleFieldChange({ nextValue: nextProps.value, prevValue: this.props.value, fieldProps: this.contextProps });
     }
   }
 
   componentWillUpdate(nextProps, nextState, nextContext) {
-    this.fieldProps = nextContext.fields.getIn([this.fieldPath]);
+    this.contextProps = nextContext.fields.getIn([this.fieldPath]);
   }
 
   /**
@@ -157,11 +120,9 @@ export default class Field extends React.Component {
    * setting its "focus" property to the respective value.
    */
   handleFocus = (event) => {
-    const { fieldProps } = this;
-
     return this.context.handleFieldFocus({
       event,
-      fieldProps
+      fieldProps: this.contextProps
     });
   }
 
@@ -169,20 +130,18 @@ export default class Field extends React.Component {
    * Handles field's value change.
    */
   handleChange = (event) => {
-    const { fieldProps } = this;
-    const { value: controlledValue, onChange } = this.props;
-
-    const prevValue = fieldProps.get('value');
     const { value: nextValue } = event.currentTarget;
+    const { contextProps } = this;
+    const prevValue = contextProps.get('value');
 
-    if (isset(controlledValue) && !onChange) {
-      return console.warn('It seems you are trying to make Input controllable without provide an "onChange" handler.');
+    if (contextProps.get('controllable') && !this.props.onChange) {
+      return console.warn('Cannot update the Field.Input which has a controllable value without an "onChange" handler provided.');
     }
 
     /* Call parental change handler */
     return this.context.handleFieldChange({
       event,
-      fieldProps,
+      fieldProps: contextProps,
       nextValue,
       prevValue
     });
@@ -192,29 +151,28 @@ export default class Field extends React.Component {
    * Handles field blur.
    */
   handleBlur = (event) => {
-    const { fieldProps } = this;
-
     return this.context.handleFieldBlur({
       event,
-      fieldProps
+      fieldProps: this.contextProps
     });
   }
 
   render() {
-    const { id, className, style } = this.props;
+    /* Skip rendering unless the field in in the Form's context */
+    if (!this.contextProps) return null;
 
-    if (!this.fieldProps) return null;
+    const { id, className, style } = this.props;
 
     return (
       <input
-        name={ this.fieldProps.get('name') }
-        type={ this.fieldProps.get('type') }
+        name={ this.contextProps.get('name') }
+        type={ this.contextProps.get('type') }
         id={ id }
         className={ className }
         style={ style }
-        value={ this.fieldProps.get('controllable') ? this.props.value : this.fieldProps.get('value') }
-        required={ this.fieldProps.get('required') }
-        disabled={ this.fieldProps.get('disabled') }
+        value={ this.contextProps.get('controllable') ? this.props.value : this.contextProps.get('value') }
+        required={ this.contextProps.get('required') }
+        disabled={ this.contextProps.get('disabled') }
         onFocus={ this.handleFocus }
         onChange={ this.handleChange }
         onBlur={ this.handleBlur } />

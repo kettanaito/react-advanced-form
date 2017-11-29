@@ -114,15 +114,14 @@ export default class Form extends React.Component {
       return fieldProps.merge(resolvedProps);
     });
 
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
-    console.log('directFieldProps', directFieldProps);
-    console.log('propsPatch', propsPatch);
-    console.log('fieldProps', fieldProps.toJS());
-    console.log('nextFieldProps', nextFieldProps.toJS());
-    console.log('next value:', nextFieldProps.get('value'));
-    console.log('nextFields:', nextFields.toJS());
-    console.log('nextResolvedFields:', nextResolvedFields.toJS());
-    console.groupEnd();
+    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
+    // console.log('fieldProps:', fieldProps.toJS());
+    // console.log('propsPatch:', propsPatch);
+    // console.log('next fieldProps:', nextFieldProps.toJS());
+    // console.log('next value:', nextFieldProps.get('value'));
+    // console.log('nextFields:', nextFields.toJS());
+    // console.log('nextResolvedFields:', nextResolvedFields.toJS());
+    // console.groupEnd();
 
     return new Promise((resolve, reject) => {
       try {
@@ -269,8 +268,7 @@ export default class Form extends React.Component {
       /* Validate the field */
       await this.validateField({
         type: 'async',
-        fieldProps,
-        timeout: 0
+        fieldProps
       });
     }
 

@@ -31,25 +31,6 @@ export default function connectField(WrappedComponent) {
       this.fieldPath = fieldUtils.getFieldPath({ name, fieldGroup });
     }
 
-    // componentWillReceiveProps(nextProps, nextState, nextContext) {
-    //   const { fieldPath } = this;
-    //   const { fields, updateField } = this.context;
-
-    //   console.log('nextContext', nextContext);
-
-    //   const { fields: nextFields } = nextContext;
-
-
-    //   console.warn('new props', nextProps);
-
-    //   if (!nextFields.equals(fields)) {
-    //     console.log('Update triggered by context, skip.');
-    //     return;
-    //   }
-
-    //   console.log('Update from DIRECT props, propagate');
-    // }
-
     render() {
       const { fieldPath } = this;
       const { fields, fieldGroup } = this.context;
@@ -61,8 +42,6 @@ export default function connectField(WrappedComponent) {
 
       /* Grab the value from context props when available, to present actual data in the components tree */
       // const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
-
-      // const value = fields.hasIn([fieldPath]) && !directProps.value ? fields.getIn([fieldPath, 'value']) : directProps.value;
 
       /* Compose the props passed to the decorated component */
       const newProps = {
