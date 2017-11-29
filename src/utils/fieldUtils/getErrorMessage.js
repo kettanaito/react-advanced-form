@@ -23,6 +23,7 @@ function resolveAsyncMessage({ message, errorType, fieldProps, formProps, extra 
     /* Get the validation message from the custom resolver function */
     errorMessage = resolver({
       ...extra,
+      value: fieldProps.get('value'),
       fieldProps: fieldProps.toJS(),
       formProps
     });
