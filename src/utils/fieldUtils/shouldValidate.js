@@ -3,7 +3,7 @@
  * @param {Map} fieldProps
  */
 export default function shouldValidateField(fieldProps) {
-  const validated = fieldProps.get('validated');
+  const validatedSync = fieldProps.get('validatedSync');
   const required = fieldProps.get('required');
 
   const hasDynamicRequired = (typeof required === 'function');
