@@ -1,4 +1,11 @@
-export default function debounce(func, wait, immediate) {
+/**
+ * Returns a wrapped function with debounce logic built-in.
+ * @param {function} func
+ * @param {number} duration
+ * @param {boolean} immediate
+ * @return {func}
+ */
+export default function debounce(func, duration, immediate) {
   let timeout;
 
   return function (...args) {
@@ -11,7 +18,7 @@ export default function debounce(func, wait, immediate) {
 
     const shouldResolve = (immediate && !timeout);
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+    timeout = setTimeout(later, duration);
 
     if (shouldResolve) func.apply(context, args);
   };
