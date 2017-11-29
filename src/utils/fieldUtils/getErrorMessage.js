@@ -61,12 +61,14 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
     const messagePath = messagePaths[i];
     const message = messages.getIn(messagePath);
 
-    if (message) return resolveAsyncMessage({
-      message,
-      extra,
-      errorType,
-      fieldProps,
-      formProps
-    });
+    if (message) {
+      return resolveAsyncMessage({
+        message,
+        extra,
+        errorType,
+        fieldProps,
+        formProps
+      });
+    }
   }
 }
