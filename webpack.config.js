@@ -2,16 +2,16 @@ const path = require('path');
 const webpack = require('webpack');
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
 const packageJson = require('./package.json');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
+/* Environment */
 const DEVELOPMENT = (process.env.NODE_ENV === 'development');
 const PRODUCTION = (process.env.NODE_ENV === 'production');
 
 module.exports = {
   entry: path.resolve(__dirname, packageJson.source),
   externals: {
-    react: 'React',
-    immutable: 'immutable'
+    react: 'umd react',
+    immutable: 'umd immutable'
   },
   output: {
     path: __dirname,

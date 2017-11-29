@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormProvider, Form, Field } from '../src';
+import { FormProvider, Form, Field } from '../lib';
 import MyInput from './templates/MyInput';
 import MySelect from './templates/MySelect';
 
