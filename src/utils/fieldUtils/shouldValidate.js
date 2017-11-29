@@ -1,8 +1,11 @@
 /**
  * Determines whether a Field with the provided props should be validated.
- * @param {object} fieldProps
+ * @param {Map} fieldProps
  */
-export default function shouldValidateField({ fieldProps: { validated, required } }) {
+export default function shouldValidateField(fieldProps) {
+  const validated = fieldProps.get('validated');
+  const required = fieldProps.get('required');
+
   const hasDynamicRequired = (typeof required === 'function');
   const shouldValidate = !validated || hasDynamicRequired;
 
