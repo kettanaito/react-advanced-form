@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { fromJS } from 'immutable';
@@ -135,11 +136,9 @@ export default class Field extends React.Component {
     const { value: nextValue } = event.currentTarget;
     const { contextProps } = this;
     const prevValue = contextProps.get('value');
+    const hasUpdateMethod = contextProps.get('controllable') ? this.props.onChange : true;
 
-    if (contextProps.get('controllable') && !this.props.onChange) {
-      /* eslint-disable-next-line no-console */
-      return console.warn('Cannot update the Field.Input which has a controllable value without an "onChange" handler provided.');
-    }
+    invariant(hasUpdateMethod, `Cannot update the controlled field "${contextProps.get('name')}". Expected custom "onChange" handler, but received: ${this.props.onChange}.`);
 
     /* Call parental change handler */
     return this.context.handleFieldChange({
