@@ -13,7 +13,7 @@ import { defaultProps } from './Fields/Field';
 export default function connectField(WrappedComponent) {
   const componentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
-  class CustomFieldWrapper extends React.Component {
+  class FieldWrapper extends React.Component {
     static displayName = `ConnectedField(${componentName})`;
 
     static contextTypes = {
@@ -60,5 +60,5 @@ export default function connectField(WrappedComponent) {
     }
   }
 
-  return CustomFieldWrapper;
+  return FieldWrapper;
 }
