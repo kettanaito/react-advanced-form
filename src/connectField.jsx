@@ -18,15 +18,44 @@ export default function connectField(WrappedComponent) {
 
     static contextTypes = {
       fieldGroup: PropTypes.string,
-      fields: IterableInstance
+      fields: IterableInstance,
+      updateField: PropTypes.func.isRequired
     }
 
+    constructor(props, context) {
+      super(props, context);
+
+      const { fieldGroup } = context;
+      const { name } = props;
+
+      this.fieldPath = fieldUtils.getFieldPath({ name, fieldGroup });
+    }
+
+    // componentWillReceiveProps(nextProps, nextState, nextContext) {
+    //   const { fieldPath } = this;
+    //   const { fields, updateField } = this.context;
+
+    //   console.log('nextContext', nextContext);
+
+    //   const { fields: nextFields } = nextContext;
+
+
+    //   console.warn('new props', nextProps);
+
+    //   if (!nextFields.equals(fields)) {
+    //     console.log('Update triggered by context, skip.');
+    //     return;
+    //   }
+
+    //   console.log('Update from DIRECT props, propagate');
+    // }
+
     render() {
+      const { fieldPath } = this;
       const { fields, fieldGroup } = this.context;
       const directProps = this.props;
       const { name } = directProps;
 
-      const fieldPath = fieldUtils.getFieldPath({ name, fieldGroup });
       const fieldProps = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath]).toJS() : defaultProps;
       const { focused, disabled, validated, validating, expected, valid, invalid, error } = fieldProps;
 

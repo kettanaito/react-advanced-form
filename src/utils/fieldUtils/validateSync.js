@@ -1,11 +1,18 @@
 /**
- * Performs the chain of synchronous validations.
+ * Synchronously validated the provided field.
  */
 // import { resolveProp } from './resolveProp';
 
 export default function validateSync({ fieldProps, fields, formProps, formRules }) {
   let isExpected = true;
-  const { name, type, value, required, rule, asyncRule } = fieldProps;
+  const mutableFieldProps = fieldProps.toJS();
+
+  const name = fieldProps.get('name');
+  const type = fieldProps.get('type');
+  const value = fieldProps.get('value');
+  const required = fieldProps.get('required');
+  const rule = fieldProps.get('rule');
+  const asyncRule = fieldProps.get('asyncRule');
 
   /* Resolve resolvable props */
   /* const required = resolveProp({
@@ -41,7 +48,7 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
 
     /* Test the RegExp against the field's value */
     isExpected = (typeof rule === 'function')
-      ? rule({ value, fieldProps, fields, formProps })
+      ? rule({ value, fieldProps: mutableFieldProps, fields, formProps })
       : rule.test(value);
 
     // console.log('isExpected:', isExpected);
@@ -61,8 +68,8 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
     // console.groupEnd();
 
     /* Form-level validation */
-    const isValidByType = formTypeRule ? formTypeRule(value, fieldProps, formProps) : true;
-    const isValidByName = formNameRule ? formNameRule(value, fieldProps, formProps) : true;
+    const isValidByType = formTypeRule ? formTypeRule(value, fieldProps: mutableFieldProps, formProps) : true;
+    const isValidByName = formNameRule ? formNameRule(value, fieldProps: mutableFieldProps, formProps) : true;
     isExpected = (isValidByType && isValidByName);
 
     // console.log('isExpected:', isExpected);

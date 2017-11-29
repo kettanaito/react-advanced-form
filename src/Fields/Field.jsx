@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { fromJS } from 'immutable';
 import { IterableInstance, isset, fieldUtils } from '../utils';
 
 export const defaultProps = {
@@ -41,6 +42,7 @@ export default class Field extends React.Component {
     fieldGroup: PropTypes.string,
     fields: IterableInstance,
     mapFieldToState: PropTypes.func.isRequired,
+    updateField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
     handleFieldChange: PropTypes.func.isRequired
@@ -58,20 +60,21 @@ export default class Field extends React.Component {
 
     if (typeof propValue !== 'function') return propValue;
 
-    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, fields, this.props);
-    const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps, fields });
+    // const fieldProps = fieldUtils.getFieldProps(this.fieldPath, fields, this.props);
+    const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps: this.fieldProps, fields });
     return resolvedPropValue || defaultProps[propName];
   }
 
   constructor(props, context) {
     super(props, context);
-    const { fieldGroup } = context;
+
+    const { fieldGroup } = this.context;
 
     /* Compose field's path in the state (in case of being under fieldGroup) */
     this.fieldPath = fieldUtils.getFieldPath({ ...props, fieldGroup });
   }
 
-  componentDidMount() {
+  componentWillMount() {
     /**
      * Map the field to Form's state to notify the latter of the new registered field.
      * Timeout is required because {componentDidMount} happens at the same time for all
@@ -80,20 +83,24 @@ export default class Field extends React.Component {
      */
     const { fieldGroup } = this.context;
 
-    setTimeout(() => {
-      const fieldProps = {
-        ...this.props,
-        fieldPath: this.fieldPath,
-        dynamicProps: fieldUtils.getDynamicProps(this.props),
-        validated: false
-      };
+    const fieldProps = {
+      ...this.props,
+      fieldPath: this.fieldPath,
+      dynamicProps: fieldUtils.getDynamicProps(this.props),
+      validated: false
+    };
 
-      /* Prevent { fieldGroup: undefined } for fields without a group */
-      if (fieldGroup) fieldProps.fieldGroup = fieldGroup;
+    /* Prevent { fieldGroup: undefined } for fields without a group */
+    if (fieldGroup) {
+      fieldProps.fieldGroup = fieldGroup;
+    }
 
-      /* Notify the parent Form that a new field has just mounted */
-      return this.context.mapFieldToState({ fieldProps });
-    }, 0);
+    /* Notify the parent Form that a new field has just mounted */
+    return this.context.mapFieldToState(fromJS(fieldProps));
+  }
+
+  componentWillUpdate(nextProps, nextState, nextContext) {
+    this.fieldProps = nextContext.fields.getIn([this.fieldPath]);
   }
 
   /**
@@ -102,45 +109,58 @@ export default class Field extends React.Component {
    * setting its "focus" property to the respective value.
    */
   handleFocus = (event) => {
-    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
+    const { fieldProps } = this;
 
-    return this.context.handleFieldFocus({ event, fieldProps });
+    return this.context.handleFieldFocus({
+      event,
+      fieldProps
+    });
   }
 
   /**
    * Handles field's value change.
    */
   handleChange = (event) => {
+    const { fieldProps } = this;
     const { value: prevValue } = this.props;
     const { value: nextValue } = event.currentTarget;
 
-    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
-
     /* Call parental change handler */
-    return this.context.handleFieldChange({ event, fieldProps, nextValue, prevValue });
+    return this.context.handleFieldChange({
+      event,
+      fieldProps,
+      nextValue,
+      prevValue
+    });
   }
 
   /**
    * Handles field blur.
    */
   handleBlur = (event) => {
-    const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, this.props);
-    return this.context.handleFieldBlur({ event, fieldProps });
+    const { fieldProps } = this;
+
+    return this.context.handleFieldBlur({
+      event,
+      fieldProps
+    });
   }
 
   render() {
-    const { name, type, id, className, style } = this.props;
+    const { id, className, style } = this.props;
+
+    if (!this.fieldProps) return null;
 
     return (
       <input
-        name={ name }
-        type={ type }
+        name={ this.fieldProps.get('name') }
+        type={ this.fieldProps.get('type') }
         id={ id }
         className={ className }
         style={ style }
-        value={ this.getProp('value') }
-        required={ this.getProp('required') }
-        disabled={ this.getProp('disabled') }
+        value={ this.fieldProps.get('value') }
+        required={ this.fieldProps.get('required') }
+        disabled={ this.fieldProps.get('disabled') }
         onFocus={ this.handleFocus }
         onChange={ this.handleChange }
         onBlur={ this.handleBlur } />

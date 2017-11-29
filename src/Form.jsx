@@ -52,6 +52,7 @@ export default class Form extends React.Component {
   static childContextTypes = {
     fields: IterableInstance,
     mapFieldToState: PropTypes.func.isRequired,
+    updateField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
     handleFieldChange: PropTypes.func.isRequired
@@ -61,6 +62,7 @@ export default class Form extends React.Component {
     return {
       fields: this.state.fields,
       mapFieldToState: this.mapFieldToState,
+      updateField: this.updateField,
       handleFieldFocus: this.handleFieldFocus,
       handleFieldBlur: this.handleFieldBlur,
       handleFieldChange: this.handleFieldChange
@@ -78,29 +80,32 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Updates the props of the field stored in the {state.fields} Map.
-   * @param {string} name The name of the field.
-   * @param {object} fieldProps A directly specified nextProps of the field.
+   * Updates the props of the field stored in the state.
+   * @param {string} fieldPath The name of the field.
+   * @param {Map} fieldProps A directly specified nextProps of the field.
    * @param {object} propsPath A partical Object of the props to merge into the existing field props.
    * @return {Promise<any>}
    */
-  updateField = ({ fieldPath, fieldProps: directProps, propsPatch = null }) => {
+  updateField = ({ fieldPath, fieldProps: directFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
-    const fieldProps = fieldUtils.getFieldProps(fieldPath, fields, directProps);
+    // const fieldProps = fieldUtils.getFieldProps(fieldPath, fields, directProps);
 
-    const nextProps = propsPatch ? {
-      ...fieldProps,
-      ...propsPatch
-    } : fieldProps;
+    const fieldProps = directFieldProps || fields.getIn([fieldPath]);
+    const nextFieldProps = propsPatch ? fieldProps.merge(fromJS(propsPatch)) : fieldProps;
+
+    // const nextProps = propsPatch ? {
+    //   ...fieldProps,
+    //   ...propsPatch
+    // } : fieldProps;
 
     /* Update the validity state of the field */
-    const nextFields = fields.mergeIn([fieldProps.fieldPath], fromJS(nextProps));
+    const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
 
     /* FIXME Compose resolved fields */
     const nextResolvedFields = nextFields.map((fieldProps) => {
       const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
         return resolver({
-          fieldProps: nextProps,
+          fieldProps: nextFieldProps,
           fields: fields.toJS(),
           formProps: this.props
         });
@@ -109,11 +114,12 @@ export default class Form extends React.Component {
       return fieldProps.merge(resolvedProps);
     });
 
-    // console.groupCollapsed(fieldProps.fieldPath, '@ updateField');
-    // console.log('directProps', directProps);
+    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
+    // console.log('directFieldProps', directFieldProps);
     // console.log('propsPatch', propsPatch);
-    // console.log('fieldProps', fieldProps);
-    // console.log('nextProps', nextProps);
+    // console.log('fieldProps', fieldProps.toJS());
+    // console.log('nextFieldProps', nextFieldProps.toJS());
+    // console.log('next value:', nextFieldProps.get('value'));
     // console.log('nextFields:', nextFields.toJS());
     // console.log('nextResolvedFields:', nextResolvedFields.toJS());
     // console.groupEnd();
@@ -122,7 +128,7 @@ export default class Form extends React.Component {
       try {
         this.setState({ fields: nextResolvedFields }, () => resolve({
           nextFields,
-          nextProps
+          nextFieldProps
         }));
       } catch (error) {
         return reject(error);
@@ -134,26 +140,26 @@ export default class Form extends React.Component {
    * Maps the field to the state/context.
    * Passing fields in context gives a benefit of removing an explicit traversing of children
    * tree, deconstructing and constructing each appropriate child with the attached handler props.
-   * @param {object} fieldProps
+   * @param {Map} fieldProps
    */
-  mapFieldToState = async ({ fieldProps }) => {
-    // console.groupCollapsed(fieldProps.fieldPath, '@ mapFieldToState');
+  mapFieldToState = (fieldProps) => {
+    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ mapFieldToState');
     // console.log('fieldProps', fieldProps);
     // console.groupEnd();
 
     /* Validate the field when it has initial value */
-    const shouldValidate = isset(fieldProps.value) && (fieldProps.value !== '');
+    const shouldValidate = isset(fieldProps.get('value')) && (fieldProps.get('value') !== '');
     if (shouldValidate) this.validateField({ fieldProps });
 
     this.setState(prevState => ({
-      fields: prevState.fields.mergeIn([fieldProps.fieldPath], fromJS(fieldProps))
+      fields: prevState.fields.mergeIn([fieldProps.get('fieldPath')], fieldProps)
     }));
   }
 
   /**
    * Handles field focus.
    * @param {Event} event
-   * @param {object} fieldProps
+   * @param {Map} fieldProps
    */
   handleFieldFocus = ({ event, fieldProps }) => {
     // console.groupCollapsed(fieldProps.name, '@ handleFieldFocus');
@@ -161,18 +167,18 @@ export default class Form extends React.Component {
     // console.groupEnd();
 
     this.updateField({
-      fieldPath: fieldProps.fieldPath,
+      fieldPath: fieldProps.get('fieldPath'),
       propsPatch: {
         focused: true
       }
-    }).then(({ nextProps }) => {
-      const { onFocus } = fieldProps;
+    }).then(({ nextFieldProps }) => {
+      const onFocus = fieldProps.get('onFocus');
 
       if (onFocus) {
         /* Call custom onFocus handler */
         onFocus({
           event,
-          fieldProps: nextProps,
+          fieldProps: nextFieldProps,
           formProps: this.props
         });
       }
@@ -182,7 +188,7 @@ export default class Form extends React.Component {
   /**
    * Handles field change.
    * @param {Event} event
-   * @param {object} fieldProps
+   * @param {Map} fieldProps
    * @param {mixed} nextValue
    */
   handleFieldChange = ({ event, fieldProps, nextValue }) => {
@@ -193,32 +199,26 @@ export default class Form extends React.Component {
 
     /* Update the value of the changed field in the state */
     this.updateField({
-      fieldPath: fieldProps.fieldPath,
+      fieldProps,
       propsPatch: {
         value: nextValue,
         validatedSync: false,
         validatedAsync: false
       }
-    }).then(({ nextProps }) => {
-      const { onChange } = fieldProps;
+    }).then(({ nextFieldProps }) => {
+      /* Perform sync field validation on change */
+      this.debounceValidateField({
+        type: 'sync',
+        fieldProps: nextFieldProps
+      });
 
-      /* Perform field validation on change */
-      const debouncedSyncValidation = debounce(() => {
-        this.validateField({
-          type: 'sync',
-          fieldProps: nextProps,
-          syncOnly: true
-        });
-      }, 250);
-
-      debouncedSyncValidation();
-
+      const onChange = fieldProps.get('onChange');
       if (onChange) {
         /* Call custom onChange handler */
         onChange({
           event,
           nextValue,
-          fieldProps: nextProps,
+          fieldProps: nextProps.toJS(),
           formProps: this.props
         });
       }
@@ -228,7 +228,7 @@ export default class Form extends React.Component {
   /**
    * Handles field blur.
    * @param {Event} event
-   * @param {object} fieldProps
+   * @param {Map} fieldProps
    */
   handleFieldBlur = async ({ event, fieldProps }) => {
     const {
@@ -239,7 +239,7 @@ export default class Form extends React.Component {
       expected,
       validatedAsync,
       onBlur
-    } = fieldProps;
+    } = fieldProps.toJS();
 
     let shouldValidate = expected && !validatedAsync;
 
@@ -248,7 +248,7 @@ export default class Form extends React.Component {
       shouldValidate = false;
     }
 
-    // console.groupCollapsed(fieldProps.name, '@ handleFieldBlur');
+    // console.groupCollapsed(fieldProps.get('name'), '@ handleFieldBlur');
     // console.log('fieldProps', fieldProps);
     // console.log('should validate', shouldValidate);
     // console.groupEnd();
@@ -268,7 +268,8 @@ export default class Form extends React.Component {
       /* Validate the field */
       await this.validateField({
         type: 'async',
-        fieldProps
+        fieldProps,
+        timeout: 0
       });
     }
 
@@ -280,14 +281,16 @@ export default class Form extends React.Component {
         disabled: prevDisabled,
         validating: false
       }
-    }).then(({ nextFields, nextProps }) => {
+    }).then(({ nextFields, nextFieldProps }) => {
       /* Call custom onBlur handler */
-      if (onBlur) onBlur({ event, fieldProps: nextProps, formProps: this.props });
+      if (onBlur) {
+        onBlur({ event, fieldProps: nextFieldProps, formProps: this.props });
+      }
 
       /* TODO Find more efficient way of updating the fields with dynamic props */
       nextFields.map((fieldProps) => {
         if (fieldProps.get('dynamicProps').size > 0) {
-          this.validateField({ fieldProps: fieldProps.toJS() });
+          this.validateField({ fieldProps });
         }
       });
     });
@@ -295,14 +298,22 @@ export default class Form extends React.Component {
 
   /**
    * Validates a single provided field.
-   * @param {object} fieldProps
+   * @param {Map} fieldProps
    * @param {'both'|'async'|'sync'} Validation type.
    * @return {boolean}
    */
-  validateField = async ({ type = 'both', fieldProps }) => {
+  validateField = async ({ type = 'both', fieldProps, timeout = 300 }) => {
     const { fields } = this.state;
     const isSyncValidation = (type === 'sync');
     const validatedProp = isSyncValidation ? 'validatedSync' : 'validatedAsync';
+
+    // console.groupCollapsed(fieldProps.get('name'), '@ validateField');
+    // console.log('validation type', type);
+    // console.log('value', fieldProps.get('value'));
+    // console.log('fieldProps', fieldProps.toJS());
+    // console.log('validatedProp', validatedProp);
+    // console.groupEnd();
+    // console.log(' ');
 
     const validationArgs = {
       type,
@@ -339,15 +350,12 @@ export default class Form extends React.Component {
      * Based on the changes fieldProps, the field will aquire new validity states (valid/invalid).
      */
     const nextValidityState = fieldUtils.getValidityState({
-      fieldProps: {
-        ...fieldProps,
-        ...propsPatch
-      }
+      fieldProps: fieldProps.merge(fromJS(propsPatch))
     });
 
     /* Update the field in the state/context to propagate re-render in UI */
     this.updateField({
-      fieldPath: fieldProps.fieldPath,
+      fieldProps,
       propsPatch: {
         ...propsPatch,
         ...nextValidityState
@@ -357,22 +365,22 @@ export default class Form extends React.Component {
     return expected;
   }
 
+  debounceValidateField = debounce(this.validateField, 300)
+
   /**
    * Validates the form.
    * Calls the validation on each field in parallel, awaiting for all calls
    * to be resolved before returning the result.
    */
   validate = async () => {
-    const pendingValidations = this.state.fields.reduce((validations, immutableField) => {
-      const fieldProps = immutableField.toJS();
-
+    const pendingValidations = this.state.fields.reduce((validations, fieldProps) => {
       /* When field needs validation, do so */
-      if (fieldUtils.shouldValidate({ fieldProps })) {
+      if (fieldUtils.shouldValidate(fieldProps)) {
         return validations.concat(this.validateField({ fieldProps }));
       }
 
       /* Otherwise return the current expected status of the field */
-      return validations.concat(fieldProps.expected);
+      return validations.concat(fieldProps.get('expected'));
     }, []);
 
     /* Await for all validation promises to resolve before returning */

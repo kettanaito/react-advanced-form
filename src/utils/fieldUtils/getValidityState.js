@@ -6,7 +6,11 @@
  * @param {object} fieldProps
  */
 export default function getValidityState({ fieldProps }) {
-  const { value, validatedSync, validatedAsync, expected } = fieldProps;
+  const value = fieldProps.get('value');
+  const expected = fieldProps.get('expected');
+  const validatedSync = fieldProps.get('validatedSync');
+  const validatedAsync = fieldProps.get('validatedAsync');
+
   const validated = validatedAsync || validatedSync;
 
   const validityState = {
@@ -14,7 +18,7 @@ export default function getValidityState({ fieldProps }) {
     invalid: validated && !expected
   };
 
-  // console.groupCollapsed('fieldUtils @ getValidityState', fieldProps.name);
+  // console.groupCollapsed('fieldUtils @ getValidityState', fieldProps.get('name'));
   // console.log('value', value);
   // console.log('validated', validated);
   // console.log('expected', expected);

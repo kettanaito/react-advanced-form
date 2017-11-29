@@ -51,6 +51,15 @@ const FieldsComposition = () => (
 );
 
 export default class DefaultForm extends Component {
+  state = {
+    value: ''
+  }
+
+  controlValue = (event) => {
+    event.preventDefault();
+    this.setState({ value: 'foo' });
+  }
+
   handleFormAction = () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve(), 2000);
@@ -72,6 +81,8 @@ export default class DefaultForm extends Component {
   }
 
   render() {
+    const { value } = this.state;
+
     return (
       <FormProvider
         rules={ formRules }
@@ -92,22 +103,29 @@ export default class DefaultForm extends Component {
             </label> */}
 
             {/* Input */}
+            {/* <label>
+              Filed with client rule (optional):
+              <Field.Input
+                name="numbersOnly"
+                placeholder="i.e. 123"
+                value={ value } />
+            </label> */}
+
             <label>
               Filed with client rule (optional):
               <MyInput
-                name="numbersOnly"
-                placeholder="i.e. 123"
+                name="somethingElse"
                 rule={/^\d+$/}
-                value="123" />
+                value={ value } />
             </label>
 
-            {/* <label>
+            <label>
               Field (required):
               <MyInput
                 name="password"
                 required />
-            </label> */}
-
+            </label>
+{/*
             <label>
               Async rule (optional)
               <MyInput
@@ -139,7 +157,7 @@ export default class DefaultForm extends Component {
                 }}
                 value="ab123"
                 required />
-            </label>
+            </label> */}
 
             {/* <label>
               Field with resolvable prop (required)
@@ -171,6 +189,8 @@ export default class DefaultForm extends Component {
               </Field.Group>
             </label>
           </div>
+
+          <button onClick={ this.controlValue }>Set value</button>
 
           <button type="submit">Submit</button>
         </Form>
