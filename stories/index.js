@@ -3,8 +3,10 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 
 import DefaultForm from './DefaultForm';
-import RfqForm from './RfqForm';
+import Rfq from './Rfq';
+import Conditional from './Conditional';
 
 storiesOf('Form', module)
   .add('Default form', () => (<DefaultForm />))
-  .add('RFQ form', () => <RfqForm />);
+  .add('Dynamic "required"', () => <Rfq />)
+  .add('Conditional fields', () => <Conditional />);

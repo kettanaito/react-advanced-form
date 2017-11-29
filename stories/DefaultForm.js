@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormProvider, Form, Condition, Field } from '../lib';
+import { FormProvider, Form, Condition, Field } from '../src';
 import MyInput from './templates/MyInput';
 import MySelect from './templates/MySelect';
 
@@ -114,8 +114,7 @@ export default class DefaultForm extends Component {
               <Field.Input
                 name="fieldOne"
                 value={ value }
-                disabled={ disabled }
-                onChange={({ nextValue }) => this.setState({ value: nextValue })} />
+                disabled={ disabled } />
             </label>
 
             <label>

@@ -9,7 +9,7 @@ const formRules = {
   }
 };
 
-export default class RfqForm extends Component {
+export default class ControlledFields extends Component {
   handleFormAction = () => {
     return new Promise((resolve) => {
       setTimeout(() => resolve(), 2000);
