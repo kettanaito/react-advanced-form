@@ -1,11 +1,18 @@
 /**
  * Returns a bypassed sync message, or resolved async message based on the custom resolvers.
+ * @param {Map} message
+ * @param {string} errorType
+ * @param {Map} fieldProps
+ * @param {object} formProps
+ * @param {object?} extra
+ * @return {string}
  */
 function resolveAsyncMessage({ message, errorType, fieldProps, formProps, extra }) {
   /* Bypass synchronous messages */
   if (errorType !== 'async') return message;
 
   let errorMessage;
+
   const resolvers = message.toJS();
   const resolverNames = Object.keys(resolvers);
 
@@ -13,7 +20,13 @@ function resolveAsyncMessage({ message, errorType, fieldProps, formProps, extra 
     const resolverName = resolverNames[i];
     const resolver = resolvers[resolverName];
 
-    errorMessage = resolver({ ...extra, fieldProps, formProps });
+    /* Get the validation message from the custom resolver function */
+    errorMessage = resolver({
+      ...extra,
+      fieldProps: fieldProps.toJS(),
+      formProps
+    });
+
     if (!errorMessage) break;
   }
 
@@ -22,20 +35,23 @@ function resolveAsyncMessage({ message, errorType, fieldProps, formProps, extra 
 
 /**
  * Returns an error message based on the validity status and provided map of error messages.
+ * @param {object} validationResult
+ * @param {Map} messages
+ * @param {Map} fieldProps
+ * @param {object} formProps
  * @return {string}
  */
 export default function getErrorMessage({ validationResult, messages, fieldProps, formProps }) {
   const { errorType, extra } = validationResult;
-  const { name: fieldName } = fieldProps;
+  const fieldName = fieldProps.get('name');
 
+  /**
+   * Message paths.
+   * Ordered collection of message paths to prompt in the provided "messages".
+   */
   const messagePaths = [
-    /* Name-specific messages has the highest priority */
     ['name', fieldName, errorType],
-
-    /* Type-specific messages has the middle priority */
     ['type', fieldName, errorType],
-
-    /* General messages serve as the fallback ones */
     ['general', errorType]
   ];
 
@@ -43,6 +59,13 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
   for (let i = 0; i < messagePaths.length; i++) {
     const messagePath = messagePaths[i];
     const message = messages.getIn(messagePath);
-    if (message) return resolveAsyncMessage({ message, extra, errorType, fieldProps, formProps });
+
+    if (message) return resolveAsyncMessage({
+      message,
+      extra,
+      errorType,
+      fieldProps,
+      formProps
+    });
   }
 }
