@@ -53,7 +53,7 @@ export default class Form extends React.Component {
    */
   static childContextTypes = {
     fields: IterableInstance,
-    mapFieldToState: PropTypes.func.isRequired,
+    registerField: PropTypes.func.isRequired,
     updateField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -63,7 +63,7 @@ export default class Form extends React.Component {
   getChildContext() {
     return {
       fields: this.state.fields,
-      mapFieldToState: this.mapFieldToState,
+      registerField: this.registerField,
       updateField: this.updateField,
       handleFieldFocus: this.handleFieldFocus,
       handleFieldBlur: this.handleFieldBlur,
@@ -150,8 +150,8 @@ export default class Form extends React.Component {
    * tree, deconstructing and constructing each appropriate child with the attached handler props.
    * @param {Map} fieldProps
    */
-  mapFieldToState = (fieldProps) => {
-    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ mapFieldToState');
+  registerField = (fieldProps) => {
+    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ registerField');
     // console.log('fieldProps', fieldProps);
     // console.groupEnd();
 
