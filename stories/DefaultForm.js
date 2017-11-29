@@ -181,8 +181,6 @@ export default class DefaultForm extends Component {
             </label> */}
 
             <Condition when={({ fields }) => {
-              console.log(fields.zipCode);
-
               return fields.zipCode && (fields.zipCode.validAsync);
             }}>
               <MyInput name="street" value="Baker st." required />
