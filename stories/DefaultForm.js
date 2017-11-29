@@ -53,12 +53,14 @@ const FieldsComposition = () => (
 export default class DefaultForm extends Component {
   state = {
     value: 1,
+    valueTwo: 2,
+    valueThree: 3,
     disabled: false
   }
 
   controlValue = (event) => {
     event.preventDefault();
-    this.setState(prevState => ({ value: prevState.value + 1 }));
+    this.setState(prevState => ({ valueTwo: prevState.valueTwo + 1 }));
   }
 
   handleFormAction = () => {
@@ -82,7 +84,7 @@ export default class DefaultForm extends Component {
   }
 
   render() {
-    const { value, disabled } = this.state;
+    const { value, valueTwo, valueThree, disabled } = this.state;
 
     return (
       <FormProvider
@@ -118,8 +120,8 @@ export default class DefaultForm extends Component {
               <MyInput
                 name="fieldTwo"
                 rule={/^\d+$/}
-                value={ value }
-                onChange={({ nextValue }) => this.setState({ value: nextValue })} />
+                value={ valueTwo }
+                onChange={({ nextValue }) => this.setState({ valueTwo: nextValue })} />
             </label>
 
             <label>
@@ -127,8 +129,8 @@ export default class DefaultForm extends Component {
               <MyInput
                 name="fieldThree"
                 rule={/^\d+$/}
-                value={ value }
-                onChange={({ nextValue }) => this.setState({ value: nextValue })} />
+                value={ valueThree }
+                onChange={({ nextValue }) => this.setState({ valueThree: nextValue })} />
             </label>
 
             {/* <label>
