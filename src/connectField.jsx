@@ -18,8 +18,7 @@ export default function connectField(WrappedComponent) {
 
     static contextTypes = {
       fieldGroup: PropTypes.string,
-      fields: IterableInstance,
-      updateField: PropTypes.func.isRequired
+      fields: IterableInstance
     }
 
     constructor(props, context) {
@@ -28,15 +27,17 @@ export default function connectField(WrappedComponent) {
       const { fieldGroup } = context;
       const { name } = props;
 
+      /* Determine field's path on construction and store the value forever */
       this.fieldPath = fieldUtils.getFieldPath({ name, fieldGroup });
     }
 
     render() {
       const { fieldPath } = this;
       const { fields } = this.context;
-      const directProps = this.props;
 
+      const directProps = this.props;
       const fieldProps = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath]).toJS() : defaultProps;
+
       const {
         focused,
         disabled,
