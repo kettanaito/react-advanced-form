@@ -43,6 +43,7 @@ export default class Field extends React.Component {
     fieldGroup: PropTypes.string,
     fields: IterableInstance,
     registerField: PropTypes.func.isRequired,
+    updateField: PropTypes.func.isRequired,
     unregisterField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -61,7 +62,6 @@ export default class Field extends React.Component {
 
     if (typeof propValue !== 'function') return propValue;
 
-    // const fieldProps = fieldUtils.getFieldProps(this.fieldPath, fields, this.props);
     const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps: this.contextProps, fields });
     return resolvedPropValue || defaultProps[propName];
   }
@@ -81,7 +81,7 @@ export default class Field extends React.Component {
    * fields inside the composite component. Thus, each field is updating the state
    * based on its value upon the composite mount. This causes issues of missing fields.
    */
-  registerSelf = (props) => {
+  registerWith = (props) => {
     const { fieldGroup } = this.context;
     const { value, initialValue } = props;
 
@@ -105,9 +105,26 @@ export default class Field extends React.Component {
     return this.context.registerField(fromJS(fieldProps));
   }
 
+  updateWith({ propsPatch }) {
+    return this.context.updateField({
+      fieldProps: this.contextProps,
+      propsPatch
+    });
+  }
+
+  fieldWillRegister() {
+    return this.props;
+  }
+
+  fieldWillUnregister() {
+    return null;
+  }
+
   componentWillMount() {
-    /* Notify the parent Form that a new field has just mounted */
-    return this.registerSelf(this.props);
+    const fieldProps = this.fieldWillRegister();
+
+    /* Notify the parent Form that a new field is about to mount */
+    return this.registerWith(fieldProps);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -130,7 +147,8 @@ export default class Field extends React.Component {
    * Deletes the field's bindings from the Form on unmounting.
    */
   componentWillUnmount() {
-    this.context.unregisterField(this.contextProps);
+    this.fieldWillUnregister();
+    return this.context.unregisterField(this.contextProps);
   }
 
   /**
@@ -175,14 +193,22 @@ export default class Field extends React.Component {
     });
   }
 
+  renderField() {
+    return null;
+  }
+
   render() {
     /* Skip rendering unless the field in in the Form's context */
     if (!this.contextProps) return null;
 
     const { id, className, style } = this.props;
 
+    const Component = this.renderField(this.props, this.contextProps);
+    invariant(Component, `Cannot render the field \`${this.props.name}\` as it doesn't have a renderable component. Make sure to return a React component in "renderField()" method.`);
+
     return (
-      <input
+      <Component.type
+        ref={ this.getReference }
         name={ this.contextProps.get('name') }
         type={ this.contextProps.get('type') }
         id={ id }
@@ -193,7 +219,10 @@ export default class Field extends React.Component {
         disabled={ this.contextProps.get('disabled') }
         onFocus={ this.handleFocus }
         onChange={ this.handleChange }
-        onBlur={ this.handleBlur } />
+        onBlur={ this.handleBlur }
+        {...Component.props}>
+        { Component.props.children }
+      </Component.type>
     );
   }
 }

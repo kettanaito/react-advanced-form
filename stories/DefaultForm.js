@@ -108,6 +108,11 @@ export default class DefaultForm extends Component {
               </Field.Select>
             </label> */}
 
+            <Field.Select name="selectField">
+              <option value="first">First value</option>
+              <option value="second">Second value</option>
+            </Field.Select>
+
             {/* Input */}
             <label>
               Filed with client rule (optional):
