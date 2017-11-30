@@ -1,3 +1,6 @@
+/**
+ * Field (generic).
+ */
 import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -5,9 +8,7 @@ import { fromJS } from 'immutable';
 import { IterableInstance, isset, fieldUtils } from '../utils';
 
 export const defaultProps = {
-  type: 'text',
   expected: true,
-  // value: '',
   required: false,
   disabled: false
 };
@@ -43,7 +44,6 @@ export default class Field extends React.Component {
     fields: IterableInstance,
     registerField: PropTypes.func.isRequired,
     unregisterField: PropTypes.func.isRequired,
-    updateField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
     handleFieldChange: PropTypes.func.isRequired
@@ -75,27 +75,26 @@ export default class Field extends React.Component {
     this.fieldPath = fieldUtils.getFieldPath({ ...this.props, fieldGroup });
   }
 
-  componentWillMount() {
-    /**
-     * Map the field to Form's state to notify the latter of the new registered field.
-     * Timeout is required because {componentDidMount} happens at the same time for all
-     * fields inside the composite component. Thus, each field is updating the state
-     * based on its value upon the composite mount. This causes issues of missing fields.
-     */
+  /**
+   * Map the field to Form's state to notify the latter of the new registered field.
+   * Timeout is required because {componentDidMount} happens at the same time for all
+   * fields inside the composite component. Thus, each field is updating the state
+   * based on its value upon the composite mount. This causes issues of missing fields.
+   */
+  registerSelf = (props) => {
     const { fieldGroup } = this.context;
-    const { value, initialValue } = this.props;
+    const { value, initialValue } = props;
 
-    const fieldProps = {
-      ...this.props,
-      controllable: isset(value),
-      value: value || initialValue || '',
+    const fieldProps = Object.assign({}, props, {
       fieldPath: this.fieldPath,
-      dynamicProps: fieldUtils.getDynamicProps(this.props),
+      controllable: isset(value),
+      dynamicProps: fieldUtils.getDynamicProps(props),
+      value: value || initialValue || '',
       validSync: false,
       validAsync: false,
       validatedSync: false,
       validatedAsync: false
-    };
+    });
 
     /* Prevent { fieldGroup: undefined } for fields without a group */
     if (fieldGroup) {
@@ -104,6 +103,11 @@ export default class Field extends React.Component {
 
     /* Notify the parent Form that a new field has just mounted */
     return this.context.registerField(fromJS(fieldProps));
+  }
+
+  componentWillMount() {
+    /* Notify the parent Form that a new field has just mounted */
+    return this.registerSelf(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
