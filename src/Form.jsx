@@ -7,9 +7,6 @@ import { TValidationRules, TValidationMessages } from './FormProvider';
 import { isset, debounce, fieldUtils, IterableInstance } from './utils';
 
 export default class Form extends React.Component {
-  /**
-   * Props.
-   */
   static propTypes = {
     /* General */
     id: PropTypes.string,
@@ -31,26 +28,19 @@ export default class Form extends React.Component {
     action: () => new Promise(resolve => resolve())
   }
 
-  /**
-   * State.
-   */
   state = {
     fields: Map(),
     dynamicFields: Map(),
     submitting: false
   }
 
-  /**
-   * Context which is accepted by Form.
-   */
+  /* Context which is accepted by Form */
   static contextTypes = {
     rules: TValidationRules,
     messages: IterableInstance
   }
 
-  /**
-   * Context which Form passes to Fields.
-   */
+  /* Context which Form passes to Fields */
   static childContextTypes = {
     fields: IterableInstance,
     registerField: PropTypes.func.isRequired,
@@ -99,15 +89,8 @@ export default class Form extends React.Component {
    */
   updateField = ({ fieldPath, fieldProps: directFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
-    // const fieldProps = fieldUtils.getFieldProps(fieldPath, fields, directProps);
-
     const fieldProps = directFieldProps || fields.getIn([fieldPath]);
     const nextFieldProps = propsPatch ? fieldProps.merge(fromJS(propsPatch)) : fieldProps;
-
-    // const nextProps = propsPatch ? {
-    //   ...fieldProps,
-    //   ...propsPatch
-    // } : fieldProps;
 
     /* Update the validity state of the field */
     const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
@@ -261,9 +244,13 @@ export default class Form extends React.Component {
     const validatedSync = fieldProps.get('validatedSync');
     const validatedAsync = fieldProps.get('validatedAsync');
 
-    /* Determine whether validation is needed */
     /**
-     *
+     * Determine whether the validation is needed.
+     * Also, determine a type of the validation. In case the field has been validated sync and is valid sync, it's
+     * ready to be validated async (if any async validation present). However, if the field hasn't been validated
+     * sync yet (hasn't been touched), first require sync validation. When the latter fails, user will be prompted
+     * to change the value of the field. Changing the value resets the "async" validation state as well. Hence, when
+     * the user will pass sync validation, upon blurring out the field, the validation type will be "async".
      */
     let shouldValidate = !validatedSync || (expected && !validatedAsync && asyncRule);
     const validationType = validatedSync ? 'async' : 'sync';
@@ -404,7 +391,9 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Validates the field in debounce mode.
+   * Validates the field in the debounce mode.
+   * That applies that in case multiple calls of this method will be executed, each next within the given timeout
+   * duration period postpones the method's execution.
    */
   debounceValidateField = debounce(this.validateField, 300)
 
@@ -446,8 +435,6 @@ export default class Form extends React.Component {
 
     /* Ensure form should submit (has no unexpected field values) */
     const shouldSubmit = await this.validate();
-    // console.warn('shouldSubmit?', shouldSubmit);
-
     if (!shouldSubmit) return;
 
     const { fields } = this.state;
