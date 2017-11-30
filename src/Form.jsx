@@ -181,7 +181,7 @@ export default class Form extends React.Component {
         /* Call custom onFocus handler */
         onFocus({
           event,
-          fieldProps: nextFieldProps,
+          fieldProps: nextFieldProps.toJS(),
           formProps: this.props
         });
       }
@@ -301,7 +301,7 @@ export default class Form extends React.Component {
       if (onBlur) {
         onBlur({
           event,
-          fieldProps: nextFieldProps,
+          fieldProps: nextFieldProps.toJS(),
           formProps: this.props
         });
       }
