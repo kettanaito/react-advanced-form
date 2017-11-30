@@ -55,6 +55,7 @@ export default class Form extends React.Component {
     return {
       fields: this.state.fields,
       registerField: this.registerField,
+      updateField: this.updateField,
       unregisterField: this.unregisterField,
       updateField: this.updateField,
       handleFieldFocus: this.handleFieldFocus,
@@ -137,7 +138,7 @@ export default class Form extends React.Component {
    */
   registerField = (fieldProps) => {
     // console.groupCollapsed(fieldProps.get('fieldPath'), '@ registerField');
-    // console.log('fieldProps', fieldProps);
+    // console.log('fieldProps', fieldProps.toJS());
     // console.groupEnd();
 
     /* Validate the field when it has initial value */
