@@ -424,7 +424,7 @@ export default class Form extends React.Component {
    * Serializes the fields in the Form into a plain Object.
    */
   serialize = () => {
-    return fieldUtils.serializeFields(this.state.fields);
+    return fieldUtils.serializeFields(this.state.fields).toJS();
   }
 
   /**
