@@ -447,7 +447,7 @@ export default class Form extends React.Component {
     /* Compose a single Object of arguments passed to each custom handler */
     const callbackArgs = {
       fields,
-      serialized: serialized.toJS(),
+      serialized,
       formProps: this.props
     };
 
