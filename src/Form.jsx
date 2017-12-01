@@ -99,8 +99,8 @@ export default class Form extends React.Component {
     const nextResolvedFields = nextFields.map((fieldProps) => {
       const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
         return resolver({
-          fieldProps: nextFieldProps,
-          fields: fields.toJS(),
+          fieldProps: nextFieldProps.toJS(),
+          fields: nextFields.toJS(),
           formProps: this.props
         });
       });
@@ -109,12 +109,12 @@ export default class Form extends React.Component {
     });
 
     // console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
-    // console.log('fieldProps:', fieldProps.toJS());
+    // console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
     // console.log('propsPatch:', propsPatch);
-    // console.log('next fieldProps:', nextFieldProps.toJS());
+    // console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
     // console.log('next value:', nextFieldProps.get('value'));
-    // console.log('nextFields:', nextFields.toJS());
-    // console.log('nextResolvedFields:', nextResolvedFields.toJS());
+    // console.log('nextFields:', Object.assign({}, nextFields.toJS()));
+    // console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
     // console.groupEnd();
 
     return new Promise((resolve, reject) => {
@@ -195,7 +195,7 @@ export default class Form extends React.Component {
    * @param {mixed} nextValue
    */
   handleFieldChange = ({ event, fieldProps, nextValue, prevValue }) => {
-    // console.groupCollapsed(fieldProps.name, '@ handleFieldChange');
+    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
     // console.log('fieldProps', fieldProps);
     // console.log('nextValue', nextValue);
     // console.groupEnd();
@@ -240,9 +240,9 @@ export default class Form extends React.Component {
     const fieldPath = fieldProps.get('fieldPath');
     const prevDisabled = fieldProps.get('disabled');
     const value = fieldProps.get('value');
-    const expected = fieldProps.get('expected');
     const required = fieldProps.get('required');
     const asyncRule = fieldProps.get('asyncRule');
+    const validSync = fieldProps.get('validSync');
     const validatedSync = fieldProps.get('validatedSync');
     const validatedAsync = fieldProps.get('validatedAsync');
 
@@ -254,16 +254,12 @@ export default class Form extends React.Component {
      * to change the value of the field. Changing the value resets the "async" validation state as well. Hence, when
      * the user will pass sync validation, upon blurring out the field, the validation type will be "async".
      */
-    let shouldValidate = !validatedSync || (expected && !validatedAsync && asyncRule);
-    const validationType = validatedSync ? 'async' : 'sync';
-
-    /* Skip async validation for empty non-required fields */
-    if (!value && !required) {
-      shouldValidate = false;
-    }
+    let shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
+    const validationType = (validatedSync && validSync) ? 'async' : 'sync';
 
     // console.groupCollapsed(fieldProps.get('name'), '@ handleFieldBlur');
-    // console.log('fieldProps', fieldProps);
+    // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+    // console.log('validationType', validationType);
     // console.log('should validate', shouldValidate);
     // console.groupEnd();
 
@@ -322,11 +318,10 @@ export default class Form extends React.Component {
    * @return {boolean}
    */
   validateField = async ({ type = 'both', fieldProps }) => {
-    // console.groupCollapsed(fieldProps.get('name'), '@ validateField');
+    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     // console.log('validation type', type);
     // console.log('value', fieldProps.get('value'));
-    // console.log('fieldProps', fieldProps.toJS());
-    // console.log('validatedProp', validatedProp);
+    // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     // console.groupEnd();
     // console.log(' ');
 
@@ -396,7 +391,7 @@ export default class Form extends React.Component {
    * That applies that in case multiple calls of this method will be executed, each next within the given timeout
    * duration period postpones the method's execution.
    */
-  debounceValidateField = debounce(this.validateField, 300)
+  debounceValidateField = debounce(this.validateField, 300, true)
 
   /**
    * Validates the form.

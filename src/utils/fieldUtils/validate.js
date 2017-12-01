@@ -23,14 +23,12 @@ export default async function validate({ type, fieldProps, fields, formProps, fo
   if (['both', 'sync'].includes(type)) {
     const syncValidationResult = validateSync({ fieldProps, fields, formProps, formRules });
     // console.log('syncValidation:', syncValidationResult);
-
     if (type === 'sync') return syncValidationResult;
     if (!syncValidationResult.expected) return syncValidationResult;
   }
 
   if (['both', 'async'].includes(type)) {
     const asyncValidationResult = await validateAsync({ fieldProps, fields, formProps, formRules });
-
     // console.log('asyncValidationResult', asyncValidationResult);
     return asyncValidationResult;
   }
