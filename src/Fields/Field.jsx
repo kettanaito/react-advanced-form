@@ -164,7 +164,7 @@ export default class Field extends React.Component {
     const prevValue = contextProps.get('value');
     const hasUpdateMethod = contextProps.get('controllable') ? this.props.onChange : true;
 
-    invariant(hasUpdateMethod, `Cannot update the controlled field "${contextProps.get('name')}". Expected custom "onChange" handler, but received: ${this.props.onChange}.`);
+    invariant(hasUpdateMethod, `Cannot update the controlled field \`${contextProps.get('name')}\`. Expected custom \`onChange\` handler, but received: ${this.props.onChange}.`);
 
     /* Call parental change handler */
     return this.context.handleFieldChange({
@@ -200,7 +200,6 @@ export default class Field extends React.Component {
 
     return (
       <Component.type
-        ref={ this.getReference }
         name={ this.contextProps.get('name') }
         type={ this.contextProps.get('type') }
         id={ id }
