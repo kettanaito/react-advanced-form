@@ -239,8 +239,6 @@ export default class Form extends React.Component {
   handleFieldBlur = async ({ event, fieldProps }) => {
     const fieldPath = fieldProps.get('fieldPath');
     const prevDisabled = fieldProps.get('disabled');
-    const value = fieldProps.get('value');
-    const required = fieldProps.get('required');
     const asyncRule = fieldProps.get('asyncRule');
     const validSync = fieldProps.get('validSync');
     const validatedSync = fieldProps.get('validatedSync');
@@ -254,7 +252,7 @@ export default class Form extends React.Component {
      * to change the value of the field. Changing the value resets the "async" validation state as well. Hence, when
      * the user will pass sync validation, upon blurring out the field, the validation type will be "async".
      */
-    let shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
+    const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
     const validationType = (validatedSync && validSync) ? 'async' : 'sync';
 
     // console.groupCollapsed(fieldProps.get('name'), '@ handleFieldBlur');
