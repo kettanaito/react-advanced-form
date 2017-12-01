@@ -15,16 +15,10 @@ export default class Select extends Field {
     value: PropTypes.string,
   }
 
-  getReference = (node) => {
-    const { value: nativeValue } = node;
-    if (this.props.value || !nativeValue) return;
-
-    this.updateWith({
-      propsPatch: {
-        value: nativeValue
-      }
-    });
-  }
+  fieldWillRegister = () => ({
+    ...this.props,
+    initialValue: this.props.initialValue || this.props.children[0].props.value
+  })
 
   renderField({ children }) {
     return (
