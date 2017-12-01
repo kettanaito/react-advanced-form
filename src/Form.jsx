@@ -457,18 +457,38 @@ export default class Form extends React.Component {
      * Form's action is a function which returns a Promise. You should pass a WS call, or async action
      * as a prop to the form in order for it to work.
      */
-    action(callbackArgs).then(() => {
+    action(callbackArgs).then((res) => {
       /* Event: Submit has passed */
-      if (onSubmit) onSubmit(callbackArgs);
-    }).catch(() => {
+      if (onSubmit) {
+        onSubmit({
+          ...callbackArgs,
+          res
+        });
+      }
+
+      return res;
+    }).catch((res) => {
       /* Event: Submit has failed */
-      if (onSubmitFailed) onSubmitFailed(callbackArgs);
-    }).then(() => {
+      if (onSubmitFailed) {
+        onSubmitFailed({
+          ...callbackArgs,
+          res
+        });
+      }
+
+      return res;
+    }).then((res) => {
       /**
        * Event: Submit has ended.
        * Called each time after the submit, regardless of the submit status (success/failure).
        */
-      if (onSubmitEnd) onSubmitEnd(callbackArgs);
+      if (onSubmitEnd) {
+        onSubmitEnd({
+          ...callbackArgs,
+          res
+        });
+      }
+
       this.setState({ submitting: false });
     });
   }
