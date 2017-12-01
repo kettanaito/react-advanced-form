@@ -424,8 +424,8 @@ export default class Form extends React.Component {
    * Handles form submit.
    * @param {Event} event
    */
-  handleFormSubmit = async (event) => {
-    event.preventDefault();
+  submit = async (event) => {
+    if (event) event.preventDefault();
 
     /* Ensure form should submit (has no unexpected field values) */
     const shouldSubmit = await this.validate();
@@ -454,7 +454,7 @@ export default class Form extends React.Component {
 
     /**
      * Perform the action.
-     * Form's action is a function which returns a Promise. You should pass a WS call, or async action
+     * Form's action is a function which returns a Promise. You must pass a req, or async action
      * as a prop to the form in order for it to work.
      */
     action(callbackArgs).then((res) => {
@@ -480,7 +480,7 @@ export default class Form extends React.Component {
     }).then((res) => {
       /**
        * Event: Submit has ended.
-       * Called each time after the submit, regardless of the submit status (success/failure).
+       * Called each time after the submit regardless of the its status (success/failure).
        */
       if (onSubmitEnd) {
         onSubmitEnd({
@@ -500,7 +500,7 @@ export default class Form extends React.Component {
       <form
         {...{ id }}
         {...{ className }}
-        onSubmit={ this.handleFormSubmit }
+        onSubmit={ this.submit }
         noValidate>
         { children }
       </form>
