@@ -143,7 +143,6 @@ export default class DefaultForm extends Component {
               </label>
               <label>
                 <Field.Radio
-                  type="radio"
                   name="radioField"
                   value="Goose" />
                   Goose
@@ -151,18 +150,30 @@ export default class DefaultForm extends Component {
 
               <label>
                 <Field.Radio
-                  type="radio"
                   name="radioField"
-                  value="Duck" />
+                  value="Duck"
+                  checked />
                   Duck
               </label>
+
               <label>
                 <Field.Radio
-                  type="radio"
                   name="radioField"
                   value="Kangaroo" />
                   Kangaroo
               </label>
+            </div>
+
+            <div>
+              <Field.Radio
+                name="customerType"
+                label="Business"
+                value="101"
+                checked />
+              <Field.Radio
+                name="customerType"
+                label="Private"
+                value="100" />
             </div>
 
             {/* Input */}

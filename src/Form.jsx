@@ -97,6 +97,8 @@ export default class Form extends React.Component {
 
     /* FIXME Compose resolved fields */
     const nextResolvedFields = nextFields.map((fieldProps) => {
+      if (!fieldProps.has('dynamicProps')) return fieldProps;
+
       const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
         return resolver({
           fieldProps: nextFieldProps.toJS(),
@@ -302,7 +304,7 @@ export default class Form extends React.Component {
 
       // TODO Find more efficient way of updating the fields with dynamic props
       nextFields.map((fieldProps) => {
-        if (fieldProps.get('dynamicProps').size > 0) {
+        if (fieldProps.has('dynamicProps')) {
           this.validateField({ fieldProps });
         }
       });

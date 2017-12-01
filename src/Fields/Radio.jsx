@@ -44,9 +44,9 @@ export default class Radio extends Field {
 
     return {
       ...this.props,
-      checked,
-      initialValue: checked && value,
-      value: null
+      checked: !!checked,
+      initialValue: checked && value, // only checked radio will set the context value to its value
+      value: null // other radio inputs are not mutating the conext value
     };
   }
 

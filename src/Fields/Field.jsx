@@ -84,10 +84,12 @@ export default class Field extends React.Component {
     const { fieldGroup } = this.context;
     const { value, initialValue } = props;
 
+    /* Check if dynamic props are present */
+    const dynamicProps = fieldUtils.getDynamicProps(props);
+
     const fieldProps = Object.assign({}, props, {
       fieldPath: this.fieldPath,
       controllable: isset(value),
-      dynamicProps: fieldUtils.getDynamicProps(props),
       value: value || initialValue || '',
       validSync: false,
       validAsync: false,
@@ -98,6 +100,11 @@ export default class Field extends React.Component {
     /* Prevent { fieldGroup: undefined } for fields without a group */
     if (fieldGroup) {
       fieldProps.fieldGroup = fieldGroup;
+    }
+
+    /* Assign "dynamicProps" only in case they are present */
+    if (Object.keys(dynamicProps).length > 0) {
+      fieldProps.dynamicProps = dynamicProps;
     }
 
     /* Notify the parent Form that a new field has just mounted */
