@@ -1,6 +1,7 @@
 /**
  * Input.
  */
+import React from 'react';
 import Field from './Field';
 
 export default class Input extends Field {

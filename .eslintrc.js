@@ -7,8 +7,8 @@ module.exports = {
     ecmaVersion: 7,
     ecmaFeatures: {
       classes: true,
-      modules: true,
-      jsx: true
+      jsx: true,
+      modules: true
     }
   },
   extends: ['airbnb-base', 'airbnb-base/legacy'],
@@ -21,6 +21,7 @@ module.exports = {
     }
   },
   rules: {
+    'strict': [2, 'never'],
     'no-console': 1,
     'max-len': [1, 120],
     'consistent-return': 0,
@@ -34,6 +35,11 @@ module.exports = {
     'func-names': 0,
     'no-param-reassign': 0,
     'import/prefer-default-export': 0,
-    'class-methods-use-this': 0
+    'class-methods-use-this': 0,
+
+    /* React */
+    'react/jsx-uses-react': 2,
+    'react/jsx-uses-vars': 2,
+    'react/react-in-jsx-scope': 2
   }
 };
