@@ -27,9 +27,9 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
   // console.log('required:', required);
   // console.log('value:', value);
 
-  /* Allow non-required fields to be empty */
-  if (!value && required) return { expected: false, errorType: 'missing' };
+  /* Treat optional empty fields as expected */
   if (!value && !required) return { expected: true };
+  if (!value && required) return { expected: false, errorType: 'missing' };
 
   /* Assume Field doesn't have any specific validation attached */
   const formTypeRule = formRules.type && formRules.type[type];

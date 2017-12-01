@@ -2,7 +2,8 @@ export default async function validateAsync({ fieldProps, fields, formProps }) {
   const value = fieldProps.get('value');
   const asyncRule = fieldProps.get('asyncRule');
 
-  if (!asyncRule) return { expected: true };
+  /* Treat optional empty fields as expected */
+  if (!asyncRule || !value) return { expected: true };
 
   let expected = false;
   let extra = {};
