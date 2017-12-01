@@ -33,6 +33,7 @@ module.exports = {
     'no-shadow': 0,
     'func-names': 0,
     'no-param-reassign': 0,
-    'import/prefer-default-export': 0
+    'import/prefer-default-export': 0,
+    'class-methods-use-this': 0
   }
 };
