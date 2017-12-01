@@ -67,23 +67,44 @@ export default class DefaultForm extends Component {
   }
 
   handleFormAction = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 2000);
+    return new Promise((resolve, reject) => {
+      setTimeout(() => reject({ errorMessage: 'foo' }), 2000);
     });
   }
 
   handleSubmitStart = ({ fields, serialized, formProps }) => {
-    console.warn('handleSubmitStart');
-    console.log('fields', fields.toJS());
+    console.groupCollapsed('handleSubmitStart');
+    console.log('fields', fields);
     console.log('serialized', serialized);
     console.log('formProps', formProps);
+    console.groupEnd();
   }
 
-  handleSubmitEnd = ({ fields, serialized, formProps }) => {
-    console.warn('handleSubmitEnd');
-    console.log('fields', fields.toJS());
+  handleSubmitSuccess = ({ fields, serialized, formProps, res }) => {
+    console.groupCollapsed('handleSubmitSuccess');
+    console.log('fields', fields);
     console.log('serialized', serialized);
     console.log('formProps', formProps);
+    console.log('res', res);
+    console.groupEnd();
+  }
+
+  handleSubmitFail = ({ fields, serialized, formProps, res }) => {
+    console.groupCollapsed('handleSubmitFail');
+    console.log('fields', fields);
+    console.log('serialized', serialized);
+    console.log('formProps', formProps);
+    console.log('res', res);
+    console.groupEnd();
+  }
+
+  handleSubmitEnd = ({ fields, serialized, formProps, res }) => {
+    console.groupCollapsed('handleSubmitEnd');
+    console.log('fields', fields);
+    console.log('serialized', serialized);
+    console.log('formProps', formProps);
+    console.log('res', res);
+    console.groupEnd();
   }
 
   render() {
@@ -97,6 +118,8 @@ export default class DefaultForm extends Component {
           id="default-form-example"
           action={this.handleFormAction}
           onSubmitStart={this.handleSubmitStart}
+          onSubmit={this.handleSubmitSuccess}
+          onSubmitFailed={this.handleSubmitFail}
           onSubmitEnd={this.handleSubmitEnd}>
           <div className="field-group">
             {/* Select */}
