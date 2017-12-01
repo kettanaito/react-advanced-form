@@ -137,11 +137,40 @@ export default class DefaultForm extends Component {
             </Field.Select>
 
             {/* Input */}
+            <div>
+              <label>
+                Choose one of the following:
+              </label>
+              <label>
+                <Field.Radio
+                  type="radio"
+                  name="radioField"
+                  value="Goose" />
+                  Goose
+              </label>
+
+              <label>
+                <Field.Radio
+                  type="radio"
+                  name="radioField"
+                  value="Duck" />
+                  Duck
+              </label>
+              <label>
+                <Field.Radio
+                  type="radio"
+                  name="radioField"
+                  value="Kangaroo" />
+                  Kangaroo
+              </label>
+            </div>
+
+            {/* Input */}
             <label>
               Filed with client rule (optional):
               <MyInput
                 name="fieldOne"
-                value={ value }
+                value="1"
                 disabled={ disabled } />
             </label>
 
@@ -153,7 +182,7 @@ export default class DefaultForm extends Component {
                 initialValue="John Wick" />
             </label>
 
-            <label>
+            {/* <label>
               Filed with client rule (optional):
               <MyInput
                 name="fieldTwo"
@@ -169,7 +198,7 @@ export default class DefaultForm extends Component {
                 rule={/^\d+$/}
                 value={ valueThree }
                 onChange={({ nextValue }) => this.setState({ valueThree: nextValue })} />
-            </label>
+            </label> */}
 
             {/* <label>
               Field (required):

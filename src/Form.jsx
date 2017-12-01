@@ -196,7 +196,7 @@ export default class Form extends React.Component {
    */
   handleFieldChange = ({ event, fieldProps, nextValue, prevValue }) => {
     // console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
-    // console.log('fieldProps', fieldProps);
+    // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     // console.log('nextValue', nextValue);
     // console.groupEnd();
 
