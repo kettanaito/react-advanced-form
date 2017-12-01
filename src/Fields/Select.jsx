@@ -14,15 +14,22 @@ export default class Select extends Field {
     value: PropTypes.string
   }
 
-  fieldWillRegister = () => ({
-    ...this.props,
-    initialValue: this.props.initialValue || this.props.children[0].props.value
-  })
+  /**
+   * Field registration.
+   * This is a Field's lifecycle method called immediately before its registration in the Form.
+   * The Object this method returns is treated as field props to be registered in the Form.
+   */
+  fieldWillRegister() {
+    return {
+      ...this.props,
+      initialValue: this.props.initialValue || this.props.children[0].props.value
+    };
+  }
 
-  renderField({ children }) {
+  renderField(props) {
     return (
       <select>
-        { children }
+        { props.children }
       </select>
     );
   }
