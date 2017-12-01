@@ -1,8 +1,6 @@
 /**
  * Select.
  */
-import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import Field from './Field';
 
@@ -12,7 +10,7 @@ export default class Select extends Field {
   static propTypes = {
     id: PropTypes.string,
     className: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.string
   }
 
   fieldWillRegister = () => ({
