@@ -43,7 +43,6 @@ export default class Field extends React.Component {
     fieldGroup: PropTypes.string,
     fields: IterableInstance,
     registerField: PropTypes.func.isRequired,
-    updateField: PropTypes.func.isRequired,
     unregisterField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -103,13 +102,6 @@ export default class Field extends React.Component {
 
     /* Notify the parent Form that a new field has just mounted */
     return this.context.registerField(fromJS(fieldProps));
-  }
-
-  updateWith({ propsPatch }) {
-    return this.context.updateField({
-      fieldProps: this.contextProps,
-      propsPatch
-    });
   }
 
   fieldWillRegister() {
