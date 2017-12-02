@@ -2,13 +2,28 @@
   "presets": [
     ["env", {
       "targets": {
-        "node": "current"
+        "browsers": "last 2 versions"
       }
     }],
     "stage-2",
     "react"
   ],
   "plugins": [
+    "transform-export-extensions",
     "transform-async-to-generator"
-  ]
+  ],
+  "env": {
+    "production": {
+      "presets": [
+        ["env", {
+          "modules": false,
+          "targets": {
+            "browsers": "last 2 versions"
+          }
+        }],
+        "stage-2",
+        "react"
+      ]
+    }
+  }
 }
