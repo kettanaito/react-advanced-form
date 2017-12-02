@@ -22,15 +22,14 @@ export default class Field extends React.Component {
     /* Specific */
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    placeholder: PropTypes.string,
     value: PropTypes.string,
 
     /* Validation */
     rule: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.instanceOf(RegExp)
-    ]), // sync validation rule
-    asyncRule: PropTypes.func, // async validation rule (function to return a Promise)
+    ]),
+    asyncRule: PropTypes.func,
 
     /* States */
     required: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
@@ -59,8 +58,10 @@ export default class Field extends React.Component {
     const contextValue = fields.getIn([this.fieldPath, propName]);
     const propValue = isset(contextValue) ? contextValue : this.props[propName];
 
+    /* Return plain values right away */
     if (typeof propValue !== 'function') return propValue;
 
+    /* Otherwise, try to resolve the prop value */
     const resolvedPropValue = fieldUtils.resolveProp({ propName, fieldProps: this.contextProps, fields });
     return resolvedPropValue || defaultProps[propName];
   }
@@ -75,10 +76,9 @@ export default class Field extends React.Component {
   }
 
   /**
-   * Map the field to Form's state to notify the latter of the new registered field.
-   * Timeout is required because {componentDidMount} happens at the same time for all
-   * fields inside the composite component. Thus, each field is updating the state
-   * based on its value upon the composite mount. This causes issues of missing fields.
+   * Maps the field to form's state to notify the latter of the new registered field.
+   * By providing this mapping, and passing the "fields" Map through the context, there is no need for
+   * manual parsing the children of Form for them to be controlled by the latter.
    */
   registerWith = (props) => {
     const { fieldGroup } = this.context;
@@ -111,10 +111,20 @@ export default class Field extends React.Component {
     return this.context.registerField(fromJS(fieldProps));
   }
 
+  /**
+   * Field will register.
+   * A field's lifecycle method which, when specified, is expected to return an Object to be treated as props
+   * upon field's registration within the form. You don't need to specify it explicitly unless you want for a field
+   * to be registered with some altered props, rather than its own (i.e. Radio input needs to have a "checked" prop).
+   */
   fieldWillRegister() {
     return this.props;
   }
 
+  /**
+   * Field will unregister.
+   * Called immediately before unmounting the node of the field.
+   */
   fieldWillUnregister() {
     return null;
   }
