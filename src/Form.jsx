@@ -334,6 +334,8 @@ export default class Form extends React.Component {
    * @return {boolean}
    */
   validateField = async ({ type = 'both', fieldProps }) => {
+    const { fields } = this.state;
+
     // console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     // console.log('validation type', type);
     // console.log('value', fieldProps.get('value'));
@@ -344,7 +346,7 @@ export default class Form extends React.Component {
     const validationArgs = {
       type,
       fieldProps,
-      fields: this.state.fields,
+      fields,
       formProps: this.props,
       formRules: this.formRules
     };
@@ -376,6 +378,7 @@ export default class Form extends React.Component {
         validationResult,
         messages: this.formMessages,
         fieldProps,
+        fields,
         formProps: this.props
       });
 
@@ -386,9 +389,7 @@ export default class Form extends React.Component {
      * Get the next validity state.
      * Based on the changed fieldProps, the field will aquire new validity state (valid/invalid).
      */
-    const nextValidityState = fieldUtils.getValidityState({
-      fieldProps: fieldProps.merge(fromJS(propsPatch))
-    });
+    const nextValidityState = fieldUtils.getValidityState(fieldProps.merge(fromJS(propsPatch)));
 
     /* Update the field in the state to reflect the changes */
     this.updateField({
