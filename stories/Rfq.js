@@ -5,7 +5,7 @@ import MyInput from './templates/MyInput';
 /* Form validation rules */
 const formRules = {
   name: {
-    username: value => (value === 'ab123')
+    username: ({ value }) => (value === 'ab123')
   }
 };
 

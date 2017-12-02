@@ -5,7 +5,6 @@
 
 export default function validateSync({ fieldProps, fields, formProps, formRules }) {
   let isExpected = true;
-  const mutableFieldProps = fieldProps.toJS();
 
   const name = fieldProps.get('name');
   const type = fieldProps.get('type');
@@ -20,7 +19,7 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
     fieldProps,
     fields
   });
- */
+  */
 
   // console.groupCollapsed('fieldUtils @ isExpected', name);
   // console.log('fieldProps', fieldProps);
@@ -42,13 +41,15 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
     return { expected: true };
   }
 
+  const mutableFieldProps = fieldProps.toJS();
+
   /* Format (sync) validation */
   if (rule) {
     // console.log('Field has "rule":', rule);
 
     /* Test the RegExp against the field's value */
     isExpected = (typeof rule === 'function')
-      ? rule({ value, fieldProps: mutableFieldProps, fields, formProps })
+      ? rule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), formProps })
       : rule.test(value);
 
     // console.log('isExpected:', isExpected);
@@ -68,8 +69,14 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
     // console.groupEnd();
 
     /* Form-level validation */
-    const isValidByType = formTypeRule ? formTypeRule(value, fieldProps: mutableFieldProps, formProps) : true;
-    const isValidByName = formNameRule ? formNameRule(value, fieldProps: mutableFieldProps, formProps) : true;
+    const isValidByType = formTypeRule
+      ? formTypeRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), formProps })
+      : true;
+
+    const isValidByName = formNameRule
+      ? formNameRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), formProps })
+      : true;
+
     isExpected = (isValidByType && isValidByName);
 
     // console.log('isExpected:', isExpected);
