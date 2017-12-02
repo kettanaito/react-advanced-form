@@ -67,15 +67,16 @@ export default class Form extends React.Component {
    * Getter: Returns the validation rules applicable to the current form.
    */
   get formRules() {
-    const { rules: contextRules } = this.context;
-    const { rules: formRules } = this.props;
-
-    return formRules || contextRules || Map();
+    return this.props.rules || this.context.rules || Map();
   }
 
   constructor(props, context) {
     super(props, context);
 
+    /**
+     * Define validation messages once, since those should be converted to immutable, which is a costly procedure.
+     * Moreover, messages are unlikely to change during the component's lifecycle. It should be safe to store them.
+     */
     const { messages: customMessage } = this.props;
     this.formMessages = customMessage ? fromJS(customMessage) : this.context.messages;
   }
@@ -95,7 +96,7 @@ export default class Form extends React.Component {
     /* Update the validity state of the field */
     const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
 
-    /* FIXME Compose resolved fields */
+    // FIXME Compose resolved fields
     const nextResolvedFields = nextFields.map((fieldProps) => {
       if (!fieldProps.has('dynamicProps')) return fieldProps;
 
@@ -138,17 +139,24 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   registerField = (fieldProps) => {
-    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ registerField');
+    const { fields } = this.state;
+    const fieldPath = fieldProps.get('fieldPath');
+
+    // console.groupCollapsed(fieldPath, '@ registerField');
     // console.log('fieldProps', fieldProps.toJS());
+    // console.log('already exists:', fields.hasIn([fieldPath]));
     // console.groupEnd();
+
+    /* Warn upon duplicate registrations */
+    if (fields.hasIn([fieldPath]) && (fieldProps.get('type') !== 'radio')) {
+      return console.warn(`Cannot register field \`${fieldProps.get('fieldPath')}\`, the field with the provided name is already registered. Make sure the fields on the same level of \`Form\` or \`Field.Group\` have unique names, unless it's intentional.`);
+    }
 
     /* Validate the field when it has initial value */
     const shouldValidate = isset(fieldProps.get('value')) && (fieldProps.get('value') !== '');
     if (shouldValidate) this.validateField({ fieldProps });
 
-    this.setState(prevState => ({
-      fields: prevState.fields.mergeIn([fieldProps.get('fieldPath')], fieldProps)
-    }));
+    return this.setState({ fields: fields.mergeIn([fieldPath], fieldProps) });
   }
 
   /**
@@ -156,7 +164,7 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   unregisterField = (fieldProps) => {
-    this.setState(prevState => ({
+    return this.setState(prevState => ({
       fields: prevState.fields.deleteIn([fieldProps.get('fieldPath')])
     }));
   }
@@ -166,28 +174,29 @@ export default class Form extends React.Component {
    * @param {Event} event
    * @param {Map} fieldProps
    */
-  handleFieldFocus = ({ event, fieldProps }) => {
+  handleFieldFocus = async ({ event, fieldProps }) => {
     // console.groupCollapsed(fieldProps.name, '@ handleFieldFocus');
     // console.log('fieldProps', fieldProps);
     // console.groupEnd();
 
-    this.updateField({
+    const { nextFields, nextFieldProps } = await this.updateField({
       fieldPath: fieldProps.get('fieldPath'),
       propsPatch: {
         focused: true
       }
-    }).then(({ nextFieldProps }) => {
-      const onFocus = fieldProps.get('onFocus');
-
-      if (onFocus) {
-        /* Call custom onFocus handler */
-        onFocus({
-          event,
-          fieldProps: nextFieldProps.toJS(),
-          formProps: this.props
-        });
-      }
     });
+
+    const onFocus = fieldProps.get('onFocus');
+
+    if (onFocus) {
+      /* Call custom onFocus handler */
+      onFocus({
+        event,
+        fieldProps: nextFieldProps.toJS(),
+        fields: nextFields.toJS(),
+        formProps: this.props
+      });
+    }
   }
 
   /**
@@ -196,14 +205,18 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    * @param {mixed} nextValue
    */
-  handleFieldChange = ({ event, fieldProps, nextValue, prevValue }) => {
+  handleFieldChange = async ({ event, fieldProps, nextValue, prevValue }) => {
     // console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
     // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     // console.log('nextValue', nextValue);
     // console.groupEnd();
 
-    /* Update the value of the changed field in the state */
-    this.updateField({
+    /**
+     * Update the value of the changed field.
+     * Also, reset all validation statuses since those are useless after the value has changed. This is important for
+     * validation chain, as proper validation statuses trigger proper validations.
+     */
+    const { nextFields, nextFieldProps } = await this.updateField({
       fieldProps,
       propsPatch: {
         value: nextValue,
@@ -212,25 +225,26 @@ export default class Form extends React.Component {
         validatedSync: false,
         validatedAsync: false
       }
-    }).then(({ nextFieldProps }) => {
-      /* Perform sync field validation on change */
-      this.debounceValidateField({
-        type: 'sync',
-        fieldProps: nextFieldProps
-      });
-
-      const onChange = fieldProps.get('onChange');
-      if (onChange) {
-        /* Call custom onChange handler */
-        onChange({
-          event,
-          nextValue,
-          prevValue,
-          fieldProps: nextFieldProps.toJS(),
-          formProps: this.props
-        });
-      }
     });
+
+    /* Perform debounced sync field validation */
+    this.debounceValidateField({
+      type: 'sync',
+      fieldProps: nextFieldProps
+    });
+
+    const onChange = fieldProps.get('onChange');
+    if (onChange) {
+      /* Call custom onChange handler */
+      onChange({
+        event,
+        nextValue,
+        prevValue,
+        fieldProps: nextFieldProps.toJS(),
+        fields: nextFields.toJS(),
+        formProps: this.props
+      });
+    }
   }
 
   /**
@@ -249,7 +263,7 @@ export default class Form extends React.Component {
     /**
      * Determine whether the validation is needed.
      * Also, determine a type of the validation. In case the field has been validated sync and is valid sync, it's
-     * ready to be validated async (if any async validation present). However, if the field hasn't been validated
+     * ready to be validated async (if any async validation is present). However, if the field hasn't been validated
      * sync yet (hasn't been touched), first require sync validation. When the latter fails, user will be prompted
      * to change the value of the field. Changing the value resets the "async" validation state as well. Hence, when
      * the user will pass sync validation, upon blurring out the field, the validation type will be "async".
@@ -283,31 +297,32 @@ export default class Form extends React.Component {
     }
 
     /* Make field enabled, update its props */
-    this.updateField({
+    const { nextFields, nextFieldProps } = await this.updateField({
       fieldPath,
       propsPatch: {
         focused: false,
         disabled: prevDisabled,
         validating: false
       }
-    }).then(({ nextFields, nextFieldProps }) => {
-      const onBlur = nextFieldProps.get('onBlur');
+    });
 
-      /* Call custom onBlur handler */
-      if (onBlur) {
-        onBlur({
-          event,
-          fieldProps: nextFieldProps.toJS(),
-          formProps: this.props
-        });
-      }
+    const onBlur = nextFieldProps.get('onBlur');
 
-      // TODO Find more efficient way of updating the fields with dynamic props
-      nextFields.map((fieldProps) => {
-        if (fieldProps.has('dynamicProps')) {
-          this.validateField({ fieldProps });
-        }
+    /* Call custom onBlur handler */
+    if (onBlur) {
+      onBlur({
+        event,
+        fieldProps: nextFieldProps.toJS(),
+        fields: nextFields.toJS(),
+        formProps: this.props
       });
+    }
+
+    // TODO Find more efficient way of updating the fields with dynamic props
+    nextFields.map((fieldProps) => {
+      if (fieldProps.has('dynamicProps')) {
+        this.validateField({ fieldProps });
+      }
     });
   }
 

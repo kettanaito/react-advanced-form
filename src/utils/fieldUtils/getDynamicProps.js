@@ -1,8 +1,8 @@
-/* The list of all props which may be dynamic */
+/* The list of dynamic props */
 export const dynamicProps = ['required', 'disabled'];
 
 /**
- * Returns the collection of the present dynamic props in the provided field.
+ * Returns the collection of the dynamic props presents in the provided field.
  * @param {Map} fieldProps
  * @return {object}
  */

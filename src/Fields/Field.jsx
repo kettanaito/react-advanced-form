@@ -107,8 +107,14 @@ export default class Field extends React.Component {
       fieldProps.dynamicProps = dynamicProps;
     }
 
-    /* Notify the parent Form that a new field has just mounted */
-    return this.context.registerField(fromJS(fieldProps));
+    /**
+     * Notify the parent Form that a new field has just mounted.
+     * Timeout makes this action async, hence each registration attempt may access the actual state of the form.
+     * Otherwise, registrations happen at approximately same time, resulting into fields being unaware of each other.
+     */
+    setTimeout(() => {
+      return this.context.registerField(fromJS(fieldProps));
+    }, 0);
   }
 
   /**
