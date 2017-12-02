@@ -164,18 +164,6 @@ export default class DefaultForm extends Component {
               </label>
             </div>
 
-            <div>
-              <Field.Radio
-                name="customerType"
-                label="Business"
-                value="101"
-                checked />
-              <Field.Radio
-                name="customerType"
-                label="Private"
-                value="100" />
-            </div>
-
             {/* Input */}
             <Field.Group name="groupOne">
               <label>
@@ -186,11 +174,6 @@ export default class DefaultForm extends Component {
                   disabled={ disabled } />
               </label>
 
-              <MyInput
-                name="fieldOne"
-                initialValue="10002"
-                disabled={ disabled } />
-
               <label>
                 Prefilled with initialValue
                 <MyInput
@@ -199,6 +182,20 @@ export default class DefaultForm extends Component {
                   initialValue="John Wick" />
               </label>
             </Field.Group>
+
+            <label>
+              Async rule (optional)
+              <MyInput
+                name="asyncOptional"
+                asyncRule={({ fieldProps }) => {
+                  return fetch('http://demo9102997.mockable.io/validate/productId', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      username: fieldProps.value
+                    })
+                  });
+                }} />
+            </label>
 
             {/* <label>
               Filed with client rule (optional):

@@ -425,9 +425,9 @@ export default class Form extends React.Component {
     }, []);
 
     /* Await for all validation promises to resolve before returning */
-    return Promise.all(pendingValidations).then((validatedFields) => {
-      return !validatedFields.some(expected => !expected);
-    });
+    const validatedFields = await Promise.all(pendingValidations);
+
+    return !validatedFields.some(expected => !expected);
   }
 
   /**
