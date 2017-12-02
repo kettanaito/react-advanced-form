@@ -3,7 +3,7 @@ export const dynamicProps = ['required', 'disabled'];
 
 /**
  * Returns the collection of the dynamic props presents in the provided field.
- * @param {Map} fieldProps
+ * @param {object} fieldProps
  * @return {object}
  */
 export default function getDynamicProps(fieldProps) {

@@ -5,7 +5,7 @@
  * - invalid - when it has been validated, but it's not valid
  * @param {object} fieldProps
  */
-export default function getValidityState({ fieldProps }) {
+export default function getValidityState(fieldProps) {
   const value = fieldProps.get('value');
   const expected = fieldProps.get('expected');
   const validatedSync = fieldProps.get('validatedSync');
