@@ -177,21 +177,23 @@ export default class DefaultForm extends Component {
             </div>
 
             {/* Input */}
-            <label>
-              Filed with client rule (optional):
-              <MyInput
-                name="fieldOne"
-                value="1"
-                disabled={ disabled } />
-            </label>
+            <Field.Group name="groupOne">
+              <label>
+                Filed with client rule (optional):
+                <MyInput
+                  name="fieldOne"
+                  value="1"
+                  disabled={ disabled } />
+              </label>
 
-            <label>
-              Prefilled with initialValue
-              <MyInput
-                name="initialValue"
-                rule={/^\d+$/}
-                initialValue="John Wick" />
-            </label>
+              <label>
+                Prefilled with initialValue
+                <MyInput
+                  name="initialValue"
+                  rule={/^\d+$/}
+                  initialValue="John Wick" />
+              </label>
+            </Field.Group>
 
             {/* <label>
               Filed with client rule (optional):
