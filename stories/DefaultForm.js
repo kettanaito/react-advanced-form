@@ -182,9 +182,14 @@ export default class DefaultForm extends Component {
                 Filed with client rule (optional):
                 <MyInput
                   name="fieldOne"
-                  value="1"
+                  initialValue="1"
                   disabled={ disabled } />
               </label>
+
+              <MyInput
+                name="fieldOne"
+                initialValue="10002"
+                disabled={ disabled } />
 
               <label>
                 Prefilled with initialValue

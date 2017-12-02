@@ -1,3 +1,6 @@
+/**
+ * Radio.
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 import Field from './Field';
@@ -24,6 +27,7 @@ export default class Radio extends Field {
   }
 
   static defaultProps = {
+    type: 'radio',
     expected: true,
     required: false,
     disabled: false,
