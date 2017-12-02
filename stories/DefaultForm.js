@@ -6,7 +6,7 @@ import MySelect from './templates/MySelect';
 /* Form validation rules */
 const formRules = {
   name: {
-    firstName: value => /^\w+$/.test(value)
+    firstName: ({ value }) => /^\w+$/.test(value)
   }
 };
 

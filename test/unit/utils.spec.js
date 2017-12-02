@@ -173,5 +173,111 @@ describe('Utils', () => {
       expect(fieldUtils.shouldValidate(dynamicField)).to.be.true;
     });
 
+    /**
+     * validateSync
+     */
+    it('validateSync', () => {
+      const fieldOne = Map({ value: '', required: false });
+      const fieldTwo = Map({ value: '', required: true });
+      const fieldThree = Map({ value: 'foo', required: true });
+
+      /* Rule */
+      const fieldFour = Map({ value: '', rule: /^\d+$/, required: false });
+      const fieldFive = Map({ value: 'foo', rule: /^\d+$/, required: false });
+      const fieldSix = Map({ value: '', rule: /^\d+$/, required: true });
+      const fieldSeven = Map({ value: 'foo', rule: /^\d+$/, required: true });
+      const fieldEight = Map({ value: '123', rule: /^\d+$/, required: true });
+      const fieldNine = Map({ value: '123', rule: /^\d+$/, required: false });
+      const fieldTen = Map({ value: '', rule: ({ fields }) => (fields.fieldThree.value === 'foo'), required: false });
+      const fieldEleven = Map({ value: '123', rule: ({ fields }) => (fields.fieldThree.value === 'foo'), required: false });
+
+      /* Form rules */
+      const fieldTwelve = Map({ type: 'tel', value: '', required: false });
+      const fieldThirteen = Map({ type: 'tel', value: 'abc', required: false });
+      const fieldFourteen = Map({ type: 'tel', value: '123', required: true });
+      const fieldFifteen = Map({ name: 'username', value: 'foo', required: false });
+      const fieldSixteen = Map({ name: 'username', value: 'admin', required: false });
+      const fieldSeventeen = Map({ name: 'username', value: 'admin', required: true });
+
+      const fields = fromJS({ fieldOne, fieldTwo, fieldThree });
+
+      const formRules = {
+        type: {
+          tel: ({ value }) => /^\d+$/.test(value)
+        },
+        name: {
+          username: ({ value }) => (value === 'admin')
+        }
+      };
+
+      /* Optional empty field validation */
+      expect(fieldUtils.validateSync({ fieldProps: fieldOne, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Required empty field validation */
+      expect(fieldUtils.validateSync({ fieldProps: fieldTwo, fields, formRules })).to.deep.eq({
+        expected: false,
+        errorType: 'missing'
+      });
+
+      /* Required filled field validation */
+      expect(fieldUtils.validateSync({ fieldProps: fieldThree, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Optional empty field with rule */
+      expect(fieldUtils.validateSync({ fieldProps: fieldFour, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Optional field with rule and value not matching the rule */
+      expect(fieldUtils.validateSync({ fieldProps: fieldFive, fields, formRules })).to.deep.eq({
+        expected: false,
+        errorType: 'invalid'
+      });
+
+      /* Required empty value with rule */
+      expect(fieldUtils.validateSync({ fieldProps: fieldSix, fields, formRules })).to.deep.eq({
+        expected: false,
+        errorType: 'missing'
+       });
+
+      /* Required field with rule and value not matching the rule */
+      expect(fieldUtils.validateSync({ fieldProps: fieldSeven, fields, formRules })).to.deep.eq({
+        expected: false,
+        errorType: 'invalid'
+      });
+
+      /* Required field with rule and value maatching the rule */
+      expect(fieldUtils.validateSync({ fieldProps: fieldEight, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Optional field with rule and value matching the rule */
+      expect(fieldUtils.validateSync({ fieldProps: fieldNine, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Optional empty field with custom rule resolver */
+      expect(fieldUtils.validateSync({ fieldProps: fieldTen, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Optional field with custom rule resovler and resolved */
+      expect(fieldUtils.validateSync({ fieldProps: fieldEleven, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Form type rule: Optional empty field */
+      expect(fieldUtils.validateSync({ fieldProps: fieldTwelve, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Form type rule: Field with rule not matching */
+      expect(fieldUtils.validateSync({ fieldProps: fieldThirteen, fields, formRules })).to.deep.eq({
+        expected: false,
+        errorType: 'invalid'
+      });
+
+      /* Form type rule: Required field with value matching */
+      expect(fieldUtils.validateSync({ fieldProps: fieldFourteen, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Form name rule: Optional field with unexpected value */
+      expect(fieldUtils.validateSync({ fieldProps: fieldFifteen, fields, formRules })).to.deep.eq({
+        expected: false,
+        errorType: 'invalid'
+      });
+
+      /* Form name rule: Optional field with expected value */
+      expect(fieldUtils.validateSync({ fieldProps: fieldSixteen, fields, formRules })).to.deep.eq({ expected: true });
+
+      /* Form name rule: Required field with expected value */
+      expect(fieldUtils.validateSync({ fieldProps: fieldSeventeen, fields, formRules })).to.deep.eq({ expected: true });
+    });
   });
 });
