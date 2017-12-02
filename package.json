@@ -6,8 +6,9 @@
   "main": "lib/index.js",
   "scripts": {
     "start": "webpack-dev-server",
+    "test": "mocha --require babel-core/register --require babel-polyfill",
     "build": "NODE_ENV=production webpack",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build && npm test",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
@@ -58,6 +59,7 @@
     "feather-icons": "^4.0.1",
     "immutable": "^3.8.2",
     "istanbul": "^0.4.5",
+    "mocha": "^4.0.1",
     "prop-types": "^15.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
