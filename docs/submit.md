@@ -112,6 +112,7 @@ Those props are called based on the resolving of the provided `action`. Here's a
 | `onSubmitEnd` | invoked *always* after submit status is known (submitted/failed), but regardless of the latter. |
 
 Apart from those being integrated with the `action`, each of the callbacks can access a list of arguments useful for handling any logic you need:
+
 | Property | Type | Description |
 | -------- | ---- | ----------- |
 | `fields` | `Object` | Props of all fields within the current form. |
