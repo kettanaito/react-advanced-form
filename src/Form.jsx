@@ -19,7 +19,7 @@ export default class Form extends React.Component {
 
     /* Events */
     onSumbitStart: PropTypes.func, // form should submit, submit started
-    onSumbit: PropTypes.func, // form submit went successfully
+    onSumbitted: PropTypes.func, // form submit went successfully
     onSumbitFailed: PropTypes.func, // form submit failed
     onSumbitEnd: PropTypes.func // form has finished submit (regardless of the result)
   }
@@ -449,7 +449,7 @@ export default class Form extends React.Component {
     if (!shouldSubmit) return;
 
     const { fields } = this.state;
-    const { action, onSubmitStart, onSubmit, onSubmitFailed, onSubmitEnd } = this.props;
+    const { action, onSubmitStart, onSubmitted, onSubmitFailed, onSubmitEnd } = this.props;
 
     /* Serialize the fields */
     const serialized = this.serialize();
@@ -477,7 +477,7 @@ export default class Form extends React.Component {
     action(callbackArgs).then((res) => {
       /* Event: Submit has passed */
       if (onSubmit) {
-        onSubmit({
+        onSubmitted({
           ...callbackArgs,
           res
         });

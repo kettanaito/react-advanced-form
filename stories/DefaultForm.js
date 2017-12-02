@@ -80,8 +80,8 @@ export default class DefaultForm extends Component {
     console.groupEnd();
   }
 
-  handleSubmitSuccess = ({ fields, serialized, formProps, res }) => {
-    console.groupCollapsed('handleSubmitSuccess');
+  handleSubmitted = ({ fields, serialized, formProps, res }) => {
+    console.groupCollapsed('handleSubmitted');
     console.log('fields', fields);
     console.log('serialized', serialized);
     console.log('formProps', formProps);
@@ -118,7 +118,7 @@ export default class DefaultForm extends Component {
           id="default-form-example"
           action={this.handleFormAction}
           onSubmitStart={this.handleSubmitStart}
-          onSubmit={this.handleSubmitSuccess}
+          onSubmitted={this.handleSubmitted}
           onSubmitFailed={this.handleSubmitFail}
           onSubmitEnd={this.handleSubmitEnd}>
           <div className="field-group">

@@ -111,9 +111,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { FormProvider } from 'react-advanced-form';
 import validationRules from '../validation-rules';
+import validationMessages from '../validation-messages';
 
 const App = ({ children }) => (
-  <FormProvider rules={ validationRules }>
+  <FormProvider rules={ validationRules } messages={ validationMessages }>
     { children }
   </FormProvider>
 );
