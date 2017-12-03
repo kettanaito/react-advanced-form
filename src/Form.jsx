@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { fromJS, Map } from 'immutable';
@@ -444,12 +445,16 @@ export default class Form extends React.Component {
   submit = async (event) => {
     if (event) event.preventDefault();
 
+    /* Throw on submit attempt without "action" prop */
+    const { action } = this.props;
+    invariant(action, `Cannot submit the form without \`action\` prop specified explicitly. Expected a function which returns Promise, but received: ${action}.`);
+
     /* Ensure form should submit (has no unexpected field values) */
     const shouldSubmit = await this.validate();
     if (!shouldSubmit) return;
 
     const { fields } = this.state;
-    const { action, onSubmitStart, onSubmitted, onSubmitFailed, onSubmitEnd } = this.props;
+    const { onSubmitStart, onSubmitted, onSubmitFailed, onSubmitEnd } = this.props;
 
     /* Serialize the fields */
     const serialized = this.serialize();
@@ -476,7 +481,7 @@ export default class Form extends React.Component {
      */
     action(callbackArgs).then((res) => {
       /* Event: Submit has passed */
-      if (onSubmit) {
+      if (onSubmitted) {
         onSubmitted({
           ...callbackArgs,
           res
