@@ -19,6 +19,7 @@ export default class Form extends React.Component {
     rules: TValidationRules,
 
     /* Events */
+    onInvalid: PropTypes.func,
     onSumbitStart: PropTypes.func, // form should submit, submit started
     onSumbitted: PropTypes.func, // form submit went successfully
     onSumbitFailed: PropTypes.func, // form submit failed
@@ -429,7 +430,30 @@ export default class Form extends React.Component {
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(pendingValidations);
 
-    return !validatedFields.some(expected => !expected);
+    const isFormValid = !validatedFields.filter(expected => !expected);
+
+    const { onInvalid } = this.props;
+
+    if (!isFormValid && onInvalid) {
+      const { fields: nextFields } = this.state;
+      const nextMutableFields = nextFields.toJS();
+
+      /* Reduce the invalid fields to the ordered Array */
+      const invalidFields = Object.keys(nextMutableFields).reduce((all, fieldName) => {
+        const fieldProps = nextMutableFields[fieldName];
+        if (!fieldProps.expected) return all.concat(fieldProps);
+        return all;
+      }, []);
+
+      /* Call custom callback */
+      onInvalid({
+        fields: nextMutableFields,
+        invalidFields,
+        formProps: this.props
+      });
+    }
+
+    return isFormValid;
   }
 
   /**
