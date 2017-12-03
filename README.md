@@ -11,6 +11,7 @@
   * [Handle form submit](./docs/submit.md)
 * **Other:**
   * [Custom styling](./docs/custom-styling.md)
+* [FAQ (Freqently asked questions)](./FAQ.md)
 
 ## Installation
 ```
