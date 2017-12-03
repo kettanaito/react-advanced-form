@@ -157,25 +157,33 @@ export default class MyForm extends React.Component {
 ```
 
 ## Manual validation
-Some use cases require to validate the form manually. For that, you can call an internal `validate()` function on a form:
+Some use cases require to validate the form manually. For that, you can call an internal `validate()` function on a form.
 
-1. Get the reference to the form component:
 ```jsx
-<Form ref={ form => this.myForm = form}>
-  <Form.Input name="inputOne" required />
-</Form>
-```
+import React from 'react';
+import { Form } from 'react-advanced-form';
 
-2. Validate the form when you need that, using internal `validate()` method:
-```jsx
-handleManualValidation = () => {
-  this.myForm.validate().then((isFormValid) => {
-    if (isFormValid) {
-      ...
-    } else {
-      ...
-    }
-  });
+export default class MyForm extends React.Component {
+  handleManualValidation = () => {
+    this.myForm.validate().then((isFormValid) => {
+      if (isFormValid) {
+        ...
+      } else {
+        ...
+      }
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <Form ref={ form => this.myForm = form }>
+          <Form.Input name="inputOne" required />
+        </Form>
+        <button onClick={ this.handleManualValidation }>Validate manually</button>
+      </div>
+    );
+  }
 }
 ```
 
