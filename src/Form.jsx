@@ -84,6 +84,33 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Maps the field to the state/context.
+   * Passing fields in context gives a benefit of removing an explicit traversing of children
+   * tree, deconstructing and constructing each appropriate child with the attached handler props.
+   * @param {Map} fieldProps
+   */
+  registerField = (fieldProps) => {
+    const { fields } = this.state;
+    const fieldPath = fieldProps.get('fieldPath');
+
+    // console.groupCollapsed(fieldPath, '@ registerField');
+    // console.log('fieldProps', fieldProps.toJS());
+    // console.log('already exists:', fields.hasIn([fieldPath]));
+    // console.groupEnd();
+
+    /* Warn upon duplicate registrations */
+    if (fields.hasIn([fieldPath]) && (fieldProps.get('type') !== 'radio')) {
+      return console.warn(`Cannot register field \`${fieldProps.get('fieldPath')}\`, the field with the provided name is already registered. Make sure the fields on the same level of \`Form\` or \`Field.Group\` have unique names, unless it's intentional.`);
+    }
+
+    /* Validate the field when it has initial value */
+    const shouldValidate = isset(fieldProps.get('value')) && (fieldProps.get('value') !== '');
+    if (shouldValidate) this.validateField({ fieldProps });
+
+    return this.setState({ fields: fields.mergeIn([fieldPath], fieldProps) });
+  }
+
+  /**
    * Updates the props of the field stored in the state.
    * @param {string} fieldPath The name of the field.
    * @param {Map} fieldProps A directly specified nextProps of the field.
@@ -132,33 +159,6 @@ export default class Form extends React.Component {
         return reject(error);
       }
     });
-  }
-
-  /**
-   * Maps the field to the state/context.
-   * Passing fields in context gives a benefit of removing an explicit traversing of children
-   * tree, deconstructing and constructing each appropriate child with the attached handler props.
-   * @param {Map} fieldProps
-   */
-  registerField = (fieldProps) => {
-    const { fields } = this.state;
-    const fieldPath = fieldProps.get('fieldPath');
-
-    // console.groupCollapsed(fieldPath, '@ registerField');
-    // console.log('fieldProps', fieldProps.toJS());
-    // console.log('already exists:', fields.hasIn([fieldPath]));
-    // console.groupEnd();
-
-    /* Warn upon duplicate registrations */
-    if (fields.hasIn([fieldPath]) && (fieldProps.get('type') !== 'radio')) {
-      return console.warn(`Cannot register field \`${fieldProps.get('fieldPath')}\`, the field with the provided name is already registered. Make sure the fields on the same level of \`Form\` or \`Field.Group\` have unique names, unless it's intentional.`);
-    }
-
-    /* Validate the field when it has initial value */
-    const shouldValidate = isset(fieldProps.get('value')) && (fieldProps.get('value') !== '');
-    if (shouldValidate) this.validateField({ fieldProps });
-
-    return this.setState({ fields: fields.mergeIn([fieldPath], fieldProps) });
   }
 
   /**
