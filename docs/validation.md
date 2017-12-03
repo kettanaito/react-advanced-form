@@ -124,6 +124,38 @@ ReactDOM.render(<App />, container);
 
 You would usually declare `FormProvider` at the very top of your application components tree (the same way you declare `Provider` from Redux, `ApolloProvider` from Apollo, and so on).
 
+## Cutom callbacks
+You can hook into different states of the validation using the exposed callback methods below.
+
+### `Form.props.onInvalid?: ({ fields, invalidFields, formProps }) => void`
+
+#### Arguments
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| `fields` | `Object` | Collection of validated fields. |
+| `invalidFields` | `Array<Object>` | List of invalid fields ordered by the appearance in the form (from top to bottom). |
+| `formProps` | `Object` | Self-explanatory. |
+
+#### Example
+```jsx
+import React from 'react';
+import { Form } from 'react-advanced-form';
+
+export default class MyForm extends React.Component {
+  handleInvalidForm = ({ fields, invalidFields, formProps }) => {
+    ...
+  }
+
+  render() {
+    return (
+      <Form onInvalid={ this.handleInvalidForm }>
+        <Field.Input name="username" required />
+      </Form>
+    );
+  }
+}
+```
+
 ## Manual validation
 Some use cases require to validate the form manually. For that, you can call an internal `validate()` function on a form:
 
