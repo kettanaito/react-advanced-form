@@ -1,4 +1,17 @@
-# React Advanced Form
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-advanced-form">
+    <img src="https://img.shields.io/npm/v/react-advanced-form.svg" title="Latest version" />
+  </a>
+  <a href="https://david-dm.org/kettanaito/react-advanced-form.svg">
+    <img src="https://david-dm.org/kettanaito/react-advanced-form.svg/status.svg" title="Dependencies status" />
+  </a>
+  <a href="https://david-dm.org/kettanaito/react-advanced-form.svg?type=dev" title="devDependencies status">
+    <img src="https://david-dm.org/kettanaito/react-advanced-form.svg/dev-status.svg" />
+  </a>
+</p>
+
+<h1 align="center">React Advanced Form</h1>
+
 ## Overview
 * [Installation](#installation)
 * [Getting started](#getting-started)
@@ -50,7 +63,7 @@ import { Form, Field } from 'react-advanced-form';
 export default class RegistrationForm extends React.Component {
   handleSubmit = ({ fields, serialized, formProps }) => {
     const { username, password } = serialized;
-    
+
     return fetch('https://backend.dev/register', {
       method: 'POST',
       body: JSON.stringify({
@@ -59,7 +72,7 @@ export default class RegistrationForm extends React.Component {
       });
     });
   }
-  
+
   render() {
     return (
       <Form action={ this.handleSubmit }>
