@@ -88,6 +88,7 @@ export default class Field extends React.Component {
     const dynamicProps = fieldUtils.getDynamicProps(props);
 
     const fieldProps = Object.assign({}, props, {
+      ref: this,
       fieldPath: this.fieldPath,
       controllable: isset(value),
       value: value || initialValue || '',
