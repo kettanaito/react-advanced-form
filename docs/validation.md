@@ -43,43 +43,23 @@ Going higher, you can declare the same `rules` as you pass to fields on a form l
 
 The `rules` prop expected by the form should be an Object of the following structure:
 ```jsx
-const validationRules = {
-  type: { // type-specific validations
-    text: value => !!value,
-    tel: value => validator(value),
-    ...
-  },
-  name: { // name-specific validations
-    firstName: value => validator(value),
-    email: value => validator(value)
-    ...
-  }
-};
+import validationRules from './path/to/validation/rule';
 
 <Form rules={ validationRules }>
   <Field.Input name="firstName" />
 </Form>
 ```
-* The root properties `type` and `name` are allowed.
-* `type` expectes an Object of `[fieldType]: validator` structure.
-* `name` expected an Object of `[fieldName]: validator` structure.
-* Each `validator` function should return **Boolean**.
-* Name-specific validation rules have higher priority and will resolve first, as compared to type-specific rules.
+Read more about how to declare [validation rules](./validation-rules.md).
 
 ### `FormProvider` rules
 The recommended way of using sync form validation is to pass the `rules` property to the `<FormProvider>` at the top level of your application:
 ```jsx
-<FormProvider rules={{
-  type: {
-    text: value => !!value
-  },
-  name: {
-    username: value => /^\w+$/.test(value)
-  }
-}}>
+import validationRules from './path/to/validation/rules';
+<FormProvider rules={ validationRules}>
   <div id="my-app">...</div>
 </FormProvider>
 ```
+Read more about how to declare [validation rules](./validation-rules.md).
 
 This way the rules you provide are applied application-wise, meaning that each `<Form>` rendered within the provider, regardless of the depth, will follow them. In case of necessity, you can use custom [Form rules](#form-rules) to override the global ones for a certain form.
 
