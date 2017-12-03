@@ -72,6 +72,14 @@ export default class DefaultForm extends Component {
     });
   }
 
+  handleFormInvalid = ({ fields, invalidFields, formProps}) => {
+    console.groupCollapsed('onInvalid');
+    console.log('fields', fields);
+    console.log('invalidFields', invalidFields);
+    console.log('formProps', formProps);
+    console.groupEnd();
+  }
+
   handleSubmitStart = ({ fields, serialized, formProps }) => {
     console.groupCollapsed('handleSubmitStart');
     console.log('fields', fields);
@@ -117,6 +125,7 @@ export default class DefaultForm extends Component {
         <Form
           id="default-form-example"
           action={this.handleFormAction}
+          onInvalid={this.handleFormInvalid}
           onSubmitStart={this.handleSubmitStart}
           onSubmitted={this.handleSubmitted}
           onSubmitFailed={this.handleSubmitFail}
@@ -182,6 +191,15 @@ export default class DefaultForm extends Component {
                   initialValue="John Wick" />
               </label>
             </Field.Group>
+
+            <label>
+              Prefilled with initialValue
+              <MyInput
+                name="fieldFoo"
+                rule={/^\d+$/}
+                initialValue=""
+                required />
+            </label>
 
             <label>
               Async rule (optional)
