@@ -430,7 +430,7 @@ export default class Form extends React.Component {
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(pendingValidations);
 
-    const isFormValid = !validatedFields.filter(expected => !expected);
+    const isFormValid = !validatedFields.some(expected => !expected);
 
     const { onInvalid } = this.props;
 
