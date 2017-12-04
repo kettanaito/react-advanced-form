@@ -92,7 +92,7 @@ export default class Form extends React.Component {
   registerField = (fieldProps) => {
     const { fields } = this.state;
     const fieldPath = fieldProps.get('fieldPath');
-    const isRadio = (fieldProps.get('type') === 'radio');
+    const isRadioButton = (fieldProps.get('type') === 'radio');
 
     console.groupCollapsed(fieldPath, '@ registerField');
     console.log('fieldProps', fieldProps.toJS());
@@ -100,7 +100,7 @@ export default class Form extends React.Component {
     console.groupEnd();
 
     /* Warn upon duplicate registrations */
-    if (fields.hasIn([fieldPath]) && !isRadio) {
+    if (fields.hasIn([fieldPath]) && !isRadioButton) {
       return console.warn(`Cannot register field \`${fieldProps.get('fieldPath')}\`, the field with the provided name is already registered. Make sure the fields on the same level of \`Form\` or \`Field.Group\` have unique names, unless it's intentional.`);
     }
 
@@ -108,7 +108,7 @@ export default class Form extends React.Component {
     const shouldValidate = isset(fieldProps.get('value')) && (fieldProps.get('value') !== '');
     if (shouldValidate) this.validateField({ fieldProps });
 
-    if (isRadio) {
+    if (isRadioButton) {
       fieldProps = fieldProps.set('value', fields.getIn([fieldPath, 'value']));
     }
 
