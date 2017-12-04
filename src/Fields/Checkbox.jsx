@@ -19,13 +19,28 @@ export default class Checkbox extends Field {
 
     return {
       ...this.props,
+      type: 'checkbox',
       checked
     };
   }
 
+  handleChange = (event) => {
+    const { contextProps } = this;
+    const { checked: nextValue } = event.currentTarget;
+    const prevValue = contextProps.get('checked');
+
+    return this.context.handleFieldChange({
+      event,
+      fieldProps: contextProps,
+      valueProp: 'checked',
+      prevValue,
+      nextValue
+    });
+  }
+
   renderField() {
     return (
-      <input type="checkbox" />
+      <input />
     );
   }
 }
