@@ -23,6 +23,7 @@ export default class Checkbox extends Field {
   }
 
   static defaultProps = {
+    expected: true,
     checked: false,
     disabled: false,
     required: false
