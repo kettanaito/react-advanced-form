@@ -174,6 +174,8 @@ export default class DefaultForm extends Component {
               </label>
             </div>
 
+            <Field.Checkbox name="myCheckbox" />
+
             {/* Input */}
             {/* <Field.Group name="groupOne">
               <label>
