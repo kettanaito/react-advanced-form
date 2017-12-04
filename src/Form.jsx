@@ -210,9 +210,11 @@ export default class Form extends React.Component {
    * Handles field change.
    * @param {Event} event
    * @param {Map} fieldProps
+   * @param {mixed} prevValue
    * @param {mixed} nextValue
+   * @param {string} valueProp Property name to be treated as "value" (i.e. "checked").
    */
-  handleFieldChange = async ({ event, fieldProps, nextValue, prevValue }) => {
+  handleFieldChange = async ({ event, fieldProps, nextValue, prevValue, valueProp = 'value' }) => {
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.log('nextValue', nextValue);
@@ -226,7 +228,7 @@ export default class Form extends React.Component {
     const { nextFields, nextFieldProps } = await this.updateField({
       fieldProps,
       propsPatch: {
-        value: nextValue,
+        [valueProp]: nextValue,
         validSync: false,
         validAsync: false,
         validatedSync: false,
