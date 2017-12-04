@@ -81,17 +81,21 @@ export default class Field extends React.Component {
    * manual parsing the children of Form for them to be controlled by the latter.
    */
   registerWith = (props) => {
-    const { fieldGroup } = this.context;
+    const { fields, fieldGroup } = this.context;
     const { value, initialValue } = props;
+    const contextValue = fields.getIn([this.fieldPath, 'value']);
 
-    /* Check if dynamic props are present */
-    const dynamicProps = fieldUtils.getDynamicProps(props);
+    console.groupCollapsed(this.fieldPath, '@ registerWith');
+    console.log('props', Object.assign({}, this.props));
+    console.log('value', value);
+    console.log('initialValue', initialValue);
+    console.log('context value', contextValue);
 
     const fieldProps = Object.assign({}, props, {
       ref: this,
       fieldPath: this.fieldPath,
       controllable: isset(value),
-      value: value || initialValue || '',
+      value: isset(contextValue) ? contextValue : (value || initialValue || ''),
       validSync: false,
       validAsync: false,
       validatedSync: false,
@@ -103,10 +107,17 @@ export default class Field extends React.Component {
       fieldProps.fieldGroup = fieldGroup;
     }
 
-    /* Assign "dynamicProps" only in case they are present */
+    /* Check if dynamic props are present */
+    const dynamicProps = fieldUtils.getDynamicProps(props);
+
+    /* Assign dynamic props in case they are present */
     if (Object.keys(dynamicProps).length > 0) {
       fieldProps.dynamicProps = dynamicProps;
     }
+
+    console.log('dynamicProps', dynamicProps);
+    console.log('register with:', Object.assign({}, fieldProps));
+    console.groupEnd();
 
     /**
      * Notify the parent Form that a new field has just mounted.
@@ -183,10 +194,20 @@ export default class Field extends React.Component {
    * Handles field's value change.
    */
   handleChange = (event) => {
+    console.warn('handleChange @ Field', this.fieldPath);
+
     const { value: nextValue } = event.currentTarget;
     const { contextProps } = this;
     const prevValue = contextProps.get('value');
     const hasUpdateMethod = contextProps.get('controllable') ? this.props.onChange : true;
+
+    console.groupCollapsed(this.fieldPath, '@ Field @ handleChange');
+    console.log('contextProps', contextProps);
+    console.log('prevValue', prevValue);
+    console.log('nextValue', nextValue);
+    console.log('hasUpdateMethod', hasUpdateMethod);
+    console.log('this.context.handleFieldChange', this.context.handleFieldChange);
+    console.groupEnd();
 
     invariant(hasUpdateMethod, `Cannot update the controlled field \`${contextProps.get('name')}\`. Expected custom \`onChange\` handler, but received: ${this.props.onChange}.`);
 

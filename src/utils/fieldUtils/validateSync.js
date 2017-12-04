@@ -21,14 +21,25 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
   });
   */
 
-  // console.groupCollapsed('fieldUtils @ isExpected', name);
-  // console.log('fieldProps', fieldProps);
-  // console.log('required:', required);
-  // console.log('value:', value);
+  console.groupCollapsed('fieldUtils @ validateSync', fieldProps.get('fieldPath'));
+  console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+  console.log('required:', required);
+  console.log('value:', value);
 
   /* Treat optional empty fields as expected */
-  if (!value && !required) return { expected: true };
-  if (!value && required) return { expected: false, errorType: 'missing' };
+  if (!value && !required) {
+    console.log('Empty optional field - bypass');
+    console.groupEnd();
+
+    return { expected: true };
+  }
+
+  if (!value && required) {
+    console.log('Empty required field, UNEXPECTED!');
+    console.groupEnd();
+
+    return { expected: false, errorType: 'missing' };
+  }
 
   /* Assume Field doesn't have any specific validation attached */
   const formTypeRule = formRules.type && formRules.type[type];
@@ -36,7 +47,8 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
   const hasFormRules = formTypeRule || formNameRule;
 
   if (!rule && !asyncRule && !hasFormRules) {
-    // console.groupEnd();
+    console.log('Does not have rule, asyncRule or formRules, bypass');
+    console.groupEnd();
 
     return { expected: true };
   }
@@ -45,16 +57,16 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
 
   /* Format (sync) validation */
   if (rule) {
-    // console.log('Field has "rule":', rule);
+    console.log('Field has "rule":', rule);
 
     /* Test the RegExp against the field's value */
     isExpected = (typeof rule === 'function')
       ? rule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), formProps })
       : rule.test(value);
 
-    // console.log('isExpected:', isExpected);
+    console.log('isExpected:', isExpected);
     if (!isExpected) {
-      // console.groupEnd();
+      console.groupEnd();
 
       return { expected: false, errorType: 'invalid' };
     }
@@ -66,7 +78,7 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
    * The latter property is also inherited from the context passed by FormProvider.
    */
   if (hasFormRules) {
-    // console.groupEnd();
+    console.log('Has form rules');
 
     /* Form-level validation */
     const isValidByType = formTypeRule
@@ -77,15 +89,20 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
       ? formNameRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), formProps })
       : true;
 
+    console.log('isValidByName', isValidByName);
+    console.log('isValidByType', isValidByType);
+
     isExpected = (isValidByType && isValidByName);
 
-    // console.log('isExpected:', isExpected);
+    console.log('isExpected:', isExpected);
     if (!isExpected) {
-      // console.groupEnd();
+      console.groupEnd();
 
       return { expected: false, errorType: 'invalid' };
     }
   }
+
+  console.groupEnd();
 
   return { expected: isExpected };
 }

@@ -92,20 +92,25 @@ export default class Form extends React.Component {
   registerField = (fieldProps) => {
     const { fields } = this.state;
     const fieldPath = fieldProps.get('fieldPath');
+    const isRadio = (fieldProps.get('type') === 'radio');
 
-    // console.groupCollapsed(fieldPath, '@ registerField');
-    // console.log('fieldProps', fieldProps.toJS());
-    // console.log('already exists:', fields.hasIn([fieldPath]));
-    // console.groupEnd();
+    console.groupCollapsed(fieldPath, '@ registerField');
+    console.log('fieldProps', fieldProps.toJS());
+    console.log('already exists:', fields.hasIn([fieldPath]));
+    console.groupEnd();
 
     /* Warn upon duplicate registrations */
-    if (fields.hasIn([fieldPath]) && (fieldProps.get('type') !== 'radio')) {
+    if (fields.hasIn([fieldPath]) && !isRadio) {
       return console.warn(`Cannot register field \`${fieldProps.get('fieldPath')}\`, the field with the provided name is already registered. Make sure the fields on the same level of \`Form\` or \`Field.Group\` have unique names, unless it's intentional.`);
     }
 
     /* Validate the field when it has initial value */
     const shouldValidate = isset(fieldProps.get('value')) && (fieldProps.get('value') !== '');
     if (shouldValidate) this.validateField({ fieldProps });
+
+    if (isRadio) {
+      fieldProps = fieldProps.set('value', fields.getIn([fieldPath, 'value']));
+    }
 
     return this.setState({ fields: fields.mergeIn([fieldPath], fieldProps) });
   }
@@ -140,14 +145,14 @@ export default class Form extends React.Component {
       return fieldProps.merge(resolvedProps);
     });
 
-    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
-    // console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
-    // console.log('propsPatch:', propsPatch);
-    // console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
-    // console.log('next value:', nextFieldProps.get('value'));
-    // console.log('nextFields:', Object.assign({}, nextFields.toJS()));
-    // console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
-    // console.groupEnd();
+    console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
+    console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
+    console.log('propsPatch:', propsPatch);
+    console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
+    console.log('next value:', nextFieldProps.get('value'));
+    console.log('nextFields:', Object.assign({}, nextFields.toJS()));
+    console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
+    console.groupEnd();
 
     return new Promise((resolve, reject) => {
       try {
@@ -177,9 +182,9 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   handleFieldFocus = async ({ event, fieldProps }) => {
-    // console.groupCollapsed(fieldProps.name, '@ handleFieldFocus');
-    // console.log('fieldProps', fieldProps);
-    // console.groupEnd();
+    console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldFocus');
+    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+    console.groupEnd();
 
     const { nextFields, nextFieldProps } = await this.updateField({
       fieldPath: fieldProps.get('fieldPath'),
@@ -208,10 +213,10 @@ export default class Form extends React.Component {
    * @param {mixed} nextValue
    */
   handleFieldChange = async ({ event, fieldProps, nextValue, prevValue }) => {
-    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
-    // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    // console.log('nextValue', nextValue);
-    // console.groupEnd();
+    console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
+    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+    console.log('nextValue', nextValue);
+    console.groupEnd();
 
     /**
      * Update the value of the changed field.
@@ -273,11 +278,11 @@ export default class Form extends React.Component {
     const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
     const validationType = (validatedSync && validSync) ? 'async' : 'sync';
 
-    // console.groupCollapsed(fieldProps.get('name'), '@ handleFieldBlur');
-    // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    // console.log('validationType', validationType);
-    // console.log('should validate', shouldValidate);
-    // console.groupEnd();
+    console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldBlur');
+    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+    console.log('validationType', validationType);
+    console.log('should validate', shouldValidate);
+    console.groupEnd();
 
     if (shouldValidate) {
       /* Make field disabled during the validation */
@@ -337,12 +342,12 @@ export default class Form extends React.Component {
   validateField = async ({ type = 'both', fieldProps }) => {
     const { fields } = this.state;
 
-    // console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
-    // console.log('validation type', type);
-    // console.log('value', fieldProps.get('value'));
-    // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    // console.groupEnd();
-    // console.log(' ');
+    console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
+    console.log('validation type', type);
+    console.log('value', fieldProps.get('value'));
+    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+    console.groupEnd();
+    console.log(' ');
 
     const validationArgs = {
       type,

@@ -131,6 +131,7 @@ export default class DefaultForm extends Component {
           onSubmitFailed={this.handleSubmitFail}
           onSubmitEnd={this.handleSubmitEnd}>
           <div className="field-group">
+
             {/* Select */}
             {/* <label>
               Select example:
@@ -140,10 +141,10 @@ export default class DefaultForm extends Component {
               </Field.Select>
             </label> */}
 
-            <Field.Select name="selectField">
+            {/* <Field.Select name="selectField">
               <option value="first">First value</option>
               <option value="second">Second value</option>
-            </Field.Select>
+            </Field.Select> */}
 
             {/* Input */}
             <div>
@@ -174,34 +175,34 @@ export default class DefaultForm extends Component {
             </div>
 
             {/* Input */}
-            <Field.Group name="groupOne">
+            {/* <Field.Group name="groupOne">
               <label>
                 Filed with client rule (optional):
                 <MyInput
                   name="fieldOne"
                   initialValue="1"
                   disabled={ disabled } />
-              </label>
+              </label> */}
 
-              <label>
+              {/* <label>
                 Prefilled with initialValue
                 <MyInput
                   name="initialValue"
                   rule={/^\d+$/}
                   initialValue="John Wick" />
               </label>
-            </Field.Group>
+            </Field.Group> */}
 
-            <label>
+            {/* <label>
               Prefilled with initialValue
               <MyInput
                 name="fieldFoo"
                 rule={/^\d+$/}
                 initialValue=""
                 required />
-            </label>
+            </label> */}
 
-            <label>
+            {/* <label>
               Async rule (optional)
               <MyInput
                 name="asyncOptional"
@@ -213,7 +214,7 @@ export default class DefaultForm extends Component {
                     })
                   });
                 }} />
-            </label>
+            </label> */}
 
             {/* <label>
               Filed with client rule (optional):
@@ -277,13 +278,6 @@ export default class DefaultForm extends Component {
                 }}
                 required />
             </label> */}
-
-            <Condition when={({ fields }) => {
-              return fields.zipCode && (fields.zipCode.validAsync);
-            }}>
-              <MyInput name="street" value="Baker st." required />
-              <MyInput name="houseNumber" value="12/c" required />
-            </Condition>
 
             {/* <label>
               Field with resolvable prop (required)

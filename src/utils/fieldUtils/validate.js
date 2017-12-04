@@ -12,13 +12,13 @@ import validateSync from './validateSync';
 import validateAsync from './validateAsync';
 
 export default async function validate({ type, fieldProps, fields, formProps, formRules = {} }) {
-  // console.groupCollapsed('fieldUtils @ validate', fieldProps);
-  // console.log('type', type);
-  // console.log('fieldProps', fieldProps);
-  // console.log('fields', fields);
-  // console.log('formProps', formProps);
-  // console.log('formRules', formRules);
-  // console.groupEnd();
+  console.groupCollapsed('fieldUtils @ validate', fieldProps.get('fieldPath'));
+  console.log('type', type);
+  console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+  console.log('fields', fields);
+  console.log('formProps', formProps);
+  console.log('formRules', formRules);
+  console.groupEnd();
 
   if (['both', 'sync'].includes(type)) {
     const syncValidationResult = validateSync({ fieldProps, fields, formProps, formRules });

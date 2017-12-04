@@ -46,12 +46,27 @@ export default class Radio extends Field {
   fieldWillRegister() {
     const { checked, value } = this.props;
 
-    return {
+    console.groupCollapsed(this.fieldPath, '@ fieldWillRegister');
+    console.log('props', Object.assign({}, this.props));
+
+    const fieldProps = {
       ...this.props,
-      checked: !!checked,
-      initialValue: checked && value, // only checked radio will set the context value to its value
-      value: null // other radio inputs are not mutating the conext value
+      value: checked ? value : null // other radio inputs are not mutating the conext value
     };
+
+    if (checked) {
+      fieldProps.checked = checked;
+
+      if (value) {
+        // only checked radio will set the context value to its value
+        fieldProps.initialValue = value;
+      }
+    }
+
+    console.log('fieldProps:', fieldProps);
+    console.groupEnd();
+
+    return fieldProps;
   }
 
   renderField(props, contextProps) {
