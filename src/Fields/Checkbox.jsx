@@ -6,12 +6,26 @@ export default class Checkbox extends Field {
   static displayName = 'Field.Checkbox'
 
   static propTypes = {
+    /* General */
+    id: PropTypes.string,
+    className: PropTypes.string,
+
+    /* Specific */
     name: PropTypes.string.isRequired,
-    checked: PropTypes.bool
+    checked: PropTypes.bool,
+    disabled: PropTypes.bool,
+    required: PropTypes.bool,
+
+    /* Event handlers */
+    onFocus: PropTypes.func,
+    onChange: PropTypes.func,
+    onBlur: PropTypes.func
   }
 
   static defaultProps = {
-    checked: false
+    checked: false,
+    disabled: false,
+    required: false
   }
 
   fieldWillRegister() {
@@ -39,8 +53,6 @@ export default class Checkbox extends Field {
   }
 
   renderField() {
-    return (
-      <input />
-    );
+    return (<input />);
   }
 }
