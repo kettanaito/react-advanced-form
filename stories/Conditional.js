@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Field, Condition } from '../src';
-import MyInput from './templates/MyInput';
+import { MyInput } from './custom-fields';
 
 export default class Conditional extends React.Component {
   render() {

@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { FormProvider, Form, Condition, Field } from '../src';
-import MyInput from './templates/MyInput';
-import MySelect from './templates/MySelect';
-import MyTextarea from './templates/MyTextarea';
+import { MyInput, MySelect, MyTextarea } from './custom-fields';
 
 /* Form validation rules */
 const formRules = {

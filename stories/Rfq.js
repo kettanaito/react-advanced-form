@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FormProvider, Form, Field } from '../src';
-import MyInput from './templates/MyInput';
+import { MyInput } from './custom-fields';
 
 /* Form validation rules */
 const formRules = {
