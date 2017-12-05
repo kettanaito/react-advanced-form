@@ -13,7 +13,10 @@
   </a>
 </p>
 
-<h1 align="center">React Advanced Form</h1>
+<div align="center">
+  <img src="./logo.png" alt="React Advanced Form" />
+  <h1>React Advanced Form</h1>
+</div>
 
 ## Overview
 * [Installation](#installation)
