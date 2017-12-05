@@ -13,7 +13,7 @@
   </a>
 </p>
 
-<div align="center">
+<div align="center" style="margin-top:2rem">
   <img src="./logo.png" alt="React Advanced Form" />
   <h1>React Advanced Form</h1>
 </div>
