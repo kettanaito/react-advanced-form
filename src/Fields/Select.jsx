@@ -20,9 +20,12 @@ export default class Select extends Field {
    * The Object this method returns is treated as field props to be registered in the Form.
    */
   fieldWillRegister() {
+    const { children, initialValue } = this.props;
+    const firstChildValue = children && children[0].value;
+
     return {
       ...this.props,
-      initialValue: this.props.initialValue || this.props.children[0].props.value
+      initialValue: initialValue || firstChildValue,
     };
   }
 
