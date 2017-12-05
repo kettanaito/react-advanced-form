@@ -416,7 +416,7 @@ export default class Form extends React.Component {
    * That applies that in case multiple calls of this method will be executed, each next within the given timeout
    * duration period postpones the method's execution.
    */
-  debounceValidateField = debounce(this.validateField, 300, true)
+  debounceValidateField = debounce(this.validateField, 250, false)
 
   /**
    * Validates the form.
