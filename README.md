@@ -2,11 +2,11 @@
   <a href="https://www.npmjs.com/package/react-advanced-form">
     <img src="https://img.shields.io/npm/v/react-advanced-form.svg" title="Latest version" />
   </a>
-  <a href="https://david-dm.org/kettanaito/react-advanced-form.svg">
-    <img src="https://david-dm.org/kettanaito/react-advanced-form.svg/status.svg" title="Dependencies status" />
+  <a href="https://david-dm.org/kettanaito/react-advanced-form" title="Dependencies status">
+    <img src="https://david-dm.org/kettanaito/react-advanced-form/status.svg"/>
   </a>
-  <a href="https://david-dm.org/kettanaito/react-advanced-form.svg?type=dev" title="devDependencies status">
-    <img src="https://david-dm.org/kettanaito/react-advanced-form.svg/dev-status.svg" />
+  <a href="https://david-dm.org/kettanaito/react-advanced-form?type=dev" title="devDependencies status">
+    <img src="https://david-dm.org/kettanaito/react-advanced-form/dev-status.svg"/>
   </a>
 </p>
 
@@ -52,7 +52,7 @@ const App = ({ children }) => (
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-By doing so, *all* the forms in your application will abide by the provided validation rules and corresponding validation messages. Although the `FormProvider` is not necessary for the forms to work, it is recommended for real-world applications to reduce code repetition and ensure a solid user and developer experience.
+By doing so, *all* the forms in your application will abide by the provided [validation rules](./docs/validation-rules.md) and corresponding validation messages. Although the `FormProvider` is not necessary for the forms to work, it is recommended for real-world applications to reduce code repetition and ensure a solid user and developer experience.
 
 ### Build a custom form
 ```jsx
