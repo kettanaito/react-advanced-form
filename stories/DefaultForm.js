@@ -135,6 +135,8 @@ export default class DefaultForm extends Component {
             {/* Select */}
             <label>
               Select example:
+              <Field.Select name="emptySelect" initialValue="three" />
+
               <Field.Select name="choice" initialValue="three">
                 <option value="one">One</option>
                 <option value="two">Two</option>
