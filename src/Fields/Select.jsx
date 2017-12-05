@@ -25,7 +25,7 @@ export default class Select extends Field {
 
     return {
       ...this.props,
-      initialValue: initialValue || firstChildValue,
+      initialValue: initialValue || firstChildValue
     };
   }
 
