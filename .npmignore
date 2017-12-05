@@ -4,7 +4,7 @@ src
 # Configurations
 .babelrc
 .eslintrc*
-.travis.yml
+.circleci
 npm-*
 webpack*
 .storybook
