@@ -1,11 +1,10 @@
 version: 2
 
-machine:
-  node:
-    version: 6.11.4
-
 jobs:
   build:
+    machine:
+      node:
+        version: 6.11.4
     steps:
       - checkout
 
@@ -23,6 +22,4 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-  test:
-    steps:
       - run: npm test
