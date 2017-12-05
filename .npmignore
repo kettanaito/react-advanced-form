@@ -10,6 +10,7 @@ webpack*
 .storybook
 
 # Misc
+FAQ.md
 docs
 test
 coverage
