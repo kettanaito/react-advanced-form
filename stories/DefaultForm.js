@@ -133,13 +133,14 @@ export default class DefaultForm extends Component {
           <div className="field-group">
 
             {/* Select */}
-            {/* <label>
+            <label>
               Select example:
-              <Field.Select name="choice">
-                <option>Foo</option>
-                <option>Two</option>
+              <Field.Select name="choice" initialValue="three">
+                <option value="one">One</option>
+                <option value="two">Two</option>
+                <option value="three">Three</option>
               </Field.Select>
-            </label> */}
+            </label>
 
             {/* <Field.Select name="selectField">
               <option value="first">First value</option>
