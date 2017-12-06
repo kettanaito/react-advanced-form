@@ -61,7 +61,7 @@ const App = ({ children }) => (
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-By doing so, *all* the forms in your application will abide by the provided [validation rules](./docs/validation-rules.md) and corresponding validation messages. Although the `FormProvider` is not necessary for the forms to work, it is recommended for real-world applications to reduce code repetition and ensure a solid user and developer experience.
+By doing so, *all* the forms in your application will abide by the provided [validation rules](./docs/validation-rules.md) and corresponding [validation messages](./docs/validation-messages.md). Although the `FormProvider` is not necessary for the forms to work, it is recommended for real-world applications to reduce code repetition and ensure a solid user and developer experience.
 
 ### Build a custom form
 ```jsx
