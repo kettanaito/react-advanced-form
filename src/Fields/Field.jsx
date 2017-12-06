@@ -21,7 +21,7 @@ export default class Field extends React.Component {
 
     /* Specific */
     name: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    type: PropTypes.string,
     value: PropTypes.string,
 
     /* Validation */
