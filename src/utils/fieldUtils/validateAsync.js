@@ -1,8 +1,14 @@
+/**
+ * Asynchronous validation of field.
+ * @param {Map} fieldProps
+ * @param {Map} fields
+ * @param {Object} form
+ */
 export default async function validateAsync({ fieldProps, fields, form }) {
   const value = fieldProps.get('value');
   const asyncRule = fieldProps.get('asyncRule');
 
-  /* Treat optional empty fields as expected */
+  /* Bypass optional empty fields */
   if (!asyncRule || !value) return { expected: true };
 
   let expected = false;
