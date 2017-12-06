@@ -3,7 +3,7 @@
  */
 // import { resolveProp } from './resolveProp';
 
-export default function validateSync({ fieldProps, fields, formProps, formRules }) {
+export default function validateSync({ fieldProps, fields, form, formRules }) {
   let isExpected = true;
 
   const name = fieldProps.get('name');
@@ -61,7 +61,7 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
 
     /* Test the RegExp against the field's value */
     isExpected = (typeof rule === 'function')
-      ? rule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), formProps })
+      ? rule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), form })
       : rule.test(value);
 
     // console.log('isExpected:', isExpected);
@@ -82,11 +82,11 @@ export default function validateSync({ fieldProps, fields, formProps, formRules 
 
     /* Form-level validation */
     const isValidByType = formTypeRule
-      ? formTypeRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), formProps })
+      ? formTypeRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), form })
       : true;
 
     const isValidByName = formNameRule
-      ? formNameRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), formProps })
+      ? formNameRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), form })
       : true;
 
     // console.log('isValidByName', isValidByName);

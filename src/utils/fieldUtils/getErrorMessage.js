@@ -3,11 +3,11 @@
  * @param {Map} message
  * @param {string} errorType
  * @param {Map} fieldProps
- * @param {object} formProps
+ * @param {object} form
  * @param {object?} extra
  * @return {string}
  */
-function resolveAsyncMessage({ message, errorType, fieldProps, fields, formProps, extra }) {
+function resolveAsyncMessage({ message, errorType, fieldProps, fields, form, extra }) {
   /* Bypass synchronous messages */
   if (errorType !== 'async') return message;
 
@@ -26,7 +26,7 @@ function resolveAsyncMessage({ message, errorType, fieldProps, fields, formProps
       value: fieldProps.get('value'),
       fieldProps: fieldProps.toJS(),
       fields: fields.toJS(),
-      formProps
+      form
     });
 
     if (!errorMessage) break;
@@ -40,10 +40,10 @@ function resolveAsyncMessage({ message, errorType, fieldProps, fields, formProps
  * @param {object} validationResult
  * @param {Map} messages
  * @param {Map} fieldProps
- * @param {object} formProps
+ * @param {object} form
  * @return {string}
  */
-export default function getErrorMessage({ validationResult, messages, fieldProps, fields, formProps }) {
+export default function getErrorMessage({ validationResult, messages, fieldProps, fields, form }) {
   const { errorType, extra } = validationResult;
 
   /**
@@ -68,7 +68,7 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
         errorType,
         fieldProps,
         fields,
-        formProps
+        form
       });
     }
   }
