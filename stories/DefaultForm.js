@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { FormProvider, Form, Condition, Field } from '../src';
 import MyInput from './templates/MyInput';
 import MySelect from './templates/MySelect';
+import MyTextarea from './templates/MyTextarea';
 
 /* Form validation rules */
 const formRules = {
@@ -182,6 +183,12 @@ export default class DefaultForm extends Component {
             <div>
               <Field.Textarea name="myTextarea" />
             </div>
+
+            <MyTextarea
+              name="myCustomTextarea"
+              initialValue="Predefined"
+              rule={/^\d+$/}
+              required />
 
             {/* Input */}
             {/* <Field.Group name="groupOne">
