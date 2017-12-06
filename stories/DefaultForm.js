@@ -34,7 +34,7 @@ const formMessages = {
     },
     username: {
       async: {
-        customResolver: ({ res, payload, fieldProps, formProps }) => {
+        customResolver: ({ res, payload, fieldProps, form }) => {
           return payload.statusCode;
         }
       }
@@ -72,45 +72,45 @@ export default class DefaultForm extends Component {
     });
   }
 
-  handleFormInvalid = ({ fields, invalidFields, formProps}) => {
+  handleFormInvalid = ({ fields, invalidFields, form}) => {
     console.groupCollapsed('onInvalid');
     console.log('fields', fields);
     console.log('invalidFields', invalidFields);
-    console.log('formProps', formProps);
+    console.log('form', form);
     console.groupEnd();
   }
 
-  handleSubmitStart = ({ fields, serialized, formProps }) => {
+  handleSubmitStart = ({ fields, serialized, form }) => {
     console.groupCollapsed('handleSubmitStart');
     console.log('fields', fields);
     console.log('serialized', serialized);
-    console.log('formProps', formProps);
+    console.log('form', form);
     console.groupEnd();
   }
 
-  handleSubmitted = ({ fields, serialized, formProps, res }) => {
+  handleSubmitted = ({ fields, serialized, form, res }) => {
     console.groupCollapsed('handleSubmitted');
     console.log('fields', fields);
     console.log('serialized', serialized);
-    console.log('formProps', formProps);
+    console.log('form', form);
     console.log('res', res);
     console.groupEnd();
   }
 
-  handleSubmitFail = ({ fields, serialized, formProps, res }) => {
+  handleSubmitFail = ({ fields, serialized, form, res }) => {
     console.groupCollapsed('handleSubmitFail');
     console.log('fields', fields);
     console.log('serialized', serialized);
-    console.log('formProps', formProps);
+    console.log('form', form);
     console.log('res', res);
     console.groupEnd();
   }
 
-  handleSubmitEnd = ({ fields, serialized, formProps, res }) => {
+  handleSubmitEnd = ({ fields, serialized, form, res }) => {
     console.groupCollapsed('handleSubmitEnd');
     console.log('fields', fields);
     console.log('serialized', serialized);
-    console.log('formProps', formProps);
+    console.log('form', form);
     console.log('res', res);
     console.groupEnd();
   }

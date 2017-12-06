@@ -138,7 +138,7 @@ export default class Form extends React.Component {
         return resolver({
           fieldProps: nextFieldProps.toJS(),
           fields: nextFields.toJS(),
-          formProps: this.props
+          form: this
         });
       });
 
@@ -201,7 +201,7 @@ export default class Form extends React.Component {
         event,
         fieldProps: nextFieldProps.toJS(),
         fields: nextFields.toJS(),
-        formProps: this.props
+        form: this
       });
     }
   }
@@ -251,7 +251,7 @@ export default class Form extends React.Component {
         prevValue,
         fieldProps: nextFieldProps.toJS(),
         fields: nextFields.toJS(),
-        formProps: this.props
+        form: this
       });
     }
   }
@@ -323,7 +323,7 @@ export default class Form extends React.Component {
         event,
         fieldProps: nextFieldProps.toJS(),
         fields: nextFields.toJS(),
-        formProps: this.props
+        form: this
       });
     }
 
@@ -355,7 +355,7 @@ export default class Form extends React.Component {
       type,
       fieldProps,
       fields,
-      formProps: this.props,
+      form: this,
       formRules: this.formRules
     };
 
@@ -387,7 +387,7 @@ export default class Form extends React.Component {
         messages: this.formMessages,
         fieldProps,
         fields,
-        formProps: this.props
+        form: this
       });
 
       propsPatch.error = errorMessage;
@@ -456,7 +456,7 @@ export default class Form extends React.Component {
       onInvalid({
         fields: nextMutableFields,
         invalidFields,
-        formProps: this.props
+        form: this
       });
     }
 
@@ -495,7 +495,7 @@ export default class Form extends React.Component {
     const callbackArgs = {
       serialized,
       fields: fields.toJS(),
-      formProps: this.props
+      form: this
     };
 
     /**
