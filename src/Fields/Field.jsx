@@ -230,7 +230,7 @@ export default class Field extends React.Component {
     });
   }
 
-  renderField() {
+  renderElement() {
     return null;
   }
 
@@ -240,8 +240,8 @@ export default class Field extends React.Component {
 
     const { id, className, style } = this.props;
 
-    const Component = this.renderField(this.props, this.contextProps);
-    invariant(Component, `Cannot render the field \`${this.props.name}\` as it doesn't have a renderable component. Make sure to return a React component in "renderField()" method.`);
+    const Component = this.renderElement(this.props, this.contextProps);
+    invariant(Component, `Cannot render the field \`${this.props.name}\` as it doesn't have a renderable component. Make sure to return a React component in "renderElement()" method.`);
 
     return (
       <Component.type

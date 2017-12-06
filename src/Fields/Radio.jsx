@@ -69,7 +69,7 @@ export default class Radio extends Field {
     return fieldProps;
   }
 
-  renderField(props, contextProps) {
+  renderElement(props, contextProps) {
     return (
       <input
         type="radio"

@@ -20,7 +20,7 @@ export default class Input extends Field {
     disabled: false
   }
 
-  renderField() {
+  renderElement() {
     return (<input />);
   }
 }

@@ -29,7 +29,7 @@ export default class Select extends Field {
     };
   }
 
-  renderField(props) {
+  renderElement(props) {
     return (
       <select>
         { props.children }
