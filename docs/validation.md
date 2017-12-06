@@ -64,7 +64,7 @@ Read more about how to declare [validation rules](./validation-rules.md).
 This way the rules you provide are applied application-wise, meaning that each `<Form>` rendered within the provider, regardless of the depth, will follow them. In case of necessity, you can use custom [Form rules](#form-rules) to override the global ones for a certain form.
 
 ### Asynchronous Field rules
-#### `asyncRule?: ({ value, fieldProps, fields, formProps }) => Promise<boolean>`
+#### `asyncRule?: ({ value, fieldProps, fields, formProps }) => Promise<ResolvedAsyncRule>`
 Async validation, as stated in its name, uses an async request to a remote end-point responsible for validating the field's value.
 
 ```jsx
@@ -77,11 +77,27 @@ Async validation, as stated in its name, uses an async request to a remote end-p
         body: JSON.stringify({
           username: value
         })
+        .then(res => res.json())
+        .then((payload) => {
+          return {
+            valid: (payload.statusCode === 'SUCCESS')
+          };
+        });
       });
     }} />
 </Form>
 ```
-> **Note:** Make sure to return a `Promise` in the `asyncRule`.
+
+When using `asyncRule`, you should **always** resolve with `ResolvedAsyncRule` Object:
+
+```ts
+type ResolvedAsyncRule = {
+  valid: boolean, // state the validity status of the field
+  [customProperty: string]: mixed // pass any custom properties you need
+}
+```
+
+Passing custom properties within `ResolvedAsyncRule` will make them available as argument properties in [Asynchronous validation messages](./validation-messages.md#example) resolvers.
 
 ## Usage examples
 The recommended way of declaring your validation rules is to have just one rules Object responsible for global rules. Then, pass this Object to the `FormProvider` as the `rules` prop. All forms rendered as children of `FormProvider` will inherit those rules and behave as described.
