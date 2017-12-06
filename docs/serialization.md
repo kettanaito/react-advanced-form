@@ -5,6 +5,9 @@ Form serialization (reducing the values of fields to a plain Object) is handled 
 
 > **Note:** Read about [`Field.Group`](./components/Field.Group.md) to organize your fields' data on a markup level, which keeps your `handleSubmit` logic light and smooth.
 
+## Serialize fields
+You can access the serialized fields through `serialized` argument property availabile on all [Submit callback methods](./submit.md#callback-methods). That is the recommended way of handling serialized fields.
+
 ## Manual serialization
 However, there are cases when you may require to serialize the form "from outside".
 
