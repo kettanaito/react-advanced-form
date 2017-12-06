@@ -25,10 +25,12 @@
 * **Components:**
   * [Field.Group](./docs/components/Field.Group.md)
 * **Form workflow:**
-  * [Form validation](./docs/validation.md)
-  * [Validation states](./docs/validation-states.md)
   * [Serialization](./docs/serialization.md)
-  * [Handle form submit](./docs/submit.md)
+  * [Form validation](./docs/validation.md)
+    * [Validation rules](./docs/validation-rules.md)
+    * [Validation messages](./docs/validation-messages.md)
+    * [Validation states](./docs/validation-states.md)
+  * [Form submit](./docs/submit.md)
 * **Other:**
   * [Custom styling](./docs/custom-styling.md)
 * [FAQ (Freqently asked questions)](./FAQ.md)
