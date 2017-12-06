@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" alt="React Advanced Form" />
+  <img src="./logo.svg" alt="React Advanced Form" height=200 />
 </p>
 
 <h1 align="center">React Advanced Form</h1>
