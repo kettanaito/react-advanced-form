@@ -179,6 +179,10 @@ export default class DefaultForm extends Component {
 
             <Field.Checkbox name="acceptTerms" />
 
+            <div>
+              <Field.Textarea name="myTextarea" />
+            </div>
+
             {/* Input */}
             {/* <Field.Group name="groupOne">
               <label>
