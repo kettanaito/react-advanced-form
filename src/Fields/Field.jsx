@@ -112,7 +112,7 @@ export default class Field extends React.Component {
     const dynamicProps = fieldUtils.getDynamicProps(props);
 
     /* Assign dynamic props in case they are present */
-    if (Object.keys(dynamicProps).length > 0) {
+    if (dynamicProps.size > 0) {
       fieldProps.dynamicProps = dynamicProps;
     }
 
