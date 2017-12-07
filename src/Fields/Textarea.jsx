@@ -8,6 +8,8 @@ export default class Textarea extends Field {
   static displayName = 'Field.Textarea'
 
   renderElement() {
-    return (<textarea />);
+    return (
+      <textarea />
+    );
   }
 }
