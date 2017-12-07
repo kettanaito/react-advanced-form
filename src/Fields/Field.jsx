@@ -161,15 +161,7 @@ export default class Field extends React.Component {
 
     const controllable = contextProps.get('controllable');
 
-    console.groupCollapsed(this.props.name, '@ componentWillReceiveProps');
-    console.log('prevProps', Object.assign({}, this.props));
-    console.log('nextProps', Object.assign({}, nextProps));
-    console.log('contextProps', Object.assign({}, contextProps.toJS()));
-    console.log('this.context.fields', Object.assign({}, this.context.fields.getIn([this.fieldPath]).toJS()));
-    console.groupEnd();
-
     if (controllable && (nextProps.value !== this.props.value)) {
-      console.warn('Should update value for controlled field');
       this.context.handleFieldChange({
         nextValue: nextProps.value,
         prevValue: this.props.value,
@@ -178,7 +170,6 @@ export default class Field extends React.Component {
     }
 
     if (nextProps.disabled !== contextProps.get('disabled')) {
-      console.warn('Should update "disabled" prop')
       this.context.updateField({
         fieldPath: this.fieldPath,
         propsPatch: {
@@ -209,9 +200,6 @@ export default class Field extends React.Component {
    */
   componentWillUpdate(nextProps, nextState, nextContext) {
     this.contextProps = nextContext.fields.getIn([this.fieldPath]);
-    console.warn(this.fieldPath, '@ componentWillUpdate', nextProps, nextState);
-    console.log('next contextProps:', this.contextProps && this.contextProps.toJS());
-    console.log(' ');
   }
 
   /**
