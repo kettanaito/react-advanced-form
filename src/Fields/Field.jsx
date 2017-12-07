@@ -192,7 +192,10 @@ export default class Field extends React.Component {
     const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
 
     /* Compare next context props with the current context props */
-    return !this.contextProps.equals(nextContextProps);
+    return (
+      !this.contextProps.equals(nextContextProps) ||
+      JSON.stringify(this.props) !== JSON.stringify(nextProps)
+    );
   }
 
   /**
