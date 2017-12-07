@@ -62,7 +62,7 @@ export default function connectField(WrappedComponent) {
       /* Compose the props passed to the decorated component */
       const nextProps = {
         ...directProps,
-        value,
+        // value, // doesn't work properly with controlled value
 
         /* Interaction states */
         focused,
