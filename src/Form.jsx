@@ -157,7 +157,7 @@ export default class Form extends React.Component {
     return new Promise((resolve, reject) => {
       try {
         this.setState({ fields: nextResolvedFields }, () => resolve({
-          nextFields,
+          nextFields: nextResolvedFields,
           nextFieldProps
         }));
       } catch (error) {
