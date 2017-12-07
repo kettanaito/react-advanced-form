@@ -15,11 +15,21 @@ export default class ControlledForm extends React.Component {
     password: ''
   }
 
+  handleSubmitStart = ({ fields, serialized, form }) => {
+    console.groupCollapsed('handleSubmitStart');
+    console.log('fields', fields);
+    console.log('serialized', serialized);
+    console.log('form', form);
+    console.groupEnd();
+  }
+
   render() {
     const { username, password } = this.state;
 
     return (
-      <Form messages={ validationMessages }>
+      <Form
+        messages={ validationMessages }
+        onSubmitStart={ this.handleSubmitStart }>
         <div>
           <label>
             Username:
