@@ -184,19 +184,19 @@ export default class Field extends React.Component {
    * Updates should be preceeded by the context change since the latter serves as a single source of truth
    * for the field's props.
    */
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    /* Bypass the state when the field is not yet registered */
-    if (!this.contextProps) return true;
+  // shouldComponentUpdate(nextProps, nextState, nextContext) {
+  //   /* Bypass the state when the field is not yet registered */
+  //   if (!this.contextProps) return true;
 
-    /* Get the next context props of the field */
-    const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
+  //   /* Get the next context props of the field */
+  //   const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
 
-    /* Compare next context props with the current context props */
-    return (
-      !this.contextProps.equals(nextContextProps) ||
-      JSON.stringify(this.props) !== JSON.stringify(nextProps)
-    );
-  }
+  //   /* Compare next context props with the current context props */
+  //   return (
+  //     !this.contextProps.equals(nextContextProps) ||
+  //     JSON.stringify(this.props) !== JSON.stringify(nextProps)
+  //   );
+  // }
 
   /**
    * Ensures "this.contextProps" are updated after the component's update.
