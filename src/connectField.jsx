@@ -7,14 +7,14 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { IterableInstance, fieldUtils } from './utils';
-import { defaultProps } from './Fields/Field';
+import { isset, IterableInstance, fieldUtils } from './utils';
+import { defaultProps as defaultFieldProps } from './Fields/Field';
 
 export default function connectField(WrappedComponent) {
   const componentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
   class FieldWrapper extends React.Component {
-    static displayName = `ConnectedField(${componentName})`;
+    static displayName = `connectField(${componentName})`;
 
     static contextTypes = {
       fieldGroup: PropTypes.string,
@@ -24,23 +24,26 @@ export default function connectField(WrappedComponent) {
     constructor(props, context) {
       super(props, context);
 
-      const { fieldGroup } = context;
-      const { name } = props;
-
-      /* Determine field's path on construction and store the value forever */
-      this.fieldPath = fieldUtils.getFieldPath({ name, fieldGroup });
+      /**
+       * Compose the field's path on construction and store the value internally.
+       * Note: That means that "fieldGroup" name cannot really be controlled.
+       */
+      this.fieldPath = fieldUtils.getFieldPath({
+        name: this.props.name,
+        fieldGroup: this.context.fieldGroup
+      });
     }
 
     render() {
-      const { fieldPath } = this;
+      const { fieldPath, props: directProps } = this;
       const { fields } = this.context;
 
-      const directProps = this.props;
-      const fieldProps = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath]).toJS() : defaultProps;
+      /* Get field props, either from context of from default field props (on initial render) */
+      const fieldContext = fields.getIn([fieldPath]);
+      const contextProps = fieldContext ? fieldContext.toJS() : defaultFieldProps;
 
       const {
         focused,
-        disabled,
         validatedSync,
         validatedAsync,
         validating,
@@ -50,29 +53,36 @@ export default function connectField(WrappedComponent) {
         validAsync,
         invalid,
         error
-      } = fieldProps;
+      } = contextProps;
 
       /* Grab the value from context props when available, to present actual data in the components tree */
       // const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
 
+      const value = isset(directProps.value) ? directProps.value : contextProps.value;
+      const disabled = isset(directProps.disabled) ? directProps.disabled : contextProps.disabled;
+
       /* Compose the props passed to the decorated component */
-      const newProps = {
-        ...directProps,
+      const nextProps = {
+        ...directProps, // destruct direct props
+        value,
+
+        /* Interaction states */
         focused,
-        disabled, // doesn't work with dynamic "disabled"
+        disabled, // CHECKME: doesn't work with dynamic "disabled"
+
+        /* Validation states */
         validating,
         validatedSync,
+        validSync,
+        validAsync,
         validatedAsync,
         expected,
         valid,
-        validSync,
-        validAsync,
         invalid,
         error
-        // value
       };
 
-      return React.createElement(WrappedComponent, newProps);
+      return React.createElement(WrappedComponent, nextProps);
     }
   }
 
