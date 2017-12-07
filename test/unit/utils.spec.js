@@ -13,7 +13,7 @@ describe('Utils', () => {
         required: () => true
       };
 
-      expect(fieldUtils.getDynamicProps(fieldProps)).to.have.all.keys(['required']);
+      expect(fieldUtils.getDynamicProps(fieldProps).toJS()).to.have.all.keys(['required']);
     });
 
     /**
