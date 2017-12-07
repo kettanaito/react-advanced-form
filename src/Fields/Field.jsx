@@ -4,7 +4,7 @@
 import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { fromJS } from 'immutable';
+import { Map } from 'immutable';
 import { IterableInstance, isset, fieldUtils } from '../utils';
 
 export const defaultProps = {
@@ -126,7 +126,7 @@ export default class Field extends React.Component {
      * Otherwise, registrations happen at approximately same time, resulting into fields being unaware of each other.
      */
     setTimeout(() => {
-      return this.context.registerField(fromJS(fieldProps));
+      return this.context.registerField(Map(fieldProps));
     }, 0);
   }
 
