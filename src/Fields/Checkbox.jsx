@@ -54,6 +54,8 @@ export default class Checkbox extends Field {
   }
 
   renderElement(props, contextProps) {
-    return (<input checked={ contextProps.get('checked') } />);
+    return (
+      <input checked={ contextProps.get('checked') } />
+    );
   }
 }

@@ -21,6 +21,8 @@ export default class Input extends Field {
   }
 
   renderElement() {
-    return (<input />);
+    return (
+      <input />
+    );
   }
 }
