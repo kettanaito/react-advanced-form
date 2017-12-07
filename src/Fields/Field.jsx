@@ -42,6 +42,7 @@ export default class Field extends React.Component {
     fieldGroup: PropTypes.string,
     fields: IterableInstance,
     registerField: PropTypes.func.isRequired,
+    updateField: PropTypes.func.isRequired,
     unregisterField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
@@ -155,12 +156,52 @@ export default class Field extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.contextProps) return;
-    const controllable = this.contextProps.get('controllable');
+    const { contextProps } = this;
+    if (!contextProps) return;
+
+    const controllable = contextProps.get('controllable');
+
+    console.groupCollapsed(this.props.name, '@ componentWillReceiveProps');
+    console.log('prevProps', Object.assign({}, this.props));
+    console.log('nextProps', Object.assign({}, nextProps));
+    console.log('contextProps', Object.assign({}, contextProps.toJS()));
+    console.log('this.context.fields', Object.assign({}, this.context.fields.getIn([this.fieldPath]).toJS()));
+    console.groupEnd();
 
     if (controllable && (nextProps.value !== this.props.value)) {
-      this.context.handleFieldChange({ nextValue: nextProps.value, prevValue: this.props.value, fieldProps: this.contextProps });
+      console.warn('Should update value for controlled field');
+      this.context.handleFieldChange({
+        nextValue: nextProps.value,
+        prevValue: this.props.value,
+        fieldProps: contextProps
+      });
     }
+
+    if (nextProps.disabled !== contextProps.get('disabled')) {
+      console.warn('Should update "disabled" prop')
+      this.context.updateField({
+        fieldPath: this.fieldPath,
+        propsPatch: {
+          disabled: nextProps.disabled
+        }
+      });
+    }
+  }
+
+  /**
+   * Predicates whether the field should update.
+   * Updates should be preceeded by the context change since the latter serves as a single source of truth
+   * for the field's props.
+   */
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    /* Bypass the state when the field is not yet registered */
+    if (!this.contextProps) return true;
+
+    /* Get the next context props of the field */
+    const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
+
+    /* Compare next context props with the current context props */
+    return !this.contextProps.equals(nextContextProps);
   }
 
   /**
@@ -168,6 +209,9 @@ export default class Field extends React.Component {
    */
   componentWillUpdate(nextProps, nextState, nextContext) {
     this.contextProps = nextContext.fields.getIn([this.fieldPath]);
+    console.warn(this.fieldPath, '@ componentWillUpdate', nextProps, nextState);
+    console.log('next contextProps:', this.contextProps && this.contextProps.toJS());
+    console.log(' ');
   }
 
   /**
@@ -230,18 +274,31 @@ export default class Field extends React.Component {
     });
   }
 
+  /**
+   * Renders the element.
+   * Extend this method on the particular field component to render different React component
+   * upon Field's render. By default render nothing.
+   */
   renderElement() {
     return null;
   }
 
   render() {
-    /* Skip rendering unless the field in in the Form's context */
+    /**
+     * Skip rendering unless the field in in the Form's context.
+     * While this is a safe method to ensure the relevant component's props are being rendered,
+     * it results into a noticeable flash of unrendered component.
+     *
+     * See more: https://github.com/kettanaito/react-advanced-form/issues/77.
+     */
     if (!this.contextProps) return null;
 
     const { id, className, style } = this.props;
 
     const Component = this.renderElement(this.props, this.contextProps);
-    invariant(Component, `Cannot render the field \`${this.props.name}\` as it doesn't have a renderable component. Make sure to return a React component in "renderElement()" method.`);
+    invariant(Component, `Cannot render the field \`${this.props.name}\` as it doesn't have a renderable element. Make sure to return a React component in "renderElement()" method.`);
+
+    console.log(this.props.name, 'render disabled:', this.contextProps.get('disabled'));
 
     return (
       <Component.type

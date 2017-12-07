@@ -59,12 +59,18 @@ export default class DefaultForm extends Component {
     value: 1,
     valueTwo: 2,
     valueThree: 3,
-    disabled: false
+    isDisabled: false
   }
 
   controlValue = (event) => {
     event.preventDefault();
     this.setState(prevState => ({ valueTwo: prevState.valueTwo + 1 }));
+  }
+
+  toggleDisabled = (event) => {
+    event.preventDefault();
+
+    this.setState(prevState => ({ isDisabled: !prevState.isDisabled }));
   }
 
   handleFormAction = () => {
@@ -117,7 +123,7 @@ export default class DefaultForm extends Component {
   }
 
   render() {
-    const { value, valueTwo, valueThree, disabled } = this.state;
+    const { value, valueTwo, valueThree, isDisabled } = this.state;
 
     return (
       <FormProvider
@@ -134,16 +140,14 @@ export default class DefaultForm extends Component {
           <div className="field-group">
 
             {/* Select */}
-            <label>
+            {/* <label>
               Select example:
-              <Field.Select name="emptySelect" initialValue="three" />
-
               <Field.Select name="choice" initialValue="three">
                 <option value="one">One</option>
                 <option value="two">Two</option>
                 <option value="three">Three</option>
               </Field.Select>
-            </label>
+            </label> */}
 
             {/* <Field.Select name="selectField">
               <option value="first">First value</option>
@@ -151,7 +155,7 @@ export default class DefaultForm extends Component {
             </Field.Select> */}
 
             {/* Input */}
-            <div>
+            {/* <div>
               <label>
                 Choose one of the following:
               </label>
@@ -176,19 +180,21 @@ export default class DefaultForm extends Component {
                   value="Kangaroo" />
                   Kangaroo
               </label>
-            </div>
+            </div> */}
 
-            <Field.Checkbox name="acceptTerms" />
+            <Field.Checkbox name="acceptTerms" disabled={ isDisabled } />
 
             <div>
-              <Field.Textarea name="myTextarea" />
+              <Field.Textarea name="myTextarea" disabled={ isDisabled } />
             </div>
 
-            <MyTextarea
+            <button onClick={ this.toggleDisabled }>Toggle disabled</button>
+
+            {/* <MyTextarea
               name="myCustomTextarea"
               initialValue="Predefined"
               rule={/^\d+$/}
-              required />
+              required /> */}
 
             {/* Input */}
             {/* <Field.Group name="groupOne">
