@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isset, IterableInstance, fieldUtils } from './utils';
+import { isset, getProperty, IterableInstance, fieldUtils } from './utils';
 import { defaultProps as defaultFieldProps } from './Fields/Field';
 
 export default function connectField(WrappedComponent) {
@@ -35,12 +35,10 @@ export default function connectField(WrappedComponent) {
     }
 
     render() {
-      const { fieldPath, props: directProps } = this;
-      const { fields } = this.context;
+      const directProps = this.props;
 
       /* Get field props, either from context of from default field props (on initial render) */
-      const fieldContext = fields.getIn([fieldPath]);
-      const contextProps = fieldContext ? fieldContext.toJS() : defaultFieldProps;
+      const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, defaultFieldProps);
 
       const {
         focused,
@@ -53,17 +51,17 @@ export default function connectField(WrappedComponent) {
         validAsync,
         invalid,
         error
-      } = contextProps;
+      } = fieldProps;
 
       /* Grab the value from context props when available, to present actual data in the components tree */
       // const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
 
-      const value = isset(directProps.value) ? directProps.value : contextProps.value;
-      const disabled = isset(directProps.disabled) ? directProps.disabled : contextProps.disabled;
+      const value = getProperty('value', directProps, fieldProps);
+      const disabled = getProperty('disabled', directProps, fieldProps);
 
       /* Compose the props passed to the decorated component */
       const nextProps = {
-        ...directProps, // destruct direct props
+        ...directProps,
         value,
 
         /* Interaction states */
