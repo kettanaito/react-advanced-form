@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isset, getProperty, IterableInstance, fieldUtils } from './utils';
+import { getProperty, IterableInstance, fieldUtils } from './utils';
 import { defaultProps as defaultFieldProps } from './Fields/Field';
 
 export default function connectField(WrappedComponent) {
