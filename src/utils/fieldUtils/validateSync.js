@@ -42,8 +42,8 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   }
 
   /* Assume Field doesn't have any specific validation attached */
-  const formTypeRule = formRules.type && formRules.type[type];
-  const formNameRule = formRules.name && formRules.name[name];
+  const formTypeRule = formRules.getIn(['type', type]);
+  const formNameRule = formRules.getIn(['name', name]);
   const hasFormRules = formTypeRule || formNameRule;
 
   if (!rule && !asyncRule && !hasFormRules) {

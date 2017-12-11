@@ -35,7 +35,7 @@ export default class FormProvider extends React.Component {
 
   getChildContext() {
     return {
-      rules: this.props.rules,
+      rules: fromJS(this.props.rules),
       messages: fromJS(this.props.messages)
     };
   }
