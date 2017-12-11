@@ -11,4 +11,4 @@ describe('Basics', () => {
   });
 });
 
-import './unit/utils.spec';
+require('./unit/utils.spec');

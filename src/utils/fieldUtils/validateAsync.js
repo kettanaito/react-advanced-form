@@ -21,9 +21,11 @@ export default async function validateAsync({ fieldProps, fields, form }) {
     extra = rest;
   }
 
-  return {
-    expected,
-    errorType: 'async',
-    extra
-  };
+  const validationResult = { expected };
+
+  /* Include additional properties for unexpected fields only */
+  if (!expected) validationResult.errorType = 'async';
+  if (Object.keys(extra).length > 0) validationResult.extra = extra;
+
+  return validationResult;
 }

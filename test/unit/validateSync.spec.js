@@ -1,3 +1,6 @@
+/**
+ * Synchronous validation.
+ */
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { fieldUtils } from '../../src/utils';
