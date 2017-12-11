@@ -201,14 +201,14 @@ describe('Utils', () => {
 
       const fields = fromJS({ fieldOne, fieldTwo, fieldThree });
 
-      const formRules = {
+      const formRules = fromJS({
         type: {
           tel: ({ value }) => /^\d+$/.test(value)
         },
         name: {
           username: ({ value }) => (value === 'admin')
         }
-      };
+      });
 
       /* Optional empty field validation */
       expect(fieldUtils.validateSync({ fieldProps: fieldOne, fields, formRules })).to.deep.eq({ expected: true });
