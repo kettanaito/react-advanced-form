@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Field, Condition } from '../lib';
-import MyInput from './templates/MyInput';
+import { MyInput } from './custom-fields';
 
 const validationMessages = {
   general: {
