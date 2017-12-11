@@ -6,7 +6,7 @@ import * as libExports from '../lib';
 configure({ adapter: new Adapter() });
 
 describe('Basics', () => {
-  it('Exports are fine', () => {
+  it('Library exports are fine', () => {
     expect(libExports).to.have.all.keys(['connectField', 'FormProvider', 'Form', 'Field', 'Condition']);
   });
 });
