@@ -22,7 +22,7 @@ describe('validateSync', () => {
     }
   });
 
-  it('empty field (optional)', () => {
+  it('empty optional field is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: '',
@@ -35,7 +35,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('empty field (required)', () => {
+  it('empty required fields is unexpected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: '',
@@ -49,7 +49,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('filled field (required)', () => {
+  it('filled required field is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: 'foo',
@@ -57,10 +57,12 @@ describe('validateSync', () => {
       }),
       fields,
       formRules
-    })).to.deep.eq({ expected: true });
+    })).to.deep.eq({
+      expected: true
+    });
   });
 
-  it('optional field with rule', () => {
+  it('optional empty field with rule is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: '',
@@ -74,7 +76,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('optional field with rule (not matching)', () => {
+  it('optional field with rule (not matching) is unexepcted', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: 'foo',
@@ -89,7 +91,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('empty require field with rule', () => {
+  it('empty require field with rule is unexpected', () => {
     /* Required empty value with rule */
     expect(fieldUtils.validateSync({
       fieldProps: Map({
@@ -105,7 +107,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('filled required field with rule (not matching)', () => {
+  it('filled required field with rule (not matching) is unexpected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: 'foo',
@@ -120,7 +122,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('filled required field with rule (matching)', () => {
+  it('filled required field with rule (matching) is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: '123',
@@ -134,7 +136,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('filled optional field with rule (matching)', () => {
+  it('filled optional field with rule (matching) is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: '123',
@@ -148,7 +150,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('empty optional field with custom rule resolver', () => {
+  it('empty optional field with custom rule resolver is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: '',
@@ -162,7 +164,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('filled optional field with custom rule resolver (matching)', () => {
+  it('filled optional field with custom rule resolver (matching) is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         value: '123',
@@ -176,7 +178,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('empty optional field (form rule)', () => {
+  it('empty optional field (form rule)is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         type: 'tel',
@@ -185,10 +187,12 @@ describe('validateSync', () => {
       }),
       fields,
       formRules
-    })).to.deep.eq({ expected: true });
+    })).to.deep.eq({
+      expected: true
+    });
   });
 
-  it('filled optional field (form rule not matching)', () => {
+  it('filled optional field (form rule not matching) is unexpected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         type: 'tel',
@@ -203,7 +207,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('filled required field (form rule matching)', () => {
+  it('filled required field (form rule matching) is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         type: 'tel',
@@ -217,7 +221,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('optional filled field (form rule not matching)', () => {
+  it('optional filled field (form rule not matching) is unexpected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         name: 'username',
@@ -232,7 +236,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('filled optional field (form rule matching)', () => {
+  it('filled optional field (form rule matching) is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         name: 'username',
@@ -246,7 +250,7 @@ describe('validateSync', () => {
     });
   });
 
-  it('filled required field (form rule matching)', () => {
+  it('filled required field (form rule matching) is expected', () => {
     expect(fieldUtils.validateSync({
       fieldProps: Map({
         name: 'username',
