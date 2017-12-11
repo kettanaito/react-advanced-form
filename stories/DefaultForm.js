@@ -130,6 +130,15 @@ export default class DefaultForm extends Component {
         <Form
           id="default-form-example"
           action={this.handleFormAction}
+          rules={{
+            extend: true,
+            name: {
+              lastName: ({ value }) => !!value
+            },
+            type: {
+              tel: () => true
+            }
+          }}
           onInvalid={this.handleFormInvalid}
           onSubmitStart={this.handleSubmitStart}
           onSubmitted={this.handleSubmitted}

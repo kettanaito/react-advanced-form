@@ -38,7 +38,7 @@ export default class Form extends React.Component {
 
   /* Context which is accepted by Form */
   static contextTypes = {
-    rules: TValidationRules,
+    rules: IterableInstance,
     messages: IterableInstance
   }
 
@@ -66,21 +66,35 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Getter: Returns the validation rules applicable to the current form.
+   * Returns form rules based on the priority of the provided rulesa and the necessity to extend them.
    */
-  get formRules() {
-    return this.props.rules || this.context.rules || Map();
+  defineFormRules() {
+    const { rules: contextRules } = this.context;
+    const { rules: mutableFormRules } = this.props;
+
+    if (!mutableFormRules) return contextRules || Map();
+
+    const formRules = fromJS(mutableFormRules);
+    const highestRules = formRules || contextRules || Map();
+
+    return formRules.get('extend') ? contextRules.mergeDeep(formRules) : highestRules;
   }
 
   constructor(props, context) {
     super(props, context);
 
     /**
+     * Define validation rules.
+     */
+    this.formRules = this.defineFormRules();
+
+    /**
      * Define validation messages once, since those should be converted to immutable, which is a costly procedure.
      * Moreover, messages are unlikely to change during the component's lifecycle. It should be safe to store them.
+     * Note: Messages passed from FormProvider are already immutable.
      */
-    const { messages: customMessage } = this.props;
-    this.formMessages = customMessage ? fromJS(customMessage) : this.context.messages;
+    const { messages: formMessages } = this.props;
+    this.formMessages = formMessages ? fromJS(formMessages) : this.context.messages;
   }
 
   /**
