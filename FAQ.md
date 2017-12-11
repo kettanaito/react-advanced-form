@@ -9,6 +9,7 @@
 <details>
   <summary>Why should I switch to React Advanced Form?</summary>
   <p>We have researched various form libraries to find the one which would suit us. It sounds easy, but in reality there wasn't a single library which would take care of forms gracefully, without unnecessary boilterplate, manual state management or architectural dependencies. If you want a library which "just works", without spending a week on configuring it, React Advanced Form is exactly what you need.</p>
+  <p>Read more about the <a href="./docs/concept.md">motivation and thoughts</a> behind React Advanced Form.
 </details>
 
 <details>
