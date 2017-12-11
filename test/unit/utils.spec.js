@@ -176,6 +176,11 @@ describe('Utils', () => {
     /**
      * Synchronous validation.
      */
-    require('./validateSync');
+    require('./validateSync.spec');
+
+    /**
+     * Asynchronous validation.
+     */
+    require('./validateAsync.spec');
   });
 });
