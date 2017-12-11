@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types';
-import { IterableInstance } from './utils';
+import { IterableInstance, fieldUtils } from './utils';
 
 export default function Condition(props, context) {
   const { fields } = context;
   const { children, when } = props;
 
   /* Resolve the condition in order to render the children */
-  const resolved = when({ fields: fields.toJS() });
+  const extendedFields = fieldUtils.serializeFields(fields, fieldProps => fieldProps);
+  const resolved = when({ fields: extendedFields.toJS() });
 
   return resolved ? children : null;
 }
