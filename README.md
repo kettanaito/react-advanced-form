@@ -81,8 +81,13 @@ export default class RegistrationForm extends React.Component {
   render() {
     return (
       <Form action={ this.handleSubmit }>
-        <Field.Input name="username" required />
-        <Field.Input name="password" type="password" required />
+        <Field.Input
+          name="username"
+          required />
+        <Field.Input
+          name="password"
+          type="password"
+          required />
         <button type="submit">Register</button>
       </Form>
     );
