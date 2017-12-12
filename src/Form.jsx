@@ -5,7 +5,7 @@ import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
 import { TValidationRules, TValidationMessages } from './FormProvider';
-import { isset, debounce, fieldUtils, IterableInstance } from './utils';
+import { isset, debounce, capitalize, fieldUtils, IterableInstance } from './utils';
 
 export default class Form extends React.Component {
   static propTypes = {
@@ -250,8 +250,13 @@ export default class Form extends React.Component {
       }
     });
 
-    /* Perform debounced sync field validation */
-    this.debounceValidateField({
+    /**
+     * Perform appropriate field validation.
+     * When field has a value set, perform debounced sync validation. For the cases the user clear the field instantly
+     * perform the corresponding immediate sync validation.
+     */
+    const appropriateValidation = nextFieldProps.get('value') ? this.debounceValidateField : this.validateField;
+    appropriateValidation({
       type: 'sync',
       fieldProps: nextFieldProps
     });
@@ -292,7 +297,9 @@ export default class Form extends React.Component {
      * the user will pass sync validation, upon blurring out the field, the validation type will be "async".
      */
     const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
-    const validationType = (validatedSync && validSync) ? 'async' : 'sync';
+
+    /* Always perform both validation types on blur */
+    const validationType = 'both';
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldBlur');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
@@ -355,8 +362,9 @@ export default class Form extends React.Component {
    * @param {'both'|'async'|'sync'} Validation type.
    * @return {boolean}
    */
-  validateField = async ({ type = 'both', fieldProps }) => {
+  validateField = async ({ type = 'both', fieldProps: directFieldProps }) => {
     const { fields } = this.state;
+    const fieldProps = fields.getIn([directFieldProps.get('fieldPath')]);
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     console.log('validation type', type);
@@ -364,6 +372,9 @@ export default class Form extends React.Component {
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.groupEnd();
     console.log(' ');
+
+    /* Bypass the validation if the provided validation type has been already validated */
+    if (fieldProps.get(`validated${capitalize(type)}`)) return true;
 
     const validationArgs = {
       type,
