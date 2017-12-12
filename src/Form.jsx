@@ -298,12 +298,8 @@ export default class Form extends React.Component {
      */
     const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
 
-    /* Always perform both validation types on blur */
-    const validationType = 'both';
-
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldBlur');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    console.log('validationType', validationType);
     console.log('should validate', shouldValidate);
     console.groupEnd();
 
@@ -321,7 +317,7 @@ export default class Form extends React.Component {
 
       /* Validate the field */
       await this.validateField({
-        type: validationType,
+        type: 'both',
         fieldProps
       });
     }
