@@ -4,6 +4,9 @@
 // import { resolveProp } from './resolveProp';
 
 export default function validateSync({ fieldProps, fields, form, formRules }) {
+  /* Bypass validation for already valid field */
+  if (fieldProps.get('validSync')) return { expected: true };
+
   let isExpected = true;
 
   const name = fieldProps.get('name');
