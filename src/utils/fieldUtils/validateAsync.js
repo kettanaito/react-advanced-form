@@ -5,6 +5,9 @@
  * @param {Object} form
  */
 export default async function validateAsync({ fieldProps, fields, form }) {
+  /* Bypass validation for an already valid field */
+  if (fieldProps.get('validAsync')) return { expected: true };
+
   const value = fieldProps.get('value');
   const asyncRule = fieldProps.get('asyncRule');
 
