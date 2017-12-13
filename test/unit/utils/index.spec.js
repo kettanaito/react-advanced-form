@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
-import { fieldUtils } from '../../src/utils';
+import { fieldUtils } from '../../../src/utils';
 
 describe('Utils', () => {
   describe('Field utils', () => {

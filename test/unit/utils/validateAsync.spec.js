@@ -3,7 +3,7 @@
  */
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
-import { fieldUtils } from '../../src/utils';
+import { fieldUtils } from '../../../src/utils';
 
 const asyncRule = ({ value }) => new Promise((resolve, reject) => {
   setTimeout(resolve({
