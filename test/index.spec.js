@@ -11,4 +11,5 @@ describe('Basics', () => {
   });
 });
 
-require('./unit/utils.spec');
+/* Utilities */
+require('./unit/utils/index.spec');
