@@ -11,5 +11,5 @@ describe('Basics', () => {
   });
 });
 
-/* Utilities */
-require('./unit/utils/index.spec');
+/* Unit tests */
+require('./unit');
