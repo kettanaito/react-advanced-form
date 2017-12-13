@@ -12,7 +12,10 @@ module.exports = {
     }
   },
   extends: ['airbnb-base', 'airbnb-base/legacy'],
-  plugins: ['react', 'import'],
+  plugins: ['react', 'import', 'mocha'],
+  env: { 
+    'mocha': true
+  },
   settings: {
     'import/resolver': {
       webpack: {
@@ -40,6 +43,9 @@ module.exports = {
     /* React */
     'react/jsx-uses-react': 2,
     'react/jsx-uses-vars': 2,
-    'react/react-in-jsx-scope': 2
+    'react/react-in-jsx-scope': 2,
+
+    /* Mocha */
+    'mocha/no-exclusive-tests': 'error'
   }
 };
