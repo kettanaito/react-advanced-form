@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { Map } from 'immutable';
 import { mount } from 'enzyme';
 import { Form, Field } from '../../../lib';
-import { format } from 'util';
 import { validationRules, validationMessages } from '../../common';
 
 describe('Field.Group', () => {
