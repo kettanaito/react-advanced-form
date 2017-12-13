@@ -5,9 +5,12 @@
  */
 import invariant from 'invariant';
 import { Iterable } from 'immutable';
+import { isset } from '../utils';
 
 export default function IterableInstance(props, propName, componentName) {
   const propValue = props[propName];
+
+  if (!isset(propValue)) return null;
 
   invariant(Iterable.isIterable(propValue), `Invalid prop \`${propName}\` of type \`${typeof propValue}\` supplied to \`${componentName}\`, expected an instance of Iterable.`);
 }
