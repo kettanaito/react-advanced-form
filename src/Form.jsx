@@ -360,7 +360,7 @@ export default class Form extends React.Component {
    */
   validateField = async ({ type = 'both', fieldProps: directFieldProps }) => {
     const { fields } = this.state;
-    const fieldProps = fields.getIn([directFieldProps.get('fieldPath')]);
+    const fieldProps = fields.getIn([directFieldProps.get('fieldPath')]) || directFieldProps;
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     console.log('validation type', type);
