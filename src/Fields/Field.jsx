@@ -5,7 +5,7 @@ import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
-import { IterableInstance, isset, fieldUtils } from '../utils';
+import { IterableInstance, isset, getPropsPatch, fieldUtils } from '../utils';
 
 export const defaultProps = {
   expected: true,
@@ -159,6 +159,12 @@ export default class Field extends React.Component {
     const { contextProps } = this;
     if (!contextProps) return;
 
+    /**
+     * Handle controlled fields.
+     * The responsibility of value update of controlled fields is delegated to the end developer.
+     * However, that still means that the new value should be propagated to theF orm's state to guarantee
+     * proper value in the form lifecycle methods.
+     */
     const controllable = contextProps.get('controllable');
 
     if (controllable && (nextProps.value !== this.props.value)) {
@@ -169,12 +175,20 @@ export default class Field extends React.Component {
       });
     }
 
-    if (nextProps.disabled !== contextProps.get('disabled')) {
+    /**
+     * Handle direct props updates.
+     * When direct props receive new values, those should be updated in the Form's state as well.
+     */
+
+    const propsPatch = getPropsPatch({
+      contextProps,
+      nextProps
+    });
+
+    if (Object.keys(propsPatch).length > 0) {
       this.context.updateField({
         fieldPath: this.fieldPath,
-        propsPatch: {
-          disabled: nextProps.disabled
-        }
+        propsPatch
       });
     }
   }
