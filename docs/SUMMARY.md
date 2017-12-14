@@ -3,21 +3,21 @@
 ## General
 
 * [Introduction](../README.md)
-* [Getting Started](./getting-started.md)
-* [Custom styling](./custom-styling.md)
+* [Getting Started](./docs/getting-started.md)
+* [Custom styling](./docs/custom-styling.md)
 
 ## Validation
 
 * Logic
-* [Validation rules](./validation-rules.md)
+* [Validation rules](./docs/validation-rules.md)
 
 ## Components
 
-* [FormProvider](./components/formprovider.md)
-* [Field.Group](./components/fieldgroup.md)
+* [FormProvider](./docs/components/formprovider.md)
+* [Field.Group](./docs/components/fieldgroup.md)
 
 ## Methods
 
-* [Form.validate\(\)](./methods/formvalidate.md)
-* [Form.serialize\(\)](./methods/formserialize.md)
-* [Form.submit\(\)](./methods/formsubmit.md)
+* [Form.validate\(\)](./docs/methods/formvalidate.md)
+* [Form.serialize\(\)](./docs/methods/formserialize.md)
+* [Form.submit\(\)](./docs/methods/formsubmit.md)
