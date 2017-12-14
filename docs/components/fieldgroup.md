@@ -10,6 +10,8 @@ This component is designed to provide the data separation on a layout level. Par
 
 ## Examples
 
+### Basic
+
 ```jsx
 <Form>
     <Field.Group name="primaryInfo">

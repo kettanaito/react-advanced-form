@@ -1,1 +1,7 @@
-{}
+{
+    "root": "./docs",
+    "structure": {
+        "readme": "../README.md"
+    },
+    "title": "React Advanced Form"
+}
