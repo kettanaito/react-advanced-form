@@ -1,6 +1,6 @@
-<h1 align="center">React Advanced Form</h1>
+# React Advanced Form
 
-<p align="center">
+<p>
   <a href="https://www.npmjs.com/package/react-advanced-form">
     <img src="https://img.shields.io/npm/v/react-advanced-form.svg" title="Latest version" />
   </a>
@@ -15,15 +15,58 @@
   </a>
 </p>
 
-## Getting started
+[React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library which allows you to create simple and customizable forms with a powerful functionality built-in.
 
-### Installation
-```
-npm install react-advanced-form --save
+No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
+
+## Basic usage
+### Introduce `FormProvider`
+```jsx
+// src/app/index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { FormProvider } from 'react-advanced-form';
+import validationRules from './validation-rules';
+import validationMessages from './validation-messages';
+
+const App = ({ children }) => (
+  <FormProvider rules={ validationRules } messages={ validationMessages }>
+    { children }
+  </FormProvider>
+);
+
+ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-### API
-Read about the exposed API, components and features in the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form/). Thank you.
+### Create a custom form
+```jsx
+// src/app/components/MyForm.jsx
+import React from 'react';
+import { Form, Field } from 'react-adnvaced-form';
+
+export default class MyForm extends React.Component {
+  handleSubmit = ({ serialized }) => {
+    return fetch('https://backend.dev/ws', {
+      method: 'POST',
+      body: JSON.stringify(serialized)
+    });
+  }
+
+  render() {
+    return (
+      <Form action={ this.handleSubmit }>
+        <Field.Input name="username" required />
+        <Field.Input name="password" type="password" required />
+        <Field.Radio name="gender" value="male" />
+        <Field.Radio name="gender" value="female" />
+        <button type="submit">Submit</button>
+      </Form>
+    );
+  }
+}
+```
+
+Read more about how to use RAF to get the most out of its features in this documentation.
 
 ## License
-MIT
+[MIT](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE)
