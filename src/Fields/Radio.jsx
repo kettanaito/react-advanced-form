@@ -58,7 +58,7 @@ export default class Radio extends Field {
       fieldProps.checked = checked;
 
       if (value) {
-        // only checked radio will set the context value to its value
+        /* Only checked radio will set the context value to its value */
         fieldProps.initialValue = value;
       }
     }
