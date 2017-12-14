@@ -1,16 +1,26 @@
 import React from 'react';
-import { Form, Field, Condition } from '../lib';
+import { Form, Field, Condition } from '../src';
 
 const validationRules = {};
 const validationMessages = {};
 
 export default class FullForm extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      gender: 'male'
+    };
+  }
+
   handleSubmit = ({ serialized }) => {
     console.warn('Submit', serialized);
     return new Promise(resolve => resolve());
   }
 
   render() {
+    const { gender } = this.state;
+
     return (
       <Form
         rules={ validationRules }
@@ -41,19 +51,29 @@ export default class FullForm extends React.Component {
           <div>
             <p>Choose gender:</p>
             <label>
+              <Field.Radio
+                name="gender"
+                value="male"
+                onChange={({ nextValue }) => {
+                  console.log('change', nextValue);
+                  this.setState({ gender: nextValue });
+                }}
+                checked />
               Male
-              <Field.Radio name="gender" value="male" checked />
             </label>
             <label>
+              <Field.Radio
+                name="gender"
+                onChange={({ nextValue }) => this.setState({ gender: nextValue })}
+                value="female" />
               Female
-              <Field.Radio name="gender" value="female" />
             </label>
           </div>
         </Field.Group>
 
         <div>
           Counry
-          <Field.Select name="country">
+          <Field.Select name="country" initialValue={ (gender === 'male') ? 'UA' : 'UK' }>
             <option value="US">United States</option>
             <option value="UK">United Kingdom</option>
             <option value="UA">Ukraine</option>
