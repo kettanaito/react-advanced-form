@@ -1,8 +1,8 @@
 import React from 'react';
 import { expect } from 'chai';
-import { mount } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import { FormProvider, Form, Field } from '../../../lib';
-import { validationRules, validationMessages } from '../../common';
+import { defer, validationRules, validationMessages } from '../../common';
 
 describe('Form', () => {
   it('Uses default "action" prop when none provided', () => {
@@ -38,8 +38,8 @@ describe('Form', () => {
       </Form>
     );
 
-    setTimeout(() => {
-      const { serialize } = wrapper.find(Form).instance();
+    return defer(() => {
+      const { serialize } = wrapper.instance();
 
       expect(serialize).not.to.be.undefined;
       expect(serialize()).to.deep.equal({
@@ -48,6 +48,6 @@ describe('Form', () => {
           username: 'foo'
         }
       });
-    }, 0);
+    });
   });
 });
