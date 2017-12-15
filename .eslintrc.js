@@ -13,7 +13,7 @@ module.exports = {
   },
   extends: ['airbnb-base', 'airbnb-base/legacy'],
   plugins: ['react', 'import', 'mocha'],
-  env: { 
+  env: {
     'mocha': true
   },
   settings: {
@@ -39,6 +39,7 @@ module.exports = {
     'no-param-reassign': 0,
     'import/prefer-default-export': 0,
     'class-methods-use-this': 0,
+    'no-prototype-builtins': 0,
 
     /* React */
     'react/jsx-uses-react': 2,

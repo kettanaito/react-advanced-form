@@ -9,7 +9,7 @@ export default class FullForm extends React.Component {
     super();
 
     this.state = {
-      gender: 'male'
+      gender: 'pooper'
     };
   }
 
@@ -27,7 +27,7 @@ export default class FullForm extends React.Component {
         messages={ validationMessages }
         action={ this.handleSubmit }>
         <Field.Group name="userInfo">
-          <div>
+          {/* <div>
             <label>
               User name:
               <Field.Input name="username" required />
@@ -46,7 +46,7 @@ export default class FullForm extends React.Component {
               Last name:
               <Field.Input name="firstName" />
             </label>
-          </div>
+          </div> */}
 
           <div>
             <p>Choose gender:</p>
@@ -57,10 +57,19 @@ export default class FullForm extends React.Component {
                 onChange={({ nextValue }) => {
                   console.log('change', nextValue);
                   this.setState({ gender: nextValue });
-                }}
-                checked />
+                }} />
               Male
             </label>
+
+            <label>
+              <Field.Radio
+                name="gender"
+                onChange={({ nextValue }) => this.setState({ gender: nextValue })}
+                value="pooper"
+                checked />
+              Pooper
+            </label>
+
             <label>
               <Field.Radio
                 name="gender"
@@ -80,7 +89,7 @@ export default class FullForm extends React.Component {
           </Field.Select>
         </div>
 
-        <Condition when={({ fields }) => fields.country && fields.country.value === 'UK'}>
+        {/* <Condition when={({ fields }) => fields.country && fields.country.value === 'UK'}>
           <Field.Group name="hobbies">
             <div>
               <p>Your hobbies</p>
@@ -99,7 +108,7 @@ export default class FullForm extends React.Component {
               </label>
             </div>
           </Field.Group>
-        </Condition>
+        </Condition> */}
 
         <button type="submit">Submit</button>
       </Form>
