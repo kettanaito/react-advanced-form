@@ -179,7 +179,6 @@ export default class Field extends React.Component {
      * Handle direct props updates.
      * When direct props receive new values, those should be updated in the Form's state as well.
      */
-
     const propsPatch = getPropsPatch({
       contextProps,
       nextProps
@@ -301,9 +300,7 @@ export default class Field extends React.Component {
     const { id, className, style } = this.props;
 
     const Component = this.renderElement(this.props, this.contextProps);
-    invariant(Component, `Cannot render the field \`${this.props.name}\` as it doesn't have a renderable element. Make sure to return a React component in "renderElement()" method.`);
-
-    console.log(this.props.name, 'render disabled:', this.contextProps.get('disabled'));
+    invariant(Component, `Cannot render the field \`${this.props.name}\`, no valid React element was returns from its "renderElement()" method.`);
 
     return (
       <Component.type

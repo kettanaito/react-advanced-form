@@ -106,24 +106,37 @@ export default class Form extends React.Component {
   registerField = (fieldProps) => {
     const { fields } = this.state;
     const fieldPath = fieldProps.get('fieldPath');
+    const isAlreadyExist = fields.hasIn([fieldPath]);
     const isRadioButton = (fieldProps.get('type') === 'radio');
 
     console.groupCollapsed(fieldPath, '@ registerField');
     console.log('fieldProps', fieldProps.toJS());
-    console.log('already exists:', fields.hasIn([fieldPath]));
+    console.log('already exists:', isAlreadyExist);
     console.groupEnd();
 
     /* Warn upon duplicate registrations */
-    if (fields.hasIn([fieldPath]) && !isRadioButton) {
-      return console.warn(`Cannot register field \`${fieldProps.get('fieldPath')}\`, the field with the provided name is already registered. Make sure the fields on the same level of \`Form\` or \`Field.Group\` have unique names, unless it's intentional.`);
+    if (isAlreadyExist && !isRadioButton) {
+      return console.warn(`Cannot register field \`${fieldProps.get('fieldPath')}\`, the field with the provided name is already registered. Make sure the fields on the same level of \`Form\` or \`Field.Group\` have unique names.`);
+    }
+
+    if (isRadioButton && isAlreadyExist) {
+      const existingValue = fields.getIn([fieldPath, 'value']);
+      if (existingValue) return;
+
+      const currentValue = fieldProps.get('value');
+
+      if (currentValue) {
+        fieldProps = fieldProps.set('value', currentValue);
+      }
     }
 
     /* Validate the field when it has initial value */
     const shouldValidate = isset(fieldProps.get('value')) && (fieldProps.get('value') !== '');
-    if (shouldValidate) this.validateField({ fieldProps });
-
-    if (isRadioButton) {
-      fieldProps = fieldProps.set('value', fields.getIn([fieldPath, 'value']));
+    if (shouldValidate) {
+      this.validateField({
+        fieldProps,
+        enforceProps: true
+      });
     }
 
     return this.setState({ fields: fields.mergeIn([fieldPath], fieldProps) });
@@ -356,11 +369,14 @@ export default class Form extends React.Component {
    * Validates a single provided field.
    * @param {Map} fieldProps
    * @param {'both'|'async'|'sync'} Validation type.
+   * @param {boolean} enforceProps Use direct props explicitly, without trying to grab props from the state.
    * @return {boolean}
    */
-  validateField = async ({ type = 'both', fieldProps: directFieldProps }) => {
+  validateField = async ({ type = 'both', fieldProps: directFieldProps, enforceProps = false }) => {
     const { fields } = this.state;
-    const fieldProps = fields.getIn([directFieldProps.get('fieldPath')]) || directFieldProps;
+    const fieldProps = enforceProps
+      ? directFieldProps
+      : fields.getIn([directFieldProps.get('fieldPath')]) || directFieldProps;
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     console.log('validation type', type);
