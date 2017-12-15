@@ -1,6 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
-import { mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import { FormProvider, Form, Field } from '../../../lib';
 import { defer, validationRules, validationMessages } from '../../common';
 
@@ -48,6 +48,33 @@ describe('Form', () => {
           username: 'foo'
         }
       });
+    });
+  });
+
+  it('Can be validated manually', () => {
+    const wrapper = mount(
+      <Form rules={ validationRules } messages={ validationMessages }>
+        <Field.Input name="username" required />
+      </Form>
+    );
+
+    return defer(async () => {
+      /* "validate" method should be available */
+      const { validate } = wrapper.find(Form).instance();
+      expect(validate).to.not.be.undefined;
+
+      /* Should return a promise stating whether the Form is valid */
+      const isFormValid = await validate();
+      expect(isFormValid).to.be.false;
+
+      /* Should have context props corresponding to the validation status */
+      const Input = wrapper.find(Field.Input).instance();
+      expect(Input.contextProps.get('validatedSync')).to.be.true;
+      expect(Input.contextProps.get('validatedAsync')).to.be.true;
+      expect(Input.contextProps.get('validSync')).to.be.false;
+      expect(Input.contextProps.get('validAsync')).to.be.false;
+      expect(Input.contextProps.get('valid')).to.be.false;
+      expect(Input.contextProps.get('invalid')).to.be.true;
     });
   });
 });
