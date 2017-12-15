@@ -74,6 +74,17 @@ export default class Field extends React.Component {
 
     /* Compose field's path in the state (in case of being under fieldGroup) */
     this.fieldPath = fieldUtils.getFieldPath({ ...this.props, fieldGroup });
+
+    /* Get the props the field should register with from the respective lifecycle method */
+    const registrationProps = this.fieldWillRegister();
+
+    /* Notify the parent Form that a new field is about to mount */
+    /**
+     * Register the field in the parent Form's state.
+     * Also, assume the field's contextProps, since they are composed at this moment. There is no need
+     * to wait for the next re-rendering to access them.
+     */
+    this.contextProps = this.registerWith(registrationProps);
   }
 
   /**
@@ -92,7 +103,7 @@ export default class Field extends React.Component {
     console.log('initialValue', initialValue);
     console.log('context value', contextValue);
 
-    const fieldProps = Object.assign({}, props, {
+    const registrationProps = Object.assign({}, props, {
       ref: this,
       fieldPath: this.fieldPath,
       controllable: isset(value),
@@ -105,7 +116,7 @@ export default class Field extends React.Component {
 
     /* Prevent { fieldGroup: undefined } for fields without a group */
     if (fieldGroup) {
-      fieldProps.fieldGroup = fieldGroup;
+      registrationProps.fieldGroup = fieldGroup;
     }
 
     /* Check if dynamic props are present */
@@ -113,21 +124,26 @@ export default class Field extends React.Component {
 
     /* Assign dynamic props in case they are present */
     if (dynamicProps.size > 0) {
-      fieldProps.dynamicProps = dynamicProps;
+      registrationProps.dynamicProps = dynamicProps;
     }
 
     console.log('dynamicProps', dynamicProps);
-    console.log('register with:', Object.assign({}, fieldProps));
+    console.log('register with:', Object.assign({}, registrationProps));
     console.groupEnd();
+
+    const fieldProps = Map(registrationProps);
 
     /**
      * Notify the parent Form that a new field has just mounted.
-     * Timeout makes this action async, hence each registration attempt may access the actual state of the form.
-     * Otherwise, registrations happen at approximately same time, resulting into fields being unaware of each other.
+     * Timeout makes this action async, hence each registration attempt may access the actual state of the form by the
+     * time the registration happens. Otherwise, registrations happen at approximately same time, resulting into fields
+     * being unaware of each other.
      */
     setTimeout(() => {
-      return this.context.registerField(Map(fieldProps));
+      this.context.registerField(fieldProps);
     }, 0);
+
+    return fieldProps;
   }
 
   /**
@@ -146,13 +162,6 @@ export default class Field extends React.Component {
    */
   fieldWillUnregister() {
     return null;
-  }
-
-  componentWillMount() {
-    const fieldProps = this.fieldWillRegister();
-
-    /* Notify the parent Form that a new field is about to mount */
-    return this.registerWith(fieldProps);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -215,7 +224,12 @@ export default class Field extends React.Component {
    * Ensures "this.contextProps" are updated after the component's update.
    */
   componentWillUpdate(nextProps, nextState, nextContext) {
-    this.contextProps = nextContext.fields.getIn([this.fieldPath]);
+    const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
+
+    /* Bypass contextProps updates when field is updated, but not yet registred in the Form's state */
+    if (!nextContextProps) return;
+
+    this.contextProps = nextContextProps;
   }
 
   /**
@@ -288,15 +302,6 @@ export default class Field extends React.Component {
   }
 
   render() {
-    /**
-     * Skip rendering unless the field in in the Form's context.
-     * While this is a safe method to ensure the relevant component's props are being rendered,
-     * it results into a noticeable flash of unrendered component.
-     *
-     * See more: https://github.com/kettanaito/react-advanced-form/issues/77.
-     */
-    if (!this.contextProps) return null;
-
     const { id, className, style } = this.props;
 
     const Component = this.renderElement(this.props, this.contextProps);
