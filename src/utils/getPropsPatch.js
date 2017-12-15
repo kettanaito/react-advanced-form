@@ -6,7 +6,7 @@
  * @param {object} nextProps
  * @return {object}
  */
-const subscribedProps = ['initialValue', 'disabled', 'required'];
+const subscribedProps = ['initialValue', 'disabled'];
 
 export default function getPropsPatch({ contextProps, nextProps }) {
   const nextPropsKeys = Object.keys(nextProps);
