@@ -66,7 +66,7 @@ export default class MyForm extends React.Component {
 }
 ```
 
-Read more about how to use RAF to get the most out of its features in the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form).
+Read more about how to use React Advanced Form to get the most out of its features in the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form).
 
 ## License
 [MIT](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE)
