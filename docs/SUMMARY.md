@@ -15,13 +15,11 @@
 ## Components
 
 * [FormProvider](./components/FormProvider.md)
+* [Form](./components/Form/README.md)
+  * [validate\(\)](./components/Form/validate.md)
+  * [serialize\(\)](./components/Form/serialize.md)
+  * [submit\(\)](./components/Form/submit.md)
 * [Field.Group](./components/Field.Group.md)
-
-## Methods
-
-* [Form.validate\(\)](./methods/Form.validate.md)
-* [Form.serialize\(\)](./methods/Form.serialize.md)
-* [Form.submit\(\)](./methods/Form.submit.md)
 
 ## Customization
 * [Custom styling](./custom-styling.md)
