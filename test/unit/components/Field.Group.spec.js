@@ -16,9 +16,9 @@ describe('Field.Group', () => {
     </Form>
   );
 
-  it('Grouped fields are registered with correct "fieldPath"', () => {
+  it('Grouped fields are registered with the correct "fieldPath"', () => {
     const expectedFieldPath = 'primaryInfo.username';
-    const groupedField = wrapper.state().fields.getIn([expectedFieldPath]);
+    const groupedField = wrapper.state().fields.get(expectedFieldPath);
 
     /* Field should be accessible in the Form's state under the proper field path */
     expect(groupedField).to.be.instanceOf(Map);
@@ -35,8 +35,8 @@ describe('Field.Group', () => {
 
   it('Grouped field and ungrouped field with the same names are allowed', () => {
     const { fields } = wrapper.state();
-    const ungroupedField = fields.getIn(['username']);
-    const grouppedField = fields.getIn(['primaryInfo.username']);
+    const ungroupedField = fields.get('username');
+    const grouppedField = fields.get('primaryInfo.username');
 
     expect(ungroupedField).to.not.be.undefined;
     expect(grouppedField).to.not.be.undefined;
