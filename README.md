@@ -19,6 +19,17 @@
 
 No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
 
+## Getting started
+### Prerequisites
+This library requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install the latter in order for React Advanced Form to function properly.
+* [React](https://github.com/facebook/react) 15.0+
+* [ImmutableJS](https://github.com/facebook/immutable-js) 3.8+
+
+### Installation
+```
+npm install react-advanced-form --save
+```
+
 ## Basic usage
 ### Introduce `FormProvider`
 ```jsx
@@ -69,4 +80,4 @@ export default class MyForm extends React.Component {
 Read more about how to use React Advanced Form to get the most out of its features in the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form).
 
 ## License
-[MIT](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE)
+This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE). See the license file for more details.

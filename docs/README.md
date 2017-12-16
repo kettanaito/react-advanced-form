@@ -69,4 +69,4 @@ export default class MyForm extends React.Component {
 Read more about how to use React Advanced Form to get the most out of its features in this documentation.
 
 ## License
-[MIT](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE)
+This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE). See the license file for more details.
