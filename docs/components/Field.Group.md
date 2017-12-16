@@ -35,7 +35,7 @@ This layout will result into the following `serialized` Object upon submit:
 }
 ```
 
-> **Tip:** `Field.Group` allows you to have multiple fields with _the same name_ under one Form, as long as there are no same names within one group \(root, or custom field groups\).
+> **Tip:** `Field.Group` allows you to have multiple fields with _the same name_ under one Form, as long as there are no same names within one group (root, or custom field groups).
 
 ### Split groups
 

@@ -9,15 +9,16 @@
 ## Validation
 
 * Logic
-* [Validation rules](./validation-rules.md)
+* [Validation rules](./validation/validation-rules.md)
+* [Validation messages](./validation/validation-messages.md)
 
 ## Components
 
-* [FormProvider](./components/formprovider.md)
-* [Field.Group](./components/fieldgroup.md)
+* [FormProvider](./components/FormProvider.md)
+* [Field.Group](./components/FieldGroup.md)
 
 ## Methods
 
-* [Form.validate\(\)](./methods/formvalidate.md)
-* [Form.serialize\(\)](./methods/formserialize.md)
-* [Form.submit\(\)](./methods/formsubmit.md)
+* [Form.validate\(\)](./methods/Form.validate.md)
+* [Form.serialize\(\)](./methods/Form.serialize.md)
+* [Form.submit\(\)](./methods/Form.submit.md)

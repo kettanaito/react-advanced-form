@@ -1,6 +1,6 @@
 # Getting started
 
-The instructions below should guide you through the minimum required to get started with React Advanced Form. For more advanced usage and full overview of the features please see the respective API sections.
+The instructions below should guide you through the minimum required to get started with React Advanced Form. For more advanced usage and full overview of the features please see the respective documentation sections.
 
 ## Prerequisites
 
