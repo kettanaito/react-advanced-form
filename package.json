@@ -35,9 +35,9 @@
     "immutable": "^3.8.2"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^3.2.14",
-    "@storybook/addon-links": "^3.2.14",
-    "@storybook/react": "^3.2.14",
+    "@storybook/addon-actions": "^3.2.17",
+    "@storybook/addon-links": "^3.2.17",
+    "@storybook/react": "^3.2.17",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^7.1.2",
@@ -52,14 +52,14 @@
     "chai": "^4.1.2",
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.0",
-    "eslint": "^4.12.1",
-    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint": "^4.13.1",
+    "eslint-config-airbnb-base": "^12.1.0",
     "eslint-import-resolver-webpack": "^0.8.3",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-mocha": "^4.11.0",
     "eslint-plugin-react": "^7.5.1",
-    "feather-icons": "^4.0.1",
+    "feather-icons": "^4.4.0",
     "immutable": "^3.8.2",
     "istanbul": "^0.4.5",
     "jsdom": "^11.5.1",
@@ -70,7 +70,7 @@
     "storybook": "^1.0.0",
     "webpack": "^3.10.0",
     "webpack-bundle-analyzer": "^2.9.1",
-    "webpack-dev-server": "^2.9.5"
+    "webpack-dev-server": "^2.9.7"
   },
   "dependencies": {
     "invariant": "^2.2.2"
