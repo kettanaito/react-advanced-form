@@ -15,7 +15,7 @@
 ## Components
 
 * [FormProvider](./components/FormProvider.md)
-* [Field.Group](./components/FieldGroup.md)
+* [Field.Group](./components/Field.Group.md)
 
 ## Methods
 
