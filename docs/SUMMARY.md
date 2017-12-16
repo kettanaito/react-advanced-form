@@ -4,7 +4,7 @@
 
 * [Introduction](./README.md)
 * [Getting Started](./getting-started.md)
-* [Custom styling](./custom-styling.md)
+* [Concept](./concept.md)
 
 ## Validation
 
@@ -22,3 +22,6 @@
 * [Form.validate\(\)](./methods/Form.validate.md)
 * [Form.serialize\(\)](./methods/Form.serialize.md)
 * [Form.submit\(\)](./methods/Form.submit.md)
+
+## Customization
+* [Custom styling](./custom-styling.md)
