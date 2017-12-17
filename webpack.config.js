@@ -8,7 +8,7 @@ const DEVELOPMENT = (process.env.NODE_ENV === 'development');
 const PRODUCTION = (process.env.NODE_ENV === 'production');
 
 module.exports = {
-  entry: path.resolve(__dirname, packageJson.source),
+  entry: path.resolve(__dirname, packageJson.module),
   externals: {
     react: 'umd react',
     immutable: 'umd immutable'
@@ -16,7 +16,7 @@ module.exports = {
   output: {
     path: __dirname,
     filename: packageJson.main,
-    library: packageJson.name,
+    library: 'reactAdvancedForm',
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
@@ -37,6 +37,7 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
+        include: `${__dirname}/src`,
         exclude: /node_modules/,
         use: ['babel-loader', 'eslint-loader']
       }
