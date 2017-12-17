@@ -5,6 +5,7 @@
 * [Introduction](./README.md)
 * [Getting Started](./getting-started.md)
 * [Concept](./concept.md)
+* [FAQ](./FAQ.md)
 
 ## Validation
 
