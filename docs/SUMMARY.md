@@ -15,7 +15,7 @@
 
 ## Components
 
-* [FormProvider](./components/FormProvider.md)
+* [FormProvider](./components/formprovider.md)
 * [Form](./components/Form/README.md)
   * [validate\(\)](./components/Form/validate.md)
   * [serialize\(\)](./components/Form/serialize.md)
