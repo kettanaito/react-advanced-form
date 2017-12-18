@@ -53,6 +53,6 @@
 
 <details>
   <summary>Why <code>action</code> should always return a Promise?</summary>
-  <p>Forms are used to request the data from a user in a pleasant way, and transform/translate it afterward. It's rare you would use a form for something different. Considering that, React Advanced Form is specifically designed to handle asynchronous nature of data transition during the workflow with the form. This also gives you a granular control over how your request is being handled, so you can change the UI respectively. Read more about <a href="./submit.md#callback-methods">submit callback methods</a>.</p>
-  <p>However, React Advanced Form never enforces you to handle things in one way only. You can use it without any  <code>action</code> specified at all, <a href="./submit.md">handling the submit manually</a>. You still benefit from all the features of React Advanced Form in this case.</p>
+  <p>Forms are used to request the data from a user in a pleasant way, and transform/translate it afterward. It's rare you would use a form for something different. Considering that, React Advanced Form is specifically designed to handle asynchronous nature of data transition during the workflow with the form. This also gives you a granular control over how your request is being handled, so you can change the UI respectively. Read more about submit callback methods.</p>
+  <p>However, React Advanced Form never enforces you to handle things in one way only. You can use it without any  <code>action</code> specified at all, <a href="./components/Form/submit.md">handling the submit manually</a>. You still benefit from all the features of React Advanced Form in this case.</p>
 </details>
