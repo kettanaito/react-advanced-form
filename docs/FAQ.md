@@ -15,8 +15,8 @@
 <details>
   <summary>How is it different from the other solutions?</summary>
   <ul>
-    <li><strong>Boilerplate-free.</strong> There are smaller and faster form libraries than React Advanced Form, but the amount of repetitive and, frankly, unnecessary code they force you to write is abnormal. RAF handles all the essential functionality of the form by itself, giving you a pleasure and flexbility to work with the forms.</li>
-    <li><strong>Essentials.</strong> React Advanced Form provides you the essential hooks and callbacks often used when crafting a form. Want to know when the submit started? Or, if it has failed? Want your UI to react correspondingly? No need to keep that information in state, you can access the internal hooks of the <code>Form</code> and know it <i>precisely</i>. You are now the one to handle the form functionality, the form library should.</li>
+    <li><strong>Boilerplate-free.</strong> There are smaller and faster form libraries than React Advanced Form, but the amount of the repetitive and, frankly, unnecessary code they force you to write is abnormal. React Advanced Form handles all the essential functionality of the form by itself, giving you a pleasure and flexbility to work with the forms.</li>
+    <li><strong>Essentials.</strong> React Advanced Form provides you the essential hooks and callbacks often used when crafting a form. Want to know when the submit started? Or, if it has failed? Want your UI to react correspondingly? No need to keep that information in state, you can access the internal hooks of the <code>Form</code> and know it <i>precisely</i>. You are not the one to handle the form functionality, the form library should.</li>
     <li><strong>Intuitive.</strong> You place the <code>Form</code> component, define the fields you need and it works. No obscure fields definition somewhere else, no strange handlers you need to write, no tons of documentation to read. Forms are meant to be simple to use.</li>
   </ul>
 </details>
