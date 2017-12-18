@@ -80,24 +80,30 @@ import { Form, Field } from 'react-advanced-form';
 import validationMessages from '../validation-messages';
 
 export default class MyForm extends React.Component {
+  /**
+   * Validates the provided username.
+   * Note: There are multiple properties exposed to your validation logic by React Advanced Form.
+   */
+  validateUsername = ({ value: username, fieldProps, fields, form }) => {
+    return fetch('https://backend.dev/user/validate', {
+      method: 'POST',
+      body: JSON.stringify({ username })
+    })
+    .then(res => res.json())
+    .then((payload) => {
+      return {
+        valid: (payload.statusCode === 'SUCCESS'),
+        backendMessage: payload.message // available as "backendMessage" in resolver arguments
+      }
+    });
+  }
+
   render() {
     return (
       <Form messages={ validationMessages }>
         <Field.Input
           name="username"
-          asyncRule={({ value: username }) => {
-            return fetch('...', {
-              method: 'POST',
-              body: JSON.stringify({ username })
-            })
-            .then(res => res.json())
-            .then((payload) => {
-              return {
-                valid: (payload.statusCode === 'SUCCESS'),
-                backendMessage: payload.message // available as "backendMessage" in resolver arguments
-              }
-            })
-          }}
+          asyncRule={ this.validateUsername }
           required />
       </Form>
     );
