@@ -143,6 +143,15 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Shorthand: Checks if the provided field is registered in the state.
+   * @param {Map} fieldProps
+   * @return {boolean}
+   */
+  isRegistered = (fieldProps) => {
+    return this.state.fields.hasIn([fieldProps.get('fieldPath')]);
+  }
+
+  /**
    * Updates the props of the field stored in the state.
    * @param {string} fieldPath The name of the field.
    * @param {Map} fieldProps A directly specified nextProps of the field.
@@ -209,6 +218,9 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   handleFieldFocus = async ({ event, fieldProps }) => {
+    /* Bypass events called from an unregistered Field */
+    if (!this.isRegistered(fieldProps)) return;
+
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldFocus');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.groupEnd();
@@ -242,6 +254,9 @@ export default class Form extends React.Component {
    * @param {string} valueProp Property name to be treated as "value" (i.e. "checked").
    */
   handleFieldChange = async ({ event, fieldProps, nextValue, prevValue, valueProp = 'value' }) => {
+    /* Bypass events called from an unregistered Field */
+    if (!this.isRegistered(fieldProps)) return;
+
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.log('nextValue', nextValue);
@@ -294,6 +309,9 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   handleFieldBlur = async ({ event, fieldProps }) => {
+    /* Bypass events called from an unregistered Field */
+    if (!this.isRegistered(fieldProps)) return;
+
     const fieldPath = fieldProps.get('fieldPath');
     const prevDisabled = fieldProps.get('disabled');
     const asyncRule = fieldProps.get('asyncRule');
