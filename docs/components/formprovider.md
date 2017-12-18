@@ -8,7 +8,7 @@ You may think of it as a `<Provider>` from Redux, only for the forms. This way t
 
 ## Usage
 
-Currently `FormProvider` is used to propagate the Validation rules and the corresponding Validation messages to the underlying forms.
+Currently `FormProvider` is used to propagate the [Validation rules](./validation/validation-rules.md) and the corresponding [Validation messages](./validation/validation-messages.md) to the underlying forms.
 
 * `rules: ValidationRules`
 * `messages: ValidationMessages`
