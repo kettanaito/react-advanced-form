@@ -9,7 +9,7 @@
 
 ## Validation
 
-* Logic
+* [Logic](./validation/logic.md)
 * [Validation rules](./validation/validation-rules.md)
 * [Validation messages](./validation/validation-messages.md)
 
