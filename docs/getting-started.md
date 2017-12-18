@@ -3,19 +3,19 @@
 The instructions below should guide you through the minimum required to get started with React Advanced Form. For more advanced usage and full overview of the features please see the respective documentation sections.
 
 ## Prerequisites
-
-You need to install \(ensure\) the following peer dependencies in your project:
-
-* [Node](https://nodejs.org/en/) \(version &gt;= 5\)
-* [React](https://reactjs.org/) \(version &gt;= 15\)
-* [ImmutableJS](https://facebook.github.io/immutable-js/) \(version &gt;= 3.8\)
+This library requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install/have those in your project in order for React Advanced Form to function properly.
+* [React](https://github.com/facebook/react) (15.0+)
+* [ImmutableJS](https://github.com/facebook/immutable-js) (3.8+)
 
 ## Installation
-
-Install React Advanced form via NPM:
-
+Using NPM:
 ```
 npm install react-advanced-form --save
+```
+
+Using Yarn:
+```
+yarn add react-advanced-form
 ```
 
 ## Usage

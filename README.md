@@ -21,17 +21,23 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
 
 ## Getting started
 ### Prerequisites
-This library requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install the latter in order for React Advanced Form to function properly.
-* [React](https://github.com/facebook/react) 15.0+
-* [ImmutableJS](https://github.com/facebook/immutable-js) 3.8+
+This library requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install/have those in your project in order for React Advanced Form to function properly.
+* [React](https://github.com/facebook/react) (15.0+)
+* [ImmutableJS](https://github.com/facebook/immutable-js) (3.8+)
 
 ### Installation
+Using NPM:
 ```
 npm install react-advanced-form --save
 ```
 
+Using Yarn:
+```
+yarn add react-advanced-form
+```
+
 ## Basic usage
-### Introduce `FormProvider`
+### Introduce `FormProvider`:
 ```jsx
 // src/app/index.js
 import React from 'react';
@@ -49,7 +55,7 @@ const App = ({ children }) => (
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-### Create a custom form
+### Create a custom form:
 ```jsx
 // src/app/components/MyForm.jsx
 import React from 'react';
