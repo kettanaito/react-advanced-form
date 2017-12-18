@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
 const packageJson = require('./package.json');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 /* Environment */
 const DEVELOPMENT = (process.env.NODE_ENV === 'development');
