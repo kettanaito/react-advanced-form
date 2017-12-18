@@ -302,7 +302,7 @@ export default class Field extends React.Component {
   }
 
   render() {
-    const { id, className, style } = this.props;
+    const { id, className, style, placeholder } = this.props;
 
     const Component = this.renderElement(this.props, this.contextProps);
     invariant(Component, `Cannot render the field \`${this.props.name}\`, no valid React element was returns from its "renderElement()" method.`);
@@ -314,6 +314,7 @@ export default class Field extends React.Component {
         id={ id }
         className={ className }
         style={ style }
+        placeholder={ placeholder }
         value={ this.contextProps.get('controllable') ? this.props.value : this.contextProps.get('value') }
         required={ this.contextProps.get('required') }
         disabled={ this.contextProps.get('disabled') }

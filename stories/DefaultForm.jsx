@@ -193,7 +193,11 @@ export default class DefaultForm extends Component {
               <Field.Textarea name="myTextarea" disabled={ isDisabled } />
             </div>
 
-            <MyInput name="foo" initialValue="Pooper" disabled={ isDisabled } />
+            <MyInput
+              name="foo"
+              initialValue="Pooper"
+              placeholder="My placeholder"
+              disabled={ isDisabled } />
 
             <Field.Checkbox name="acceptTerms" disabled={ isDisabled } />
 
