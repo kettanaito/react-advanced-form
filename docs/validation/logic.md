@@ -71,7 +71,7 @@ export default class App extends React.Component {
 }
 ```
 
-> **Note:** Since "firstName" field is not `required`, it will not be validated unless provided some value. At the current state of the form it would submit gracefully since the value of "firstName" is `null`. Once the value is provided, it will undergo through the same validation sequence as listed below:
+> **Note:** Since "firstName" field is not `required`, it will not be validated unless provided some value. At the current state of the form it would submit gracefully since the value of "firstName" is `null`. Once the value is provided, it will undergo through the same validation sequence as listed below.
 
 Upon submitting the form, the following validation sequence will happen:
 

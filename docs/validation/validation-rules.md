@@ -105,7 +105,5 @@ export default function MyForm() {
 }
 ```
 
-Now, `phoneNumber` field will be validated against `customValidationRules.name.phoneNumber` first, and then against `validationRules.type.tel`.
-
-Keep in mind those are just illustrational examples. Their primary purpose is to demonstrate the capabilities of validation rules. They may not have much sense in real-world applications.
+The `phoneNumber` field will be validated against `customValidationRules.name.phoneNumber` first, and then against `validationRules.type.tel`.
 
