@@ -199,6 +199,11 @@ export default class DefaultForm extends Component {
               placeholder="My placeholder"
               disabled={ isDisabled } />
 
+            <MyInput
+              name="abcd"
+              placeholder="Required"
+              required />
+
             <Field.Checkbox name="acceptTerms" disabled={ isDisabled } />
 
             <button onClick={ this.toggleDisabled }>Toggle disabled</button>

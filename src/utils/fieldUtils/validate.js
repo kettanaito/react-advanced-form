@@ -11,6 +11,24 @@
 import { Map } from 'immutable';
 import validateSync from './validateSync';
 import validateAsync from './validateAsync';
+import capitalize from '../capitalize';
+
+function ensureInterface({ type, expected, ...restParams }) {
+  const types = type === 'both' ? ['sync', 'async'] : [type];
+
+  const validationParams = types.reduce((params, type) => {
+    params[`validated${capitalize(type)}`] = true;
+    params[`valid${capitalize(type)}`] = expected;
+
+    return params;
+  }, {});
+
+  return {
+    ...restParams,
+    ...validationParams,
+    expected
+  };
+}
 
 export default async function validate({ type, fieldProps, fields, form, formRules = Map() }) {
   console.groupCollapsed('fieldUtils @ validate', fieldProps.get('fieldPath'));
@@ -23,12 +41,23 @@ export default async function validate({ type, fieldProps, fields, form, formRul
 
   if (['both', 'sync'].includes(type)) {
     const syncValidationResult = validateSync({ fieldProps, fields, form, formRules });
-    if (type === 'sync') return syncValidationResult;
-    if (!syncValidationResult.expected) return syncValidationResult;
+
+    if (type === 'sync') return ensureInterface({
+      type,
+      ...syncValidationResult
+    });
+
+    if (!syncValidationResult.expected) return ensureInterface({
+      type,
+      ...syncValidationResult
+    });
   }
 
   if (['both', 'async'].includes(type)) {
     const asyncValidationResult = await validateAsync({ fieldProps, fields, form });
-    return asyncValidationResult;
+    return ensureInterface({
+      type,
+      ...asyncValidationResult
+    });
   }
 }

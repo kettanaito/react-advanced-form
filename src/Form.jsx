@@ -406,37 +406,28 @@ export default class Form extends React.Component {
     /* Bypass the validation if the provided validation type has been already validated */
     if (fieldProps.get(`validated${capitalize(type)}`)) return true;
 
+    const { formRules } = this;
     const validationArgs = {
       type,
       fieldProps,
       fields,
       form: this,
-      formRules: this.formRules
+      formRules
     };
+
+    const shouldValidate = fieldUtils.shouldValidate({
+      fieldProps,
+      formRules
+    });
 
     /* Perform the respective kind of validation */
     const validationResult = await fieldUtils.validate(validationArgs);
-    const { expected } = validationResult;
 
     /* Update the validity state of the field */
-    const propsPatch = {
-      expected,
-      error: null
-    };
-
-    /* Update the corresponding validation properties */
-    if (['both', 'sync'].includes(type)) {
-      propsPatch.validatedSync = true;
-      propsPatch.validSync = expected;
-    }
-
-    if (['both', 'async'].includes(type)) {
-      propsPatch.validatedAsync = true;
-      propsPatch.validAsync = expected;
-    }
+    const propsPatch = validationResult;
 
     /* Get the validation message based on the validation summary */
-    if (!expected) {
+    if (!validationResult.expected) {
       const errorMessage = fieldUtils.getErrorMessage({
         validationResult,
         messages: this.formMessages,
@@ -463,7 +454,7 @@ export default class Form extends React.Component {
       }
     });
 
-    return expected;
+    return validationResult.expected;
   }
 
   /**
@@ -480,13 +471,7 @@ export default class Form extends React.Component {
    */
   validate = async () => {
     const pendingValidations = this.state.fields.reduce((validations, fieldProps) => {
-      /* When field needs validation, do so */
-      if (fieldUtils.shouldValidate(fieldProps)) {
         return validations.concat(this.validateField({ fieldProps }));
-      }
-
-      /* Otherwise return the current expected status of the field */
-      return validations.concat(fieldProps.get('expected'));
     }, []);
 
     /* Await for all validation promises to resolve before returning */
@@ -516,6 +501,25 @@ export default class Form extends React.Component {
     }
 
     return isFormValid;
+  }
+
+  /**
+   * Resets the fields in the form.
+   */
+  reset = () => {
+    const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
+
+    this.setState({ fields: nextFields }, () => {
+      this.validate();
+    });
+
+    // const nextFields = this.state.fields.map((fieldProps) => {
+    //   const nextFieldProps = fieldUtils.resetField(fieldProps);
+
+    //   console.log('nextFieldProps', nextFieldProps);
+
+    //     this.validateField(nextFieldProps);
+    // });
   }
 
   /**
