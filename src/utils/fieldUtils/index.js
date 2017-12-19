@@ -3,6 +3,7 @@ export getFieldPath from './getFieldPath';
 export getFieldProps from './getFieldProps';
 export resolveProp from './resolveProp';
 export getDynamicProps from './getDynamicProps';
+export resetField from './resetField';
 
 /* Validation */
 export shouldValidate from './shouldValidate';

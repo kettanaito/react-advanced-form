@@ -164,13 +164,51 @@ describe('Utils', () => {
      * shouldValidate
      */
     it('shouldValidate', () => {
-      const optionalField = Map({ validatedSync: false, required: false });
+      const dynamicRequiredField = Map({ validaredSync: false, required: () => false });
+      const validatedField = Map({ validatedSync: true });
       const requiredField = Map({ validatedSync: false, required: true });
-      const dynamicField = Map({ validaredSync: false, required: () => false });
+      const optionalField = Map({ validatedSync: false, required: false });
+      const optionalFieldWithNameRule = Map({ name: 'field', required: false, value: 'foo '});
+      const optionalFieldWithTypeRule = Map({ type: 'text', name: 'field', required: false, value: 'foo '});
 
-      expect(fieldUtils.shouldValidate(optionalField)).to.be.false;
-      expect(fieldUtils.shouldValidate(requiredField)).to.be.true;
-      expect(fieldUtils.shouldValidate(dynamicField)).to.be.true;
+      expect(fieldUtils.shouldValidate({
+        fieldProps: dynamicRequiredField,
+        formRules: Map()
+      })).to.be.true;
+
+      expect(fieldUtils.shouldValidate({
+        fieldProps: validatedField,
+        formRules: Map()
+      })).to.be.false;
+
+      expect(fieldUtils.shouldValidate({
+        fieldProps: requiredField,
+        formRules: Map()
+      })).to.be.true;
+
+      expect(fieldUtils.shouldValidate({
+        fieldProps: optionalField,
+        formRules: Map()
+      })).to.be.false;
+
+      expect(fieldUtils.shouldValidate({
+        fieldProps: optionalFieldWithNameRule,
+        formRules: fromJS({
+          name: {
+            field: ({ value }) => (value !== 'foo')
+          }
+        })
+      })).to.be.true;
+
+      expect(fieldUtils.shouldValidate({
+        fieldProps: optionalFieldWithTypeRule,
+        formRules: fromJS({
+          type: {
+            text: ({ value }) => (value !== 'foo')
+          }
+        })
+      })).to.be.true;
+
     });
 
     /**

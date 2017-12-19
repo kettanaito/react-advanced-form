@@ -103,11 +103,14 @@ export default class Field extends React.Component {
     console.log('initialValue', initialValue);
     console.log('context value', contextValue);
 
+    const registeredValue = isset(contextValue) ? contextValue : (value || initialValue || '');
+
     const registrationProps = Object.assign({}, props, {
       ref: this,
       fieldPath: this.fieldPath,
       controllable: isset(value),
-      value: isset(contextValue) ? contextValue : (value || initialValue || ''),
+      value: registeredValue,
+      initialValue: initialValue || registeredValue,
       validSync: false,
       validAsync: false,
       validatedSync: false,
