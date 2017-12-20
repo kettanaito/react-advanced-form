@@ -11,14 +11,14 @@
 import { Map } from 'immutable';
 import validateSync from './validateSync';
 import validateAsync from './validateAsync';
-import capitalize from '../capitalize';
+import validationTypes from '../../const/validation-types';
 
 function ensureInterface({ type, expected, ...restParams }) {
-  const types = type === 'both' ? ['sync', 'async'] : [type];
+  const types = (type === validationTypes.both) ? [validationTypes.sync, validationTypes.async] : [type];
 
   const validationParams = types.reduce((params, type) => {
-    params[`validated${capitalize(type)}`] = true;
-    params[`valid${capitalize(type)}`] = expected;
+    params[`validated${type}`] = true;
+    params[`valid${type}`] = expected;
 
     return params;
   }, {});
@@ -39,29 +39,26 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   console.log('formRules', formRules.toJS());
   console.groupEnd();
 
-  if (['both', 'sync'].includes(type)) {
+  const shouldValidateSync = [validationTypes.both, validationTypes.sync].includes(type);
+  const shouldValidateAsync = [validationTypes.both, validationTypes.async].includes(type);
+
+  let result = {
+    validatedSync: false,
+    validatedAsync: false,
+    validSync: false,
+    validAsync: false
+  };
+
+  if (shouldValidateSync) {
     const syncValidationResult = validateSync({ fieldProps, fields, form, formRules });
 
-    if (type === 'sync') {
-      return ensureInterface({
-        type,
-        ...syncValidationResult
-      });
-    }
-
-    if (!syncValidationResult.expected) {
-      return ensureInterface({
-        type,
-        ...syncValidationResult
-      });
+    if ((type === validationTypes.sync) || !syncValidationResult.expected) {
+      return ensureInterface({ ...syncValidationResult, type });
     }
   }
 
-  if (['both', 'async'].includes(type)) {
+  if (shouldValidateAsync) {
     const asyncValidationResult = await validateAsync({ fieldProps, fields, form });
-    return ensureInterface({
-      type,
-      ...asyncValidationResult
-    });
+    return ensureInterface({ ...asyncValidationResult, type });
   }
 }

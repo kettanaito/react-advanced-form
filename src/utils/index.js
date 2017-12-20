@@ -1,4 +1,3 @@
-export capitalize from './capitalize';
 export debounce from './debounce';
 export IterableInstance from './IterableInstance';
 export getProperty from './getProperty';

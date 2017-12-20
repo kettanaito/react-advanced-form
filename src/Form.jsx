@@ -5,6 +5,7 @@ import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
 import { TValidationRules, TValidationMessages } from './FormProvider';
+import validationTypes from './const/validation-types';
 import { isset, debounce, fieldUtils, IterableInstance } from './utils';
 
 export default class Form extends React.Component {
@@ -285,7 +286,7 @@ export default class Form extends React.Component {
      */
     const appropriateValidation = nextFieldProps.get('value') ? this.debounceValidateField : this.validateField;
     appropriateValidation({
-      type: 'sync',
+      type: validationTypes.sync,
       fieldProps: nextFieldProps
     });
 
@@ -349,7 +350,7 @@ export default class Form extends React.Component {
 
       /* Validate the field */
       await this.validateField({
-        type: 'both',
+        type: validationTypes.both,
         fieldProps
       });
     }
@@ -391,19 +392,16 @@ export default class Form extends React.Component {
    * @param {boolean} enforceProps Use direct props explicitly, without trying to grab props from the state.
    * @return {boolean}
    */
-  validateField = async ({ type = 'both', strict = true, fieldProps: directFieldProps, enforceProps = false }) => {
+  validateField = async ({ type = validationTypes.both, fieldProps: directFieldProps, enforceProps = false }) => {
     const { formRules } = this;
     const { fields } = this.state;
     const fieldProps = enforceProps
       ? directFieldProps
       : fields.getIn([directFieldProps.get('fieldPath')]) || directFieldProps;
 
-    // TODO This reads feels and is hackish
-    if (!strict && fieldProps.get('value') === '') return true;
-
     /* Bypass the validation if the provided validation type has been already validated */
     const shouldValidate = fieldUtils.shouldValidate({
-      type,
+      validationType: type,
       fieldProps,
       formRules
     });
@@ -475,9 +473,15 @@ export default class Form extends React.Component {
    * Calls the validation on each field in parallel, awaiting for all calls
    * to be resolved before returning the result.
    */
-  validate = async (strict = true) => {
-    const pendingValidations = this.state.fields.reduce((validations, fieldProps) => {
-      return validations.concat(this.validateField({ strict, fieldProps }));
+  validate = async (fieldSelector) => {
+    const { fields } = this.state;
+
+    /* Allow to apply field selector to the fields Map */
+    const validatingFields = fieldSelector ? fields.filter(fieldSelector) : fields;
+
+    /* Validate only the fields matching the optional selection */
+    const pendingValidations = validatingFields.reduce((validations, fieldProps) => {
+      return validations.concat(this.validateField({ fieldProps }));
     }, []);
 
     /* Await for all validation promises to resolve before returning */
@@ -513,7 +517,10 @@ export default class Form extends React.Component {
    */
   reset = () => {
     const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
-    this.setState({ fields: nextFields }, () => this.validate(false));
+    this.setState({ fields: nextFields }, () => {
+      /* Validate only non-empty fields, since empty required fields should not be unexpected on reset */
+      this.validate(fieldProps => (fieldProps.get('value') !== ''));
+    });
   }
 
   /**
