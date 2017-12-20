@@ -391,22 +391,29 @@ export default class Form extends React.Component {
    * @return {boolean}
    */
   validateField = async ({ type = 'both', fieldProps: directFieldProps, enforceProps = false }) => {
+    const { formRules } = this;
     const { fields } = this.state;
     const fieldProps = enforceProps
       ? directFieldProps
       : fields.getIn([directFieldProps.get('fieldPath')]) || directFieldProps;
 
+    /* Bypass the validation if the provided validation type has been already validated */
+    const shouldValidate = fieldUtils.shouldValidate({
+      type,
+      fieldProps,
+      formRules
+    });
+
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     console.log('validation type', type);
     console.log('value', fieldProps.get('value'));
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+    console.log('shouldValidate', shouldValidate);
     console.groupEnd();
-    console.log(' ');
 
-    /* Bypass the validation if the provided validation type has been already validated */
-    if (fieldProps.get(`validated${capitalize(type)}`)) return true;
+    /* Bypass unnecessary validation */
+    if (!shouldValidate) return true;
 
-    const { formRules } = this;
     const validationArgs = {
       type,
       fieldProps,
@@ -414,11 +421,6 @@ export default class Form extends React.Component {
       form: this,
       formRules
     };
-
-    const shouldValidate = fieldUtils.shouldValidate({
-      fieldProps,
-      formRules
-    });
 
     /* Perform the respective kind of validation */
     const validationResult = await fieldUtils.validate(validationArgs);
@@ -471,7 +473,7 @@ export default class Form extends React.Component {
    */
   validate = async () => {
     const pendingValidations = this.state.fields.reduce((validations, fieldProps) => {
-        return validations.concat(this.validateField({ fieldProps }));
+      return validations.concat(this.validateField({ fieldProps }));
     }, []);
 
     /* Await for all validation promises to resolve before returning */
@@ -486,10 +488,9 @@ export default class Form extends React.Component {
       const nextMutableFields = nextFields.toJS();
 
       /* Reduce the invalid fields to the ordered Array */
-      const invalidFields = Object.keys(nextMutableFields).reduce((all, fieldName) => {
+      const invalidFields = Object.keys(nextMutableFields).reduce((invalidFields, fieldName) => {
         const fieldProps = nextMutableFields[fieldName];
-        if (!fieldProps.expected) return all.concat(fieldProps);
-        return all;
+        return fieldProps.expected ? invalidFields : invalidFields.concat(fieldProps);
       }, []);
 
       /* Call custom callback */

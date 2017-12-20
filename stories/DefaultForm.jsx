@@ -197,7 +197,8 @@ export default class DefaultForm extends Component {
               name="foo"
               initialValue="Pooper"
               placeholder="My placeholder"
-              disabled={ isDisabled } />
+              disabled={ isDisabled }
+              required />
 
             <MyInput
               name="abcd"

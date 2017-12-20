@@ -42,15 +42,19 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   if (['both', 'sync'].includes(type)) {
     const syncValidationResult = validateSync({ fieldProps, fields, form, formRules });
 
-    if (type === 'sync') return ensureInterface({
-      type,
-      ...syncValidationResult
-    });
+    if (type === 'sync') {
+      return ensureInterface({
+        type,
+        ...syncValidationResult
+      });
+    }
 
-    if (!syncValidationResult.expected) return ensureInterface({
-      type,
-      ...syncValidationResult
-    });
+    if (!syncValidationResult.expected) {
+      return ensureInterface({
+        type,
+        ...syncValidationResult
+      });
+    }
   }
 
   if (['both', 'async'].includes(type)) {
