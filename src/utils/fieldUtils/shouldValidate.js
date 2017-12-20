@@ -8,7 +8,6 @@ import capitalize from '../capitalize';
 
 export default function shouldValidateField({ type, fieldProps, formRules }) {
   const value = fieldProps.get('value');
-  const validatedSync = fieldProps.get('validatedSync');
   const required = fieldProps.get('required');
 
   /* Field with dynamic "required" props is always to validate */
