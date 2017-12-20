@@ -60,6 +60,7 @@ export default class Radio extends Field {
       if (value) {
         /* Only checked radio will set the context value to its value */
         fieldProps.initialValue = value;
+        delete fieldProps.value;
       }
     }
 
