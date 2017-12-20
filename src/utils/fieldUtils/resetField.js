@@ -4,7 +4,10 @@
  * @return {Map}
  */
 export default function resetField(fieldProps) {
-  const resetPatch = {
+  const propsPatch = {
+    expected: true,
+    valid: false,
+    invalid: false,
     validSync: false,
     validAsync: false,
     validatedSync: false,
@@ -13,16 +16,16 @@ export default function resetField(fieldProps) {
 
   const initialValue = fieldProps.get('initialValue');
 
+  /* Different field types need to have different props reset */
   switch (fieldProps.get('type')) {
-    case 'radio':
     case 'checkbox':
-      resetPatch.checked = initialValue;
+      propsPatch.checked = initialValue;
       break;
 
     default:
-      resetPatch.value = initialValue;
+      propsPatch.value = initialValue;
       break;
   }
 
-  return fieldProps.merge(resetPatch);
+  return fieldProps.merge(propsPatch);
 }
