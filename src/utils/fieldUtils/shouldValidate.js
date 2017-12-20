@@ -4,9 +4,7 @@
  * @param {Map} fieldProps
  * @param {Map} formRules
  */
-import capitalize from '../capitalize';
-
-export default function shouldValidateField({ type, fieldProps, formRules }) {
+export default function shouldValidateField({ validationType, fieldProps, formRules }) {
   const value = fieldProps.get('value');
   const required = fieldProps.get('required');
 
@@ -14,7 +12,7 @@ export default function shouldValidateField({ type, fieldProps, formRules }) {
   if (fieldProps.getIn(['dynamicProps', 'required'])) return true;
 
   /* Bypass the field which was already validated for the given validation type */
-  if (fieldProps.get(`validated${capitalize(type)}`)) return false;
+  if (fieldProps.get(`validated${validationType.name}`)) return false;
 
   /* Always validate the field with the "rule" or "asyncRule" set */
   if (fieldProps.has('rule') || fieldProps.has('asyncRule')) return true;
