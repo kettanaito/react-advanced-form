@@ -11,24 +11,8 @@
 import { Map } from 'immutable';
 import validateSync from './validateSync';
 import validateAsync from './validateAsync';
-import validationTypes from '../../const/validation-types';
 
-function ensureInterface({ type, expected, ...restParams }) {
-  const types = (type === validationTypes.both) ? [validationTypes.sync, validationTypes.async] : [type];
-
-  const validationParams = types.reduce((params, type) => {
-    params[`validated${type}`] = true;
-    params[`valid${type}`] = expected;
-
-    return params;
-  }, {});
-
-  return {
-    ...restParams,
-    ...validationParams,
-    expected
-  };
-}
+const validators = { validateSync, validateAsync };
 
 export default async function validate({ type, fieldProps, fields, form, formRules = Map() }) {
   console.groupCollapsed('fieldUtils @ validate', fieldProps.get('fieldPath'));
@@ -39,26 +23,47 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   console.log('formRules', formRules.toJS());
   console.groupEnd();
 
-  const shouldValidateSync = [validationTypes.both, validationTypes.sync].includes(type);
-  const shouldValidateAsync = [validationTypes.both, validationTypes.async].includes(type);
+  const patch = {};
 
-  let result = {
-    validatedSync: false,
-    validatedAsync: false,
-    validSync: false,
-    validAsync: false
-  };
+  for (let i = 0; i < type.types.length; i++) {
+    const typeName = type.types[i];
+    const validatorFunc = validators[`validate${typeName}`];
 
-  if (shouldValidateSync) {
-    const syncValidationResult = validateSync({ fieldProps, fields, form, formRules });
+    const result = await validatorFunc({ fieldProps, fields, form, formRules });
+    const { expected, ...restParams } = result;
 
-    if ((type === validationTypes.sync) || !syncValidationResult.expected) {
-      return ensureInterface({ ...syncValidationResult, type });
+    patch[`validated${typeName}`] = true;
+    patch[`valid${typeName}`] = expected;
+    patch.expected = expected;
+
+    if (type.isSync || !expected) {
+      return { ...restParams, ...patch };
     }
   }
 
-  if (shouldValidateAsync) {
-    const asyncValidationResult = await validateAsync({ fieldProps, fields, form });
-    return ensureInterface({ ...asyncValidationResult, type });
-  }
+  return patch;
+
+  // if (shouldValidateSync) {
+  //   const result = validateSync({ fieldProps, fields, form, formRules });
+  //   const { expected, ...restParams } = result;
+
+  //   patch.validatedSync = true;
+  //   patch.validSync = expected;
+  //   patch.expected = expected;
+
+  //   if (type.isSync || !expected) {
+  //     return { ...restParams, ...patch };
+  //   }
+  // }
+
+  // if (shouldValidateAsync) {
+  //   const result = await validateAsync({ fieldProps, fields, form });
+  //   const { expected, ...restParams } = result;
+
+  //   patch.validatedAsync = true;
+  //   patch.validAsync = expected;
+  //   patch.expected = expected;
+
+  //   return { ...restParams, ...patch };
+  // }
 }

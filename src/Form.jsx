@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
-import { TValidationRules, TValidationMessages } from './FormProvider';
 import validationTypes from './const/validation-types';
+import { BothValidationType, SyncValidationType } from './ValidationType';
+import { TValidationRules, TValidationMessages } from './FormProvider';
 import { isset, debounce, fieldUtils, IterableInstance } from './utils';
 
 export default class Form extends React.Component {
@@ -286,7 +287,7 @@ export default class Form extends React.Component {
      */
     const appropriateValidation = nextFieldProps.get('value') ? this.debounceValidateField : this.validateField;
     appropriateValidation({
-      type: validationTypes.sync,
+      type: SyncValidationType,
       fieldProps: nextFieldProps
     });
 
@@ -349,10 +350,7 @@ export default class Form extends React.Component {
       });
 
       /* Validate the field */
-      await this.validateField({
-        type: validationTypes.both,
-        fieldProps
-      });
+      await this.validateField({ fieldProps });
     }
 
     /* Make field enabled, update its props */
@@ -388,11 +386,11 @@ export default class Form extends React.Component {
   /**
    * Validates a single provided field.
    * @param {Map} fieldProps
-   * @param {'both'|'async'|'sync'} Validation type.
+   * @param {ValidationType} type
    * @param {boolean} enforceProps Use direct props explicitly, without trying to grab props from the state.
    * @return {boolean}
    */
-  validateField = async ({ type = validationTypes.both, fieldProps: directFieldProps, enforceProps = false }) => {
+  validateField = async ({ type = BothValidationType, fieldProps: directFieldProps, enforceProps = false }) => {
     const { formRules } = this;
     const { fields } = this.state;
     const fieldProps = enforceProps
