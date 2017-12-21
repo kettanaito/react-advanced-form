@@ -17,6 +17,7 @@
 
 * [FormProvider](./components/formprovider.md)
 * [Form](./components/Form/README.md)
+  * [reset\(\)](./components/Form/reset.md)
   * [validate\(\)](./components/Form/validate.md)
   * [serialize\(\)](./components/Form/serialize.md)
   * [submit\(\)](./components/Form/submit.md)
