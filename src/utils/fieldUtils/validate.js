@@ -15,8 +15,10 @@ import Sequence from '../../Sequence';
 
 const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
   const { expected } = resolved;
+  /* Prevent any following validation once the previous one fails */
   if (!isLast && !expected) stop();
 
+  /* Update dynamic properties based on the current validation entry */
   acc[`validated${entry.name}`] = true;
   acc[`valid${entry.name}`] = resolved.expected;
   acc.expected = resolved.expected;
@@ -33,8 +35,10 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   console.log('formRules', formRules.toJS());
   console.groupEnd();
 
+  /* Create a new validation sequence */
   const validationSeq = new Sequence({ iterator: sequenceIterator });
 
+  /* Add sync validation to the validation sequence */
   if (type.isBoth || type.isSync) {
     validationSeq.add({
       name: 'Sync',
@@ -42,6 +46,7 @@ export default async function validate({ type, fieldProps, fields, form, formRul
     });
   }
 
+  /* Add async validation to the validation sequence */
   if (type.isBoth || type.isAsync) {
     validationSeq.add({
       name: 'Async',
@@ -49,8 +54,6 @@ export default async function validate({ type, fieldProps, fields, form, formRul
     });
   }
 
-  const result = await validationSeq.run();
-  console.log(result);
-
-  return result;
+  /* Return the accumulated result (patchProps) of the validation */
+  return await validationSeq.run();
 }
