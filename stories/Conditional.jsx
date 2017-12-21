@@ -30,17 +30,22 @@ export default class Conditional extends React.Component {
               name="username"
               rule={/^[a-zA-Z]+$/}
               asyncRule={({ value: username }) => {
-                return fetch('http://www.mocky.io/v2/5a1d8ee02e0000fc3848b8f2', {
-                  method: 'POST',
-                  body: JSON.stringify({ username })
-                })
-                .then(res => res.json())
-                .then((response) => {
-                  return {
-                    valid: (username === 'admin'),
-                    someProperty: 'someValue'
-                  };
-                }).catch(console.log);
+                return new Promise(resolve => resolve({
+                  valid: (username === 'admin'),
+                  someProperty: 'someValue'
+                }));
+
+                // return fetch('http://www.mocky.io/v2/5a1d8ee02e0000fc3848b8f2', {
+                //   method: 'POST',
+                //   body: JSON.stringify({ username })
+                // })
+                // .then(res => res.json())
+                // .then((response) => {
+                //   return {
+                //     valid: (username === 'admin'),
+                //     someProperty: 'someValue'
+                //   };
+                // }).catch(console.log);
               }}
               required />
           </label>
