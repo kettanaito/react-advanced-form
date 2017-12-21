@@ -20,10 +20,10 @@ export default class Form extends React.Component {
 
     /* Events */
     onInvalid: PropTypes.func,
-    onSumbitStart: PropTypes.func, // form should submit, submit started
-    onSumbitted: PropTypes.func, // form submit went successfully
-    onSumbitFailed: PropTypes.func, // form submit failed
-    onSumbitEnd: PropTypes.func // form has finished submit (regardless of the result)
+    onSubmitStart: PropTypes.func, // form should submit, submit started
+    onSubmitted: PropTypes.func, // form submit went successfully
+    onSubmitFailed: PropTypes.func, // form submit failed
+    onSubmitEnd: PropTypes.func // form has finished submit (regardless of the result)
   }
 
   static defaultProps = {
