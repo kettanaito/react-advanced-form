@@ -16,9 +16,7 @@ export default class MyForm extends React.Component {
 
   render() {
     return (
-      <Form
-        action={ ... }
-        onSubmitted={ this.handleSubmitted }>
+      <Form onSubmitted={ this.handleSubmitted }>
         <Field.Input name="username" initialValue="admin" />
       </Form>
     );
@@ -39,9 +37,7 @@ export default class MyForm extends React.Component {
   render() {
     return (
       <div>
-        <Form
-          ref={ form => this.form = form }
-          action={ ... }>
+        <Form ref={ form => this.form = form }>
           <Field.Input name="username" initialValue="admin" />
         </Form>
         <button onClick={ this.handleButtonClick }>Reset</button>
