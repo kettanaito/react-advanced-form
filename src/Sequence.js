@@ -44,11 +44,11 @@ export default class Sequence {
       const entry = entries[i];
       const isLast = ((entries.length - 1) === i);
 
-      const resolved = await entry.resolver({ entries: entries });
+      const resolved = await entry.resolver({ entries });
 
       acc = this.iterator({
         acc,
-        entries: entries,
+        entries,
         entry,
         resolved,
         index: i,
