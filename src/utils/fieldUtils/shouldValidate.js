@@ -13,7 +13,6 @@ export default function shouldValidateField({ validationType, fieldProps, formRu
 
   /* Bypass the field which was already validated for the given validation type */
   if (validationType.isValidated(fieldProps)) return false;
-  // if (fieldProps.get(`validated${validationType.name}`)) return false;
 
   /* Always validate the field with the "rule" or "asyncRule" set */
   if (fieldProps.has('rule') || fieldProps.has('asyncRule')) return true;
