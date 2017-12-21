@@ -35,7 +35,8 @@ export default class Checkbox extends Field {
     return {
       ...this.props,
       type: 'checkbox',
-      checked
+      checked,
+      initialValue: checked
     };
   }
 
