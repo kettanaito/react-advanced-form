@@ -59,7 +59,7 @@ describe('Form', () => {
     );
 
     return defer(async () => {
-      /* "validate" method should be available */
+      /* The method should be available */
       const { validate } = wrapper.find(Form).instance();
       expect(validate).to.not.be.undefined;
 
@@ -70,7 +70,7 @@ describe('Form', () => {
       /* Should have context props corresponding to the validation status */
       const Input = wrapper.find(Field.Input).instance();
       expect(Input.contextProps.get('validatedSync')).to.be.true;
-      expect(Input.contextProps.get('validatedAsync')).to.be.true;
+      expect(Input.contextProps.get('validatedAsync')).to.be.false;
       expect(Input.contextProps.get('validSync')).to.be.false;
       expect(Input.contextProps.get('validAsync')).to.be.false;
       expect(Input.contextProps.get('valid')).to.be.false;
@@ -85,40 +85,45 @@ describe('Form', () => {
         <Field.Radio name="gender" value="male" />
         <Field.Radio name="gender" value="female" checked />
         <Field.Checkbox name="choice" checked />
+        <Field.Select name="number" initialValue="two">
+          <option value="one">One</option>
+          <option value="two">Two</option>
+          <option value="three">Three</option>
+        </Field.Select>
+        <Field.Textarea name="myTextarea" initialValue="Hello, world!" />
       </Form>
     );
 
     return defer(async () => {
-      /* Simulate fields change */
-      const username = wrapper.find(Field.Input);
-      username.instance().handleChange({ currentTarget: { value: 'pooper' } });
-
-      const gender = wrapper.find('[value="female"]');
-      // gender.instance().handleChange({ })
-
-      // await defer(() => {
-      //   username.simulate('change', { target: { value: 'pooper' } });
-      // });
-
       const form = wrapper.find(Form).instance();
 
-      console.log(form.state.fields.get('username').toJS());
+      /* Simulate the fields change */
+      const text = wrapper.find(Field.Input);
+      text.instance().handleChange({ currentTarget: { value: 'pooper' } });
+
+      const radio = wrapper.find('[value="male"]').first();
+      radio.instance().handleChange({ currentTarget: { value: 'male' } });
+
+      const checkbox = wrapper.find('[name="choice"]').first();
+      checkbox.instance().handleChange({ currentTarget: { checked: false } });
+
+      const select = wrapper.find(Field.Select);
+      select.instance().handleChange({ currentTarget: { value: 'three' } });
+
+      const textarea = wrapper.find(Field.Textarea);
+      textarea.instance().handleChange({ currentTarget: { value: 'Goodbye, universe!' } });
 
       /* The method should be exposed */
       expect(form.reset).to.not.be.undefined;
 
       form.reset();
 
-      // console.log(form.state.fields.toJS());
-      console.log(' ');
-      console.log(' ');
-      console.log(' ');
-      console.log('serialized', form.serialize());
-
-      /* Calling "reset()" should reset the values of all fields in the form */
+      /* Should reset the values of the fields the their initial values */
       expect(form.state.fields.getIn(['username', 'value'])).to.equal('admin');
       expect(form.state.fields.getIn(['gender', 'value'])).to.equal('female');
-      expect(form.state.fields.getIn(['choice', 'checked'])).to.be.false;
+      expect(form.state.fields.getIn(['choice', 'checked'])).to.be.true;
+      expect(form.state.fields.getIn(['number', 'value'])).to.equal('two');
+      expect(form.state.fields.getIn(['myTextarea', 'value'])).to.equal('Hello, world!');
     });
   });
 });
