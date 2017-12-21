@@ -120,6 +120,11 @@ export default class DefaultForm extends Component {
     console.groupEnd();
   }
 
+  handleResetForm = (event) => {
+    event.preventDefault();
+    this.form.reset();
+  }
+
   render() {
     const { value, valueTwo, valueThree, isDisabled } = this.state;
 
@@ -129,6 +134,7 @@ export default class DefaultForm extends Component {
         messages={ formMessages }>
         <Form
           id="default-form-example"
+          ref={ form => this.form = form }
           action={this.handleFormAction}
           rules={{
             extend: true,
@@ -147,14 +153,14 @@ export default class DefaultForm extends Component {
           <div className="field-group">
 
             {/* Select */}
-            {/* <label>
+            <label>
               Select example:
-              <Field.Select name="choice" initialValue="three">
+              <Field.Select name="choice" initialValue="two">
                 <option value="one">One</option>
                 <option value="two">Two</option>
                 <option value="three">Three</option>
               </Field.Select>
-            </label> */}
+            </label>
 
             {/* <Field.Select name="selectField">
               <option value="first">First value</option>
@@ -162,7 +168,7 @@ export default class DefaultForm extends Component {
             </Field.Select> */}
 
             {/* Input */}
-            {/* <div>
+            <div>
               <label>
                 Choose one of the following:
               </label>
@@ -187,7 +193,7 @@ export default class DefaultForm extends Component {
                   value="Kangaroo" />
                   Kangaroo
               </label>
-            </div> */}
+            </div>
 
             <div>
               <Field.Textarea name="myTextarea" disabled={ isDisabled } />
@@ -351,7 +357,7 @@ export default class DefaultForm extends Component {
             </label> */}
           </div>
 
-          <button onClick={ this.controlValue }>Set value</button>
+          <button onClick={ this.handleResetForm }>Reset</button>
 
           <button type="submit">Submit</button>
         </Form>
