@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { fromJS, Map } from 'immutable';
 
 /* Internal modules */
-import validationTypes from './const/validation-types';
 import { BothValidationType, SyncValidationType } from './ValidationType';
 import { TValidationRules, TValidationMessages } from './FormProvider';
 import { isset, debounce, fieldUtils, IterableInstance } from './utils';

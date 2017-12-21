@@ -55,5 +55,5 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   }
 
   /* Return the accumulated result (patchProps) of the validation */
-  return await validationSeq.run();
+  return validationSeq.run();
 }
