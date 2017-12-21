@@ -9,7 +9,7 @@ Performs a manual submit of the current `Form`. Submit function returns a Promis
 
 You still need to provide `Form.props.action` for internal submit logic to know what suppose to happen on submit.
 
-## Examples
+## Usage
 ```jsx
 import React from 'react';
 import { Form, Field } from 'react-advanced-form';
@@ -18,13 +18,13 @@ export default class MyForm extends React.Component {
     handleSubmit = () => {
         // Make sure to return a Promise here
     }
-    
+
     handleClick = () => {
         this.form.submit().then((submitState) => {
             // This is called after the Promise of `this.handleSubmit` resolves/rejects
         });
     }
-    
+
     render() {
         return (
             <div>

@@ -13,7 +13,7 @@ Considering the warning note above, there are some use cases when performing man
 1. When submitting multiple forms at once. In this case you need to validate each form independently and then do the submit.
 2. When there is a custom logic which depends on the runtime validation status of the form.
 
-## Examples
+## Usage
 
 ```jsx
 import React from 'react';
@@ -22,10 +22,10 @@ import { Form, Field } from 'react-advanced-form';
 export default class MyForm extends React.Component {
     handleClick = () => {
         this.form.validate().then((isValid) => {
-            // 
+            //
         });
     }
-    
+
     render() {
         return (
             <div>

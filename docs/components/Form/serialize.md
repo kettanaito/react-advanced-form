@@ -6,7 +6,7 @@ Performs a manual serialization of the current `Form`.
 
 > **Note:** Manual serialization happens _regardless_ of the validation state of the form. This is almost never what you want. Make sure to perform Manual validation when serializing the form by yourself.
 
-## Examples
+## Usage
 
 ```jsx
 import React from 'react';
