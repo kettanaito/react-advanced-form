@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { fieldUtils } from '../../../src/utils';
+import { BothValidationType, SyncValidationType } from '../../../src/ValidationType';
 
 describe('Utils', () => {
   describe('Field utils', () => {
@@ -172,26 +173,31 @@ describe('Utils', () => {
       const optionalFieldWithTypeRule = Map({ type: 'text', name: 'field', required: false, value: 'foo '});
 
       expect(fieldUtils.shouldValidate({
+        validationType: BothValidationType,
         fieldProps: dynamicRequiredField,
         formRules: Map()
       })).to.be.true;
 
       expect(fieldUtils.shouldValidate({
+        validationType: BothValidationType,
         fieldProps: validatedField,
         formRules: Map()
       })).to.be.false;
 
       expect(fieldUtils.shouldValidate({
+        validationType: BothValidationType,
         fieldProps: requiredField,
         formRules: Map()
       })).to.be.true;
 
       expect(fieldUtils.shouldValidate({
+        validationType: BothValidationType,
         fieldProps: optionalField,
         formRules: Map()
       })).to.be.false;
 
       expect(fieldUtils.shouldValidate({
+        validationType: BothValidationType,
         fieldProps: optionalFieldWithNameRule,
         formRules: fromJS({
           name: {
@@ -201,6 +207,7 @@ describe('Utils', () => {
       })).to.be.true;
 
       expect(fieldUtils.shouldValidate({
+        validationType: BothValidationType,
         fieldProps: optionalFieldWithTypeRule,
         formRules: fromJS({
           type: {
