@@ -77,4 +77,48 @@ describe('Form', () => {
       expect(Input.contextProps.get('invalid')).to.be.true;
     });
   });
+
+  it('Can be reset manually', () => {
+    const wrapper = mount(
+      <Form rules={ validationRules } messages={ validationMessages }>
+        <Field.Input id="username" name="username" initialValue="admin" required />
+        <Field.Radio name="gender" value="male" />
+        <Field.Radio name="gender" value="female" checked />
+        <Field.Checkbox name="choice" checked />
+      </Form>
+    );
+
+    return defer(async () => {
+      /* Simulate fields change */
+      const username = wrapper.find(Field.Input);
+      username.instance().handleChange({ currentTarget: { value: 'pooper' } });
+
+      const gender = wrapper.find('[value="female"]');
+      // gender.instance().handleChange({ })
+
+      // await defer(() => {
+      //   username.simulate('change', { target: { value: 'pooper' } });
+      // });
+
+      const form = wrapper.find(Form).instance();
+
+      console.log(form.state.fields.get('username').toJS());
+
+      /* The method should be exposed */
+      expect(form.reset).to.not.be.undefined;
+
+      form.reset();
+
+      // console.log(form.state.fields.toJS());
+      console.log(' ');
+      console.log(' ');
+      console.log(' ');
+      console.log('serialized', form.serialize());
+
+      /* Calling "reset()" should reset the values of all fields in the form */
+      expect(form.state.fields.getIn(['username', 'value'])).to.equal('admin');
+      expect(form.state.fields.getIn(['gender', 'value'])).to.equal('female');
+      expect(form.state.fields.getIn(['choice', 'checked'])).to.be.false;
+    });
+  });
 });
