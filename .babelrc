@@ -5,12 +5,17 @@
         "browsers": "last 2 versions"
       }
     }],
-    "stage-2",
     "react"
   ],
   "plugins": [
     "transform-export-extensions",
-    "transform-async-to-generator"
+    "transform-class-properties",
+    "transform-object-rest-spread",
+    ["transform-runtime", {
+      "helpers": false,
+      "polyfill": false,
+      "regenerator": true
+    }]
   ],
   "env": {
     "production": {
@@ -21,8 +26,17 @@
             "browsers": "last 2 versions"
           }
         }],
-        "stage-2",
         "react"
+      ],
+      "plugins": [
+        "transform-export-extensions",
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        ["transform-runtime", {
+          "helpers": false,
+          "polyfill": false,
+          "regenerator": true
+        }]
       ]
     }
   }

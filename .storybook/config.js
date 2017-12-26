@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import { configure } from '@storybook/react';
 
 function loadStories() {
