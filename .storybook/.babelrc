@@ -1,12 +1,5 @@
 {
-  "presets": [
-    ["env", {
-      "targets": {
-        "browsers": "last 2 versions"
-      }
-    }],
-    "react"
-  ],
+  "presets": ["env", "react"],
   "plugins": [
     "transform-export-extensions",
     "transform-class-properties",
