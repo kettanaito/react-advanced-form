@@ -1,19 +1,12 @@
-const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
 const packageJson = require('./package.json');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const babelConfig = JSON.parse(fs.readFileSync('.babelrc'));
-
 /* Environment */
 const DEVELOPMENT = (process.env.NODE_ENV === 'development');
 const PRODUCTION = (process.env.NODE_ENV === 'production');
-
-if (PRODUCTION) {
-  babelConfig.presets[0][1].modules = false;
-}
 
 module.exports = {
   entry: path.resolve(__dirname, packageJson.module),
@@ -46,7 +39,36 @@ module.exports = {
         test: /\.jsx?$/,
         include: path.resolve(__dirname, 'src'),
         exclude: /node_modules/,
-        use: ['babel-loader', 'eslint-loader']
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: DEVELOPMENT,
+              presets: [
+                ['env', {
+                  modules: DEVELOPMENT && 'commonjs',
+                  targets: {
+                    browsers: 'last 2 versions'
+                  }
+                }],
+                'react'
+              ],
+              plugins: [
+                'transform-export-extensions',
+                'transform-class-properties',
+                'transform-object-rest-spread',
+                ['transform-runtime', {
+                  helpers: false,
+                  polyfill: false,
+                  regenerator: true
+                }]
+              ]
+            }
+          },
+          {
+            loader: 'eslint-loader'
+          }
+        ]
       }
     ]
   },
