@@ -1,12 +1,19 @@
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
 const packageJson = require('./package.json');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
+const babelConfig = JSON.parse(fs.readFileSync('.babelrc'));
+
 /* Environment */
 const DEVELOPMENT = (process.env.NODE_ENV === 'development');
 const PRODUCTION = (process.env.NODE_ENV === 'production');
+
+if (PRODUCTION) {
+  babelConfig.presets[0][1].modules = false;
+}
 
 module.exports = {
   entry: path.resolve(__dirname, packageJson.module),
@@ -25,7 +32,6 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     }),
-
     PRODUCTION && new BabelMinifyPlugin({
       removeConsole: true,
       mangle: {
@@ -38,7 +44,7 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        include: `${__dirname}/src`,
+        include: path.resolve(__dirname, 'src'),
         exclude: /node_modules/,
         use: ['babel-loader', 'eslint-loader']
       }
