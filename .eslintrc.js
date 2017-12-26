@@ -1,7 +1,6 @@
 module.exports = {
-  env: {
-    browser: true
-  },
+  extends: ['airbnb-base', 'airbnb-base/legacy'],
+  plugins: ['react', 'import', 'mocha'],
   parser: 'babel-eslint',
   parserOptions: {
     ecmaVersion: 7,
@@ -11,10 +10,9 @@ module.exports = {
       modules: true
     }
   },
-  extends: ['airbnb-base', 'airbnb-base/legacy'],
-  plugins: ['react', 'import', 'mocha'],
   env: {
-    'mocha': true
+    browser: true,
+    mocha: true
   },
   settings: {
     'import/resolver': {
