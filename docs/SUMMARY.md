@@ -24,4 +24,5 @@
 * [Field.Group](./components/Field.Group.md)
 
 ## Customization
-* [Custom styling](./custom-styling.md)
+* [Custom styling](./customization/custom-styling.md)
+* [Custom fields](./customization/custom-fields.md)
