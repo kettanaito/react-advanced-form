@@ -1,7 +1,7 @@
 # Validation messages
 
 ## Introduction
-Having an ability to display different validation messages at different states of validation is a common requirement for any modern form. Just as with the validation rules, we have refined an approach of declaring validation messages which serves gracefully in full-scale applications.
+Having an ability to display different validation messages at different states of the validation is a common requirement toward any modern form. Just as with the validation rules, we have refined an approach of declaring validation messages which serves gracefully in full-scale applications.
 
 ## Specification
 
@@ -32,7 +32,7 @@ The values supplied to the mentioned groups are expected to be in a certain form
 }
 ```
 
-Message value resolver can be a function which should return a string. This function accepts the following argument properties:
+Message value can be a plain `string` or a resolver function which returns a string. The resolver function accepts the following argument properties:
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
