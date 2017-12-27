@@ -1,6 +1,6 @@
 {
   "name": "react-advanced-form",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "React form without boilerplate. Down with the state management. Embrace custom styling, dynamic props, fields grouping, multi-level validation, flexible API, and much more. Everything you may need.",
   "module": "src/index.js",
   "main": "lib/index.js",
