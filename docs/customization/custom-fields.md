@@ -19,7 +19,7 @@ import { Field } from 'react-advanced-form';
 
 export default class CustomField extends Field {
     renderElement(props, contextProps) {
-        return (<ElementToRender value={ contextProps.get('value') }>);
+        return (<AnyElement value={ contextProps.get('value') } />);
     }
 }
 ```
