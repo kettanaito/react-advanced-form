@@ -3,9 +3,9 @@
 ## General
 
 * [Introduction](./README.md)
-* [Getting Started](./getting-started.md)
-* [Concept](./concept.md)
-* [FAQ](./FAQ.md)
+* [Getting started](./general/getting-started.md)
+* [Concept](./general/concept.md)
+* [FAQ](./general/FAQ.md)
 
 ## Validation
 
