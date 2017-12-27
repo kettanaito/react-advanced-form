@@ -28,15 +28,15 @@
 ## Callbacks
 
 * Form
-  * [onSubmitStart()](./callbacks/Form/onSubmitStart.md)
-  * [onSubmitted()](./callbacks/Form/onSubmitted.md)
-  * [onSubmitFailed()](./callbacks/Form/onSubmitFailed.md)
-  * [onSubmitEnd()](./callbacks/Form/onSubmitEnd.md)
+  * [onSubmitStart](./callbacks/Form/onSubmitStart.md)
+  * [onSubmitted](./callbacks/Form/onSubmitted.md)
+  * [onSubmitFailed](./callbacks/Form/onSubmitFailed.md)
+  * [onSubmitEnd](./callbacks/Form/onSubmitEnd.md)
 
 * Field
-  * [onFocus()](./callbacks/Field/onFocus.md)
-  * [onChange()](./callbacks/Field/onChange.md)
-  * [onBlur()](./callbacks/Field/onBlur.md)
+  * [onFocus](./callbacks/Field/onFocus.md)
+  * [onChange](./callbacks/Field/onChange.md)
+  * [onBlur](./callbacks/Field/onBlur.md)
 
 ## Customization
 * [Custom styling](./customization/custom-styling.md)

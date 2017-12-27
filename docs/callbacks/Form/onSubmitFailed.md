@@ -1,7 +1,7 @@
 # `Form.onSubmitFailed`
 
 ## Specification
-Called immediately in case submit action failed.
+Called immediately in case asynchronous submit action rejects, or fails to resolve for any other reason.
 
 ### Arguments
 
