@@ -8,8 +8,8 @@ Called immediately on the submit attempt of the valid form. Useful for displayin
 | Property name | Type | Description |
 | ------------- | ---- | ----------- |
 | `serialized` | `Object` | Map of the serialized fields. |
-| `fields` | `Object` | Map of all fields after submit attempt. |
-| `form` | `Object` | A reference to the submitted `Form` |
+| `fields` | `Object` | Map of all fields. |
+| `form` | `Object` | A reference to the current `Form` |
 
 ## Usage
 ```jsx

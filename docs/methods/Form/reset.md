@@ -1,7 +1,9 @@
 # `Form.reset()`
 
 ## Specification
-Resets fields' values of the `Form` to their initial values.
+Resets the values of the unctronolled fields of the `Form` to their initial values.
+
+> **Note:** `Form.reset()` will not affect controlled fields. To reset the latter use [`Form.onReset`](../../callbacks/Form/onReset.md) callback method handler, which is called after `Form.reset()` is finished.
 
 ## Usage
 ### Using submit callback handlers

@@ -9,8 +9,8 @@ Event handler called after the field has been focused.
 | ------------- | ---- | ----------- |
 | `event` | `Event` | Native event instance reference. |
 | `fieldProps` | `Object` | Props of the current field. |
-| `fields` | `Object` | Map of all fields after submit attempt. |
-| `form` | `Object` | A reference to the submitted `Form` |
+| `fields` | `Object` | Map of all fields. |
+| `form` | `Object` | A reference to the current `Form` |
 
 ## Usage
 ```jsx

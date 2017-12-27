@@ -8,8 +8,8 @@ Called once the submit is prevented due to invalid validation state of the form.
 | Property name | Type | Description |
 | ------------- | ---- | ----------- |
 | `invalidFields` | `Array<Object>` | Unordered list of invalid fields. |
-| `fields` | `Object` | Map of all fields after submit attempt. |
-| `form` | `Object` | A reference to the submitted `Form` |
+| `fields` | `Object` | Map of all fields. |
+| `form` | `Object` | A reference to the current `Form` |
 
 ## Usage
 ```jsx

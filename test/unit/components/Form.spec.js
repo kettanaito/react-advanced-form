@@ -79,8 +79,19 @@ describe('Form', () => {
   });
 
   it('Can be reset manually', () => {
+    let resetCallbackCalled = false;
+
+    function resetCallback({ fields, form }) {
+      resetCallbackCalled = true;
+      expect(fields).to.be.instanceof(Object);
+      expect(form).to.be.instanceof(Object);
+    }
+
     const wrapper = mount(
-      <Form rules={ validationRules } messages={ validationMessages }>
+      <Form
+        rules={ validationRules }
+        messages={ validationMessages }
+        onReset={ resetCallback }>
         <Field.Input id="username" name="username" initialValue="admin" required />
         <Field.Radio name="gender" value="male" />
         <Field.Radio name="gender" value="female" checked />
@@ -124,6 +135,7 @@ describe('Form', () => {
       expect(form.state.fields.getIn(['choice', 'checked'])).to.be.true;
       expect(form.state.fields.getIn(['number', 'value'])).to.equal('two');
       expect(form.state.fields.getIn(['myTextarea', 'value'])).to.equal('Hello, world!');
+      expect(resetCallbackCalled).to.be.true;
     });
   });
 });
