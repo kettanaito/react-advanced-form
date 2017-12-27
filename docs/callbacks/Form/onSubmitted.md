@@ -1,0 +1,35 @@
+# `Form.onSubmitted`
+
+## Specification
+Called immediately in case asynchronous submit action resolves.
+
+### Arguments
+
+| Property name | Type | Description |
+| ------------- | ---- | ----------- |
+| `res` | `Object` | An accumulated response Object of the async submit action. |
+| `serialized` | `Object` | Map of the serialized fields. |
+| `fields` | `Object` | Map of all fields after submit attempt. |
+| `form` | `Object` | A reference to the submitted `Form` |
+
+## Usage
+```jsx
+import { Form, Field } from 'react-advanced-form';
+
+export default class RegistrationForm extends React.Component {
+    handleUserRegistered = ({ res, serialized, fields, form }) => {
+        // ...
+    }
+
+    render() {
+        return (
+            <Form onSubmitted={ this.handleUserRegistered }>
+                <Field.Input name="username" required />
+                <button type="submit">Submit</button>
+            </Form>
+        );
+    }
+}
+```
+
+> **Note:** It's a good practice to name the `onSubmitted` callback methods relatively to the form's primary action. For "Registration" form - `onUserRegistered`, for "Add product to Cart" form - `onProductAdded`, etc.

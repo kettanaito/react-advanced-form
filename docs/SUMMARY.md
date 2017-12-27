@@ -5,7 +5,7 @@
 * [Introduction](./README.md)
 * [Getting started](./general/getting-started.md)
 * [Concept](./general/concept.md)
-* [FAQ](./general/FAQ.md)
+* [FAQ](./general/faq.md)
 
 ## Validation
 
@@ -14,14 +14,29 @@
 * [Validation messages](./validation/validation-messages.md)
 
 ## Components
-
 * [FormProvider](./components/formprovider.md)
-* [Form](./components/Form/README.md)
-  * [reset\(\)](./components/Form/reset.md)
-  * [validate\(\)](./components/Form/validate.md)
-  * [serialize\(\)](./components/Form/serialize.md)
-  * [submit\(\)](./components/Form/submit.md)
+* [Form](./components/Form.md)
 * [Field.Group](./components/Field.Group.md)
+
+## Methods
+* Form
+  * [validate\(\)](./methods/Form/validate.md)
+  * [serialize\(\)](./methods/Form/serialize.md)
+  * [submit\(\)](./methods/Form/submit.md)
+  * [reset\(\)](./methods/Form/reset.md)
+
+## Callbacks
+
+* Form
+  * [onSubmitStart()](./callbacks/Form/onSubmitStart.md)
+  * [onSubmitted()](./callbacks/Form/onSubmitted.md)
+  * [onSubmitFailed()](./callbacks/Form/onSubmitFailed.md)
+  * [onSubmitEnd()](./callbacks/Form/onSubmitEnd.md)
+
+* Field
+  * [onFocus()](./callbacks/Field/onFocus.md)
+  * [onChange()](./callbacks/Field/onChange.md)
+  * [onBlur()](./callbacks/Field/onBlur.md)
 
 ## Customization
 * [Custom styling](./customization/custom-styling.md)
