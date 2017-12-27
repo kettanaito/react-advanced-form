@@ -13,6 +13,7 @@ Called once the submit is prevented due to invalid validation state of the form.
 
 ## Usage
 ```jsx
+import React from 'react';
 import { Form, Field } from 'react-advanced-form';
 
 export default class MyForm extends React.Component {

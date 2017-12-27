@@ -14,6 +14,7 @@ Called immediately in case asynchronous submit action resolves.
 
 ## Usage
 ```jsx
+import React from 'react';
 import { Form, Field } from 'react-advanced-form';
 
 export default class RegistrationForm extends React.Component {

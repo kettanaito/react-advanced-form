@@ -14,6 +14,7 @@ Called immediately after the submit ended, regardless of the submit status (on b
 
 ## Usage
 ```jsx
+import React from 'react';
 import { Form, Field } from 'react-advanced-form';
 
 export default class MyForm extends React.Component {

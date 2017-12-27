@@ -13,6 +13,7 @@ Called immediately on the submit attempt of the valid form. Useful for displayin
 
 ## Usage
 ```jsx
+import React from 'react';
 import { Form, Field } from 'react-advanced-form';
 
 export default class MyForm extends React.Component {
