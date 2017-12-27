@@ -20,6 +20,7 @@ export default class Form extends React.Component {
     rules: TValidationRules,
 
     /* Events */
+    onReset: PropTypes.func,
     onInvalid: PropTypes.func,
     onSubmitStart: PropTypes.func, // form should submit, submit started
     onSubmitted: PropTypes.func, // form submit went successfully
@@ -517,6 +518,16 @@ export default class Form extends React.Component {
     this.setState({ fields: nextFields }, () => {
       /* Validate only non-empty fields, since empty required fields should not be unexpected on reset */
       this.validate(fieldProps => (fieldProps.get('value') !== ''));
+
+      /* Call custom callback methods to be able to reset controlled fields */
+      const { onReset } = this.props;
+
+      if (onReset) {
+        onReset({
+          fields: nextFields,
+          form: this
+        });
+      }
     });
   }
 

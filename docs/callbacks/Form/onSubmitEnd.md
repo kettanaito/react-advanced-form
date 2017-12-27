@@ -9,7 +9,7 @@ Called immediately after the submit ended, regardless of the submit status (on b
 | ------------- | ---- | ----------- |
 | `res` | `Object` | An accumulated response Object of the async submit action. |
 | `serialized` | `Object` | Map of the serialized fields. |
-| `fields` | `Object` | Map of all fields after submit attempt. |
+| `fields` | `Object` | Map of all fields after submit. |
 | `form` | `Object` | A reference to the submitted `Form` |
 
 ## Usage
