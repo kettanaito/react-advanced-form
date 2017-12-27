@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Creating a custom styles for the form should be easy and flexible, allowing you to achieve modern look _and_ modern functionality without the two conflicting with each other. The main concept behind the custom styling is to completely separate the logic of the `Field` component and its visual appearance, fully dedicating the latter to the end developer.
+Styling a form should be an easy and pleasant experience, allowing you to achieve modern look _and_ modern functionality without the two conflicting with each other. The main concept behind the custom styling is to completely separate the logic of the `Field` component and its visual appearance, fully dedicating the latter to the end developer.
 
-Technically speaking, this is powered by the `connectField`, a HOC which wraps your custom React component (custom field) and provides the following features:
+Technically speaking, this is achieved by the `connectField` component, a HOC which wraps a custom React component (custom field), providing the following features:
 
-* Makes the custom component subscribed to the native `Field` lifecycle events
+* Subscribes the custom component to the native `Field` lifecycle events
 * Propagates all the essential props of the field to the custom component to tailor the best user interface possible
 * Strives towards the custom components being stateless/functional
 
