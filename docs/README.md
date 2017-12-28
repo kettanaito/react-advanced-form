@@ -15,7 +15,7 @@
   </a>
 </p>
 
-[React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library which allows you to create simple and customizable forms with a powerful functionality built-in.
+[React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library for tailoring simple and flexible forms with a powerful functionality built-in.
 
 No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
 
@@ -66,7 +66,10 @@ export default class MyForm extends React.Component {
 }
 ```
 
-Read more about how to use React Advanced Form to get the most out of its features in this documentation.
+Read more about how to use React Advanced Form to get the most out of its features in the respective sections of this documentation.
+
+## Contributing
+Any of your contributions, be that a comment, an issue or a pull request, is highly appreciated. Please read the [Contribution guide](../CONTRIBUTING.md) for the contribution guidelines. Moreover, development isn't the only way to contribute, there are [many more](../CONTRIBUTING.md#other-contributions).
 
 ## License
 This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE). See the license file for more details.

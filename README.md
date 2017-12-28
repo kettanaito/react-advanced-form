@@ -15,13 +15,14 @@
   </a>
 </p>
 
-[React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library which allows you to create simple and customizable forms with a powerful functionality built-in.
+[React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library for tailoring simple and flexible forms with a powerful functionality built-in.
 
 No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
 
 ## Getting started
 ### Prerequisites
 This library requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install/have those in your project in order for React Advanced Form to function properly.
+* [NodeJS](https://nodejs.org) (6+)
 * [React](https://github.com/facebook/react) (15.0+)
 * [ImmutableJS](https://github.com/facebook/immutable-js) (3.8+)
 
@@ -83,10 +84,10 @@ export default class MyForm extends React.Component {
 }
 ```
 
-Read more about how to use React Advanced Form to get the most out of its features in the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form).
+Read the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for a detailed information on components, methods and examples of their usage.
 
 ## Contributing
-Any of your contributions, be that a comment, an issue or a pull request, is highly appreciated. Please read the [Contribution guide](./CONTRIBUTING.md) to ensure consistency of the codebase and the project's development workflow.
+Any of your contributions, be that a comment, an issue or a pull request, is highly appreciated. Please read the [Contribution guide](./docs/developers/contributing.md) for the contribution guidelines. Moreover, development isn't the only way to contribute, there are [many more](./docs/developers/contributing.md#other-contributions).
 
 ## License
 This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE). See the license file for more details.

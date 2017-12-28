@@ -42,3 +42,6 @@
 ## Customization
 * [Custom styling](./customization/custom-styling.md)
 * [Custom fields](./customization/custom-fields.md)
+
+## Developers
+* [Contributing](./developers/contributing.md)
