@@ -25,8 +25,8 @@ module.exports = {
     'strict': [2, 'never'],
     'no-console': 0,
     'max-len': [1, 120, {
-      "ignoreStrings": true,
-      "ignoreTemplateLiterals": true
+      ignoreStrings: true,
+      ignoreTemplateLiterals: true
     }],
     'consistent-return': 0,
     'array-callback-return': 0,
