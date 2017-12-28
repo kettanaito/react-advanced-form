@@ -85,15 +85,13 @@ export default class Form extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    /**
-     * Define validation rules.
-     */
+    /* Define validation rules */
     this.formRules = this.defineFormRules();
 
     /**
-     * Define validation messages once, since those should be converted to immutable, which is a costly procedure.
+     * Define validation messages once, since those should be converted to immutable, which is an expensive procedure.
      * Moreover, messages are unlikely to change during the component's lifecycle. It should be safe to store them.
-     * Note: Messages passed from FormProvider are already immutable.
+     * Note: Messages passed from FormProvider (context messages) are already immutable.
      */
     const { messages: formMessages } = this.props;
     this.formMessages = formMessages ? fromJS(formMessages) : this.context.messages;
@@ -428,8 +426,11 @@ export default class Form extends React.Component {
     /* Update the validity state of the field */
     const propsPatch = validationResult;
 
-    /* Get the validation message based on the validation summary */
-    if (!validationResult.expected) {
+    /* Determine if there are any messages available to form */
+    const hasMessages = this.formMessages && (this.formMessages.size > 0);
+
+    /* Get the validation message based on the validation result */
+    if (hasMessages && !validationResult.expected) {
       const errorMessage = fieldUtils.getErrorMessage({
         validationResult,
         messages: this.formMessages,
@@ -445,7 +446,8 @@ export default class Form extends React.Component {
      * Get the next validity state.
      * Based on the changed fieldProps, the field will aquire new validity state (valid/invalid).
      */
-    const nextValidityState = fieldUtils.getValidityState(fieldProps.merge(fromJS(propsPatch)));
+    const nextFieldProps = fieldProps.merge(fromJS(propsPatch));
+    const nextValidityState = fieldUtils.getValidityState(nextFieldProps);
 
     /* Update the field in the state to reflect the changes */
     this.updateField({
