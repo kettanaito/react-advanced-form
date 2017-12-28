@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Field, Condition } from '../lib';
+import { Form, Field, Condition } from '../src';
 import { MyInput } from './custom-fields';
 
 const validationMessages = {
@@ -16,9 +16,7 @@ export default class BugWithForm extends React.Component {
 
   render() {
     return (
-      <Form
-        messages={ validationMessages }
-        onInvalid={ this.handleInvalidForm }>
+      <Form onInvalid={ this.handleInvalidForm }>
         <div>
           <label>
             One:
