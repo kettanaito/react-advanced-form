@@ -29,7 +29,14 @@ module.exports = {
       removeConsole: true,
       mangle: {
         topLevel: true,
-        keepFnName: true
+        // exclude: {
+        //   'FormProvider': true,
+        //   'Form': true,
+        //   'connectField': true,
+        //   'Condition': true,
+        //   'Field': true
+        // }
+        // keepFnName: true
       }
     })
   ].filter(Boolean),

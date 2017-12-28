@@ -9,10 +9,12 @@ import { TValidationRules, TValidationMessages } from './FormProvider';
 import { isset, debounce, fieldUtils, IterableInstance } from '../utils';
 
 export default class Form extends React.Component {
+  static displayName = 'Form'
+
   static propTypes = {
     action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
-    rules: TValidationRules, // validation rules schema
-    messages: TValidationMessages, // validation messages corresponding to the rules schema
+    rules: TValidationRules,
+    messages: TValidationMessages,
 
     /* Events */
     onFirstChange: PropTypes.func,
