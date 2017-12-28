@@ -21,8 +21,11 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
 
 ## Getting started
 ### Prerequisites
+#### Engines
+* [NodeJS](https://nodejs.org) (6.0+)
+
+#### Peer dependencies
 This library requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install/have those in your project in order for React Advanced Form to function properly.
-* [NodeJS](https://nodejs.org) (6+)
 * [React](https://github.com/facebook/react) (15.0+)
 * [ImmutableJS](https://github.com/facebook/immutable-js) (3.8+)
 
