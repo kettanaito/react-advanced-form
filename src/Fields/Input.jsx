@@ -3,26 +3,21 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Field from './Field';
+import createField from '../createField';
 
-export default class Input extends Field {
-  static displayName = 'Field.Input'
-
+class Input extends React.Component {
   static propTypes = {
-    /* Specific */
-    placeholder: PropTypes.string
+    type: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
   }
 
   static defaultProps = {
-    type: 'text',
-    expected: true,
-    required: false,
-    disabled: false
+    type: 'text'
   }
 
-  renderElement() {
-    return (
-      <input />
-    );
+  render() {
+    return (<input {...this.props} />);
   }
 }
+
+export default createField()(Input);
