@@ -200,9 +200,16 @@ export default class DefaultForm extends Component {
             </div>
 
             <MyInput
-              name="foo"
+              name="initialValue"
               initialValue="Pooper"
               placeholder="My placeholder"
+              disabled={ isDisabled }
+              required />
+
+            <MyInput
+              name="undefinedInitialValue"
+              initialValue={ undefined }
+              placeholder="Undefined initial value"
               disabled={ isDisabled }
               required />
 
