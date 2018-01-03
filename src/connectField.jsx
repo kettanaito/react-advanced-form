@@ -7,14 +7,12 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getProperty, IterableInstance, fieldUtils } from './utils';
-import { defaultProps as defaultFieldProps } from './Fields/Field';
+import defaultFieldProps from './const/default-field-props';
+import { getComponentName, getProperty, IterableInstance, fieldUtils } from './utils';
 
 export default function connectField(WrappedComponent) {
-  const componentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-
   class FieldWrapper extends React.Component {
-    static displayName = `connectField(${componentName})`;
+    static displayName = `connectField(${ getComponentName(WrappedComponent) })`;
 
     static contextTypes = {
       fieldGroup: PropTypes.string,

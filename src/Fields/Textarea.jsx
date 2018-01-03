@@ -1,15 +1,8 @@
-/**
- * Textarea.
- */
 import React from 'react';
-import Field from './Field';
+import createField from '../createField';
 
-export default class Textarea extends Field {
-  static displayName = 'Field.Textarea'
-
-  renderElement() {
-    return (
-      <textarea />
-    );
-  }
+function Textarea(props) {
+  return (<textarea {...props} />);
 }
+
+export default createField()(Textarea);
