@@ -26,6 +26,7 @@ module.exports = {
     'no-console': 0,
     'max-len': [1, 120, {
       ignoreStrings: true,
+      ignoreComments: true,
       ignoreTemplateLiterals: true
     }],
     'consistent-return': 0,

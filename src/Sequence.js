@@ -1,6 +1,3 @@
-/**
- * Sequence.
- */
 export default class Sequence {
   /**
    * Creates a new instance of Sequence.
@@ -31,18 +28,18 @@ export default class Sequence {
   }
 
   /**
-   * Run the sequence with the current entries.
+   * Runs the sequence with the current entries.
    */
   async run() {
     const { entries } = this;
     if (entries.length === 0) return;
     let acc = {};
 
-    for (let i = 0; i < entries.length; i++) {
+    for (let index = 0; index < entries.length; index++) {
       if (!this.shouldRun) break;
 
-      const entry = entries[i];
-      const isLast = ((entries.length - 1) === i);
+      const entry = entries[index];
+      const isLast = ((entries.length - 1) === index);
 
       const resolved = await entry.resolver({ entries });
 
@@ -51,7 +48,7 @@ export default class Sequence {
         entries,
         entry,
         resolved,
-        index: i,
+        index,
         isLast,
         stop: this.stop
       });
