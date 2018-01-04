@@ -137,11 +137,12 @@ export default class Form extends React.Component {
     if (shouldValidate) {
       this.validateField({
         fieldProps,
-        enforceProps: true
+        forceProps: true
       });
     }
 
-    return this.setState({ fields: fields.mergeIn([fieldPath], fieldProps) });
+    const nextFields = fields.mergeIn([fieldPath], fieldProps);
+    return this.setState({ fields: nextFields });
   }
 
   /**
@@ -262,9 +263,8 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    * @param {mixed} prevValue
    * @param {mixed} nextValue
-   * @param {string} valueProp Property name to be treated as "value" (i.e. "checked").
    */
-  handleFieldChange = async ({ event, fieldProps, nextValue, prevValue, valueProp = 'value' }) => {
+  handleFieldChange = async ({ event, fieldProps, nextValue, prevValue }) => {
     /* Bypass events called from an unregistered Field */
     if (!this.isRegistered(fieldProps)) return;
 
@@ -272,6 +272,8 @@ export default class Form extends React.Component {
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.log('nextValue', nextValue);
     console.groupEnd();
+
+    const valueProp = fieldProps.get('valueProp');
 
     /**
      * Update the value of the changed field.
@@ -396,13 +398,13 @@ export default class Form extends React.Component {
    * Validates a single provided field.
    * @param {Map} fieldProps
    * @param {ValidationType} type
-   * @param {boolean} enforceProps Use direct props explicitly, without trying to grab props from the state.
+   * @param {boolean} forceProps Use direct props explicitly, without trying to grab props from the state.
    * @return {boolean}
    */
-  validateField = async ({ type = BothValidationType, fieldProps: directFieldProps, enforceProps = false }) => {
+  validateField = async ({ type = BothValidationType, fieldProps: directFieldProps, forceProps = false }) => {
     const { formRules } = this;
     const { fields } = this.state;
-    const fieldProps = enforceProps
+    const fieldProps = forceProps
       ? directFieldProps
       : fields.getIn([directFieldProps.get('fieldPath')]) || directFieldProps;
 
@@ -528,6 +530,7 @@ export default class Form extends React.Component {
    */
   reset = () => {
     const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
+
     this.setState({ fields: nextFields }, () => {
       /* Validate only non-empty fields, since empty required fields should not be unexpected on reset */
       this.validate(fieldProps => (fieldProps.get('value') !== ''));

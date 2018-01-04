@@ -13,7 +13,8 @@ export default function serializeFields(fields, valueResolver = null) {
 
     if (!isCheckbox && hasEmptyValue) return serialized;
 
-    const defaultValue = isCheckbox ? fieldProps.get('checked') : fieldProps.get('value');
+    const valueProp = fieldProps.get('valueProp');
+    const defaultValue = fieldProps.get(valueProp);
     const value = valueResolver ? valueResolver(fieldProps) : defaultValue;
 
     return serialized.setIn(fieldProps.get('fieldPath').split('.'), value);
