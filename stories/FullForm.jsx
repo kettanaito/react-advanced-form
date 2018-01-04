@@ -96,7 +96,7 @@ export default class FullForm extends React.Component {
             <option value="UK">United Kingdom</option>
             <option value="UA">Ukraine</option>
           </Field.Select>
-        </div>
+        </div> */}
 
         {/* <Condition when={({ fields }) => fields.country && fields.country.value === 'UK'}>
           <Field.Group name="hobbies">

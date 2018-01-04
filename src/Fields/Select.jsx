@@ -1,12 +1,14 @@
 import React from 'react';
 import createField from '../createField';
 
-function Select({ children, ...props }) {
-  return (
-    <select { ...props }>
-      { children }
-    </select>
-  );
+class Select extends React.Component {
+  render() {
+    return (
+      <select { ...this.props }>
+        { this.props.children }
+      </select>
+    );
+  }
 }
 
 export default createField({

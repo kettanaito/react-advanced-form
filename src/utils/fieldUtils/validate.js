@@ -38,7 +38,7 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   /* Create a new validation sequence */
   const validationSeq = new Sequence({ iterator: sequenceIterator });
 
-  /* Add sync validation to the validation sequence */
+  /* Sync validation */
   if (type.isBoth || type.isSync) {
     validationSeq.add({
       name: 'Sync',
@@ -46,7 +46,7 @@ export default async function validate({ type, fieldProps, fields, form, formRul
     });
   }
 
-  /* Add async validation to the validation sequence */
+  /* Async validation */
   if (type.isBoth || type.isAsync) {
     validationSeq.add({
       name: 'Async',

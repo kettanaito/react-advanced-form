@@ -1,8 +1,10 @@
 import React from 'react';
 import createField from '../createField';
 
-function Checkbox(props) {
-  return (<input { ...props } />);
+class Checkbox extends React.Component {
+  render() {
+    return (<input type="checkbox" { ...this.props } />);
+  }
 }
 
 export default createField({
@@ -12,7 +14,6 @@ export default createField({
     initialValue: props.checked
   }),
   enforceProps: (props, contextProps) => ({
-    type: 'checkbox',
     checked: contextProps.get('checked')
   })
 })(Checkbox);

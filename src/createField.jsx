@@ -1,5 +1,5 @@
 /**
- * A high-order component to create custom instances of form elements basedc on the generic Field class.
+ * A high-order component to create custom instances of form elements based on the generic Field class.
  * Also suitable for third-party fields integration.
  */
 import invariant from 'invariant';
@@ -13,7 +13,8 @@ import { IterableInstance, getComponentName, isset, getPropsPatch, fieldUtils } 
 /* Default "createField" options */
 const defaultOptions = {
   valueProp: 'value',
-  mapPropsToField: props => props
+  mapPropsToField: props => props,
+  enforceProps: () => ({})
 };
 
 export default function createField(options) {
@@ -63,13 +64,15 @@ export default function createField(options) {
        * @param {Object} props
        */
       registerWith(props) {
-        const { fields, fieldGroup, registerField } = this.context;
+        const { fieldPath } = this;
+        const { fields, fieldGroup } = this.context;
         const { value, initialValue } = props;
 
-        const contextValue = fields.getIn([this.fieldPath, 'value']);
+        const { valueProp } = resolvedOptions;
+        const contextValue = fields.getIn([this.fieldPath, valueProp]);
 
-        console.groupCollapsed(this.fieldPath, '@ registerWith');
-        console.log('props', Object.assign({}, this.props));
+        console.groupCollapsed(fieldPath, '@ registerWith');
+        console.log('props', Object.assign({}, props));
         console.log('value', value);
         console.log('initialValue', initialValue);
         console.log('context value', contextValue);
@@ -81,9 +84,11 @@ export default function createField(options) {
         const registrationProps = {
           ...props,
           ref: this,
-          fieldPath: this.fieldPath,
+          type: props.type || this.props.type,
+          fieldPath,
           controllable: isset(value),
-          value: registeredValue,
+          valueProp,
+          [valueProp]: registeredValue,
           initialValue: initialValue || registeredValue,
           validSync: false,
           validAsync: false,
@@ -96,10 +101,8 @@ export default function createField(options) {
           registrationProps.fieldGroup = fieldGroup;
         }
 
-        /* Check if dynamic props are present */
-        const dynamicProps = fieldUtils.getDynamicProps(props);
-
         /* Assign dynamic props in case they are present */
+        const dynamicProps = fieldUtils.getDynamicProps(props);
         if (dynamicProps.size > 0) {
           registrationProps.dynamicProps = dynamicProps;
         }
@@ -116,7 +119,7 @@ export default function createField(options) {
          * time the registration happens. Otherwise, registrations happen at approximately same time, resulting into fields
          * being unaware of each other.
          */
-        setTimeout(() => registerField(fieldProps), 0);
+        setTimeout(() => this.context.registerField(fieldProps), 0);
 
         return fieldProps;
       }
@@ -126,7 +129,7 @@ export default function createField(options) {
         if (!contextProps) return;
 
         /**
-         * Handle controlled fields.
+         * Handle value change of controlled fields.
          * The responsibility of value update of controlled fields is delegated to the end developer.
          * However, that still means that the new value should be propagated to theF orm's state to guarantee
          * proper value in the form lifecycle methods.
@@ -142,6 +145,7 @@ export default function createField(options) {
         }
 
         /**
+         * TODO This is worth redoing.
          * Handle direct props updates.
          * When direct props receive new values, those should be updated in the Form's state as well.
          */
@@ -171,16 +175,11 @@ export default function createField(options) {
         this.contextProps = nextContextProps;
       }
 
-      /**
-       * Deletes the field's bindings from the Form on unmounting.
-       */
       componentWillUnmount() {
+        /* Deletes the field's bindings from the Form on unmounting */
         return this.context.unregisterField(this.contextProps);
       }
 
-      /**
-       * Handles field's focus.
-       */
       handleFocus = (event) => {
         return this.context.handleFieldFocus({
           event,
@@ -188,9 +187,6 @@ export default function createField(options) {
         });
       }
 
-      /**
-       * Handles field's value change.
-       */
       handleChange = (event) => {
         const { valueProp } = resolvedOptions;
         const { [valueProp]: nextValue } = event.currentTarget;
@@ -209,7 +205,6 @@ export default function createField(options) {
 
         invariant(hasUpdateMethod, `Cannot update the controlled field \`${contextProps.get('name')}\`. Expected custom \`onChange\` handler, but received: ${this.props.onChange}.`);
 
-        /* Call parental change handler */
         return this.context.handleFieldChange({
           event,
           fieldProps: contextProps,
@@ -218,9 +213,6 @@ export default function createField(options) {
         });
       }
 
-      /**
-       * Handles field blur.
-       */
       handleBlur = (event) => {
         return this.context.handleFieldBlur({
           event,
@@ -231,14 +223,17 @@ export default function createField(options) {
       render() {
         const { props: directProps, contextProps } = this;
 
-        /* Get the enforced props from HoC options */
+        /* Get the enforced props from HOC options */
         const { enforceProps } = resolvedOptions;
-        const enforcedProps = enforceProps ? enforceProps(directProps, contextProps) : {};
+        const enforcedProps = enforceProps(directProps, contextProps);
+
+        console.log('Field.props', this.props);
+        console.log('WrappedComponent.props', WrappedComponent.props);
+        console.log('enforcedProps', enforcedProps);
 
         return (
           <WrappedComponent
             /* Assign all props passed to the WrappedComponent */
-            { ...WrappedComponent.props }
 
             /* Assign contextProps necessary for proper field management */
             name={ contextProps.get('name') }

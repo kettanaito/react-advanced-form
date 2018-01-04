@@ -1,5 +1,8 @@
 # Sources
 src
+test
+docs
+stories
 
 # Configurations
 .babelrc
@@ -7,12 +10,9 @@ src
 .circleci
 npm-*
 webpack*
-.storybook
 
 # Misc
+.storybook
 FAQ.md
-docs
-test
 coverage
-stories
 internal
