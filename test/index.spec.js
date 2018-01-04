@@ -7,7 +7,14 @@ configure({ adapter: new Adapter() });
 
 describe('Basics', () => {
   it('Library exports are fine', () => {
-    expect(libExports).to.have.all.keys(['connectField', 'FormProvider', 'Form', 'Field', 'Condition']);
+    expect(libExports).to.have.all.keys([
+      'connectField',
+      'createField',
+      'FormProvider',
+      'Form',
+      'Field',
+      'Condition'
+    ]);
   });
 });
 
