@@ -7,7 +7,7 @@ function Radio(props) {
 
 export default createField({
   /**
-   * Radio inputs are unique in terms how their context props are handled.
+   * Handling of contextProps of  Radio inputs' is unique.
    * 1. Never pass "props.value" to context. <Field.Radio> is always expected to receive a "value" prop,
    * however it should never set it to context on registration. The value in the context will be changed
    * according to the onChange handlers in the future.
@@ -26,7 +26,7 @@ export default createField({
       fieldProps.checked = checked;
 
       if (value) {
-        /* Only checked radio will set the context value to its value */
+        /* Only checked radio will set the context value to its own value */
         fieldProps.initialValue = value;
         delete fieldProps.value;
       }

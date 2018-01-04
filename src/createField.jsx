@@ -22,7 +22,7 @@ export default function createField(options) {
 
   return function (WrappedComponent) {
     class Field extends React.Component {
-      static displayName = `Field.${ getComponentName(WrappedComponent) }`
+      static displayName = `Field.${getComponentName(WrappedComponent)}`
 
       static defaultProps = defaultFieldProps
 
@@ -121,6 +121,43 @@ export default function createField(options) {
         return fieldProps;
       }
 
+      componentWillReceiveProps(nextProps) {
+        const { contextProps } = this;
+        if (!contextProps) return;
+
+        /**
+         * Handle controlled fields.
+         * The responsibility of value update of controlled fields is delegated to the end developer.
+         * However, that still means that the new value should be propagated to theF orm's state to guarantee
+         * proper value in the form lifecycle methods.
+         */
+        const controllable = contextProps.get('controllable');
+
+        if (controllable && (nextProps.value !== this.props.value)) {
+          this.context.handleFieldChange({
+            nextValue: nextProps.value,
+            prevValue: this.props.value,
+            fieldProps: contextProps
+          });
+        }
+
+        /**
+         * Handle direct props updates.
+         * When direct props receive new values, those should be updated in the Form's state as well.
+         */
+        const propsPatch = getPropsPatch({
+          contextProps,
+          nextProps
+        });
+
+        if (Object.keys(propsPatch).length > 0) {
+          this.context.updateField({
+            fieldPath: this.fieldPath,
+            propsPatch
+          });
+        }
+      }
+
       /**
        * Ensures "this.contextProps" is updated accoding to the component updates.
        */
@@ -213,7 +250,7 @@ export default function createField(options) {
             /* Assign props passed to the "Field" generic component */
             placeholder={ directProps.placeholder }
             style={ directProps.style }
-            
+
             /* Assign/override the props provided via {options.enforceProps()} */
             { ...enforcedProps }
 
@@ -229,5 +266,5 @@ export default function createField(options) {
 
     /* Ensure static properties are hoisted */
     return hoistNonReactStatics(Field, WrappedComponent);
-  }
+  };
 }

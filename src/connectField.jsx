@@ -12,7 +12,7 @@ import { getComponentName, getProperty, IterableInstance, fieldUtils } from './u
 
 export default function connectField(WrappedComponent) {
   class FieldWrapper extends React.Component {
-    static displayName = `connectField(${ getComponentName(WrappedComponent) })`;
+    static displayName = `connectField(${getComponentName(WrappedComponent)})`;
 
     static contextTypes = {
       fieldGroup: PropTypes.string,
