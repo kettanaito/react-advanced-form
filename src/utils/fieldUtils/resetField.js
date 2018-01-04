@@ -4,7 +4,12 @@
  * @return {Map}
  */
 export default function resetField(fieldProps) {
-  const propsPatch = {
+  /* Get the dynamic property name which represents the field's value (i.e. "checked" for Checkbox) */
+  const valueProp = fieldProps.get('valueProp');
+  const initialValue = fieldProps.get('initialValue');
+
+  return fieldProps.merge({
+    [valueProp]: initialValue,
     expected: true,
     valid: false,
     invalid: false,
@@ -12,20 +17,5 @@ export default function resetField(fieldProps) {
     validAsync: false,
     validatedSync: false,
     validatedAsync: false
-  };
-
-  const initialValue = fieldProps.get('initialValue');
-
-  /* Different field types need to have different props reset */
-  switch (fieldProps.get('type')) {
-    case 'checkbox':
-      propsPatch.checked = initialValue;
-      break;
-
-    default:
-      propsPatch.value = initialValue;
-      break;
-  }
-
-  return fieldProps.merge(propsPatch);
+  });
 }
