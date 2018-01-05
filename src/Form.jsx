@@ -314,7 +314,6 @@ export default class Form extends React.Component {
     if (!this.isRegistered(fieldProps)) return;
 
     const fieldPath = fieldProps.get('fieldPath');
-    const prevDisabled = fieldProps.get('disabled');
     const asyncRule = fieldProps.get('asyncRule');
     const validSync = fieldProps.get('validSync');
     const validatedSync = fieldProps.get('validatedSync');
@@ -336,11 +335,10 @@ export default class Form extends React.Component {
     console.groupEnd();
 
     if (shouldValidate) {
-      /* Make field disabled during the validation */
+      /* Indicate that the validation is running */
       this.updateField({
         fieldPath,
         propsPatch: {
-          disabled: true,
           valid: false,
           invalid: false,
           validating: true
@@ -356,7 +354,6 @@ export default class Form extends React.Component {
       fieldPath,
       propsPatch: {
         focused: false,
-        disabled: prevDisabled,
         validating: false
       }
     });
