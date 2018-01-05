@@ -1,5 +1,5 @@
 /**
- * Serializes the provided Map of fields.
+ * Serializes the provided fields into immutable map.
  * @param {Map} fields
  * @param {Function} valueResolver
  * @return {object}

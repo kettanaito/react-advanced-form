@@ -16,37 +16,29 @@ export default createField({
    * 2. Determine "initialValue" based on optional "checked" prop.
    * 3. Add new "checked" props unique to this field type.
    */
-  mapPropsToField: ({ checked, value, ...props }) => ({
-    ...props,
-    type: 'radio',
-    checked,
-    value: checked ? value : null,
-    initialValue: checked && value
-  }),
-  // mapPropsToField: (props) => {
-  //   const { checked, value } = props;
+  mapPropsToField: (props) => {
+    const { checked, value } = props;
 
-  //   const fieldProps = {
-  //     ...props,
-  //     value: checked ? value : null // unchecked radio inputs must not mutate the context value
-  //   };
+    const fieldProps = {
+      ...props,
+      type: 'radio',
+      value: checked ? value : null // unchecked radio inputs must not mutate the context value
+    };
 
-  //   if (checked) {
-  //     fieldProps.checked = checked;
+    if (checked) {
+      fieldProps.checked = checked;
 
-  //     if (value) {
-  //       /* Only checked radio inputs should set the context value to its own value */
-  //       fieldProps.initialValue = value;
-  //       delete fieldProps.value;
-  //     }
-  //   }
+      if (value) {
+        /* Only checked radio inputs should set the context value to its own value */
+        fieldProps.initialValue = value;
+        delete fieldProps.value;
+      }
+    }
 
-
-  //   console.log('mapPropsToField:', Object.assign({}, fieldProps));
-
-  //   return fieldProps;
-  // },
+    return fieldProps;
+  },
   enforceProps: (props, contextProps) => ({
+    value: props.value,
     checked: (props.value === contextProps.get('value'))
   })
 })(Radio);

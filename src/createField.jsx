@@ -72,10 +72,10 @@ export default function createField(options) {
         const contextValue = fields.getIn([this.fieldPath, valueProp]);
 
         console.groupCollapsed(fieldPath, '@ registerWith');
-        console.log('props', Object.assign({}, props));
-        console.log('value', value);
-        console.log('initialValue', initialValue);
-        console.log('context value', contextValue);
+        console.log('props:', Object.assign({}, props));
+        console.log('value:', value);
+        console.log('initial value:', initialValue);
+        console.log('context value:', contextValue);
 
         /* Get the proper field value to register with */
         const fallbackValue = (value || initialValue || '');
@@ -89,11 +89,7 @@ export default function createField(options) {
           controllable: isset(value),
           valueProp,
           [valueProp]: registeredValue,
-          initialValue: initialValue || fallbackValue,
-          validSync: false,
-          validAsync: false,
-          validatedSync: false,
-          validatedAsync: false
+          initialValue: initialValue || fallbackValue
         };
 
         /* Prevent { fieldGroup: undefined } for fields without a group */
@@ -197,6 +193,7 @@ export default function createField(options) {
         const hasUpdateMethod = contextProps.get('controllable') ? this.props.onChange : true;
 
         console.groupCollapsed(this.fieldPath, '@ Field @ handleChange');
+        console.log('valueProp', valueProp);
         console.log('contextProps', contextProps);
         console.log('prevValue', prevValue);
         console.log('nextValue', nextValue);

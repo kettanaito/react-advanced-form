@@ -146,9 +146,9 @@ describe('Utils', () => {
      */
     it('serializeFields', () => {
       const fields = fromJS({
-        fieldOne: { fieldPath: 'fieldOne', value: 'foo' },
-        fieldTwo: { fieldPath: 'fieldTwo', value: '' },
-        fieldThree: { fieldPath: 'groupOne.fieldThree', value: 'doe' }
+        fieldOne: { fieldPath: 'fieldOne', value: 'foo', valueProp: 'value' },
+        fieldTwo: { fieldPath: 'fieldTwo', value: '', valueProp: 'value' },
+        fieldThree: { fieldPath: 'groupOne.fieldThree', value: 'doe', valueProp: 'value' }
       });
 
       const serialized = fieldUtils.serializeFields(fields).toJS();
