@@ -3,7 +3,7 @@ import createField from '../createField';
 
 class Radio extends React.Component {
   render() {
-    return (<input type="radio" { ...this.props } />);
+    return (<input { ...this.props } />);
   }
 }
 
@@ -18,6 +18,7 @@ export default createField({
    */
   mapPropsToField: ({ checked, value, ...props }) => ({
     ...props,
+    type: 'radio',
     checked,
     value: checked ? value : null,
     initialValue: checked && value

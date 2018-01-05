@@ -20,6 +20,7 @@ const defaultOptions = {
 export default function createField(options) {
   /* Merge default and custom options */
   const resolvedOptions = { ...defaultOptions, ...options };
+  const { valueProp } = resolvedOptions;
 
   return function (WrappedComponent) {
     class Field extends React.Component {
@@ -68,7 +69,6 @@ export default function createField(options) {
         const { fields, fieldGroup } = this.context;
         const { value, initialValue } = props;
 
-        const { valueProp } = resolvedOptions;
         const contextValue = fields.getIn([this.fieldPath, valueProp]);
 
         console.groupCollapsed(fieldPath, '@ registerWith');
@@ -84,12 +84,12 @@ export default function createField(options) {
         const registrationProps = {
           ...props,
           ref: this,
-          type: props.type || this.props.type,
+          type: props.type || this.props.type, // no point of this if "type" comes from "mapPropsToField"
           fieldPath,
           controllable: isset(value),
           valueProp,
           [valueProp]: registeredValue,
-          initialValue: initialValue || registeredValue,
+          initialValue: initialValue || fallbackValue,
           validSync: false,
           validAsync: false,
           validatedSync: false,
@@ -135,11 +135,13 @@ export default function createField(options) {
          * proper value in the form lifecycle methods.
          */
         const controllable = contextProps.get('controllable');
+        const nextValue = nextProps[valueProp];
+        const prevValue = this.props[valueProp];
 
-        if (controllable && (nextProps.value !== this.props.value)) {
+        if (controllable && (nextValue !== prevValue)) {
           this.context.handleFieldChange({
-            nextValue: nextProps.value,
-            prevValue: this.props.value,
+            nextValue,
+            prevValue,
             fieldProps: contextProps
           });
         }
@@ -188,7 +190,6 @@ export default function createField(options) {
       }
 
       handleChange = (event) => {
-        const { valueProp } = resolvedOptions;
         const { [valueProp]: nextValue } = event.currentTarget;
         const { contextProps } = this;
 
@@ -227,14 +228,8 @@ export default function createField(options) {
         const { enforceProps } = resolvedOptions;
         const enforcedProps = enforceProps(directProps, contextProps);
 
-        console.log('Field.props', this.props);
-        console.log('WrappedComponent.props', WrappedComponent.props);
-        console.log('enforcedProps', enforcedProps);
-
         return (
           <WrappedComponent
-            /* Assign all props passed to the WrappedComponent */
-
             /* Assign contextProps necessary for proper field management */
             name={ contextProps.get('name') }
             type={ contextProps.get('type') }
