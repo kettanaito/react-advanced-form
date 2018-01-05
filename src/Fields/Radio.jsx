@@ -1,10 +1,8 @@
 import React from 'react';
 import createField from '../createField';
 
-class Radio extends React.Component {
-  render() {
-    return (<input { ...this.props } />);
-  }
+function Radio(props) {
+  return (<input { ...props } />);
 }
 
 export default createField({
