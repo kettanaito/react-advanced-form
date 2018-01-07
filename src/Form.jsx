@@ -10,14 +10,9 @@ import { isset, debounce, fieldUtils, IterableInstance } from './utils';
 
 export default class Form extends React.Component {
   static propTypes = {
-    /* General */
-    id: PropTypes.string,
-    className: PropTypes.string,
-
-    /* Specific */
     action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
-    messages: TValidationMessages,
-    rules: TValidationRules,
+    rules: TValidationRules, // validation rules schema
+    messages: TValidationMessages, // validation messages corresponding to the rules schema
 
     /* Events */
     onFirstChange: PropTypes.func,
@@ -72,7 +67,7 @@ export default class Form extends React.Component {
   /**
    * Returns form rules based on the priority of the provided rulesa and the necessity to extend them.
    */
-  defineFormRules() {
+  defineRules() {
     const { rules: contextRules } = this.context;
     const { rules: mutableFormRules } = this.props;
 
@@ -88,7 +83,7 @@ export default class Form extends React.Component {
     super(props, context);
 
     /* Define validation rules */
-    this.formRules = this.defineFormRules();
+    this.formRules = this.defineRules();
 
     /**
      * Define validation messages once, since those should be converted to immutable, which is an expensive procedure.
@@ -169,7 +164,7 @@ export default class Form extends React.Component {
     /* Update the validity state of the field */
     const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
 
-    // FIXME Compose resolved fields
+    // FIXME Update the fields with dynamic props
     const nextResolvedFields = nextFields.map((fieldProps) => {
       if (!fieldProps.has('dynamicProps')) return fieldProps;
 
@@ -196,8 +191,8 @@ export default class Form extends React.Component {
     return new Promise((resolve, reject) => {
       try {
         this.setState({ fields: nextResolvedFields }, () => resolve({
-          nextFields: nextResolvedFields,
-          nextFieldProps
+          nextFieldProps,
+          nextFields: nextResolvedFields
         }));
       } catch (error) {
         return reject(error);

@@ -50,7 +50,7 @@ export default function createField(options) {
         });
 
         /* Get the registration props from the respective lifecycle method */
-        const registrationProps = resolvedOptions.mapPropsToField(props);
+        const registrationProps = resolvedOptions.mapPropsToField(props, context);
 
         /**
          * Register the field in the parent Form's state and store its internal record reference (contextProps).
@@ -190,18 +190,18 @@ export default function createField(options) {
         const { contextProps } = this;
 
         const prevValue = contextProps.get(valueProp);
-        const hasUpdateMethod = contextProps.get('controllable') ? this.props.onChange : true;
+        const hasChangeHandler = contextProps.get('controllable') ? this.props.onChange : true;
 
         console.groupCollapsed(this.fieldPath, '@ Field @ handleChange');
         console.log('valueProp', valueProp);
         console.log('contextProps', contextProps);
         console.log('prevValue', prevValue);
         console.log('nextValue', nextValue);
-        console.log('hasUpdateMethod', hasUpdateMethod);
+        console.log('hasChangeHandler', hasChangeHandler);
         console.log('this.context.handleFieldChange', this.context.handleFieldChange);
         console.groupEnd();
 
-        invariant(hasUpdateMethod, `Cannot update the controlled field \`${contextProps.get('name')}\`. Expected custom \`onChange\` handler, but received: ${this.props.onChange}.`);
+        invariant(hasChangeHandler, `Cannot update the controlled field \`${contextProps.get('name')}\`. Expected custom \`onChange\` handler, but received: ${this.props.onChange}.`);
 
         return this.context.handleFieldChange({
           event,
@@ -222,8 +222,7 @@ export default function createField(options) {
         const { props: directProps, contextProps } = this;
 
         /* Get the enforced props from HOC options */
-        const { enforceProps } = resolvedOptions;
-        const enforcedProps = enforceProps(directProps, contextProps);
+        const enforcedProps = resolvedOptions.enforceProps(directProps, contextProps);
 
         return (
           <WrappedComponent
