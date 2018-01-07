@@ -20,7 +20,7 @@ export default class ValidationType {
   }
 }
 
-/* Pre-defined validation types */
+/* Validation types instances */
 export const SyncValidationType = new ValidationType(validationTypes.sync);
 export const AsyncValidationType = new ValidationType(validationTypes.async);
 export const BothValidationType = new ValidationType(validationTypes.both);

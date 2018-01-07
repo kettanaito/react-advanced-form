@@ -1,17 +1,15 @@
 /**
  * Connect field.
- * A decorator for custom components for styling over default Field.
- * This decorator will allow to access the field's props from the Form's context
- * from within the custom styling components without having them to subscribe to
- * the context types.
+ * A HOC which enhances a custom field with the wrapped native field's props.
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import hoistNonReactStatics from 'hoist-non-react-statics';
 import defaultFieldProps from './const/default-field-props';
 import { getComponentName, getProperty, IterableInstance, fieldUtils } from './utils';
 
 export default function connectField(WrappedComponent) {
-  class FieldWrapper extends React.Component {
+  class FieldConnector extends React.Component {
     static displayName = `connectField(${getComponentName(WrappedComponent)})`;
 
     static contextTypes = {
@@ -33,10 +31,10 @@ export default function connectField(WrappedComponent) {
     }
 
     render() {
-      const directProps = this.props;
+      const { props: directProps, context, fieldPath } = this;
 
       /* Get field props, either from context of from default field props (on initial render) */
-      const fieldProps = fieldUtils.getFieldProps(this.fieldPath, this.context.fields, defaultFieldProps);
+      const fieldProps = fieldUtils.getFieldProps(fieldPath, context.fields, defaultFieldProps);
 
       const {
         focused,
@@ -53,16 +51,16 @@ export default function connectField(WrappedComponent) {
 
       /* Grab the value from context props when available, to present actual data in the components tree */
       // const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
-
       // const value = getProperty('value', directProps, fieldProps);
+      
       const disabled = getProperty('disabled', directProps, fieldProps);
 
-      /* Compose the props passed to the decorated component */
+      /* Compose the props passed to the enhanced component */
       const nextProps = {
         ...directProps,
         // value, // doesn't work properly with controlled value
 
-        /* Interaction states */
+        /* States */
         focused,
         disabled, // CHECKME: doesn't work with dynamic "disabled"
 
@@ -82,5 +80,5 @@ export default function connectField(WrappedComponent) {
     }
   }
 
-  return FieldWrapper;
+  return hoistNonReactStatics(FieldConnector, WrappedComponent);
 }

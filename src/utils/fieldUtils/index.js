@@ -13,5 +13,5 @@ export validate from './validate';
 export getValidityState from './getValidityState';
 export getErrorMessage from './getErrorMessage';
 
-/* Misc */
+/* Other */
 export serializeFields from './serializeFields';
