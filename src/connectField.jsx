@@ -52,7 +52,7 @@ export default function connectField(WrappedComponent) {
       /* Grab the value from context props when available, to present actual data in the components tree */
       // const value = fields.hasIn([fieldPath]) ? fields.getIn([fieldPath, 'value']) : directProps.value;
       // const value = getProperty('value', directProps, fieldProps);
-      
+
       const disabled = getProperty('disabled', directProps, fieldProps);
 
       /* Compose the props passed to the enhanced component */
