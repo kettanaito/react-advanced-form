@@ -1,0 +1,1 @@
+# `connectField(WrappedComponent: React.Component)`

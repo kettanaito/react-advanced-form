@@ -7,11 +7,9 @@
 * [Concept](./general/concept.md)
 * [FAQ](./general/faq.md)
 
-## Validation
-
-* [Logic](./validation/logic.md)
-* [Validation rules](./validation/validation-rules.md)
-* [Validation messages](./validation/validation-messages.md)
+## High-order Components
+* [createField](./hoc/createField.md)
+* [connectField](./hoc/connectField.md)
 
 ## Components
 * [FormProvider](./components/formprovider.md)
@@ -38,6 +36,12 @@
   * [onFocus](./callbacks/Field/onFocus.md)
   * [onChange](./callbacks/Field/onChange.md)
   * [onBlur](./callbacks/Field/onBlur.md)
+
+## Validation
+
+* [Logic](./validation/logic.md)
+* [Validation rules](./validation/validation-rules.md)
+* [Validation messages](./validation/validation-messages.md)
 
 ## Customization
 * [Custom styling](./customization/custom-styling.md)
