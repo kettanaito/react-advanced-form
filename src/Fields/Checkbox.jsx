@@ -6,7 +6,7 @@ function Checkbox(props) {
 }
 
 export default createField({
-  valueProp: 'checked',
+  valuePropName: 'checked',
   mapPropsToField: props => ({
     ...props,
     type: 'checkbox',

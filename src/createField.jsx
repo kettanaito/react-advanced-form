@@ -12,7 +12,7 @@ import { IterableInstance, getComponentName, isset, getPropsPatch, fieldUtils } 
 
 /* Default "createField" options */
 const defaultOptions = {
-  valueProp: 'value',
+  valuePropName: 'value',
   mapPropsToField: props => props,
   enforceProps: () => ({})
 };
@@ -20,7 +20,7 @@ const defaultOptions = {
 export default function createField(options) {
   /* Merge default and custom options */
   const resolvedOptions = { ...defaultOptions, ...options };
-  const { valueProp } = resolvedOptions;
+  const { valuePropName } = resolvedOptions;
 
   return function (WrappedComponent) {
     class Field extends React.Component {
@@ -69,7 +69,7 @@ export default function createField(options) {
         const { fields, fieldGroup } = this.context;
         const { value, initialValue } = props;
 
-        const contextValue = fields.getIn([this.fieldPath, valueProp]);
+        const contextValue = fields.getIn([this.fieldPath, valuePropName]);
 
         console.groupCollapsed(fieldPath, '@ registerWith');
         console.log('props:', Object.assign({}, props));
@@ -87,8 +87,8 @@ export default function createField(options) {
           type: props.type || this.props.type, // no point of this if "type" comes from "mapPropsToField"
           fieldPath,
           controllable: isset(value),
-          valueProp,
-          [valueProp]: registeredValue,
+          valuePropName,
+          [valuePropName]: registeredValue,
           initialValue: initialValue || fallbackValue
         };
 
@@ -131,8 +131,8 @@ export default function createField(options) {
          * proper value in the form lifecycle methods.
          */
         const controllable = contextProps.get('controllable');
-        const nextValue = nextProps[valueProp];
-        const prevValue = this.props[valueProp];
+        const nextValue = nextProps[valuePropName];
+        const prevValue = this.props[valuePropName];
 
         if (controllable && (nextValue !== prevValue)) {
           this.context.handleFieldChange({
@@ -186,14 +186,14 @@ export default function createField(options) {
       }
 
       handleChange = (event) => {
-        const { [valueProp]: nextValue } = event.currentTarget;
+        const { [valuePropName]: nextValue } = event.currentTarget;
         const { contextProps } = this;
 
-        const prevValue = contextProps.get(valueProp);
+        const prevValue = contextProps.get(valuePropName);
         const hasChangeHandler = contextProps.get('controllable') ? this.props.onChange : true;
 
         console.groupCollapsed(this.fieldPath, '@ Field @ handleChange');
-        console.log('valueProp', valueProp);
+        console.log('valuePropName', valuePropName);
         console.log('contextProps', contextProps);
         console.log('prevValue', prevValue);
         console.log('nextValue', nextValue);
