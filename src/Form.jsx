@@ -161,6 +161,10 @@ export default class Form extends React.Component {
   updateField = ({ fieldPath, fieldProps: directFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
     const fieldProps = directFieldProps || fields.getIn([fieldPath]);
+
+    /* Do not update field if its not registered yet */
+    if (!fieldProps) return;
+
     const nextFieldProps = propsPatch ? fieldProps.merge(fromJS(propsPatch)) : fieldProps;
 
     /* Update the validity state of the field */
