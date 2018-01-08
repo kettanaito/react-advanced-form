@@ -268,7 +268,7 @@ export default class Form extends React.Component {
     console.log('nextValue', nextValue);
     console.groupEnd();
 
-    const valueProp = fieldProps.get('valueProp');
+    const valuePropName = fieldProps.get('valuePropName');
 
     /**
      * Update the value of the changed field.
@@ -278,7 +278,7 @@ export default class Form extends React.Component {
     const { nextFields, nextFieldProps } = await this.updateField({
       fieldProps,
       propsPatch: {
-        [valueProp]: nextValue,
+        [valuePropName]: nextValue,
         validSync: false,
         validAsync: false,
         validatedSync: false,
