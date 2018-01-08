@@ -161,7 +161,7 @@ export default function createField(options) {
       }
 
       /**
-       * Ensures "this.contextProps" is updated accoding to the component updates.
+       * Ensures "this.contextProps" is always actual.
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
         const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
