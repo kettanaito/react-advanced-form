@@ -1,94 +1,132 @@
 # `createField(options: CreateFieldOptions)`
 
 ## Specification
-A high-order component enhancing the provided custom component (`WrappedComponent`) to behave as a native field.
+A high-order component which enhances the provided custom component (`WrappedComponent`) to behave as a native field.
 
-## Use cases
-* Custom field implementation
-* Third-party form components intergration
+> **Note:** It is important to understand how React Advanced Form works first. This will reduce the amount of questions when using `createField`.
+
+## Usage scenarios
+* Implementation of custom fields.
+* Integration of third-party form components to work with React Advanced Form.
 
 ## Declaration
 ```jsx
 import React from 'react';
 import { createField } from 'react-advanced-form';
 
-function CustomComponent(props) {
-  return (<MyComponent { ...props }>);
+class CustomComponent extends React.Component {
+  render() {
+    return (<MyComponent { ...this.props } />);
+  }
 }
 
 export default createField({ ... })(CustomComponent);
 ```
 
-> **Note:** It's crucial to propagate the `CustomComponent.props` to the `MyComponent` in order for it to behave as the native field.
+> **Note:** It's crucial to propagate the `CustomComponent.props` to the `MyComponent` for it to have the essential props and event handlers of the native field.
 
 ## Options
+| Option | Type | Description |
+| ------ | ---- | ----------- |
+| `valuePropName` | `string` | A custom prop name to be treated as an updatable value during the field event handlers. **Default:** `value`. |
+| `mapPropsToField` | `(props: Object, context: Object) => Object` | A custom maping function which should return a props Object used as the initial props during the field registration. |s
+| `enforceProps` | `(props: Object, contextProps: Immutable.Map) => Object` | A function which should return a props Object to be enforced on the custom field. |
 
-### Type definition 
-It is possible to use custom options during the `createField` declaration to achieve the required logic of the wrapped field.
-```tsx
+### `valuePropName`
+Sometimes the property updated during the `onChange` event of the field is not a `value` prop. For those occasions provide the name of the property within the high-order component declaration.
 
-type CreateFieldOptions = {
-  valueProp?: string,
-  mapPropsToField?: (props: Object, context: Object) => Object,
-  enforceProps?: (props: Object, contextProps: Immutable.Map) => Object
-}
-```
-
-### Explanation
-
-#### `valueProp?: string`
-**Default:** `'value'`
-
-A custom prop name which should be treated as an updatable value prop during `Field.handleChange` and various other event handlers and callbacks.
-
-**Usage example:**
 ```jsx
 import React from 'react';
 import { createField } from 'react-advanced-form';
 
-function Checkbox(props) {
-  return (<input { ...props } />);
+class Checkbox extends React.Component {
+  render() {
+    return (<input { ...this.props } />);
+  }
 }
 
 export default createField({
-  valueProp: 'checked'
+  valuePropName: 'checked'
 })(Checkbox);
 ```
 
-By providing the `valueProp` option to `createField`, an enhanced `Checkbox` component will update its `checked` prop during the workflow with the field.
-
-> **Note:** Radio field has `valueProp: 'checked`', as this is its the updatable prop, while still having `value` property, representing the actual value of each radio input.
-
-#### `mapPropsToField?: (props: Object, context: Object): Object`
-
-| Argument | Description |
-| ------------- | ----------- |
-| `props` | A reference to `WrappedComponent.props`. |
-| `context` | Context Object exposed to the field from the parent `Form`. |
-
-**Default:** `props => props`
-
-Explicitly returns the props Object to be used as the registrational props during the custom field's registration process.
-
-**Usage example:**
+### `mapPropsToField`
 ```jsx
 import React from 'react';
 import { createField } from 'react-advanced-form';
 
+class Checkbox extends React.Component {
+  render() {
+    return (<input { ...this.props } />);
+  }
+}
+
 export default createField({
+  valuePropName: 'checked',
   mapPropsToField: (props, context) => ({
-    ...
+    ...props,
+    type: 'checkbox',
+    initialValue: props.checked
   })
-})();
+})(Checkbox);
 ```
 
-#### `enforceProps?: (props, contextProps): Object`
+> **Note:** `mapPropsToField` should return the *whole* props Object. Make sure to include `...props`.
 
-| Argument | Description |
-| ------------- | ----------- |
-| `props` | A reference to `WrappedComponent.props`. |
-| `contextProps` |  |
+### `enforceProps`
+Use this option to return the props to override the native field's props when necessary.
 
-**Default:** `() => ({})`
+```jsx
+import React from 'react';
+import { createField } from 'react-advanced-form';
 
-Returns the props of the highest priority to pass to the custom `WrappedComponent` wrapped instance. Useful to override the props assigned by `createField`.
+class Checkbox extends React.Component {
+  render() {
+    return (<input { ...this.props } />);
+  }
+}
+
+export default createField({
+  valuePropName: 'checked',
+  enforceProps: (props, contextProps) => ({
+    checked: contextProps.get('checked')
+  })
+})(Checkbox);
+```
+
+## Custom event handlers
+Wrapped fields inherit `onFocus`, `onChange` and `onBlur` native event handlers automatically.
+
+In order to have a custom logic happening during those event handlers, provide them *after* the native props propagation and ensure to call native event handlers inside your custom handlers.
+
+```jsx
+import React from 'react';
+import { createField } from 'react-advanced-form';
+
+class MyCheckbox extends React.Component {
+  handleChange = (event) => {
+
+    /* Make sure to dispatch the native event handler */
+    this.props.handleFieldChange();
+  }
+
+  render() {
+    return (
+      <input
+        { ...this.props }
+        onChange={ this.handleChange } />
+    );
+  }
+}
+
+export default createField({
+  enforceProps: () => ({
+    type: 'checkbox'
+  })
+})(MyCheckbox);
+```
+
+## Recommendations
+* Write stateless wrapped components.
+* Wrap custom components in `createField`, not native fields.
+* Use [`connectField()`](./connectField.md) for custom styling, and `createField()` for custom field logic.
