@@ -16,14 +16,14 @@ import { createField } from 'react-advanced-form';
 
 class CustomComponent extends React.Component {
   render() {
-    return (<MyComponent { ...this.props } />);
+    return (<MyComponent { ...this.props.fieldProps } />);
   }
 }
 
 export default createField({ ... })(CustomComponent);
 ```
 
-> **Note:** It's crucial to propagate the `CustomComponent.props` to the `MyComponent` for it to have the essential props and event handlers of the native field.
+> **Note:** It's crucial to propagate the `CustomComponent.props.fieldProps` to the `MyComponent` for it to have the essential props and event handlers of the native field.
 
 ## Options
 | Option | Type | Description |
@@ -41,7 +41,7 @@ import { createField } from 'react-advanced-form';
 
 class Checkbox extends React.Component {
   render() {
-    return (<input { ...this.props } />);
+    return (<input { ...this.props.fieldProps } />);
   }
 }
 
@@ -57,7 +57,7 @@ import { createField } from 'react-advanced-form';
 
 class Checkbox extends React.Component {
   render() {
-    return (<input { ...this.props } />);
+    return (<input { ...this.props.fieldProps } />);
   }
 }
 
@@ -82,7 +82,7 @@ import { createField } from 'react-advanced-form';
 
 class Checkbox extends React.Component {
   render() {
-    return (<input { ...this.props } />);
+    return (<input { ...this.props.fieldProps } />);
   }
 }
 
@@ -105,15 +105,19 @@ import { createField } from 'react-advanced-form';
 
 class MyCheckbox extends React.Component {
   handleChange = (event) => {
+    const { value: nextValue } = event.currentTarget;
 
     /* Make sure to dispatch the native event handler */
-    this.props.handleFieldChange();
+    this.props.handleFieldChange({
+      event,
+      nextValue
+    });
   }
 
   render() {
     return (
       <input
-        { ...this.props }
+        { ...this.props.fieldProps }
         onChange={ this.handleChange } />
     );
   }

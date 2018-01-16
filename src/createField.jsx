@@ -185,11 +185,12 @@ export default function createField(options) {
         });
       }
 
-      handleChange = (event) => {
-        const { [valuePropName]: nextValue } = event.currentTarget;
+      handleChange = ({ event, nextValue: customNextValue, prevValue: customPrevValue }) => {
         const { contextProps } = this;
 
-        const prevValue = contextProps.get(valuePropName);
+        const nextValue = customNextValue || event.currentTarget[valuePropName];
+        const prevValue = customPrevValue || contextProps.get(valuePropName);
+
         const hasChangeHandler = contextProps.get('controllable') ? this.props.onChange : true;
 
         console.groupCollapsed(this.fieldPath, '@ Field @ handleChange');
@@ -218,32 +219,52 @@ export default function createField(options) {
         });
       }
 
+      handleFieldChange = ({ event, nextValue, prevValue }) => {
+        const { contextProps } = this;
+        const valuePropName = contextProps.get('valuePropName');
+
+        this.context.handleFieldChange({
+          event,
+          fieldProps: contextProps,
+          nextValue,
+          prevValue: prevValue || contextProps.get(valuePropName)
+        });
+      }
+
       render() {
         const { props: directProps, contextProps } = this;
 
         /* Get the enforced props from HOC options */
         const enforcedProps = resolvedOptions.enforceProps(directProps, contextProps);
 
+        const fieldProps = {
+          /* Assign contextProps necessary for proper field management */
+          name: contextProps.get('name'),
+          type: contextProps.get('type'),
+          required: contextProps.get('required'),
+          disabled: contextProps.get('disabled'),
+
+          /* Assign props passed to the "Field" generic component */
+          placeholder: directProps.placeholder,
+          style: directProps.style,
+
+          /* Assign/override the props provided via {options.enforceProps()} */
+          ...enforcedProps,
+
+          /* Explicitly assign event handlers to prevent unwanted override */
+          onFocus: this.handleFocus,
+          onChange: event => this.handleChange({ event }),
+          onBlur: this.handleBlur
+        };
+
         return (
           <WrappedComponent
-            /* Assign contextProps necessary for proper field management */
-            name={ contextProps.get('name') }
-            type={ contextProps.get('type') }
-            value={ contextProps.get('controllable') ? directProps.value : contextProps.get('value') }
-            required={ contextProps.get('required') }
-            disabled={ contextProps.get('disabled') }
+            fieldProps={ fieldProps }
 
-            /* Assign props passed to the "Field" generic component */
-            placeholder={ directProps.placeholder }
-            style={ directProps.style }
-
-            /* Assign/override the props provided via {options.enforceProps()} */
-            { ...enforcedProps }
-
-            /* Explicitly assign event handlers to prevent unwanted override */
-            onFocus={ this.handleFocus }
-            onChange={ this.handleChange }
-            onBlur={ this.handleBlur }>
+            /* Pass native event handlers to call in custom event handlers */
+            handleFieldFocus={ this.handleFocus }
+            handleFieldChange={ this.handleChange }
+            handleFieldBlur={ this.handleBlur }>
             { directProps.children }
           </WrappedComponent>
         );

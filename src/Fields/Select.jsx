@@ -1,10 +1,10 @@
 import React from 'react';
 import createField from '../createField';
 
-function Select(props) {
+function Select({ children, fieldProps }) {
   return (
-    <select { ...props }>
-      { props.children }
+    <select { ...fieldProps }>
+      { children }
     </select>
   );
 }

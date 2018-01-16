@@ -1,8 +1,8 @@
 import React from 'react';
 import createField from '../createField';
 
-function Input(props) {
-  return (<input { ...props } />);
+function Input({ fieldProps }) {
+  return (<input { ...fieldProps } />);
 }
 
 export default createField()(Input);
