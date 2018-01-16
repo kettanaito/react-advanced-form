@@ -5,18 +5,22 @@
 * [Introduction](./README.md)
 * [Getting started](./general/getting-started.md)
 * [Concept](./general/concept.md)
+* [Customization](./general/customization.md)
 * [FAQ](./general/faq.md)
 
 ## High-order Components
+
 * [createField](./hoc/createField.md)
 * [connectField](./hoc/connectField.md)
 
 ## Components
+
 * [FormProvider](./components/formprovider.md)
 * [Form](./components/Form.md)
 * [Field.Group](./components/Field.Group.md)
 
 ## Methods
+
 * Form
   * [validate\(\)](./methods/Form/validate.md)
   * [serialize\(\)](./methods/Form/serialize.md)
@@ -43,9 +47,6 @@
 * [Validation rules](./validation/validation-rules.md)
 * [Validation messages](./validation/validation-messages.md)
 
-## Customization
-* [Custom styling](./customization/custom-styling.md)
-* [Custom fields](./customization/custom-fields.md)
-
 ## Developers
+
 * [Contributing](./developers/contributing.md)
