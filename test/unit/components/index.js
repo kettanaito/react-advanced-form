@@ -7,6 +7,9 @@ describe('Components', () => {
   /* Form */
   require('./Form.spec');
 
+  /* Field */
+  require('./Field.spec');
+
   /* Field.Group */
   require('./Field.Group.spec');
 });
