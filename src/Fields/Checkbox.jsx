@@ -1,8 +1,8 @@
 import React from 'react';
 import createField from '../createField';
 
-function Checkbox(props) {
-  return (<input { ...props } />);
+function Checkbox({ fieldProps }) {
+  return (<input { ...fieldProps } />);
 }
 
 export default createField({
