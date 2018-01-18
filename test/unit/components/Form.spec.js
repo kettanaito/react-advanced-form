@@ -109,20 +109,20 @@ describe('Form', () => {
       const form = wrapper.find(Form).instance();
 
       /* Simulate the fields change */
-      const text = wrapper.find(Field.Input);
-      text.instance().handleChange({ currentTarget: { value: 'pooper' } });
+      const text = wrapper.find(Field.Input)
+      text.simulate('change', { currentTarget: { value: 'pooper' } });
 
       const radio = wrapper.find('[value="male"]').first();
-      radio.instance().handleChange({ currentTarget: { value: 'male' } });
+      radio.simulate('change', { currentTarget: { value: 'male' } });
 
       const checkbox = wrapper.find('[name="choice"]').first();
-      checkbox.instance().handleChange({ currentTarget: { checked: false } });
+      checkbox.simulate('change', { currentTarget: { checked: false } });
 
       const select = wrapper.find(Field.Select);
-      select.instance().handleChange({ currentTarget: { value: 'three' } });
+      select.simulate('change', { currentTarget: { value: 'three' } });
 
       const textarea = wrapper.find(Field.Textarea);
-      textarea.instance().handleChange({ currentTarget: { value: 'Goodbye, universe!' } });
+      textarea.simulate('change', { currentTarget: { value: 'Goodbye, universe!' } });
 
       /* The method should be exposed */
       expect(form.reset).to.not.be.undefined;
