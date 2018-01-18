@@ -28,6 +28,27 @@ describe('Form', () => {
     expect(messages.toJS()).to.deep.equal(validationMessages);
   });
 
+  it('Mark form as dirty properly', () => {
+    let sum = 0;
+
+    const wrapper = mount(
+      <Form onFirstChange={ () => sum++ }>
+        <Field.Input name="foo" />
+        <Field.Select name="abc" />
+      </Form>
+    );
+
+    return defer(async () => {
+      const input = wrapper.find(Field.Input);
+      input.simulate('change', { currentTarget: { value: 'foo' } });
+      setTimeout(() => expect(sum).to.equal(1), 10);
+
+      const select = wrapper.find(Field.Select);
+      select.simulate('change', { currentTarget: { value: 'foo' } });
+      setTimeout(() => expect(sum).to.equal(1), 10);
+    });
+  });
+
   it('Can be serialized manually', () => {
     const wrapper = mount(
       <Form rules={ validationRules } messages={ validationMessages }>
