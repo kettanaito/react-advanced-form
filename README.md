@@ -31,12 +31,12 @@ This library requires the [peer dependencies](https://nodejs.org/en/blog/npm/pee
 
 ### Installation
 Using NPM:
-```
+```bash
 npm install react-advanced-form --save
 ```
 
 Using Yarn:
-```
+```bash
 yarn add react-advanced-form
 ```
 
