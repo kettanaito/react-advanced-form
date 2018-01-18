@@ -9,8 +9,10 @@
 const subscribedProps = ['initialValue', 'disabled'];
 
 export default function getPropsPatch({ contextProps, nextProps }) {
+  if (!nextProps) return {};
+
   const nextPropsKeys = Object.keys(nextProps);
-  if (!nextProps || nextPropsKeys.length === 0) return {};
+  if (nextPropsKeys.length === 0) return {};
 
   return subscribedProps.reduce((patch, propName) => {
     if (!nextProps.hasOwnProperty(propName)) return patch;

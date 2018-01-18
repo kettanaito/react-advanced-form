@@ -26,7 +26,7 @@ export default class FullForm extends React.Component {
         rules={ validationRules }
         messages={ validationMessages }
         action={ this.handleSubmit }
-        onDirty={ () => console.warn('Became dirty') }>
+        onFirstChange={ () => console.warn('Became dirty') }>
         <Field.Group name="userInfo">
           {/* <div>
             <label>
@@ -80,6 +80,14 @@ export default class FullForm extends React.Component {
             </label>
           </div>
         </Field.Group>
+
+        <Field.Input
+          name="foo"
+          initialValue={ undefined }
+          required />
+        <Field.Input
+          name="abc"
+          initialValue={ undefined } />
 
         <div>
           Counry
