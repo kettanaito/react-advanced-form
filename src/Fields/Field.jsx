@@ -93,11 +93,12 @@ export default class Field extends React.Component {
    * manual parsing the children of Form for them to be controlled by the latter.
    */
   registerWith = (props) => {
+    const { fieldPath } = this;
     const { fields, fieldGroup } = this.context;
     const { value, initialValue } = props;
-    const contextValue = fields.getIn([this.fieldPath, 'value']);
+    const contextValue = fields.getIn([fieldPath, 'value']);
 
-    console.groupCollapsed(this.fieldPath, '@ registerWith');
+    console.groupCollapsed(fieldPath, '@ registerWith');
     console.log('props', Object.assign({}, this.props));
     console.log('value', value);
     console.log('initialValue', initialValue);
@@ -107,10 +108,10 @@ export default class Field extends React.Component {
 
     const registrationProps = Object.assign({}, props, {
       ref: this,
-      fieldPath: this.fieldPath,
+      fieldPath,
       controllable: isset(value),
       value: registeredValue,
-      initialValue: initialValue || registeredValue,
+      initialValue: props.hasOwnProperty('initialValue') ? initialValue : registeredValue,
       validSync: false,
       validAsync: false,
       validatedSync: false,

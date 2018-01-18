@@ -5,17 +5,23 @@ import { defer } from '../../common';
 import { Form, Field } from '../../../lib';
 
 describe('Field', function () {
-  it('Allows undefined "initialValue" prop', () => {
+  it('Allows undefined "initialValue"', () => {
     const initialValue = undefined;
 
-    const wrapper = mount(
+    const createWrapper = () => mount(
       <Form>
         <Field.Input
           name="foo"
           initialValue={ undefined }
           required />
+        <Field.Input
+          name="abc"
+          initialValue={ undefined } />
       </Form>
     );
+
+    expect(createWrapper).not.to.throw();
+    const wrapper = createWrapper();
 
     return defer(async () => {
       const form = wrapper.find(Form).instance();
