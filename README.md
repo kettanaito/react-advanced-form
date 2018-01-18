@@ -21,15 +21,14 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
 
 ## Getting started
 ### Prerequisites
-#### Engines
 * [NodeJS](https://nodejs.org) (6.0+)
 
 #### Peer dependencies
-This library requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install/have those in your project in order for React Advanced Form to function properly.
+React Advanced Form requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install/have those in your project in order for it to function properly.
 * [React](https://github.com/facebook/react) (15.0+)
 * [ImmutableJS](https://github.com/facebook/immutable-js) (3.8+)
 
-### Installation
+### Install
 Using NPM:
 ```bash
 npm install react-advanced-form --save
@@ -87,10 +86,10 @@ export default class MyForm extends React.Component {
 }
 ```
 
-Read the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for a detailed information on components, methods and examples of their usage.
+Read the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more info on components, methods and examples of their usage.
 
 ## Contributing
-Any of your contributions, be that a comment, an issue or a pull request, is highly appreciated. Please read the [Contribution guide](./docs/developers/contributing.md) for the contribution guidelines. Moreover, development isn't the only way to contribute, there are [many more](./docs/developers/contributing.md#other-contributions).
+Any of your contributions are highly appreciated. Please read the [Contribution guidelines](./docs/developers/contributing.md) before contributing to the library. Moreover, development isn't the only way to contribute, there are [many more](./docs/developers/contributing.md#other-contributions).
 
 ## License
 This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE). See the license file for more details.

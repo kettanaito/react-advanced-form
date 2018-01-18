@@ -69,7 +69,7 @@ export default class MyForm extends React.Component {
 Read more about how to use React Advanced Form to get the most out of its features in the respective sections of this documentation.
 
 ## Contributing
-Any of your contributions, be that a comment, an issue or a pull request, is highly appreciated. Please read the [Contribution guide](../CONTRIBUTING.md) for the contribution guidelines. Moreover, development isn't the only way to contribute, there are [many more](../CONTRIBUTING.md#other-contributions).
+Any of your contributions are highly appreciated. Please read the [Contribution guidelines](./developers/contributing.md) before contributing to the library. Moreover, development isn't the only way to contribute, there are [many more](./developers/contributing.md#other-contributions).
 
 ## License
 This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE). See the license file for more details.
