@@ -20,6 +20,7 @@ export default class Form extends React.Component {
     rules: TValidationRules,
 
     /* Events */
+    onFirstChange: PropTypes.func,
     onReset: PropTypes.func,
     onInvalid: PropTypes.func,
     onSubmitStart: PropTypes.func, // form should submit, submit started
@@ -35,6 +36,7 @@ export default class Form extends React.Component {
   state = {
     fields: Map(),
     dynamicFields: Map(),
+    dirty: false,
     submitting: false
   }
 
@@ -213,6 +215,15 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Handles the change which marks form as dirty.
+   */
+  handleFirstChange = ({ event, nextValue, prevValue, fieldProps }) => {
+    const { onFirstChange } = this.props;
+    if (onFirstChange) onFirstChange({ event, nextValue, prevValue, fieldProps });
+    this.setState({ dirty: true });
+  }
+
+  /**
    * Handles field focus.
    * @param {Event} event
    * @param {Map} fieldProps
@@ -302,6 +313,9 @@ export default class Form extends React.Component {
         form: this
       });
     }
+
+    /* Mark form as dirty if it's not already */
+    if (!this.state.dirty) this.handleFirstChange({ event, nextValue, prevValue, fieldProps });
   }
 
   /**

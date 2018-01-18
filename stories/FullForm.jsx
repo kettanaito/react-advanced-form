@@ -25,7 +25,8 @@ export default class FullForm extends React.Component {
       <Form
         rules={ validationRules }
         messages={ validationMessages }
-        action={ this.handleSubmit }>
+        action={ this.handleSubmit }
+        onDirty={ () => console.warn('Became dirty') }>
         <Field.Group name="userInfo">
           {/* <div>
             <label>
