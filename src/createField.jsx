@@ -78,8 +78,7 @@ export default function createField(options) {
         console.log('context value:', contextValue);
 
         /* Get the proper field value to register with */
-        const fallbackValue = (value || initialValue || '');
-        const registeredValue = isset(contextValue) ? contextValue : fallbackValue;
+        const registeredValue = isset(contextValue) ? contextValue : (value || initialValue || '');
 
         const registrationProps = {
           ...props,
@@ -89,7 +88,7 @@ export default function createField(options) {
           controllable: isset(value),
           valuePropName,
           [valuePropName]: registeredValue,
-          initialValue: initialValue || fallbackValue
+          initialValue: props.hasOwnProperty('initialValue') ? initialValue : registeredValue
         };
 
         /* Prevent { fieldGroup: undefined } for fields without a group */
