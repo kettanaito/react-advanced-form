@@ -174,15 +174,13 @@ export default function createField(options) {
 
       componentWillUnmount() {
         /* Deletes the field's bindings from the Form on unmounting */
-        return this.context.unregisterField(this.contextProps);
+        this.context.unregisterField(this.contextProps);
       }
 
-      handleFocus = (event) => {
-        return this.context.handleFieldFocus({
-          event,
-          fieldProps: this.contextProps
-        });
-      }
+      handleFocus = event => this.context.handleFieldFocus({
+        event,
+        fieldProps: this.contextProps
+      })
 
       handleChange = ({ event, nextValue: customNextValue, prevValue: customPrevValue }) => {
         const { contextProps } = this;
@@ -203,7 +201,7 @@ export default function createField(options) {
 
         invariant(hasChangeHandler, `Cannot update the controlled field \`${contextProps.get('name')}\`. Expected custom \`onChange\` handler, but received: ${this.props.onChange}.`);
 
-        return this.context.handleFieldChange({
+        this.context.handleFieldChange({
           event,
           fieldProps: contextProps,
           nextValue,
@@ -211,12 +209,10 @@ export default function createField(options) {
         });
       }
 
-      handleBlur = (event) => {
-        return this.context.handleFieldBlur({
-          event,
-          fieldProps: this.contextProps
-        });
-      }
+      handleBlur = event => this.context.handleFieldBlur({
+        event,
+        fieldProps: this.contextProps
+      })
 
       handleFieldChange = ({ event, nextValue, prevValue }) => {
         const { contextProps } = this;
@@ -259,8 +255,6 @@ export default function createField(options) {
         return (
           <WrappedComponent
             fieldProps={ fieldProps }
-
-            /* Pass native event handlers to call in custom event handlers */
             handleFieldFocus={ this.handleFocus }
             handleFieldChange={ this.handleChange }
             handleFieldBlur={ this.handleBlur }>
