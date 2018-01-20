@@ -29,36 +29,17 @@ React Advanced Form requires the [peer dependencies](https://nodejs.org/en/blog/
 * [ImmutableJS](https://github.com/facebook/immutable-js) (3.8+)
 
 ### Install
-Using NPM:
+#### NPM:
 ```bash
 npm install react-advanced-form --save
 ```
 
-Using Yarn:
+#### Yarn:
 ```bash
 yarn add react-advanced-form
 ```
 
 ## Basic usage
-### Introduce `FormProvider`:
-```jsx
-// src/app/index.js
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { FormProvider } from 'react-advanced-form';
-import validationRules from './validation-rules';
-import validationMessages from './validation-messages';
-
-const App = ({ children }) => (
-  <FormProvider rules={ validationRules } messages={ validationMessages }>
-    { children }
-  </FormProvider>
-);
-
-ReactDOM.render(<App />, document.getElementById('root'));
-```
-
-### Create a custom form:
 ```jsx
 // src/app/components/MyForm.jsx
 import React from 'react';
@@ -86,7 +67,7 @@ export default class MyForm extends React.Component {
 }
 ```
 
-Read the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more info on components, methods and examples of their usage.
+Read the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more information on components, methods and usage examples.
 
 ## Contributing
 Any of your contributions are highly appreciated. Please read the [Contribution guidelines](./docs/developers/contributing.md) before contributing to the library. Moreover, development isn't the only way to contribute, there are [many more](./docs/developers/contributing.md#other-contributions).
