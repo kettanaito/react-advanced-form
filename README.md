@@ -41,7 +41,6 @@ yarn add react-advanced-form
 
 ## Basic usage
 ```jsx
-// src/app/components/MyForm.jsx
 import React from 'react';
 import { Form, Field } from 'react-adnvaced-form';
 
