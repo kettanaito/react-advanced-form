@@ -49,26 +49,7 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              cacheDirectory: DEVELOPMENT,
-              presets: [
-                ['env', {
-                  modules: DEVELOPMENT && 'commonjs',
-                  targets: {
-                    browsers: 'last 2 versions'
-                  }
-                }],
-                'react'
-              ],
-              plugins: [
-                'transform-export-extensions',
-                'transform-class-properties',
-                'transform-object-rest-spread',
-                ['transform-runtime', {
-                  helpers: false,
-                  polyfill: false,
-                  regenerator: true
-                }]
-              ]
+              cacheDirectory: DEVELOPMENT
             }
           },
           {
