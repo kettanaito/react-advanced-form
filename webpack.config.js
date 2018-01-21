@@ -26,15 +26,17 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     }),
     PRODUCTION && new BabelMinifyPlugin({
+      removeDebugger: true,
       removeConsole: true,
       mangle: {
         topLevel: true,
         exclude: {
+          'connectField': true,
+          'createField': true,
           'FormProvider': true,
           'Form': true,
-          'connectField': true,
-          'Condition': true,
-          'Field': true
+          'Field': true,
+          'Condition': true
         }
       }
     })
