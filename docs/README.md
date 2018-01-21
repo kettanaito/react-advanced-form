@@ -47,8 +47,8 @@ ReactDOM.render(<App />, document.getElementById('root'));
 import React from 'react';
 import { Form, Field } from 'react-adnvaced-form';
 
-export default class MyForm extends React.Component {
-  handleSubmit = ({ serialized }) => {
+export default class RegistrationForm extends React.Component {
+  registerUser = ({ serialized }) => {
     return fetch('https://backend.dev/ws', {
       method: 'POST',
       body: JSON.stringify(serialized)
@@ -57,7 +57,7 @@ export default class MyForm extends React.Component {
 
   render() {
     return (
-      <Form action={ this.handleSubmit }>
+      <Form action={ this.registerUser }>
         <Field.Input name="username" required />
         <Field.Input name="password" type="password" required />
         <Field.Radio name="gender" value="male" />
