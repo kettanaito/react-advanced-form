@@ -19,8 +19,6 @@ export const TValidationMessages = PropTypes.shape({
 });
 
 export default class FormProvider extends React.Component {
-  static displayName = 'FormProvider'
-
   static propTypes = {
     rules: TValidationRules,
     messages: TValidationMessages
