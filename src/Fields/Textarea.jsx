@@ -1,5 +1,5 @@
 import React from 'react';
-import createField from '../createField';
+import connectField from '../connectField';
 
 function Textarea({ fieldProps }) {
   return (<textarea { ...fieldProps } />);
@@ -7,4 +7,4 @@ function Textarea({ fieldProps }) {
 
 Textarea.displayName = 'Textarea';
 
-export default createField()(Textarea);
+export default connectField()(Textarea);

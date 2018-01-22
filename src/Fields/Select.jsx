@@ -1,5 +1,5 @@
 import React from 'react';
-import createField from '../createField';
+import connectField from '../connectField';
 
 function Select({ children, fieldProps }) {
   return (
@@ -11,9 +11,9 @@ function Select({ children, fieldProps }) {
 
 Select.displayName = 'Select';
 
-export default createField({
-  mapPropsToField: ({ children, initialValue, ...props }) => ({
-    ...props,
+export default connectField({
+  mapPropsToField: ({ fieldRecord, props: { children, initialValue } }) => ({
+    ...fieldRecord,
     initialValue: initialValue || (children && children[0].value)
   })
 })(Select);
