@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Field, Condition } from '../src';
+import { Form, Field, Condition } from '../lib';
 
 const validationRules = {};
 const validationMessages = {};

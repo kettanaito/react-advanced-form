@@ -1,5 +1,5 @@
 import React from 'react';
-import { Field, connectField } from '../../src';
+import { Field, connectField } from '../../lib';
 import feather from 'feather-icons';
 
 const inputStyles = {
@@ -25,9 +25,18 @@ class MyCustomInput extends React.Component {
       <div className="form-group" style={{ marginBottom: '1rem', opacity }}>
         <div style={{ display: 'inline-flex', position: 'relative' }}>
           <Field.Input {...this.props} style={{ ...inputStyles, borderColor }} />
+
           { (valid || invalid) && (
             <span
-              style={{ position: 'absolute', height: 16, color: iconColor, top: 0, bottom: 0, margin: 'auto', right: 8 }}
+              style={{
+                position: 'absolute',
+                height: 16,
+                color: iconColor,
+                top: 0,
+                bottom: 0,
+                margin: 'auto',
+                right: 8
+              }}
               dangerouslySetInnerHTML={{
                 __html: icon
               }} />
