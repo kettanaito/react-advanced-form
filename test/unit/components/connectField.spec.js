@@ -1,98 +1,56 @@
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
-import { Map } from 'immutable';
-import { connectField, Form, Field } from '../../../lib';
+import { connectField, Form } from '../../../lib';
 import { defer } from '../../common';
 
-describe('connectField', () => {
-  it('Wrapped field is registered with correct "fieldPath"', (done) => {
-    const CustomField = props => (
-      <div>
-        <Field.Input {...props} />
-      </div>
-    );
+describe('connectField', function () {
+  it('Supports custom event handlers', () => {
+    let sum = 0;
 
-    const WrappedField = connectField(CustomField);
+    class CustomComponent extends React.Component {
+      handleFocus = () => sum++
+      handleBlur = () => sum++
 
-    const wrapper = mount(
+      handleChange = (event) => {
+        const { value: nextValue } = event.currentTarget;
+        this.props.handleFieldChange({ event, nextValue });
+
+        sum++;
+      }
+
+      render() {
+        return (<input { ...this.props.fieldProps } onChange={ this.handleChangeFoo } />);
+      }
+    }
+
+    const EnhancedField = connectField({
+      mapPropsToField: ({ fieldRecord }) => ({
+        ...fieldRecord,
+        type: 'text'
+      })
+    })(CustomComponent);
+
+    const wrapped = mount(
       <Form>
-        <WrappedField name="username" required />
+        <EnhancedField name="enhanced-field" />
       </Form>
     );
 
-    defer(() => {
-      const form = wrapper.find(Form).instance();
-      expect(form.state.fields.has('username')).to.be.true;
+    defer(async () => {
+      const form = wrapped.find(Form).instance();
+      const input = wrapped.find(CustomComponent).instance();
 
-      return done();
-    });
-  });
+      input.handleChange({ currentTarget: { value: 'foo' } });
+      expect(sum).to.equal(1);
 
-  it('Wrapped field has access to the native Field props', (done) => {
-    const CustomField = props => (
-      <div>
-        <Field.Input {...props} />
-      </div>
-    );
+      input.handleFocus();
+      expect(sum).to.equal(2);
 
-    const WrappedField = connectField(CustomField);
+      input.handleBlur();
+      expect(sum).to.equal(3);
 
-    const wrapper = mount(
-      <Form>
-        <WrappedField name="username" required />
-      </Form>
-    );
-
-    defer(() => {
-      const customField = wrapper.find(CustomField);
-
-      expect(customField.props()).to.have.all.keys([
-        'name',
-        'required',
-        'focused',
-        'disabled',
-        'validating',
-        'validatedSync',
-        'validatedAsync',
-        'validSync',
-        'validAsync',
-        'expected',
-        'valid',
-        'invalid',
-        'error'
-      ]);
-
-      return done();
-    });
-  });
-
-  it('Wrapped field within Field.Group registers with the correct "fieldPath"', (done) => {
-    const CustomField = props => (
-      <div>
-        <Field.Input {...props} />
-      </div>
-    );
-
-    const WrappedField = connectField(CustomField);
-
-    const wrapper = mount(
-      <Form>
-        <Field.Group name="primaryInfo">
-          <WrappedField name="username" required />
-        </Field.Group>
-      </Form>
-    );
-
-    defer(() => {
-      const form = wrapper.find(Form).instance();
-      const groupedField = form.state.fields.get('primaryInfo.username');
-
-      expect(groupedField).to.be.instanceOf(Map);
-      expect(groupedField.get('name')).to.equal('username');
-      expect(groupedField.get('fieldPath')).to.equal('primaryInfo.username');
-
-      return done();
+      expect(form.state.fields.getIn(['enhanced-field', 'value'])).to.equal('foo');
     });
   });
 });

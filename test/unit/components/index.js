@@ -1,9 +1,6 @@
 require('../../jsdom.config');
 
 describe('Components', () => {
-  /* createField */
-  require('./createField.spec');
-
   /* connectField */
   require('./connectField.spec');
 

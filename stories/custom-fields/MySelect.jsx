@@ -10,13 +10,13 @@ const selectStyles = {
 
 export default class MyCustomSelect extends React.Component {
   render() {
-    const { fieldHandlers, valid } = this.props;
+    const { valid } = this.props;
 
     return (
       <div className="form-group" style={{ marginBottom: '1rem' }}>
         {/* <Field style={ selectStyles } /> */}
 
-        <select style={ selectStyles } {...fieldHandlers} />
+        <select  { ...fieldHandlers } style={ selectStyles } />
 
         { !valid && (
           <p style={{ color: 'red', marginTop: 0 }}>The field is invalid.</p>

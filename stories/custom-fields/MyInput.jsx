@@ -1,5 +1,5 @@
 import React from 'react';
-import { Field, connectField } from '../../lib';
+import { Field, connectField } from '../../src';
 import feather from 'feather-icons';
 
 const inputStyles = {
@@ -10,9 +10,12 @@ const inputStyles = {
   fontSize: '14px'
 };
 
-class MyCustomInput extends React.Component {
+class Input extends React.Component {
   render() {
-    const { valid, invalid, error, validating, disabled } = this.props;
+    const { fieldProps, fieldState, className } = this.props;
+    const { valid, invalid, error, validating, disabled } = fieldState;
+
+    console.log('CustomInput.props', this.props);
 
     const iconOptions = { width: 16, height: 16 };
 
@@ -24,7 +27,9 @@ class MyCustomInput extends React.Component {
     return (
       <div className="form-group" style={{ marginBottom: '1rem', opacity }}>
         <div style={{ display: 'inline-flex', position: 'relative' }}>
-          <Field.Input {...this.props} style={{ ...inputStyles, borderColor }} />
+          <input
+            { ...fieldProps }
+            style={{ ...inputStyles, borderColor }} />
 
           { (valid || invalid) && (
             <span
@@ -53,4 +58,4 @@ class MyCustomInput extends React.Component {
   }
 }
 
-export default connectField(MyCustomInput);
+export default connectField()(Input);

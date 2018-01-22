@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormProvider, Form, Condition, Field } from '../lib';
+import { FormProvider, Form, Condition, Field } from '../src';
 import { MyInput, MySelect, MyTextarea } from './custom-fields';
 
 /* Form validation rules */
@@ -162,12 +162,6 @@ export default class DefaultForm extends Component {
               </Field.Select>
             </label>
 
-            {/* <Field.Select name="selectField">
-              <option value="first">First value</option>
-              <option value="second">Second value</option>
-            </Field.Select> */}
-
-            {/* Input */}
             <div>
               <label>Choose one of the following:</label>
               <label>
@@ -186,7 +180,7 @@ export default class DefaultForm extends Component {
               </label>
             </div>
 
-            <div>
+            {/* <div>
               <Field.Textarea name="myTextarea" disabled={ isDisabled } />
             </div>
 
@@ -199,10 +193,13 @@ export default class DefaultForm extends Component {
 
             <MyInput
               name="abcd"
-              placeholder="Required"
-              required />
+              placeholder="Custom placeholder"
+              className="HOLLY SHIT!"
+              required /> */}
 
-            <Field.Checkbox name="acceptTerms" disabled={ isDisabled } />
+            <Field.Checkbox
+              name="acceptTerms"
+              disabled={ isDisabled } />
 
             <button onClick={ this.toggleDisabled }>Toggle disabled</button>
 
