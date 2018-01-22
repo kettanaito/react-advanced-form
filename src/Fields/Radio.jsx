@@ -1,5 +1,5 @@
 import React from 'react';
-import createField from '../createField';
+import connectField from '../connectField';
 
 function Radio({ fieldProps }) {
   return (<input { ...fieldProps } />);
@@ -7,7 +7,7 @@ function Radio({ fieldProps }) {
 
 Radio.displayName = 'Radio';
 
-export default createField({
+export default connectField({
   /**
    * Handling of contextProps of  Radio inputs' is unique.
    * 1. Never pass "props.value" to context. <Field.Radio> is always expected to receive a "value" prop,
@@ -16,26 +16,19 @@ export default createField({
    * 2. Determine "initialValue" based on optional "checked" prop.
    * 3. Add new "checked" props unique to this field type.
    */
-  mapPropsToField: (props) => {
-    const { checked, value } = props;
+  mapPropsToField: ({ fieldRecord, props: { checked, value, onChange } }) => {
+    fieldRecord.type = 'radio';
+    fieldRecord.controllable = !!onChange;
 
-    const fieldProps = {
-      ...props,
-      type: 'radio',
-      value: checked ? value : null // unchecked radio inputs must not mutate the context value
-    };
+    delete fieldRecord.initialValue;
 
     if (checked) {
-      fieldProps.checked = checked;
-
-      if (value) {
-        /* Only checked radio inputs should set the context value to its own value */
-        fieldProps.initialValue = value;
-        delete fieldProps.value;
-      }
+      fieldRecord.initialValue = value;
+    } else {
+      delete fieldRecord.value;
     }
 
-    return fieldProps;
+    return fieldRecord;
   },
   enforceProps: (props, contextProps) => ({
     value: props.value,

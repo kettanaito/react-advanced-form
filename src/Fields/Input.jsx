@@ -1,5 +1,5 @@
 import React from 'react';
-import createField from '../createField';
+import connectField from '../connectField';
 
 function Input({ fieldProps }) {
   return (<input { ...fieldProps } />);
@@ -7,4 +7,4 @@ function Input({ fieldProps }) {
 
 Input.displayName = 'Input';
 
-export default createField()(Input);
+export default connectField()(Input);
