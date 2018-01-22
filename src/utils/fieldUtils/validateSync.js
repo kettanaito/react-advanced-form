@@ -1,14 +1,73 @@
 /**
- * Synchronously validated the provided field.
+ * Synchronously validate the provided field.
  */
-// import { resolveProp } from './resolveProp';
+const schemaSelectors = ['type', 'name'];
+
+const commonErrorTypes = {
+  missing: 'missing',
+  invalid: 'invalid'
+};
+
+function getResult(expected, ...args) {
+  return { expected, ...args };
+}
+
+/**
+ * Applies the given validation schema and returns the immutable map of invalid rules.
+ * @param {Map} schema
+ * @param {Object} ruleArgs
+ * @return {Map}
+ */
+function applyValidationSchema(schema, ruleArgs) {
+  const { fieldProps } = ruleArgs;
+
+  console.log(' ');
+  console.log('applies validation schema to:', fieldProps);
+  console.log('schema:', schema);
+
+  return schemaSelectors.reduce((foo, schemaSelector) => {
+    console.log('schemaSelector:', schemaSelector);
+
+    const rules = schema.getIn([schemaSelector, fieldProps[schemaSelector]]);
+
+    /* Bypass empty rules set */
+    if (!rules || (rules.size === 0)) return foo;
+    const existingInvalidRules = foo[schemaSelector] || [];
+
+    console.log('foo', foo);
+    console.log('existingInvalidRules', existingInvalidRules);
+
+    /* Handle root function rules */
+    if ((typeof rules === 'function') && !rules(ruleArgs)) {
+      foo[schemaSelector] = [...existingInvalidRules, 'invalid'];
+      return foo;
+    }
+
+    const newInvalidRules = rules.reduce((list, rule, ruleName) => {
+      return rule(ruleArgs) ? list : list.push(ruleName);
+    }, []);
+
+    console.log('newInvalidRules:', newInvalidRules);
+
+    foo[schemaSelector] = [...existingInvalidRules, ...newInvalidRules];
+    return foo;
+  }, {});
+}
+
+// function applyValidationGroup(group, ruleArgs) {
+//   // converting to immutable here is redundant, remove it
+//   const endGroup = (typeof group === 'function') ? Map({ [commonErrorTypes.invalid]: group }) : group;
+
+//   return endGroup.reduce((invalidKeys, rule, ruleName) => {
+//     return rule(ruleArgs) ? invalidKeys : invalidKeys.concat(ruleName);
+//   }, []);
+// }
 
 export default function validateSync({ fieldProps, fields, form, formRules }) {
   /* Bypass validation for already valid field */
   if (fieldProps.get('validSync')) return { expected: true };
 
-  let isExpected = true;
-
+  /* Get properties shorthand references */
   const name = fieldProps.get('name');
   const type = fieldProps.get('type');
   const value = fieldProps.get('value');
@@ -16,63 +75,28 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   const rule = fieldProps.get('rule');
   const asyncRule = fieldProps.get('asyncRule');
 
-  /* Resolve resolvable props */
-  /* const required = resolveProp({
-    propName: 'required',
-    fieldProps,
-    fields
-  });
-  */
+  /* Empty optional fields are expected */
+  if (!value && !required) return getResult(true);
 
-  // console.groupCollapsed('fieldUtils @ validateSync', fieldProps.get('fieldPath'));
-  // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-  // console.log('required:', required);
-  // console.log('value:', value);
+  /* Empty required fields are unexpected */
+  if (!value && required) return getResult(false, { errorType: commonErrorTypes.missing });
 
-  /* Treat optional empty fields as expected */
-  if (!value && !required) {
-    // console.log('Empty optional field - bypass');
-    // console.groupEnd();
+  /* Assume Field doesn't have any relevant validation rules */
+  const hasFormNameRules = formRules.hasIn(['name', name]);
+  const hasFormTypeRules = formRules.hasIn(['type', type]);
+  const hasFormRules = hasFormNameRules || hasFormTypeRules;
 
-    return { expected: true };
-  }
+  if (!rule && !asyncRule && !hasFormRules) return getResult(true);
 
-  if (!value && required) {
-    // console.log('Empty required field, UNEXPECTED!');
-    // console.groupEnd();
-
-    return { expected: false, errorType: 'missing' };
-  }
-
-  /* Assume Field doesn't have any specific validation attached */
-  const formTypeRule = formRules.getIn(['type', type]);
-  const formNameRule = formRules.getIn(['name', name]);
-  const hasFormRules = formTypeRule || formNameRule;
-
-  if (!rule && !asyncRule && !hasFormRules) {
-    // console.log('Does not have rule, asyncRule or formRules, bypass');
-    // console.groupEnd();
-
-    return { expected: true };
-  }
-
+  /* Format validation */
   const mutableFieldProps = fieldProps.toJS();
 
-  /* Format (sync) validation */
   if (rule) {
-    // console.log('Field has "rule":', rule);
-
-    /* Test the RegExp against the field's value */
-    isExpected = (typeof rule === 'function')
+    const isExpected = (typeof rule === 'function')
       ? rule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), form })
       : rule.test(value);
 
-    // console.log('isExpected:', isExpected);
-    if (!isExpected) {
-      // console.groupEnd();
-
-      return { expected: false, errorType: 'invalid' };
-    }
+    if (!isExpected) return getResult(false, { errorTypes: commonErrorTypes.invalid });
   }
 
   /**
@@ -80,32 +104,21 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
    * A form-wide validation provided by "rules" property of the Form.
    * The latter property is also inherited from the context passed by FormProvider.
    */
-  if (hasFormRules) {
-    // console.log('Has form rules');
+  const ruleArgs = {
+    value,
+    fieldProps: mutableFieldProps,
+    fields: fields.toJS(),
+    form
+  };
 
-    /* Form-level validation */
-    const isValidByType = formTypeRule
-      ? formTypeRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), form })
-      : true;
+  //
+  const invalidRules = applyValidationSchema(formRules, ruleArgs);
 
-    const isValidByName = formNameRule
-      ? formNameRule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), form })
-      : true;
+  console.log('end invalidRules:', invalidRules);
 
-    // console.log('isValidByName', isValidByName);
-    // console.log('isValidByType', isValidByType);
-
-    isExpected = (isValidByType && isValidByName);
-
-    // console.log('isExpected:', isExpected);
-    if (!isExpected) {
-      // console.groupEnd();
-
-      return { expected: false, errorType: 'invalid' };
-    }
+  if (Object.keys(invalidRules).length > 0) {
+    return getResult(false, { errorType: invalidRules });
   }
 
-  // console.groupEnd();
-
-  return { expected: isExpected };
+  return getResult(true);
 }

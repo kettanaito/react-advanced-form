@@ -20,8 +20,8 @@ const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
 
   /* Update dynamic properties based on the current validation entry */
   acc[`validated${entry.name}`] = true;
-  acc[`valid${entry.name}`] = resolved.expected;
-  acc.expected = resolved.expected;
+  acc[`valid${entry.name}`] = expected;
+  acc.expected = expected;
 
   return { ...acc, ...resolved };
 };
