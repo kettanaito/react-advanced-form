@@ -81,7 +81,6 @@ export default class FullForm extends React.Component {
           </div>
         </Field.Group>
 
-<<<<<<< 5bcaf76f5943abbcd3e8cb67b472a8ac12b123e6
         <Field.Input
           name="foo"
           initialValue={ undefined }
@@ -90,8 +89,6 @@ export default class FullForm extends React.Component {
           name="abc"
           initialValue={ undefined } />
 
-=======
->>>>>>> createField: Expect "type" from "mapPropsToField"
         <div>
           Counry
           <Field.Select name="country" initialValue={ (gender === 'male') ? 'UA' : 'UK' }>
