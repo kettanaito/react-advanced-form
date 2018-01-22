@@ -5,6 +5,8 @@ function Radio({ fieldProps }) {
   return (<input { ...fieldProps } />);
 }
 
+Radio.displayName = 'Radio';
+
 export default createField({
   /**
    * Handling of contextProps of  Radio inputs' is unique.

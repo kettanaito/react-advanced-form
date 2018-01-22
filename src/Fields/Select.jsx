@@ -9,6 +9,8 @@ function Select({ children, fieldProps }) {
   );
 }
 
+Select.displayName = 'Select';
+
 export default createField({
   mapPropsToField: ({ children, initialValue, ...props }) => ({
     ...props,

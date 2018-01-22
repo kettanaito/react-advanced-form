@@ -5,6 +5,8 @@ function Checkbox({ fieldProps }) {
   return (<input { ...fieldProps } />);
 }
 
+Checkbox.displayName = 'Checkbox';
+
 export default createField({
   valuePropName: 'checked',
   mapPropsToField: props => ({
