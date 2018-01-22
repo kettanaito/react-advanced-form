@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Field, Condition } from '../lib';
+import { Form, Field, Condition } from '../src';
 
 const validationRules = {};
 const validationMessages = {};
@@ -28,26 +28,6 @@ export default class FullForm extends React.Component {
         action={ this.handleSubmit }
         onFirstChange={ () => console.warn('Became dirty') }>
         <Field.Group name="userInfo">
-          {/* <div>
-            <label>
-              User name:
-              <Field.Input name="username" required />
-            </label>
-          </div>
-
-          <div>
-            <label>
-              First name:
-              <Field.Input name="firstName" />
-            </label>
-          </div>
-
-          <div>
-            <label>
-              Last name:
-              <Field.Input name="firstName" />
-            </label>
-          </div> */}
 
           <div>
             <p>Choose gender:</p>
@@ -84,6 +64,7 @@ export default class FullForm extends React.Component {
         <Field.Input
           name="foo"
           initialValue={ undefined }
+          className="HOLLY SHIT!"
           required />
         <Field.Input
           name="abc"

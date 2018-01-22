@@ -9,7 +9,6 @@ describe('Basics', () => {
   it('Library exports are fine', () => {
     expect(libExports).to.have.all.keys([
       'connectField',
-      'createField',
       'FormProvider',
       'Form',
       'Field',

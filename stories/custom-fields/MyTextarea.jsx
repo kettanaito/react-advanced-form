@@ -24,7 +24,8 @@ class MyCustomTextarea extends React.Component {
     return (
       <div className="form-group" style={{ marginBottom: '1rem', opacity }}>
         <div style={{ display: 'inline-flex', position: 'relative' }}>
-          <Field.Textarea {...this.props} style={{ ...textareaStyles, borderColor }} />
+          <textarea { ...this.props.fieldProps } style={{ ...textareaStyles, borderColor }} />
+
           { (valid || invalid) && (
             <span
               style={{ position: 'absolute', height: 16, color: iconColor, top: 0, bottom: 0, margin: 'auto', right: 8 }}
@@ -44,4 +45,4 @@ class MyCustomTextarea extends React.Component {
   }
 }
 
-export default connectField(MyCustomTextarea);
+export default connectField()(MyCustomTextarea);
