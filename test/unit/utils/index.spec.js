@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { fieldUtils } from '../../../src/utils';
-import { BothValidationType, SyncValidationType } from '../../../src/ValidationType';
+import { BothValidationType, SyncValidationType } from '../../../src/classes/ValidationType';
 
 describe('Utils', () => {
   describe('Field utils', () => {

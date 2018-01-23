@@ -1,5 +1,5 @@
 import React from 'react';
-import connectField from '../connectField';
+import { connectField } from '../../lib';
 
 function Checkbox({ fieldProps }) {
   return (<input { ...fieldProps } />);

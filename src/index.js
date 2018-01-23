@@ -1,5 +1,5 @@
-export FormProvider from './FormProvider';
-export connectField from './connectField';
-export Form from './Form';
-export Condition from './Condition';
-export * as Field from './Fields';
+export FormProvider from './components/FormProvider';
+export connectField from './components/connectField';
+export Form from './components/Form';
+export * as Field from './components/Field';
+export Condition from './components/Condition';

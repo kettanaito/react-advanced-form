@@ -2,6 +2,7 @@ import React from 'react';
 import { expect } from 'chai';
 import { Map } from 'immutable';
 import { mount } from 'enzyme';
+import { Input } from '../../components';
 import { Form, Field } from '../../../lib';
 import { validationRules, validationMessages } from '../../common';
 
@@ -9,10 +10,10 @@ describe('Field.Group', () => {
   const wrapper = mount(
     <Form rules={ validationRules } messages={ validationMessages }>
       <Field.Group name="primaryInfo">
-        <Field.Input name="username" value="foo" />
+        <Input name="username" value="foo" />
       </Field.Group>
 
-      <Field.Input name="username" value="doe" />
+      <Input name="username" value="doe" />
     </Form>
   );
 

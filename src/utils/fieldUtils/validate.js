@@ -11,7 +11,7 @@
 import { Map } from 'immutable';
 import validateSync from './validateSync';
 import validateAsync from './validateAsync';
-import Sequence from '../../Sequence';
+import Sequence from '../../classes/Sequence';
 
 const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
   const { expected } = resolved;

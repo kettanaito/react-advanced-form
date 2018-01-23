@@ -1,8 +1,9 @@
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
+import { Input } from '../../components';
 import { defer } from '../../common';
-import { Form, Field } from '../../../lib';
+import { Form } from '../../../lib';
 
 describe('Field', function () {
   it('Allows undefined "initialValue"', () => {
@@ -10,11 +11,11 @@ describe('Field', function () {
 
     const createWrapper = () => mount(
       <Form>
-        <Field.Input
+        <Input
           name="foo"
           initialValue={ undefined }
           required />
-        <Field.Input
+        <Input
           name="abc"
           initialValue={ undefined } />
       </Form>
