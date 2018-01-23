@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Input, Select, Checkbox } from 'react-advanced-form-addons';
 import { FormProvider, Form, Condition, Field } from '../src';
 import { MyInput, MySelect, MyTextarea } from './custom-fields';
 
@@ -155,33 +156,33 @@ export default class DefaultForm extends Component {
             {/* Select */}
             <label>
               Select example:
-              <Field.Select name="choice" initialValue="two">
+              <Select name="choice" initialValue="two">
                 <option value="one">One</option>
                 <option value="two">Two</option>
                 <option value="three">Three</option>
-              </Field.Select>
+              </Select>
             </label>
 
             <div>
               <label>Choose one of the following:</label>
               <label>
-                <Field.Radio name="animal" value="Goose" />
+                <Radio name="animal" value="Goose" />
                 Goose
               </label>
 
               <label>
-                <Field.Radio name="animal" value="Duck" checked />
+                <Radio name="animal" value="Duck" checked />
                 Duck
               </label>
 
               <label>
-                <Field.Radio name="animal" value="Kangaroo" />
+                <Radio name="animal" value="Kangaroo" />
                 Kangaroo
               </label>
             </div>
 
             {/* <div>
-              <Field.Textarea name="myTextarea" disabled={ isDisabled } />
+              <Textarea name="myTextarea" disabled={ isDisabled } />
             </div>
 
             <MyInput
@@ -197,7 +198,7 @@ export default class DefaultForm extends Component {
               className="HOLLY SHIT!"
               required /> */}
 
-            <Field.Checkbox
+            <Checkbox
               name="acceptTerms"
               disabled={ isDisabled } />
 

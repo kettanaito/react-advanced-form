@@ -1,4 +1,5 @@
 import React from 'react';
+import { Input, Select, Checkbox, Textarea } from 'react-advanced-form-addons';
 import { Form, Field, Condition } from '../src';
 
 const validationRules = {};
@@ -32,7 +33,7 @@ export default class FullForm extends React.Component {
           <div>
             <p>Choose gender:</p>
             <label>
-              <Field.Radio
+              <Radio
                 name="gender"
                 value="male"
                 onChange={({ nextValue }) => {
@@ -43,7 +44,7 @@ export default class FullForm extends React.Component {
             </label>
 
             <label>
-              <Field.Radio
+              <Radio
                 name="gender"
                 onChange={({ nextValue }) => this.setState({ gender: nextValue })}
                 value="pooper"
@@ -52,7 +53,7 @@ export default class FullForm extends React.Component {
             </label>
 
             <label>
-              <Field.Radio
+              <Radio
                 name="gender"
                 onChange={({ nextValue }) => this.setState({ gender: nextValue })}
                 value="female" />
@@ -61,22 +62,22 @@ export default class FullForm extends React.Component {
           </div>
         </Field.Group>
 
-        <Field.Input
+        <Input
           name="foo"
           initialValue={ undefined }
           className="HOLLY SHIT!"
           required />
-        <Field.Input
+        <Input
           name="abc"
           initialValue={ undefined } />
 
         <div>
           Counry
-          <Field.Select name="country" initialValue={ (gender === 'male') ? 'UA' : 'UK' }>
+          <Select name="country" initialValue={ (gender === 'male') ? 'UA' : 'UK' }>
             <option value="US">United States</option>
             <option value="UK">United Kingdom</option>
             <option value="UA">Ukraine</option>
-          </Field.Select>
+          </Select>
         </div>
 
         {/* <Condition when={({ fields }) => fields.country && fields.country.value === 'UK'}>
@@ -86,15 +87,15 @@ export default class FullForm extends React.Component {
 
               <label>
                 Drawing
-                <Field.Checkbox name="drawing" />
+                <Checkbox name="drawing" />
               </label>
               <label>
                 Biking
-                <Field.Checkbox name="biking" />
+                <Checkbox name="biking" />
               </label>
               <label>
                 Traveling
-                <Field.Checkbox name="traveling" />
+                <Checkbox name="traveling" />
               </label>
             </div>
           </Field.Group>

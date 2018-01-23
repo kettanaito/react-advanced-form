@@ -1,5 +1,5 @@
 import React from 'react';
-import connectField from '../connectField';
+import { connectField } from '../../lib';
 
 function Textarea({ fieldProps }) {
   return (<textarea { ...fieldProps } />);

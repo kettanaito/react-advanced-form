@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Field, Condition } from '../lib';
+import { Form, Condition } from '../lib';
 import { MyInput } from './custom-fields';
 
 const validationMessages = {

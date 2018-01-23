@@ -1,6 +1,7 @@
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
+import { Input, Select, Checkbox, Radio, Textarea } from '../../components';
 import { FormProvider, Form, Field } from '../../../lib';
 import { defer, validationRules, validationMessages } from '../../common';
 
@@ -33,17 +34,17 @@ describe('Form', () => {
 
     const wrapper = mount(
       <Form onFirstChange={ () => sum++ }>
-        <Field.Input name="foo" />
-        <Field.Select name="abc" />
+        <Input name="foo" />
+        <Select name="abc" />
       </Form>
     );
 
     return defer(async () => {
-      const input = wrapper.find(Field.Input);
+      const input = wrapper.find(Input);
       input.simulate('change', { currentTarget: { value: 'foo' } });
       setTimeout(() => expect(sum).to.equal(1), 10);
 
-      const select = wrapper.find(Field.Select);
+      const select = wrapper.find(Select);
       select.simulate('change', { currentTarget: { value: 'foo' } });
       setTimeout(() => expect(sum).to.equal(1), 10);
     });
@@ -52,9 +53,9 @@ describe('Form', () => {
   it('Can be serialized manually', () => {
     const wrapper = mount(
       <Form rules={ validationRules } messages={ validationMessages }>
-        <Field.Input name="username" value="doe" />
+        <Input name="username" value="doe" />
         <Field.Group name="primaryInfo">
-          <Field.Input name="username" value="foo" />
+          <Input name="username" value="foo" />
         </Field.Group>
       </Form>
     );
@@ -75,7 +76,7 @@ describe('Form', () => {
   it('Can be validated manually', () => {
     const wrapper = mount(
       <Form rules={ validationRules } messages={ validationMessages }>
-        <Field.Input name="username" required />
+        <Input name="username" required />
       </Form>
     );
 
@@ -89,13 +90,13 @@ describe('Form', () => {
       expect(isFormValid).to.be.false;
 
       /* Should have context props corresponding to the validation status */
-      const Input = wrapper.find(Field.Input).instance();
-      expect(Input.contextProps.get('validatedSync')).to.be.true;
-      expect(Input.contextProps.get('validatedAsync')).to.be.false;
-      expect(Input.contextProps.get('validSync')).to.be.false;
-      expect(Input.contextProps.get('validAsync')).to.be.false;
-      expect(Input.contextProps.get('valid')).to.be.false;
-      expect(Input.contextProps.get('invalid')).to.be.true;
+      const input = wrapper.find(Input).instance();
+      expect(input.contextProps.get('validatedSync')).to.be.true;
+      expect(input.contextProps.get('validatedAsync')).to.be.false;
+      expect(input.contextProps.get('validSync')).to.be.false;
+      expect(input.contextProps.get('validAsync')).to.be.false;
+      expect(input.contextProps.get('valid')).to.be.false;
+      expect(input.contextProps.get('invalid')).to.be.true;
     });
   });
 
@@ -113,16 +114,16 @@ describe('Form', () => {
         rules={ validationRules }
         messages={ validationMessages }
         onReset={ resetCallback }>
-        <Field.Input id="username" name="username" initialValue="admin" required />
-        <Field.Radio name="gender" value="male" />
-        <Field.Radio name="gender" value="female" checked />
-        <Field.Checkbox name="choice" checked />
-        <Field.Select name="number" initialValue="two">
+        <Input id="username" name="username" initialValue="admin" required />
+        <Radio name="gender" value="male" />
+        <Radio name="gender" value="female" checked />
+        <Checkbox name="choice" checked />
+        <Select name="number" initialValue="two">
           <option value="one">One</option>
           <option value="two">Two</option>
           <option value="three">Three</option>
-        </Field.Select>
-        <Field.Textarea name="myTextarea" initialValue="Hello, world!" />
+        </Select>
+        <Textarea name="myTextarea" initialValue="Hello, world!" />
       </Form>
     );
 
@@ -130,7 +131,7 @@ describe('Form', () => {
       const form = wrapper.find(Form).instance();
 
       /* Simulate the fields change */
-      const text = wrapper.find(Field.Input)
+      const text = wrapper.find(Input)
       text.simulate('change', { currentTarget: { value: 'pooper' } });
 
       const radio = wrapper.find('[value="male"]').first();
@@ -139,10 +140,10 @@ describe('Form', () => {
       const checkbox = wrapper.find('[name="choice"]').first();
       checkbox.simulate('change', { currentTarget: { checked: false } });
 
-      const select = wrapper.find(Field.Select);
+      const select = wrapper.find(Select);
       select.simulate('change', { currentTarget: { value: 'three' } });
 
-      const textarea = wrapper.find(Field.Textarea);
+      const textarea = wrapper.find(Textarea);
       textarea.simulate('change', { currentTarget: { value: 'Goodbye, universe!' } });
 
       /* The method should be exposed */

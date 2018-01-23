@@ -1,4 +1,4 @@
-import validationTypes from './const/validation-types';
+import validationTypes from '../const/validation-types';
 
 export default class ValidationType {
   constructor(name) {

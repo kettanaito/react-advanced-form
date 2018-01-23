@@ -1,5 +1,5 @@
 import React from 'react';
-import { Field, connectField } from '../../src';
+import { connectField } from '../../src';
 import feather from 'feather-icons';
 
 const textareaStyles = {

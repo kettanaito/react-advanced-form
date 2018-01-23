@@ -13,7 +13,7 @@ import {
   getComponentName,
   getPropsPatch,
   fieldUtils
-} from './utils';
+} from '../utils';
 
 /* Default options */
 const defaultOptions = {

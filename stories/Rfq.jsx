@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormProvider, Form, Field } from '../src';
+import { FormProvider, Form } from '../src';
 import { MyInput } from './custom-fields';
 
 /* Form validation rules */

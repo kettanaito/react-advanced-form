@@ -5,7 +5,7 @@ import * as libExports from '../lib';
 
 configure({ adapter: new Adapter() });
 
-describe('Basics', () => {
+describe('General', () => {
   it('Library exports are fine', () => {
     expect(libExports).to.have.all.keys([
       'connectField',

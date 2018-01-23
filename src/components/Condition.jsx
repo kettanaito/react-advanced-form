@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { IterableInstance, fieldUtils } from './utils';
+import { IterableInstance, fieldUtils } from '../utils';
 
 export default function Condition(props, context) {
   const { fields } = context;
