@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Input, Select, Checkbox } from 'react-advanced-form-addons';
 import { FormProvider, Form, Condition, Field } from '../src';
 import { MyInput, MySelect, MyTextarea } from './custom-fields';
 
@@ -154,43 +153,44 @@ export default class DefaultForm extends Component {
           <div className="field-group">
 
             {/* Select */}
-            <label>
+            {/* <label>
               Select example:
-              <Select name="choice" initialValue="two">
+              <Field.Select name="choice" initialValue="two">
                 <option value="one">One</option>
                 <option value="two">Two</option>
                 <option value="three">Three</option>
-              </Select>
+              </Field.Select>
             </label>
 
             <div>
               <label>Choose one of the following:</label>
               <label>
-                <Radio name="animal" value="Goose" />
+                <Field.Radio name="animal" value="Goose" />
                 Goose
               </label>
 
               <label>
-                <Radio name="animal" value="Duck" checked />
+                <Field.Radio name="animal" value="Duck" checked />
                 Duck
               </label>
 
               <label>
-                <Radio name="animal" value="Kangaroo" />
+                <Field.Radio name="animal" value="Kangaroo" />
                 Kangaroo
               </label>
-            </div>
-
-            {/* <div>
-              <Textarea name="myTextarea" disabled={ isDisabled } />
-            </div>
+            </div> */}
 
             <MyInput
               name="foo"
               initialValue="Pooper"
               placeholder="My placeholder"
               disabled={ isDisabled }
+              onChange={(...args) => console.log(...args)}
               required />
+
+            {/* <div>
+              <Field.Textarea name="myTextarea" disabled={ isDisabled } />
+            </div>
 
             <MyInput
               name="abcd"
@@ -198,9 +198,9 @@ export default class DefaultForm extends Component {
               className="HOLLY SHIT!"
               required /> */}
 
-            <Checkbox
+            {/* <Field.Checkbox
               name="acceptTerms"
-              disabled={ isDisabled } />
+              disabled={ isDisabled } /> */}
 
             <button onClick={ this.toggleDisabled }>Toggle disabled</button>
 

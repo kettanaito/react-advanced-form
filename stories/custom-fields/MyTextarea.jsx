@@ -1,5 +1,5 @@
 import React from 'react';
-import { connectField } from '../../src';
+import { createField } from '../../src';
 import feather from 'feather-icons';
 
 const textareaStyles = {
@@ -45,4 +45,4 @@ class MyCustomTextarea extends React.Component {
   }
 }
 
-export default connectField()(MyCustomTextarea);
+export default createField()(MyCustomTextarea);

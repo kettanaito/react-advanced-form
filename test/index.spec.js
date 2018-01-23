@@ -8,7 +8,8 @@ configure({ adapter: new Adapter() });
 describe('General', () => {
   it('Library exports are fine', () => {
     expect(libExports).to.have.all.keys([
-      'connectField',
+      'createField',
+      'fieldPresets',
       'FormProvider',
       'Form',
       'Field',
