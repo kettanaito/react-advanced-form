@@ -44,7 +44,7 @@ yarn add react-advanced-form
 ## Basic usage
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-adnvaced-form';
+import { Form, Field } from 'react-advanced-form';
 
 export default class MyForm extends React.Component {
   handleSubmit = ({ serialized }) => {
