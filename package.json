@@ -10,7 +10,7 @@
     "build": "webpack",
     "test": "mocha --require babel-core/register --require babel-polyfill",
     "build-storybook": "build-storybook",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
