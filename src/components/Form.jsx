@@ -159,45 +159,50 @@ export default class Form extends React.Component {
   updateField = ({ fieldPath, fieldProps: directFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
     const fieldProps = directFieldProps || fields.getIn([fieldPath]);
-    const nextFieldProps = propsPatch ? fieldProps.merge(fromJS(propsPatch)) : fieldProps;
 
-    /* Update the validity state of the field */
-    const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
+    try {
+      const nextFieldProps = propsPatch ? fieldProps.merge(fromJS(propsPatch)) : fieldProps;
 
-    // FIXME Update the fields with dynamic props
-    const nextResolvedFields = nextFields.map((fieldProps) => {
-      if (!fieldProps.has('dynamicProps')) return fieldProps;
+      /* Update the validity state of the field */
+      const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
 
-      const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
-        return resolver({
-          fieldProps: nextFieldProps.toJS(),
-          fields: nextFields.toJS(),
-          form: this
+      // FIXME Update the fields with dynamic props
+      const nextResolvedFields = nextFields.map((fieldProps) => {
+        if (!fieldProps.has('dynamicProps')) return fieldProps;
+
+        const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
+          return resolver({
+            fieldProps: nextFieldProps.toJS(),
+            fields: nextFields.toJS(),
+            form: this
+          });
         });
+
+        return fieldProps.merge(resolvedProps);
       });
 
-      return fieldProps.merge(resolvedProps);
-    });
+      console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
+      console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
+      console.log('propsPatch:', propsPatch);
+      console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
+      console.log('next value:', nextFieldProps.get('value'));
+      console.log('nextFields:', Object.assign({}, nextFields.toJS()));
+      console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
+      console.groupEnd();
 
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
-    console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
-    console.log('propsPatch:', propsPatch);
-    console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
-    console.log('next value:', nextFieldProps.get('value'));
-    console.log('nextFields:', Object.assign({}, nextFields.toJS()));
-    console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
-    console.groupEnd();
-
-    return new Promise((resolve, reject) => {
-      try {
-        this.setState({ fields: nextResolvedFields }, () => resolve({
-          nextFieldProps,
-          nextFields: nextResolvedFields
-        }));
-      } catch (error) {
-        return reject(error);
-      }
-    });
+      return new Promise((resolve, reject) => {
+        try {
+          this.setState({ fields: nextResolvedFields }, () => resolve({
+            nextFieldProps,
+            nextFields: nextResolvedFields
+          }));
+        } catch (error) {
+          return reject(error);
+        }
+      });
+    } catch (error) {
+      throw new Error('Updating the field failed. Field props:', fieldPath, fieldProps && fieldProps.toJS());
+    }
   }
 
   /**
