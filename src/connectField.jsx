@@ -7,7 +7,6 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-// import defaultFieldProps from './const/default-field-props';
 import {
   isset,
   IterableInstance,
@@ -31,8 +30,6 @@ export default function connectField(options) {
   return function (WrappedComponent) {
     class Field extends React.Component {
       static displayName = `Field.${getComponentName(WrappedComponent)}`
-
-      // static defaultProps = defaultFieldProps
 
       static defaultProps = {
         type: 'text',
