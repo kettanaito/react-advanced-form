@@ -6,7 +6,7 @@
  * @param {object} nextProps
  * @return {object}
  */
-const subscribedProps = ['initialValue', 'disabled'];
+const subscribedProps = ['disabled'];
 
 export default function getPropsPatch({ contextProps, nextProps }) {
   if (!nextProps) return {};
@@ -24,7 +24,7 @@ export default function getPropsPatch({ contextProps, nextProps }) {
       patch[propName] = nextValue;
 
       /* Ensure "initialValue" updates are propagated to the actual "value" */
-      if (propName === 'initialValue') patch.value = nextValue;
+      // if (propName === 'initialValue') patch.value = nextValue;
     }
 
     return patch;
