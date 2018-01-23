@@ -7,7 +7,7 @@
   "scripts": {
     "start": "webpack-dev-server",
     "storybook": "start-storybook -p 6006",
-    "build": "NODE_ENV=production webpack",
+    "build": "webpack",
     "test": "mocha --require babel-core/register --require babel-polyfill",
     "build-storybook": "build-storybook",
     "prepublishOnly": "npm run build && npm test"
