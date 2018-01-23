@@ -1,13 +1,4 @@
-import React from 'react';
-import { createField } from '../../lib';
-
-function Radio({ fieldProps }) {
-  return (<input { ...fieldProps } />);
-}
-
-Radio.displayName = 'Radio';
-
-export default createField({
+export default {
   /**
    * Handling of contextProps of  Radio inputs' is unique.
    * 1. Never pass "props.value" to context. <Field.Radio> is always expected to receive a "value" prop,
@@ -34,4 +25,4 @@ export default createField({
     value: props.value,
     checked: (props.value === contextProps.get('value'))
   })
-})(Radio);
+};

@@ -7,15 +7,9 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import {
-  isset,
-  IterableInstance,
-  getComponentName,
-  getPropsPatch,
-  fieldUtils
-} from '../utils';
+import { isset, IterableInstance, getComponentName, getPropsPatch, fieldUtils } from '../utils';
 
-/* Default options */
+/** Default options of "connectField()" HOC. */
 const defaultOptions = {
   valuePropName: 'value',
   mapPropsToField: ({ fieldRecord }) => fieldRecord,
@@ -23,7 +17,7 @@ const defaultOptions = {
 };
 
 export default function connectField(options) {
-  /* Merge default and custom options */
+  /** Merge default and custom options. */
   const hocOptions = { ...defaultOptions, ...options };
   const { valuePropName } = hocOptions;
 
@@ -36,7 +30,6 @@ export default function connectField(options) {
         required: false
       }
 
-      /* Context types expected by the field */
       static contextTypes = {
         fieldGroup: PropTypes.string,
         fields: IterableInstance,
@@ -65,9 +58,7 @@ export default function connectField(options) {
         this.contextProps = this.registerWith();
       }
 
-      /**
-       * Registers the current field within the parent form's state with the given props.
-       */
+      /** Registers the current field within the parent form's state with the given props. */
       registerWith() {
         const { fieldPath } = this;
         const { fields, fieldGroup } = this.context;
@@ -111,7 +102,12 @@ export default function connectField(options) {
           validatedSync: false,
           validSync: false,
           validatedAsync: false,
-          validAsync: false
+          validAsync: false,
+
+          /* Events */
+          onFocus: this.props.onFocus,
+          onChange: this.props.onChange,
+          onBlur: this.props.onBlur
         };
 
         console.log('defaultFieldRecord:', Object.assign({}, defaultFieldRecord));
@@ -157,8 +153,8 @@ export default function connectField(options) {
         /**
          * Handle value change of controlled fields.
          * The responsibility of value update of controlled fields is delegated to the end developer.
-         * However, that still means that the new value should be propagated to theF orm's state to guarantee
-         * proper value in the form lifecycle methods.
+         * However, that still means that the new value should be propagated to the Form's state to guarantee
+         * the field's internal record is updated respectively.
          */
         const controllable = contextProps.get('controllable');
         const nextValue = nextProps[valuePropName];
@@ -172,8 +168,8 @@ export default function connectField(options) {
           });
         }
 
+        // TODO This is worth redoing!
         /**
-         * TODO This is worth redoing.
          * Handle direct props updates.
          * When direct props receive new values, those should be updated in the Form's state as well.
          */
@@ -190,9 +186,7 @@ export default function connectField(options) {
         }
       }
 
-      /**
-       * Ensures "this.contextProps" is always actual.
-       */
+      /** Ensures "this.contextProps" is always actual. */
       componentWillUpdate(nextProps, nextState, nextContext) {
         const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
 
@@ -260,13 +254,13 @@ export default function connectField(options) {
       render() {
         const { props, contextProps } = this;
 
-        /* Get the enforced props from HOC options */
+        /** Reference to the enforced props from the HOC options */
         const enforcedProps = hocOptions.enforceProps(props, contextProps);
 
-        /* A mirror reference to "contextProps", an internal field record stored in Form's state */
+        /** A mirror reference to "contextProps", an internal field record stored in Form's state */
         const fieldState = contextProps.toJS();
 
-        /* Props to assign to the field component directly (input, select, etc.) */
+        /** Props to assign to the field component directly (input, select, etc.) */
         const fieldProps = {
           name: fieldState.name,
           type: fieldState.type,
@@ -283,11 +277,6 @@ export default function connectField(options) {
           onBlur: this.handleBlur
         };
 
-        console.log('directProps', props);
-        console.log('fieldState:', fieldState);
-        console.log('fieldProps:', fieldProps);
-        console.warn(' ');
-
         return (
           <WrappedComponent
             { ...props }
@@ -300,7 +289,6 @@ export default function connectField(options) {
       }
     }
 
-    /* Ensure static properties are hoisted */
     return hoistNonReactStatics(Field, WrappedComponent);
   };
 }

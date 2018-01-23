@@ -1,5 +1,4 @@
 import React from 'react';
-import { Input, Select, Checkbox, Textarea } from 'react-advanced-form-addons';
 import { Form, Field, Condition } from '../src';
 
 const validationRules = {};
@@ -33,7 +32,7 @@ export default class FullForm extends React.Component {
           <div>
             <p>Choose gender:</p>
             <label>
-              <Radio
+              <Field.Radio
                 name="gender"
                 value="male"
                 onChange={({ nextValue }) => {
@@ -44,7 +43,7 @@ export default class FullForm extends React.Component {
             </label>
 
             <label>
-              <Radio
+              <Field.Radio
                 name="gender"
                 onChange={({ nextValue }) => this.setState({ gender: nextValue })}
                 value="pooper"
@@ -53,7 +52,7 @@ export default class FullForm extends React.Component {
             </label>
 
             <label>
-              <Radio
+              <Field.Radio
                 name="gender"
                 onChange={({ nextValue }) => this.setState({ gender: nextValue })}
                 value="female" />
@@ -62,22 +61,22 @@ export default class FullForm extends React.Component {
           </div>
         </Field.Group>
 
-        <Input
+        <Field.Input
           name="foo"
           initialValue={ undefined }
           className="HOLLY SHIT!"
           required />
-        <Input
+        <Field.Input
           name="abc"
           initialValue={ undefined } />
 
         <div>
-          Counry
-          <Select name="country" initialValue={ (gender === 'male') ? 'UA' : 'UK' }>
+          Counry:
+          <Field.Select name="country" initialValue={ (gender === 'male') ? 'UA' : 'UK' }>
             <option value="US">United States</option>
             <option value="UK">United Kingdom</option>
             <option value="UA">Ukraine</option>
-          </Select>
+          </Field.Select>
         </div>
 
         {/* <Condition when={({ fields }) => fields.country && fields.country.value === 'UK'}>

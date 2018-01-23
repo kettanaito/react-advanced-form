@@ -1,10 +1,10 @@
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
-import { connectField, Form } from '../../../lib';
+import { createField, Form } from '../../../lib';
 import { defer } from '../../common';
 
-describe('connectField', function () {
+describe('createField', function () {
   it('Supports custom event handlers', () => {
     let sum = 0;
 
@@ -24,7 +24,7 @@ describe('connectField', function () {
       }
     }
 
-    const EnhancedField = connectField({
+    const EnhancedField = createField({
       mapPropsToField: ({ fieldRecord }) => ({
         ...fieldRecord,
         type: 'text'

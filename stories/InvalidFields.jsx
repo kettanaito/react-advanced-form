@@ -1,7 +1,6 @@
 import React from 'react';
-import { Input } from 'react-advanced-form-addons';
 import { Form, Field, Condition } from '../lib';
-import { TValidationMessages } from '../src/FormProvider';
+import { TValidationMessages } from '../src/components/FormProvider';
 
 const validationMessages = {
   general: {
@@ -23,7 +22,7 @@ export default class InvalidFields extends React.Component {
         <div>
           <label>
             One:
-            <Input name="one" required />
+            <Field.Input name="one" required />
           </label>
         </div>
 
@@ -31,14 +30,14 @@ export default class InvalidFields extends React.Component {
           <div>
             <label>
               Two:
-              <Input name="two" required />
+              <Field.Input name="two" required />
             </label>
           </div>
 
           <div>
             <label>
               Three:
-              <Input name="three" required />
+              <Field.Input name="three" required />
             </label>
           </div>
         </Condition>
@@ -46,7 +45,7 @@ export default class InvalidFields extends React.Component {
         <div>
           <label>
             Four:
-            <Input name="four" required />
+            <Field.Input name="four" required />
           </label>
         </div>
 

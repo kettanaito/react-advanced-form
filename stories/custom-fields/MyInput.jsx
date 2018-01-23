@@ -1,5 +1,5 @@
 import React from 'react';
-import { connectField } from '../../src';
+import { createField, Field } from '../../src';
 import feather from 'feather-icons';
 
 const inputStyles = {
@@ -27,7 +27,7 @@ class Input extends React.Component {
     return (
       <div className="form-group" style={{ marginBottom: '1rem', opacity }}>
         <div style={{ display: 'inline-flex', position: 'relative' }}>
-          <input
+          <Field.Input
             { ...fieldProps }
             style={{ ...inputStyles, borderColor }} />
 
@@ -58,4 +58,4 @@ class Input extends React.Component {
   }
 }
 
-export default connectField()(Input);
+export default createField()(Input);
