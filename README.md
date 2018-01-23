@@ -15,6 +15,8 @@
   </a>
 </p>
 
+> Thank you for deciding to try React Advanced Form! Please note that before the `1.0` release the package is under heavy development. Things may change, and things may break. We are doing our best to release breaking changes in the proper versions of the library. Help us reach `1.0` faster by [Contributing](#contributing) to the library. Thank you.
+
 [React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library for tailoring simple and flexible forms with a powerful functionality built-in.
 
 No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
