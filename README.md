@@ -7,6 +7,9 @@
   <a href="#">
     <img src="https://circleci.com/gh/kettanaito/react-advanced-form/tree/master.svg?style=shield" title="Build status" />
   </a>
+  <a href="https://www.codefactor.io/repository/github/kettanaito/react-advanced-form" title="Code review">
+    <img src="https://www.codefactor.io/repository/github/kettanaito/react-advanced-form/badge" />
+  </a>
   <a href="https://david-dm.org/kettanaito/react-advanced-form" title="Dependencies status">
     <img src="https://david-dm.org/kettanaito/react-advanced-form/status.svg" />
   </a>

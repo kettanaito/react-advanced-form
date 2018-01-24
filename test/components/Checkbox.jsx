@@ -1,5 +1,5 @@
 import React from 'react';
-import { createField } from '../../lib';
+import { createField, fieldPresets } from '../../lib';
 
 function Checkbox({ fieldProps }) {
   return (<input { ...fieldProps } />);
@@ -7,14 +7,4 @@ function Checkbox({ fieldProps }) {
 
 Checkbox.displayName = 'Checkbox';
 
-export default createField({
-  valuePropName: 'checked',
-  mapPropsToField: ({ props: { checked }, fieldRecord }) => ({
-    ...fieldRecord,
-    type: 'checkbox',
-    initialValue: checked
-  }),
-  enforceProps: (props, contextProps) => ({
-    checked: contextProps.get('checked')
-  })
-})(Checkbox);
+export default createField(fieldPresets.checkbox)(Checkbox);
