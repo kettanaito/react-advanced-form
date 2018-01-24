@@ -1,5 +1,5 @@
 import React from 'react';
-import { createField, Field } from '../../src';
+import { createField } from '../../src';
 import feather from 'feather-icons';
 
 const inputStyles = {
@@ -15,8 +15,6 @@ class Input extends React.Component {
     const { fieldProps, fieldState, className } = this.props;
     const { valid, invalid, error, validating, disabled } = fieldState;
 
-    console.log('CustomInput.props', this.props);
-
     const iconOptions = { width: 16, height: 16 };
 
     const borderColor = (valid && 'green') || (invalid && '#cc0000');
@@ -27,7 +25,7 @@ class Input extends React.Component {
     return (
       <div className="form-group" style={{ marginBottom: '1rem', opacity }}>
         <div style={{ display: 'inline-flex', position: 'relative' }}>
-          <Field.Input
+          <input
             { ...fieldProps }
             style={{ ...inputStyles, borderColor }} />
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FormProvider, Form, Condition, Field } from '../src';
-import { MyInput, MySelect, MyTextarea } from './custom-fields';
+import { MyInput, MySelect, MyCheckbox, MyTextarea } from './custom-fields';
 
 /* Form validation rules */
 const formRules = {
@@ -198,9 +198,9 @@ export default class DefaultForm extends Component {
               className="HOLLY SHIT!"
               required /> */}
 
-            {/* <Field.Checkbox
+            <MyCheckbox
               name="acceptTerms"
-              disabled={ isDisabled } /> */}
+              disabled={ isDisabled } />
 
             <button onClick={ this.toggleDisabled }>Toggle disabled</button>
 
