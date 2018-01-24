@@ -22,8 +22,34 @@
 No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
 
 ## Features
-<br>
-<img src="./features.svg" />
+
+<table>
+  <tr>
+    <th>Boilerplate-free</th>
+    <th>Intuitive usage</th>
+    <th>Smart multi-layer validation</th>
+  </tr>
+  <tr>
+    <td align="center">Stop wasting time on redundant state management of forms, and start <i>creating</i> forms in the end!</td>
+    <td align="center">You place a <code>Form</code> component, declare the fields and your form is working without extra effort.</td>
+    <td align="center">Dozens of use cases have been refined to provide you flexible validation to suit <strong>them all</strong>.</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <th>Custom styling</th>
+    <th>Third-party libraries support</th>
+    <th>Built-in Form callbacks</th>
+  </tr>
+  <tr>
+    <td align="center">Create custom styles of fields for your project like you have never done before.</td>
+    <td align="center">Love external field library? Connect it with RAF and enjoy <br>the benefits of both!</td>
+    <td align="center">Know precisely what happens with the Form and react to that by the provided callback methods.</td>
+  </tr>
+</table>
 <br>
 
 ## Getting started
