@@ -86,6 +86,7 @@ yarn add react-advanced-form
 ```jsx
 import React from 'react';
 import { Form, Field } from 'react-advanced-form';
+import { Input, Radio, Checkbox } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
   handleSubmit = ({ serialized }) => {
@@ -98,16 +99,22 @@ export default class MyForm extends React.Component {
   render() {
     return (
       <Form action={ this.handleSubmit }>
-        <Field.Input name="username" required />
-        <Field.Input name="password" type="password" required />
-        <Field.Radio name="gender" value="male" />
-        <Field.Radio name="gender" value="female" />
+        <Input name="username" required />
+        <Input name="password" type="password" required />
+
+        <Radio name="gender" value="male" />
+        <Radio name="gender" value="female" />
+
+        <Checkbox name="subscribe" />
+
         <button type="submit">Submit</button>
       </Form>
     );
   }
 }
 ```
+
+> **Note:** We are using [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) package meant for fast form prototypes.
 
 Read the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more information on components, methods and usage examples.
 
