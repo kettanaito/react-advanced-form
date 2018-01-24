@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="877px" height="288px" viewBox="0 0 877 288" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>Artboard</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard">
+            <text id="Boilerplate-free" font-family="SFProText-Medium, SF Pro Text" font-size="24" font-weight="400" fill="#24292E">
+                <tspan x="31.6796875" y="19">Boilerplate-free</tspan>
+            </text>
+            <text id="Custom-styling" font-family="SFProText-Medium, SF Pro Text" font-size="24" font-weight="400" fill="#24292E">
+                <tspan x="36.1972656" y="192">Custom styling</tspan>
+            </text>
+            <text id="Multi-layer-validati" font-family="SFProText-Medium, SF Pro Text" font-size="24" font-weight="400" fill="#24292E">
+                <tspan x="622.578125" y="19">Multi-layer validation</tspan>
+            </text>
+            <text id="Built-in-Form-callba" font-family="SFProText-Medium, SF Pro Text" font-size="24" font-weight="400" fill="#24292E">
+                <tspan x="612.248047" y="192">Built-in Form callbacks</tspan>
+            </text>
+            <text id="Intuitive-usage" font-family="SFProText-Medium, SF Pro Text" font-size="24" font-weight="400" fill="#24292E">
+                <tspan x="349.025391" y="19">Intuitive usage</tspan>
+            </text>
+            <text id="Third-party-support" font-family="SFProText-Medium, SF Pro Text" font-size="24" font-weight="400" fill="#24292E">
+                <tspan x="319.025391" y="192">Third-party support</tspan>
+            </text>
+            <text id="Stop-wasting-time-on" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26" fill="#6A737D">
+                <tspan x="2.67773438" y="56">Stop wasting time on redundant </tspan>
+                <tspan x="0.271484375" y="82">state management of forms, and </tspan>
+                <tspan x="6.10742188" y="108">start creating forms in the end!</tspan>
+            </text>
+            <text id="Create-custom-styles" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26" fill="#6A737D">
+                <tspan x="10.5253906" y="229">Create custom styles of fields</tspan>
+                <tspan x="13.0761719" y="255">for your project like you have </tspan>
+                <tspan x="51.4199219" y="281">never done before.</tspan>
+            </text>
+            <text id="Dozens-of-use-cases" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26">
+                <tspan x="625.861328" y="56" fill="#6A737D">Dozens of use cases have been </tspan>
+                <tspan x="632.474609" y="82" fill="#6A737D">refined to provide you flexible </tspan>
+                <tspan x="646.130859" y="108" fill="#6A737D">validation to suit </tspan>
+                <tspan x="775.076172" y="108" font-family="SFProText-Bold, SF Pro Text" font-weight="bold" fill="#24292E">them all</tspan>
+                <tspan x="839.326172" y="108" fill="#6A737D">.</tspan>
+            </text>
+            <text id="Know-precisely-what" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26" fill="#6A737D">
+                <tspan x="614.732422" y="229">Know precisely what happens with </tspan>
+                <tspan x="620.255859" y="255">the Form and react to that by the </tspan>
+                <tspan x="640.775391" y="281">provided callback methods.</tspan>
+            </text>
+            <text id="You-place-a-Form-com" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26">
+                <tspan x="321.501953" y="55" fill="#6A737D">You place a </tspan>
+                <tspan x="413.876953" y="55" font-family="Monaco" fill="#24292E">Form</tspan>
+                <tspan x="452.283203" y="55" fill="#6A737D"> component, </tspan>
+                <tspan x="305.201172" y="81" fill="#6A737D">declare the fields and your form is </tspan>
+                <tspan x="326.826172" y="107" fill="#6A737D">working without extra effort.</tspan>
+            </text>
+            <text id="Love-external-field" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26" fill="#6A737D">
+                <tspan x="334.544922" y="229">Love external field library?</tspan>
+                <tspan x="320.908203" y="255">Connect it with RAF and enjoy</tspan>
+                <tspan x="357.017578" y="281">the benefits of both!</tspan>
+            </text>
+        </g>
+    </g>
+</svg>
