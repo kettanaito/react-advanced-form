@@ -41,7 +41,7 @@ npm install react-advanced-form --save
 yarn add react-advanced-form
 ```
 
-## Basic usage
+### Basic usage
 ```jsx
 import React from 'react';
 import { Form, Field } from 'react-advanced-form';
@@ -71,7 +71,7 @@ export default class MyForm extends React.Component {
 Read the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more information on components, methods and usage examples.
 
 ## Contributing
-Any of your contributions are highly appreciated. Please read the [Contribution guidelines](./docs/developers/contributing.md) before contributing to the library. Moreover, development isn't the only way to contribute, there are [many more](./docs/developers/contributing.md#other-contributions).
+Any of your contributions are highly appreciated. Please read the [Contribution guidelines](./docs/developers/contributing.md) before contributing to the library. Moreover, development isn't the only way to contribute – there are [many more](./docs/developers/contributing.md#other-contributions).
 
 ## License
 This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE). See the license file for more details.
