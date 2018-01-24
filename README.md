@@ -21,6 +21,10 @@
 
 No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
 
+## Features
+<br>
+<img src="./features.svg" />
+
 ## Getting started
 ### Prerequisites
 * [NodeJS](https://nodejs.org) (6.0+)
