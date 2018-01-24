@@ -34,6 +34,7 @@ export default function connectField(options) {
 
       static defaultProps = {
         type: 'text',
+        disabled: false,
         required: false
       }
 
@@ -97,7 +98,7 @@ export default function connectField(options) {
           /* States */
           controllable: isset(value),
           focused: false,
-          disabled: false,
+          disabled: this.props.disabled,
 
           /* Validation */
           error: null,
