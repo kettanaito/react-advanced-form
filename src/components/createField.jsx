@@ -16,6 +16,13 @@ const defaultOptions = {
   enforceProps: () => ({})
 };
 
+/**
+ * Map of common event handlers.
+ * When any of those are passed to the end instance of the custom field, they are mapped to the
+ * field's internal record and called during the field's lifecycle methods in the Form.
+ */
+const commonEventHandlers = ['onFocus', 'onChange', 'onBlur'];
+
 export default function connectField(options) {
   /** Merge default and custom options. */
   const hocOptions = { ...defaultOptions, ...options };
@@ -102,13 +109,14 @@ export default function connectField(options) {
           validatedSync: false,
           validSync: false,
           validatedAsync: false,
-          validAsync: false,
-
-          /* Events */
-          onFocus: this.props.onFocus,
-          onChange: this.props.onChange,
-          onBlur: this.props.onBlur
+          validAsync: false
         };
+
+        /* Attach common event handlers conditionally */
+        commonEventHandlers.forEach((handlerName) => {
+          const eventHandler = this.props[handlerName];
+          if (eventHandler) defaultFieldRecord[handlerName] = eventHandler;
+        });
 
         console.log('defaultFieldRecord:', Object.assign({}, defaultFieldRecord));
 
