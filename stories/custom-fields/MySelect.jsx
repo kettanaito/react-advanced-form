@@ -14,8 +14,6 @@ export default class MyCustomSelect extends React.Component {
 
     return (
       <div className="form-group" style={{ marginBottom: '1rem' }}>
-        {/* <Field style={ selectStyles } /> */}
-
         <select  { ...fieldHandlers } style={ selectStyles } />
 
         { !valid && (
