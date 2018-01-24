@@ -54,6 +54,6 @@ export default async function validate({ type, fieldProps, fields, form, formRul
     });
   }
 
-  /* Return the accumulated result (patchProps) of the validation */
+  /* Return the accumulated result (propsPatch) of the validation */
   return validationSeq.run();
 }

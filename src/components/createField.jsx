@@ -21,7 +21,7 @@ const defaultOptions = {
  * When any of those are passed to the end instance of the custom field, they are mapped to the
  * field's internal record and called during the field's lifecycle methods in the Form.
  */
-const commonEventHandlers = ['onFocus', 'onChange', 'onBlur'];
+const inheritedProps = ['rule', 'asyncRule', 'onFocus', 'onChange', 'onBlur'];
 
 export default function connectField(options) {
   /** Merge default and custom options. */
@@ -113,10 +113,10 @@ export default function connectField(options) {
           validAsync: false
         };
 
-        /* Attach common event handlers conditionally */
-        commonEventHandlers.forEach((handlerName) => {
-          const eventHandler = this.props[handlerName];
-          if (eventHandler) defaultFieldRecord[handlerName] = eventHandler;
+        /* Inherit expected props to the field record */
+        inheritedProps.forEach((propName) => {
+          const propValue = this.props[propName];
+          if (propValue) defaultFieldRecord[propName] = propValue;
         });
 
         console.log('defaultFieldRecord:', Object.assign({}, defaultFieldRecord));
