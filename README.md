@@ -25,6 +25,11 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
 
 <table>
   <tr>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
     <th>Boilerplate-free</th>
     <th>Intuitive usage</th>
     <th>Smart multi-layer validation</th>
@@ -33,6 +38,11 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
     <td align="center">Stop wasting time on redundant state management of forms, and start <i>creating</i> forms in the end!</td>
     <td align="center">You place a <code>Form</code> component, declare the fields and your form is working without extra effort.</td>
     <td align="center">Dozens of use cases have been refined to provide you flexible validation to suit <strong>them all</strong>.</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td></td>
   </tr>
   <tr>
     <td></td>
