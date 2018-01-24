@@ -27,7 +27,9 @@
             <text id="Stop-wasting-time-on" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26" fill="#6A737D">
                 <tspan x="2.67773438" y="56">Stop wasting time on redundant </tspan>
                 <tspan x="0.271484375" y="82">state management of forms, and </tspan>
-                <tspan x="6.10742188" y="108">start creating forms in the end!</tspan>
+                <tspan x="6.04492188" y="108">start </tspan>
+                <tspan x="45.4824219" y="108" font-family="SFProText-Italic, SF Pro Text" font-style="italic">creating</tspan>
+                <tspan x="107.458984" y="108"> forms in the end!</tspan>
             </text>
             <text id="Create-custom-styles" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26" fill="#6A737D">
                 <tspan x="10.5253906" y="229">Create custom styles of fields</tspan>
@@ -47,9 +49,9 @@
                 <tspan x="640.775391" y="281">provided callback methods.</tspan>
             </text>
             <text id="You-place-a-Form-com" font-family="SFProText-Regular, SF Pro Text" font-size="16" font-weight="normal" line-spacing="26">
-                <tspan x="321.501953" y="55" fill="#6A737D">You place a </tspan>
-                <tspan x="413.876953" y="55" font-family="Monaco" fill="#24292E">Form</tspan>
-                <tspan x="452.283203" y="55" fill="#6A737D"> component, </tspan>
+                <tspan x="316.701172" y="55" fill="#6A737D">You place a </tspan>
+                <tspan x="409.076172" y="55" font-family="Monaco" fill="#24292E">Form </tspan>
+                <tspan x="457.083984" y="55" fill="#6A737D"> component, </tspan>
                 <tspan x="305.201172" y="81" fill="#6A737D">declare the fields and your form is </tspan>
                 <tspan x="326.826172" y="107" fill="#6A737D">working without extra effort.</tspan>
             </text>
