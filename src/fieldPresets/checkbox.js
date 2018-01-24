@@ -3,7 +3,7 @@ export default {
   mapPropsToField: ({ props: { checked }, fieldRecord }) => ({
     ...fieldRecord,
     type: 'checkbox',
-    checked,
+    checked: !!checked,
     initialValue: checked
   }),
   enforceProps: (props, contextProps) => ({
