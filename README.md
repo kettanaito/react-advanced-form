@@ -24,6 +24,7 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
 ## Features
 <br>
 <img src="./features.svg" />
+<br>
 
 ## Getting started
 ### Prerequisites
