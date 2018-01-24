@@ -114,7 +114,7 @@ export default class MyForm extends React.Component {
 }
 ```
 
-> **Note:** We are using [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) package meant for fast form prototypes.
+> **Note:** We are using [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) package in this example. It's designed for fast form prototypes based on React Advanced Form.
 
 Read the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more information on components, methods and usage examples.
 
