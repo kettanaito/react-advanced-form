@@ -85,7 +85,7 @@ export default function connectField(options) {
 
         const defaultFieldRecord = {
           /* Internals */
-          ref: this,
+          ref: this.fieldRef,
           fieldPath,
 
           /* General */
@@ -146,9 +146,10 @@ export default function connectField(options) {
 
         /**
          * Notify the parent Form that a new field attempts to register.
-         * Timeout makes this action async, hence each registration attempt may access the actual state of the form by the
-         * time the registration happens. Otherwise, registrations happen at approximately same time, resulting into fields
-         * being unaware of each other.
+         * Timeout makes this action async, hence each registration attempt may access
+         * the actual state of the form by the time the registration happens. Otherwise,
+         * registrations happen at approximately same time, resulting into fields being
+         * unaware of each other.
          */
         setTimeout(() => this.context.registerField(fieldProps), 0);
 
@@ -177,7 +178,7 @@ export default function connectField(options) {
           });
         }
 
-        // TODO This is worth redoing!
+        // TODO This is worth re-doing!
         /**
          * Handle direct props updates.
          * When direct props receive new values, those should be updated in the Form's state as well.
@@ -199,7 +200,7 @@ export default function connectField(options) {
       componentWillUpdate(nextProps, nextState, nextContext) {
         const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
 
-        /* Bypass contextProps updates when field is updated, but not yet registred in the Form's state */
+        /* Bypass scenarios when field is being updated, but not yet registred within the Form */
         if (!nextContextProps) return;
 
         /* Update the internal reference to contextProps */
@@ -209,6 +210,25 @@ export default function connectField(options) {
       componentWillUnmount() {
         /* Deletes the field's bindings from the Form on unmounting */
         this.context.unregisterField(this.contextProps);
+      }
+
+      /**
+       * Handle field and inner field component refenreces.
+       */
+      handleRef = (component) => {
+        /**
+         * Store inner component reference internally.
+         * This way inner reference is accessible by custom field reference like
+         * "CustomField.ref(Field).innerRef(Component)".
+         */
+        this.innerRef = component;
+
+        /**
+         * Allow direct reference to inner component.
+         * <CustomField innerRef={ ... } />
+         */
+        const { innerRef } = this.props;
+        if (innerRef) innerRef(component);
       }
 
       handleFocus = event => this.context.handleFieldFocus({
@@ -271,6 +291,7 @@ export default function connectField(options) {
 
         /** Props to assign to the field component directly (input, select, etc.) */
         const fieldProps = {
+          ref: this.handleRef,
           name: fieldState.name,
           type: fieldState.type,
           value: fieldState.controllable ? props.value : fieldState.value,
