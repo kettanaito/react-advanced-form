@@ -15,16 +15,17 @@ This component is designed to provide the data separation on a layout level. Par
 ```jsx
 import React from 'react';
 import { Form, Field } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default function MyForm() {
     return (
         <Form action={ ... }>
             <Field.Group name="primaryInfo">
-                <Field.Input name="username" value="admin" />
-                <Field.Input name="firstName" value="John" />
+                <Input name="username" value="admin" />
+                <Input name="firstName" value="John" />
             </Field.Group>
 
-            <Field.Input name="city" value="London" />
+            <Input name="city" value="London" />
         </Form>
     );
 }
@@ -53,16 +54,17 @@ Consider this:
 ```jsx
 import React from 'react';
 import { Form, Field } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default function MyForm() {
     return (
         <Form action={ ... }>
-            <Field.Input name="email" value="admin@site.com" />
+            <Input name="email" value="admin@site.com" />
 
             <h3>Billing address</h3>
             <Field.Group name="billingAddress">
-                <Field.Input name="firstName" value="John" />
-                <Field.Input name="lastName" value="Maverick" />
+                <Input name="firstName" value="John" />
+                <Input name="lastName" value="Maverick" />
             </Field.Group>
 
             <h3>Delivery address</h3>
@@ -73,10 +75,10 @@ export default function MyForm() {
 
             <h3>Contact details</h3>
             <Field.Group name="billingAddress">
-                <Field.Input name="phoneNumber" value="123456789" />
+                <Input name="phoneNumber" value="123456789" />
             </Field.Group>
             <Field.Group name="deliverAddress">
-                <Field.Input name="address" value="Baker st." />
+                <Input name="address" value="Baker st." />
             </Field.Group>
         </Form>
     );

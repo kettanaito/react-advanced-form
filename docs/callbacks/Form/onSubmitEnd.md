@@ -15,7 +15,8 @@ Called immediately after the submit ended, regardless of the submit status (on b
 ## Usage
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
     handleSubmitEnd = ({ res, serialized, fields, form }) => {
@@ -25,7 +26,7 @@ export default class MyForm extends React.Component {
     render() {
         return (
             <Form onSubmitEnd={ this.handleSubmitEnd }>
-                <Field.Input name="username" required />
+                <Input name="username" required />
                 <button type="submit">Submit</button>
             </Form>
         );

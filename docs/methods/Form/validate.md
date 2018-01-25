@@ -17,7 +17,8 @@ Considering the warning note above, there are some use cases when performing man
 
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
     handleClick = () => {
@@ -30,7 +31,7 @@ export default class MyForm extends React.Component {
         return (
             <div>
                 <Form ref={ form => this.form = form }>
-                    <Field.Input name="username" required />
+                    <Input name="username" required />
                 </Form>
                 <a href="#" onClick={ this.handleClick }>Validate</a>
             </div>

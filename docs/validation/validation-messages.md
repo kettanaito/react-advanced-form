@@ -76,7 +76,8 @@ export default {
 ```jsx
 // src/app/components/MyForm.jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 import validationMessages from '../validation-messages';
 
 export default class MyForm extends React.Component {
@@ -101,7 +102,7 @@ export default class MyForm extends React.Component {
   render() {
     return (
       <Form messages={ validationMessages }>
-        <Field.Input
+        <Input
           name="username"
           asyncRule={ this.validateUsername }
           required />

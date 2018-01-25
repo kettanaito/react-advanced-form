@@ -10,7 +10,8 @@ To explain the sequence of the validation let's consider the example below. It i
 
 ```jsx
 import React from 'react';
-import { FormProvider, Form, Field } from 'react-advanced-form';
+import { FormProvider, Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 /* Application-wide validation rules */
 const validationRules = {
@@ -52,13 +53,13 @@ export default class App extends React.Component {
     return (
       <FormProvider rules={ validationRules }>
         <Form rules={ formRules }>
-          <Field.Input
+          <Input
             type="text" // default value, present for clarity
             name="username"
             rule={/[^0-9]/}
             asyncRule={ this.validateUsername }
             required />
-          <Field.Input
+          <Input
             name="firstName"
             rule={({ value, fieldProps, fields, form }) => {
               return (value !== 'foo');

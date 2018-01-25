@@ -10,7 +10,8 @@ Performs a manual serialization of the current `Form`.
 
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
     handleClick = () => {
@@ -21,10 +22,10 @@ export default class MyForm extends React.Component {
         return (
             <div>
                 <Form ref={ form => this.form = form }>
-                    <Field.Input name="username" value="admin" />
+                    <Input name="username" value="admin" />
                 </Form>
 
-                <a href="#" onClick={ this.handleClick }>Serialize</a>
+                <button onClick={ this.handleClick }>Serialize</button>
             </div>
         );
     }

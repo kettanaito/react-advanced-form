@@ -47,10 +47,12 @@ ReactDOM.render(<App />, document.getElementById('root'));
 > **Note: **Although `FormProvider` is not mandatory for the forms to work, it is highly recommended to handle application-wide validation this way. The latter ensures a consistent user and developer experience.
 
 ### Create a custom form
+We are going to use a [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) package designed as a fast prototyping tool for React Advanced Form. You can, and most likely will, use your own custom fields which suit your project's visual needs.
 
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class RegistrationForm extends React.Component {
     handleSubmit = ({ serialized }) => {
@@ -63,8 +65,8 @@ export default class RegistrationForm extends React.Component {
     render() {
         return (
             <Form action={ this.handleSubmit }>
-                <Field.Input name="email" required />
-                <Field.Input name="password" type="password" required />
+                <Input name="email" required />
+                <Input name="password" type="password" required />
                 <button type="Submit">Register</button>
             </Form>
         );

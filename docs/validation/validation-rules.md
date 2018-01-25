@@ -66,7 +66,7 @@ Once declared, the validation rules can be reused in `FormProvider` or passed to
 ```jsx
 // src/app/index.js
 import React from 'react';
-import { } from 'react-advanced-form';
+import { FormProvider } from 'react-advanced-form';
 import validationRules from './validation-rules';
 
 const App = ({ children }) => (
@@ -93,13 +93,14 @@ export default {
 ```jsx
 // src/app/components/MyForm.jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 import customValidationRules from '../../validation-rules-custom';
 
 export default function MyForm() {
     return (
         <Form rules={ customValidationRules }>
-            <Field.Input name="phoneNumber" type="tel" />
+            <Input name="phoneNumber" type="tel" />
         </Form>
     );
 }

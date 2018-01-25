@@ -15,7 +15,8 @@ Called immediately in case asynchronous submit action resolves.
 ## Usage
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class RegistrationForm extends React.Component {
     handleUserRegistered = ({ res, serialized, fields, form }) => {
@@ -25,7 +26,7 @@ export default class RegistrationForm extends React.Component {
     render() {
         return (
             <Form onSubmitted={ this.handleUserRegistered }>
-                <Field.Input name="username" required />
+                <Input name="username" required />
                 <button type="submit">Submit</button>
             </Form>
         );

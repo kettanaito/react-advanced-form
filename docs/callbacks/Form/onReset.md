@@ -13,7 +13,8 @@ A callback method called once `Form.reset()` is finished. Useful for reseting th
 ## Usage
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
     constructor() {
@@ -39,10 +40,10 @@ export default class MyForm extends React.Component {
             <Form
                 ref={ form => this.form = form }
                 onReset={ this.handleReset }>
-                <Field.Input
+                <Input
                     name="username"
                     required />
-                <Field.Input
+                <Input
                     name="password"
                     value={ password }
                     onChange={ ({ nextValue }) => this.setState({ password: nextValue }) }

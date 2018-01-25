@@ -9,7 +9,8 @@ Resets the values of the unctronolled fields of the `Form` to their initial valu
 ### Using submit callback handlers
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
   handleSubmitted = ({ res, fields, form }) => {
@@ -19,7 +20,7 @@ export default class MyForm extends React.Component {
   render() {
     return (
       <Form onSubmitted={ this.handleSubmitted }>
-        <Field.Input name="username" initialValue="admin" />
+        <Input name="username" initialValue="admin" />
       </Form>
     );
   }

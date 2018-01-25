@@ -12,7 +12,8 @@ You still need to provide `Form.props.action` for internal submit logic to know 
 ## Usage
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
     handleSubmit = () => {
@@ -31,9 +32,10 @@ export default class MyForm extends React.Component {
                 <Form
                     ref={ form => this.form = form }
                     action={ this.handleSubmit }>
-                    <Field.Input name="username" required />
+                    <Input name="username" required />
                 </Form>
-                <a href="#" onClick={ this.handleClick }>Submit</a>
+
+                <a href="#" onClick={ this.handleClick }>Submit manually</a>
             </div>
         );
     }
