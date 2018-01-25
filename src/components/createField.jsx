@@ -85,7 +85,7 @@ export default function connectField(options) {
 
         const defaultFieldRecord = {
           /* Internals */
-          ref: this.fieldRef,
+          ref: this,
           fieldPath,
 
           /* General */
@@ -215,20 +215,28 @@ export default function connectField(options) {
       /**
        * Handle field and inner field component refenreces.
        */
-      handleRef = (component) => {
+      handleWrappedRef = (Component) => {
         /**
          * Store inner component reference internally.
          * This way inner reference is accessible by custom field reference like
          * "CustomField.ref(Field).innerRef(Component)".
          */
-        this.innerRef = component;
+        this.wrappedRef = Component;
 
         /**
          * Allow direct reference to inner component.
          * <CustomField innerRef={ ... } />
+         *
+         * First, check if the component where "fieldProps" are destructued is another
+         * React Component. This means, that the end developer wrapped the "input" with
+         * another React Component. In that case "innerRef" will not return the actual
+         * "input", but custom React Component, which would be the same what "wrappedRef"
+         * references. In that case, omit explicit call of "innerRef".
          */
+        if (Component instanceof React.Component) return;
+
         const { innerRef } = this.props;
-        if (innerRef) innerRef(component);
+        if (innerRef) innerRef(Component);
       }
 
       handleFocus = event => this.context.handleFieldFocus({
@@ -291,7 +299,6 @@ export default function connectField(options) {
 
         /** Props to assign to the field component directly (input, select, etc.) */
         const fieldProps = {
-          ref: this.handleRef,
           name: fieldState.name,
           type: fieldState.type,
           value: fieldState.controllable ? props.value : fieldState.value,
@@ -300,6 +307,9 @@ export default function connectField(options) {
 
           /* Assign/override the props provided via {options.enforceProps()} */
           ...enforcedProps,
+
+          /* Reference */
+          ref: this.handleWrappedRef,
 
           /* Explicitly assign event handlers to prevent unwanted override */
           onFocus: this.handleFocus,
@@ -310,8 +320,8 @@ export default function connectField(options) {
         return (
           <WrappedComponent
             { ...props }
-            fieldState={ fieldState }
             fieldProps={ fieldProps }
+            fieldState={ fieldState }
             handleFieldFocus={ this.handleFocus }
             handleFieldChange={ this.handleChange }
             handleFieldBlur={ this.handleBlur } />
