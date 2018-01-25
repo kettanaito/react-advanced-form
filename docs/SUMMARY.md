@@ -5,6 +5,7 @@
 * [Introduction](./README.md)
 * [Getting started](./general/getting-started.md)
 * [Concept](./general/concept.md)
+* [Referencing](./general/referencing.md)
 * [Customization](./general/customization.md)
 * [FAQ](./general/faq.md)
 
