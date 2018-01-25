@@ -43,6 +43,7 @@ module.exports = {
     'class-methods-use-this': 0,
     'no-prototype-builtins': 0,
     'no-await-in-loop': 0,
+    'no-return-assign': 0,
 
     /* React */
     'react/jsx-uses-react': 2,
