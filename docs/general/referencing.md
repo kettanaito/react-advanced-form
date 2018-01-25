@@ -1,10 +1,15 @@
 # Referencing
 
 ## Field
-Passing `ref` prop to your custom field will return the reference to the `Field` class, *not* to the DOMElement directly.
+Passing `ref` prop to your custom field will return the reference to the `Field` class, *not* to the DOM node directly.
 
 ```jsx
 class MyForm extends React.Component {
+  componentDidMount() {
+    console.log(this.fieldRef);
+    console.log(this.fieldRef.wrappedRef);
+  }
+
   render() {
     return (
       <Form>
@@ -15,12 +20,14 @@ class MyForm extends React.Component {
 }
 ```
 
-## DOMElement
-In order to reference a DOMElement behind the field (which is `input`, `select`, etc.), please provide an `innerRef` prop to your custom field:
+`this.fieldRef.wrappedRef` references to the component on which gets the destructed `...fieldProps` Object. This may be plain form element, or custom React component propagating those props to the plain form element.
+
+## DOM node
+In order to reference a DOM node behind the field (which is `input`, `select`, etc.), please provide an `innerRef` prop to your custom field:
 
 ```jsx
 class MyForm extends React.Component {
-  handleButtonClick = (event) => {
+  handleButtonClick = () => {
     this.inputRef.focus();
   }
 
@@ -35,15 +42,23 @@ class MyForm extends React.Component {
 }
 ```
 
-> **Note:** You can have both `ref` and `innerRef` props on your custom field at the same time.
+> **Note:** You can have both `ref` and `innerRef` props on the same custom field component at once.
 
-## Nested DOMElement
+> **Note:** `innerRef` will **not** work if the form element is returned by another React Component (for example, when using `styled-components`). See the [Nested DOM nodes](#nested-dom-node) reference example to handle those scenarios.
+
+## Nested DOM node
 When using third-party libraries which wrap the plain form components in their own components you need to map `innerRef` explicitly to return the reference to the DOMElement.
 
 Do that by accessing an `innerRef` prop inside your custom field declaration:
 
 ```jsx
 import { createField } from 'react-advanced-form';
+import styled from 'styled-components';
+
+/* Custom styled component */
+const StyledInput = styled.input`
+  ...
+`;
 
 class Input extends React.Component {
   render() {
@@ -59,3 +74,5 @@ class Input extends React.Component {
 
 export default createField()(Input);
 ```
+
+> Do not be confused, as `StyledInput.props.innerRef` is the prop expected by `styled-components,` while `Input.props.innerRef` is the prop (a function) passed to the custom field component from the `createField()` wrapper.
