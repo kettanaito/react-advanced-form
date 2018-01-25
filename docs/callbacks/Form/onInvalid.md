@@ -1,7 +1,7 @@
 # `Form.onInvalid`
 
 ## Specification
-Called once the submit is prevented due to invalid validation state of the form. Useful for any kind of xustom logic based on the invalid fields.
+Called once the submit is prevented due to invalid validation state of the form. Useful for any kind of custom logic based on the invalid fields.
 
 ### Arguments
 
