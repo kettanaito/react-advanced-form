@@ -122,15 +122,17 @@ That being said, we will create a simple `Input` component based on `Field.Input
 ```jsx
 // ./Input.js
 import React from 'react';
-import { connectField, Field } from 'react-advanced-form';
+import { createField } from 'react-advanced-form';
+import { Input } from 'react-advanced-form';
 
 class Input extends React.Component {
   render() {
-    const { invalid, error } = this.props;
+    const { fieldProps, fieldState } = this.props;
+    const { invalid, error } = fieldState;
 
     return (
       <div>
-        <Field.Input { ...this.props } />
+        <input { ...fieldProps } />
 
         { /* Display validation errors */ }
         { invalid && (<p style={{ color: 'red' }}>{ error }</p>) }
@@ -139,7 +141,7 @@ class Input extends React.Component {
   }
 }
 
-export default connectField(Input);
+export default createField()(Input);
 ```
 
 Now let's create a simple Registration form:
@@ -176,4 +178,3 @@ See the source code of this example [here]().
 We have built a real-world Registration form with advanced validation logic in a few minutes. Of course, this is the demonstration of one particular form, while React Advanced Form offers much more.
 
 Please read more on validation and other features in the further sections of this documentation.
-
