@@ -14,8 +14,10 @@ import validateAsync from './validateAsync';
 import Sequence from '../../classes/Sequence';
 
 /**
-* Shorthand function to return a unified validation result Object.
-*/
+ * Shorthand function to return a unified validation result Object.
+ * @param {Boolean} expected
+ * @param {List<string>} errorPaths
+ */
 export const composeResult = (expected, errorPaths = List()) => (Map({
  propsPatch: Map({
    expected
@@ -23,9 +25,15 @@ export const composeResult = (expected, errorPaths = List()) => (Map({
  errorPaths
 }));
 
+/**
+ * @param {Map} acc
+ * @param {IteratorEntry} entry
+ * @param {Map} resolved
+ * @param {Boolean} isLast
+ * @param {Function} stop
+ */
 const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
-  const resolvedPropsPatch = resolved.get('propsPatch');
-  const expected = resolvedPropsPatch.get('expected');
+  const expected = resolved.getIn(['propsPatch', 'expected']);
 
   /* Prevent any following validation once the previous one fails */
   if (!isLast && !expected) stop();
@@ -33,13 +41,10 @@ const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
   /* Get the name of the sequence entry (which is the validation type) */
   const { name: validationType } = entry;
 
-  const nextPropsPatch = resolvedPropsPatch
-    .set(`validated${validationType}`, true)
-    .set(`valid${validationType}`, expected);
-
   const nextAcc = acc
     .merge(resolved)
-    .set('propsPatch', nextPropsPatch);
+    .setIn(['propsPatch', `validated${validationType}`], true)
+    .setIn(['propsPatch', `valid${validationType}`], expected);
 
   return nextAcc;
 };
