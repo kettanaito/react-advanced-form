@@ -2,6 +2,7 @@ import React from 'react';
 
 import { storiesOf } from '@storybook/react';
 
+import ValidationExample from './ValidationExample';
 import NativeFields from './NativeFields';
 import StyledFields from './StyledFields';
 import Rfq from './Rfq';
@@ -11,6 +12,7 @@ import BugWithForm from './BugWithForm';
 import InvalidFields from './InvalidFields';
 
 storiesOf('Form', module)
+  .add('ValidationExample', () => (<ValidationExample />))
   .add('Native fields', () => (<NativeFields />))
   .add('Styled fields', () => (<StyledFields />))
   .add('Dynamic "required"', () => <Rfq />)

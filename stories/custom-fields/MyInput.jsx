@@ -13,7 +13,7 @@ const inputStyles = {
 class Input extends React.Component {
   render() {
     const { fieldProps, fieldState, className } = this.props;
-    const { valid, invalid, error, validating, disabled } = fieldState;
+    const { valid, invalid, errors, validating, disabled } = fieldState;
 
     const iconOptions = { width: 16, height: 16 };
 
@@ -48,9 +48,9 @@ class Input extends React.Component {
 
         { validating && <p>Validating...</p> }
 
-        { invalid && (
-          <p style={{ color: '#cc0000', marginTop: 4 }}>Error: { error }</p>
-        ) }
+        { invalid && errors.map(error => (
+          <p style={{ color: '#cc0000', marginTop: 4 }}>{ error }</p>
+        )) }
       </div>
     );
   }

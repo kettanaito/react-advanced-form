@@ -15,12 +15,15 @@ import Sequence from '../../classes/Sequence';
 
 const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
   const { expected } = resolved;
+
   /* Prevent any following validation once the previous one fails */
   if (!isLast && !expected) stop();
 
+  const { name } = entry;
+
   /* Update dynamic properties based on the current validation entry */
-  acc[`validated${entry.name}`] = true;
-  acc[`valid${entry.name}`] = expected;
+  acc[`validated${name}`] = true;
+  acc[`valid${name}`] = expected;
   acc.expected = expected;
 
   return { ...acc, ...resolved };
