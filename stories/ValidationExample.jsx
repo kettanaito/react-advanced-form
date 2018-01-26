@@ -27,8 +27,8 @@ const formMessages = {
   },
   name: {
     quantity: {
-      missing: 'Please fill in.',
-      invalid: 'Enter valid "quantity".',
+      missing: 'Name-specific missing message',
+      invalid: 'Name-specific invalid message',
       rules: {
         forbidLetters: ({ value }) => `Does "${value}" look like a number to you?`
       }
@@ -73,7 +73,8 @@ export default class ValidationExample extends Component {
           <MyInput
             name="quantity"
             initialValue="s"
-            placeholder="Quantity" />
+            placeholder="Quantity"
+            required />
 
           <button type="submit">Submit</button>
         </Form>

@@ -4,7 +4,7 @@
 import { List } from 'immutable';
 import { composeResult } from './validate';
 
-const schemaSelectors = ['type', 'name'];
+const schemaSelectors = ['name', 'type'];
 
 const commonErrorTypes = {
   missing: 'missing',
@@ -76,7 +76,7 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
 
   /* Empty required fields are unexpected */
   if (!value && required) {
-    return composeResult(false, List(commonErrorTypes.missing));
+    return composeResult(false, List([[commonErrorTypes.missing]]));
   }
 
   /* Assume Field doesn't have any relevant validation rules */
@@ -102,7 +102,7 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
       : rule.test(value);
 
     if (!isExpected) {
-      return composeResult(false, List(commonErrorTypes.invalid));
+      return composeResult(false, List([[commonErrorTypes.invalid]]));
     }
   }
 
@@ -119,6 +119,7 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   };
 
   const errorPaths = applyRulesSchema(formRules, ruleArgs);
+
   if (errorPaths.size > 0) {
     return composeResult(false, errorPaths);
   }
