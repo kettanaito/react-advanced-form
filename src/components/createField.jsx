@@ -101,7 +101,7 @@ export default function connectField(options) {
           disabled: this.props.disabled,
 
           /* Validation */
-          error: null,
+          errors: null,
           required: this.props.required,
           expected: true,
           valid: false,

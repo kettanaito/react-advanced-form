@@ -1,17 +1,15 @@
 /**
  * Synchronously validate the provided field.
  */
+import { List } from 'immutable';
+import { composeResult } from './validate';
+
 const schemaSelectors = ['type', 'name'];
 
 const commonErrorTypes = {
   missing: 'missing',
   invalid: 'invalid'
 };
-
-/**
- * Shorthand function to return a unified validation result Object.
- */
-const getResult = (expected, errorType) => ({ expected, errorType });
 
 /**
  * Applies the given validation schema and returns the immutable map of invalid rules.
@@ -22,53 +20,46 @@ const getResult = (expected, errorType) => ({ expected, errorType });
 function applyRulesSchema(schema, ruleArgs) {
   const { fieldProps } = ruleArgs;
 
-  return schemaSelectors.reduce((invalidRules, schemaSelector) => {
+  return schemaSelectors.reduce((errorPaths, schemaSelector) => {
     const rules = schema.getIn([schemaSelector, fieldProps[schemaSelector]]);
 
     /* Bypass empty rules set */
-    if (!rules || (rules.size === 0)) return invalidRules;
-
-    const existingInvalidRules = invalidRules[schemaSelector] || [];
+    if (!rules || (rules.size === 0)) return errorPaths;
 
     /* Handle single functional rules */
     if ((typeof rules === 'function')) {
-      const isExpected = rules(ruleArgs);
-      if (!isExpected) invalidRules.push([schemaSelector, fieldProps[schemaSelector], 'invalid']);
+      if (!rules(ruleArgs)) errorPaths.push(List([schemaSelector, fieldProps[schemaSelector], 'invalid']));
 
-      return invalidRules;
+      return errorPaths;
     }
 
-    const nextInvalidRules = rules.reduce((list, rule, ruleName) => {
-      return rule(ruleArgs) ? list : list.concat([
-        [
-          schemaSelector,
-          fieldProps[schemaSelector],
-          'rules',
-          ruleName
-        ]
-      ]);
+    /**
+     * Keep error paths mutable to be able to get error message like:
+     * messages.getIn(errorPath);
+     * That doesn't work with List as "errorPath".
+     */
+    const nextErrorPaths = rules.reduce((list, rule, ruleName) => {
+      return rule(ruleArgs) ? list : list.concat([[
+        schemaSelector,
+        fieldProps[schemaSelector],
+        'rules',
+        ruleName
+      ]]);
     }, []);
 
-    if (nextInvalidRules.length > 0) {
-      invalidRules.push(...nextInvalidRules);
+    if (nextErrorPaths.length > 0) {
+      return errorPaths.push(...nextErrorPaths);
     }
 
-    return invalidRules;
-  }, []);
+    return errorPaths;
+  }, List());
 }
-
-// function applyValidationGroup(group, ruleArgs) {
-//   // converting to immutable here is redundant, remove it
-//   const endGroup = (typeof group === 'function') ? Map({ [commonErrorTypes.invalid]: group }) : group;
-
-//   return endGroup.reduce((invalidKeys, rule, ruleName) => {
-//     return rule(ruleArgs) ? invalidKeys : invalidKeys.concat(ruleName);
-//   }, []);
-// }
 
 export default function validateSync({ fieldProps, fields, form, formRules }) {
   /* Bypass validation for already valid field */
-  if (fieldProps.get('validSync')) return getResult(true);
+  if (fieldProps.get('validSync')) {
+    return composeResult(true);
+  }
 
   /* Get properties shorthand references */
   const name = fieldProps.get('name');
@@ -79,17 +70,23 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   const asyncRule = fieldProps.get('asyncRule');
 
   /* Empty optional fields are expected */
-  if (!value && !required) return getResult(true);
+  if (!value && !required) {
+    return composeResult(true);
+  }
 
   /* Empty required fields are unexpected */
-  if (!value && required) return getResult(false, commonErrorTypes.missing);
+  if (!value && required) {
+    return composeResult(false, List(commonErrorTypes.missing));
+  }
 
   /* Assume Field doesn't have any relevant validation rules */
   const hasFormNameRules = formRules.hasIn(['name', name]);
   const hasFormTypeRules = formRules.hasIn(['type', type]);
   const hasFormRules = hasFormNameRules || hasFormTypeRules;
 
-  if (!rule && !asyncRule && !hasFormRules) return getResult(true);
+  if (!rule && !asyncRule && !hasFormRules) {
+    return composeResult(true);
+  }
 
   /* Format validation */
   const mutableFieldProps = fieldProps.toJS();
@@ -104,7 +101,9 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
       })
       : rule.test(value);
 
-    if (!isExpected) return getResult(false,commonErrorTypes.invalid);
+    if (!isExpected) {
+      return composeResult(false, List(commonErrorTypes.invalid));
+    }
   }
 
   /**
@@ -119,8 +118,10 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
     form
   };
 
-  const invalidRules = applyRulesSchema(formRules, ruleArgs);
-  if (invalidRules.length > 0) return getResult(false, invalidRules);
+  const errorPaths = applyRulesSchema(formRules, ruleArgs);
+  if (errorPaths.size > 0) {
+    return composeResult(false, errorPaths);
+  }
 
-  return getResult(true);
+  return composeResult(true);
 }
