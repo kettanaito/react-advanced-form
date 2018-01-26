@@ -46,30 +46,82 @@ function resolveAsyncMessage({ message, errorType, fieldProps, fields, form, ext
 export default function getErrorMessage({ validationResult, messages, fieldProps, fields, form }) {
   const { errorType, extra } = validationResult;
 
+  if (!errorType) return;
+
+  const messageResolverArgs = {
+    ...extra,
+    value: fieldProps.get('value'),
+    fieldProps: fieldProps.toJS(),
+    fields: fields.toJS(),
+    form
+  };
+
+  console.log('errorType:', errorType);
+
+  const resolvedMessages = errorType.reduce((messagesList, errorPath) => {
+    /* Attempt to grab root level message declaration */
+    const message = messages.getIn(errorPath);
+
+    if (!message) {
+      const fallbackMessage = messages.getIn([errorPath[0], errorPath[1], 'invalid']);
+      return fallbackMessage ? messagesList.concat(fallbackMessage) : messagesList;
+    }
+
+    const resolvedMessage = (typeof message === 'function')
+      ? message(messageResolverArgs)
+      : message;
+
+    return messagesList.concat(resolvedMessage);
+  }, []);
+
+  console.log('resolvedMessages', resolvedMessages);
+
+  return resolvedMessages;
+
+  /* Object.keys(errorType).forEach((ruleSelector) => {
+    const invalidRules = errorType[ruleSelector];
+
+    console.log(' ');
+    console.warn('ruleSelector', `"${ruleSelector}"`);
+    console.log('invalidRules', invalidRules);
+
+    const resolvedMessages = invalidRules.reduce((all, rules) => {
+      const message = messages.getIn([ruleSelector, fieldProps.get(ruleSelector), ...rules]);
+
+      if (typeof message === 'function') {
+        return all.concat(message(messageResolverArgs));
+      }
+
+      return all.concat(message);
+    }, []);
+
+    console.log('resolved messages:', resolvedMessages);
+  }); */
+
   /**
    * Message paths.
    * Ordered collection of message paths to prompt in the provided "messages".
    */
-  const messagePaths = [
-    ['name', fieldProps.get('name'), errorType],
-    ['type', fieldProps.get('type'), errorType],
-    ['general', errorType]
-  ];
+  // const messagePaths = [
+  //   ['name', fieldProps.get('name'), errorType],
+  //   ['type', fieldProps.get('type'), errorType],
+  //   ['general', errorType]
+  // ];
 
   /* Iterate through each message path and break as soon as the message is found */
-  for (let i = 0; i < messagePaths.length; i++) {
-    const messagePath = messagePaths[i];
-    const message = messages.getIn(messagePath);
+  // for (let i = 0; i < messagePaths.length; i++) {
+  //   const messagePath = messagePaths[i];
+  //   const message = messages.getIn(messagePath);
 
-    if (message) {
-      return resolveAsyncMessage({
-        message,
-        extra,
-        errorType,
-        fieldProps,
-        fields,
-        form
-      });
-    }
-  }
+  //   if (message) {
+  //     return resolveAsyncMessage({
+  //       message,
+  //       extra,
+  //       errorType,
+  //       fieldProps,
+  //       fields,
+  //       form
+  //     });
+  //   }
+  // }
 }

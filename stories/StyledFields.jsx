@@ -5,6 +5,10 @@ import { MyInput, MySelect, MyCheckbox, MyTextarea } from './custom-fields';
 /* Form validation rules */
 const formRules = {
   name: {
+    // foo: ({ value }) => (value !== '123'),
+    foo: {
+      numbersOnly: ({ value }) => /^\d+$/.test(value)
+    },
     firstName: ({ value }) => /^\w+$/.test(value)
   }
 };
@@ -20,6 +24,14 @@ const formMessages = {
     }
   },
   name: {
+    foo: {
+      missing: 'Please fill in.',
+      invalid: 'Fallback message.',
+      rules: {
+        numbersOnly: ({ value }) => `Does "${value}" look like a number to you?`
+      }
+    },
+
     numbersOnly: {
       invalid: 'Only numbers are allowed!',
       async: {

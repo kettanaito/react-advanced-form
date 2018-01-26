@@ -8,9 +8,10 @@ const commonErrorTypes = {
   invalid: 'invalid'
 };
 
-function getResult(expected, ...args) {
-  return { expected, ...args };
-}
+/**
+ * Shorthand function to return a unified validation result Object.
+ */
+const getResult = (expected, errorType) => ({ expected, errorType });
 
 /**
  * Applies the given validation schema and returns the immutable map of invalid rules.
@@ -18,40 +19,42 @@ function getResult(expected, ...args) {
  * @param {Object} ruleArgs
  * @return {Map}
  */
-function applyValidationSchema(schema, ruleArgs) {
+function applyRulesSchema(schema, ruleArgs) {
   const { fieldProps } = ruleArgs;
 
-  console.log(' ');
-  console.log('applies validation schema to:', fieldProps);
-  console.log('schema:', schema);
-
-  return schemaSelectors.reduce((foo, schemaSelector) => {
-    console.log('schemaSelector:', schemaSelector);
-
+  return schemaSelectors.reduce((invalidRules, schemaSelector) => {
     const rules = schema.getIn([schemaSelector, fieldProps[schemaSelector]]);
 
     /* Bypass empty rules set */
-    if (!rules || (rules.size === 0)) return foo;
-    const existingInvalidRules = foo[schemaSelector] || [];
+    if (!rules || (rules.size === 0)) return invalidRules;
 
-    console.log('foo', foo);
-    console.log('existingInvalidRules', existingInvalidRules);
+    const existingInvalidRules = invalidRules[schemaSelector] || [];
 
-    /* Handle root function rules */
-    if ((typeof rules === 'function') && !rules(ruleArgs)) {
-      foo[schemaSelector] = [...existingInvalidRules, 'invalid'];
-      return foo;
+    /* Handle single functional rules */
+    if ((typeof rules === 'function')) {
+      const isExpected = rules(ruleArgs);
+      if (!isExpected) invalidRules.push([schemaSelector, fieldProps[schemaSelector], 'invalid']);
+
+      return invalidRules;
     }
 
-    const newInvalidRules = rules.reduce((list, rule, ruleName) => {
-      return rule(ruleArgs) ? list : list.push(ruleName);
+    const nextInvalidRules = rules.reduce((list, rule, ruleName) => {
+      return rule(ruleArgs) ? list : list.concat([
+        [
+          schemaSelector,
+          fieldProps[schemaSelector],
+          'rules',
+          ruleName
+        ]
+      ]);
     }, []);
 
-    console.log('newInvalidRules:', newInvalidRules);
+    if (nextInvalidRules.length > 0) {
+      invalidRules.push(...nextInvalidRules);
+    }
 
-    foo[schemaSelector] = [...existingInvalidRules, ...newInvalidRules];
-    return foo;
-  }, {});
+    return invalidRules;
+  }, []);
 }
 
 // function applyValidationGroup(group, ruleArgs) {
@@ -65,7 +68,7 @@ function applyValidationSchema(schema, ruleArgs) {
 
 export default function validateSync({ fieldProps, fields, form, formRules }) {
   /* Bypass validation for already valid field */
-  if (fieldProps.get('validSync')) return { expected: true };
+  if (fieldProps.get('validSync')) return getResult(true);
 
   /* Get properties shorthand references */
   const name = fieldProps.get('name');
@@ -79,7 +82,7 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   if (!value && !required) return getResult(true);
 
   /* Empty required fields are unexpected */
-  if (!value && required) return getResult(false, { errorType: commonErrorTypes.missing });
+  if (!value && required) return getResult(false, commonErrorTypes.missing);
 
   /* Assume Field doesn't have any relevant validation rules */
   const hasFormNameRules = formRules.hasIn(['name', name]);
@@ -93,10 +96,15 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
 
   if (rule) {
     const isExpected = (typeof rule === 'function')
-      ? rule({ value, fieldProps: mutableFieldProps, fields: fields.toJS(), form })
+      ? rule({
+        value,
+        fieldProps: mutableFieldProps,
+        fields: fields.toJS(),
+        form
+      })
       : rule.test(value);
 
-    if (!isExpected) return getResult(false, { errorTypes: commonErrorTypes.invalid });
+    if (!isExpected) return getResult(false,commonErrorTypes.invalid);
   }
 
   /**
@@ -111,14 +119,8 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
     form
   };
 
-  //
-  const invalidRules = applyValidationSchema(formRules, ruleArgs);
-
-  console.log('end invalidRules:', invalidRules);
-
-  if (Object.keys(invalidRules).length > 0) {
-    return getResult(false, { errorType: invalidRules });
-  }
+  const invalidRules = applyRulesSchema(formRules, ruleArgs);
+  if (invalidRules.length > 0) return getResult(false, invalidRules);
 
   return getResult(true);
 }

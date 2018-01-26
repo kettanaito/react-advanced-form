@@ -431,16 +431,19 @@ export default class Form extends React.Component {
 
     /* Perform the respective kind of validation */
     const validationResult = await fieldUtils.validate(validationArgs);
+    const { expected } = validationResult;
+
+    console.log('validationResult:', validationResult);
 
     /* Update the validity state of the field */
-    const propsPatch = validationResult;
+    const propsPatch = { expected };
 
     /* Determine if there are any messages available to form */
     const hasMessages = this.formMessages && (this.formMessages.size > 0);
 
     /* Get the validation message based on the validation result */
-    if (hasMessages && !validationResult.expected) {
-      const errorMessage = fieldUtils.getErrorMessage({
+    if (hasMessages && !expected) {
+      const errorMessages = fieldUtils.getErrorMessage({
         validationResult,
         messages: this.formMessages,
         fieldProps,
@@ -448,14 +451,14 @@ export default class Form extends React.Component {
         form: this
       });
 
-      propsPatch.error = errorMessage;
+      propsPatch.errors = errorMessages;
     }
 
     /**
      * Get the next validity state.
      * Based on the changed fieldProps, the field will aquire new validity state (valid/invalid).
      */
-    const nextFieldProps = fieldProps.merge(fromJS(propsPatch));
+    const nextFieldProps = fieldProps.merge(fromJS(validationResult));
     const nextValidityState = fieldUtils.getValidityState(nextFieldProps);
 
     /* Update the field in the state to reflect the changes */
@@ -467,7 +470,7 @@ export default class Form extends React.Component {
       }
     });
 
-    return validationResult.expected;
+    return expected;
   }
 
   /**
