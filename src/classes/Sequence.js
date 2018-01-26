@@ -3,10 +3,12 @@ export default class Sequence {
    * Creates a new instance of Sequence.
    * @param {Function} iterator Iterator function applied to each entry during the sequence run.
    */
-  constructor({ iterator }) {
+  constructor({ iterator, initialValue }) {
     this.entries = [];
+    this.initialValue = initialValue || {};
     this.iterator = iterator;
     this.shouldRun = true;
+
     return this;
   }
 
@@ -33,7 +35,7 @@ export default class Sequence {
   async run() {
     const { entries } = this;
     if (entries.length === 0) return;
-    let acc = {};
+    let acc = this.initialValue;
 
     for (let index = 0; index < entries.length; index++) {
       if (!this.shouldRun) break;

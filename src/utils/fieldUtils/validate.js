@@ -8,29 +8,44 @@
  * @param {Map} formRules
  * @return {boolean}
  */
-import { Map } from 'immutable';
+import { List, Map } from 'immutable';
 import validateSync from './validateSync';
 import validateAsync from './validateAsync';
 import Sequence from '../../classes/Sequence';
 
+/**
+* Shorthand function to return a unified validation result Object.
+*/
+export const composeResult = (expected, errorPaths = List()) => (Map({
+ propsPatch: Map({
+   expected
+ }),
+ errorPaths
+}));
+
 const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
-  const { expected } = resolved;
+  const resolvedPropsPatch = resolved.get('propsPatch');
+  const expected = resolvedPropsPatch.get('expected');
 
   /* Prevent any following validation once the previous one fails */
   if (!isLast && !expected) stop();
 
-  const { name } = entry;
+  /* Get the name of the sequence entry (which is the validation type) */
+  const { name: validationType } = entry;
 
-  /* Update dynamic properties based on the current validation entry */
-  acc[`validated${name}`] = true;
-  acc[`valid${name}`] = expected;
-  acc.expected = expected;
+  const nextPropsPatch = resolvedPropsPatch
+    .set(`validated${validationType}`, true)
+    .set(`valid${validationType}`, expected);
 
-  return { ...acc, ...resolved };
+  const nextAcc = acc
+    .merge(resolved)
+    .set('propsPatch', nextPropsPatch);
+
+  return nextAcc;
 };
 
 export default async function validate({ type, fieldProps, fields, form, formRules = Map() }) {
-  console.groupCollapsed('fieldUtils @ validate', fieldProps.get('fieldPath'));
+  console.groupCollapsed(`fieldUtils @ validate "${fieldProps.get('fieldPath')}"`);
   console.log('type', type);
   console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
   console.log('fields', fields);
@@ -39,7 +54,10 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   console.groupEnd();
 
   /* Create a new validation sequence */
-  const validationSeq = new Sequence({ iterator: sequenceIterator });
+  const validationSeq = new Sequence({
+    initialValue: Map(),
+    iterator: sequenceIterator
+  });
 
   /* Sync validation */
   if (type.isBoth || type.isSync) {

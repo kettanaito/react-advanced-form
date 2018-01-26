@@ -48,7 +48,7 @@ class Input extends React.Component {
 
         { validating && <p>Validating...</p> }
 
-        { invalid && errors.map(error => (
+        { invalid && errors && errors.map(error => (
           <p style={{ color: '#cc0000', marginTop: 4 }}>{ error }</p>
         )) }
       </div>

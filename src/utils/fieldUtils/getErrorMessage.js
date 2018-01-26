@@ -37,28 +37,26 @@ function resolveAsyncMessage({ message, errorType, fieldProps, fields, form, ext
 
 /**
  * Returns an error message based on the validity status and provided map of error messages.
- * @param {object} validationResult
+ * @param {object} validationPatch
  * @param {Map} messages
  * @param {Map} fieldProps
  * @param {object} form
  * @return {string}
  */
 export default function getErrorMessage({ validationResult, messages, fieldProps, fields, form }) {
-  const { errorType, extra } = validationResult;
-
-  if (!errorType) return;
+  /* No errors - no error messages */
+  const errorPaths = validationResult.get('errorPaths');
+  if (!errorPaths) return;
 
   const messageResolverArgs = {
-    ...extra,
+    // ...extra,
     value: fieldProps.get('value'),
     fieldProps: fieldProps.toJS(),
     fields: fields.toJS(),
     form
   };
 
-  console.log('errorType:', errorType);
-
-  const resolvedMessages = errorType.reduce((messagesList, errorPath) => {
+  const resolvedMessages = errorPaths.reduce((messagesList, errorPath) => {
     /* Attempt to grab root level message declaration */
     const message = messages.getIn(errorPath);
 
@@ -73,8 +71,6 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
 
     return messagesList.concat(resolvedMessage);
   }, []);
-
-  console.log('resolvedMessages', resolvedMessages);
 
   return resolvedMessages;
 

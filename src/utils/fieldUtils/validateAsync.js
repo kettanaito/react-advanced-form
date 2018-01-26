@@ -4,15 +4,21 @@
  * @param {Map} fields
  * @param {Object} form
  */
+import { composeResult } from './validate';
+
 export default async function validateAsync({ fieldProps, fields, form }) {
   /* Bypass validation for an already valid field */
-  if (fieldProps.get('validAsync')) return { expected: true };
+  if (fieldProps.get('validAsync')) {
+    return composeResult(true);
+  }
 
   const value = fieldProps.get('value');
   const asyncRule = fieldProps.get('asyncRule');
 
   /* Bypass optional empty fields */
-  if (!asyncRule || !value) return { expected: true };
+  if (!asyncRule || !value) {
+    return composeResult(true);
+  }
 
   let expected = false;
   let extra = {};

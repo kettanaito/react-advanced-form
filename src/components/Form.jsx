@@ -8,6 +8,8 @@ import { BothValidationType, SyncValidationType } from '../classes/ValidationTyp
 import { TValidationRules, TValidationMessages } from './FormProvider';
 import { isset, debounce, fieldUtils, IterableInstance } from '../utils';
 
+import { diff } from 'deep-object-diff';
+
 export default class Form extends React.Component {
   static propTypes = {
     action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
@@ -421,22 +423,18 @@ export default class Form extends React.Component {
     /* Bypass unnecessary validation */
     if (!shouldValidate) return true;
 
-    const validationArgs = {
+    /* Perform the validation */
+    const validationResult = await fieldUtils.validate({
       type,
       fieldProps,
       fields,
       form: this,
       formRules
-    };
-
-    /* Perform the respective kind of validation */
-    const validationResult = await fieldUtils.validate(validationArgs);
-    const { expected } = validationResult;
-
-    console.log('validationResult:', validationResult);
+    });
 
     /* Update the validity state of the field */
-    const propsPatch = { expected };
+    let propsPatch = validationResult.get('propsPatch');
+    const expected = propsPatch.get('expected');
 
     /* Determine if there are any messages available to form */
     const hasMessages = this.formMessages && (this.formMessages.size > 0);
@@ -451,23 +449,22 @@ export default class Form extends React.Component {
         form: this
       });
 
-      propsPatch.errors = errorMessages;
+      if (errorMessages) {
+        propsPatch = propsPatch.set('errors', errorMessages);
+      }
     }
 
     /**
      * Get the next validity state.
      * Based on the changed fieldProps, the field will aquire new validity state (valid/invalid).
      */
-    const nextFieldProps = fieldProps.merge(fromJS(validationResult));
+    const nextFieldProps = fieldProps.merge(propsPatch);
     const nextValidityState = fieldUtils.getValidityState(nextFieldProps);
 
     /* Update the field in the state to reflect the changes */
     this.updateField({
       fieldProps,
-      propsPatch: {
-        ...propsPatch,
-        ...nextValidityState
-      }
+      propsPatch: propsPatch.merge(nextValidityState)
     });
 
     return expected;
