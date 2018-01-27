@@ -44,9 +44,6 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
   let hasNamedMessage = false;
 
   const resolvedMessages = errorPaths.reduce((messagesList, errorPath) => {
-    /* Attempt to get the message by "errorPath" directly */
-    const message = messages.getIn(errorPath);
-
     /* Determine if this is the named error path */
     const errorPathType = errorPath[0];
     const isNamedPath = (errorPathType === 'name');
@@ -54,6 +51,9 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
 
     /* Bypass "type" error paths when named message is already present */
     if (isTypedPath && hasNamedMessage) return messagesList;
+
+    /* Attempt to get the message by "errorPath" directly */
+    const message = messages.getIn(errorPath);
 
     /* Bypass missing named error path with the named message already present */
     if (!message && isNamedPath && hasNamedMessage) return messagesList;
