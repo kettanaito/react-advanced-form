@@ -73,13 +73,11 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
 
   /* Empty optional fields are expected */
   if (!value && !required) {
-    console.log('validateSync: no value and optional, bypassing');
     return composeResult(true);
   }
 
   /* Empty required fields are unexpected */
   if (!value && required) {
-    console.log('validateSync: required but empty, false');
     return composeResult(false, List([[commonErrorTypes.missing]]));
   }
 
@@ -89,7 +87,6 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   const hasFormRules = hasFormNameRules || hasFormTypeRules;
 
   if (!rule && !asyncRule && !hasFormRules) {
-    console.log('validateSync: has no rules set, bypassing');
     return composeResult(true);
   }
 
