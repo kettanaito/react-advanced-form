@@ -7,7 +7,7 @@ function getFallbackMessage({ errorPath, messages, fieldProps }) {
     ['name', fieldProps.get('name'), primitiveErrorType],
     ['type', fieldProps.get('type'), errorType],
     ['type', fieldProps.get('type'), primitiveErrorType],
-    ['general', primitiveErrorType],
+    ['general', primitiveErrorType]
   ];
 
   for (let i = 0; i < fallbackPaths.length; i++) {
@@ -31,7 +31,7 @@ function getFallbackMessage({ errorPath, messages, fieldProps }) {
 export default function getErrorMessage({ validationResult, messages, fieldProps, fields, form }) {
   /* No errors - no error messages */
   const errorPaths = validationResult.get('errorPaths');
-  if (!errorPaths) return;
+  if (!errorPaths || errorPaths.size === 0) return;
 
   const messageResolverArgs = {
     // ...extra,

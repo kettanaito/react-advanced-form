@@ -1,42 +1,41 @@
 /**
  * Synchronous validation.
  */
-import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
-import { fieldUtils } from '../../../src/utils';
 
 describe('validateSync', () => {
-  const fields = fromJS({
-    anotherField: Map({
-      value: 'foo',
-      required: true
-    })
-  });
+  /* Type-specific validation */
+  require('./type.spec');
 
-  it('Validates by form type rules', () => {
-    const formRules = fromJS({
-      type: {
-        email: ({ value }) => (value === '123'),
-        password: {
-          minLength: ({ value }) => (value.length > 5),
-          capitalLetter: ({ value }) => value.test(/[A-Z]/g)
-        }
-      }
-    });
+  /* Name-specific validation */
+  require('./name.spec');
 
-    const firstField = Map({ name: 'a1', type: 'email', value: '456' });
-    const secondField = Map({ name: 'a2', type: 'password', value: 'sOme' });
+  /* Mixed validation */
+  require('./mixed.spec');
 
-    expect(fieldUtils.validateSync({ fieldProps: firstField, fields, formRules })).to.deep.equal({
-      expected: false,
-      errorType: ['invalid']
-    });
+  // it('Validates by form type rules', () => {
+  //   const formRules = fromJS({
+  //     type: {
+  //       email: ({ value }) => (value === '123'),
+  //       password: {
+  //         minLength: ({ value }) => (value.length > 5),
+  //         capitalLetter: ({ value }) => /[A-Z]/.test(value)
+  //       }
+  //     }
+  //   });
 
-    expect(fieldUtils.validateSync({ fieldProps: secondField, fields, formRules })).to.deep.equal({
-      expect: false,
-      errorType: ['minLength']
-    });
-  });
+  //   const firstField = Map({ name: 'a1', type: 'email', value: '456' });
+  //   const secondField = Map({ name: 'a2', type: 'password', value: 'sOme' });
+
+  //   expect(fieldUtils.validateSync({
+  //     fieldProps: secondField,
+  //     fields,
+  //     formRules
+  //   }).toJS()).to.deep.equal({
+  //     expect: false,
+  //     errorPaths: [['type', 'password', 'rules', 'minLength']]
+  //   });
+  // });
 
   /**
    * ====================================================================================
