@@ -24,7 +24,7 @@ describe('Field', function () {
     expect(createWrapper).not.to.throw();
     const wrapper = createWrapper();
 
-    return defer(async () => {
+    return defer(() => {
       const form = wrapper.find(Form).instance();
       const input = form.state.fields.get('foo');
 

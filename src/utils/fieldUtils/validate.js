@@ -19,10 +19,8 @@ import Sequence from '../../classes/Sequence';
  * @param {List<string>} errorPaths
  */
 export const composeResult = (expected, errorPaths = List()) => (Map({
- propsPatch: Map({
-   expected
- }),
- errorPaths
+  propsPatch: Map({ expected }),
+  errorPaths
 }));
 
 /**

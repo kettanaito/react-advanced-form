@@ -8,8 +8,6 @@ import { BothValidationType, SyncValidationType } from '../classes/ValidationTyp
 import { TValidationRules, TValidationMessages } from './FormProvider';
 import { isset, debounce, fieldUtils, IterableInstance } from '../utils';
 
-import { diff } from 'deep-object-diff';
-
 export default class Form extends React.Component {
   static propTypes = {
     action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
@@ -431,6 +429,8 @@ export default class Form extends React.Component {
       form: this,
       formRules
     });
+
+    console.log('validationResult', validationResult.toJS());
 
     /* Update the validity state of the field */
     let propsPatch = validationResult.get('propsPatch');

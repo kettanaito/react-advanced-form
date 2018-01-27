@@ -37,7 +37,7 @@ describe('createField', function () {
       </Form>
     );
 
-    defer(async () => {
+    return defer(() => {
       const form = wrapped.find(Form).instance();
       const input = wrapped.find(CustomComponent).instance();
 
