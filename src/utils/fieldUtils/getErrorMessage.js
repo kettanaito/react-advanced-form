@@ -41,11 +41,26 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
     form
   };
 
-  console.log('validationResult', validationResult.toJS());
+  let hasNamedMessage = false;
 
   const resolvedMessages = errorPaths.reduce((messagesList, errorPath) => {
-    /* Attempt to grab root level message declaration */
+    /* Attempt to get the message by "errorPath" directly */
     const message = messages.getIn(errorPath);
+
+    /* Determine if this is the named error path */
+    const errorPathType = errorPath[0];
+    const isNamedPath = (errorPathType === 'name');
+    const isTypedPath = (errorPathType === 'type');
+
+    /* Bypass "type" error paths when named message is already present */
+    if (isTypedPath && hasNamedMessage) return messagesList;
+
+    /* Bypass missing named error path with the named message already present */
+    if (!message && isNamedPath && hasNamedMessage) return messagesList;
+
+    if (isNamedPath && message) {
+      hasNamedMessage = true;
+    }
 
     if (!message) {
       /* Try to fallback to the "invalid" key of the current selector */

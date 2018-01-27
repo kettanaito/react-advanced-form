@@ -32,7 +32,7 @@ function applyRulesSchema(schema, ruleArgs) {
 
       return isExpected
         ? errorPaths
-        : errorPaths.push(List([schemaSelector, fieldProps[schemaSelector], 'invalid']));
+        : errorPaths.push([schemaSelector, fieldProps[schemaSelector], 'invalid']);
     }
 
     /**
