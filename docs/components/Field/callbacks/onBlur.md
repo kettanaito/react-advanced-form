@@ -15,17 +15,18 @@ Event handler called after the field has been blurred out.
 ## Usage
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
     handleUsernameBlur = ({ event, fieldProps, fields, form }) => {
         // ...
     }
-    
+
     render() {
         return (
             <Form>
-                <Field.Input
+                <Input
                     name="username"
                     onBlur={ this.handleUsernameBlur }
                     required />

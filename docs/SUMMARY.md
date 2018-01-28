@@ -48,8 +48,8 @@
 ## Validation
 
 * [Logic](./validation/logic.md)
-* [Validation rules](./validation/validation-rules.md)
-* [Validation messages](./validation/validation-messages.md)
+* [Declaring rules](./validation/rules.md)
+* [Declaring messages](./validation/messages.md)
 
 ## Developers
 

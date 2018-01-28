@@ -15,17 +15,18 @@ Event handler called after the field has been focused.
 ## Usage
 ```jsx
 import React from 'react';
-import { Form, Field } from 'react-advanced-form';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
 
 export default class MyForm extends React.Component {
     handleUsernameFocus = ({ event, fieldProps, fields, form }) => {
         // ...
     }
-    
+
     render() {
         return (
             <Form>
-                <Field.Input
+                <Input
                     name="username"
                     onFocus={ this.handleUsernameFocus }
                     required />
