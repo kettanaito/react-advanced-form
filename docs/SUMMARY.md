@@ -18,18 +18,20 @@
 * [Form](./components/Form.md)
   * Props
     * action
+    * rules
+    * messages
   * Methods
-    * [validate\(\)](./methods/Form/validate.md)
-    * [serialize\(\)](./methods/Form/serialize.md)
-    * [submit\(\)](./methods/Form/submit.md)
-    * [reset\(\)](./methods/Form/reset.md)
+    * [validate\(\)](./components/Form/methods/validate.md)
+    * [serialize\(\)](./components/Form/methods/serialize.md)
+    * [submit\(\)](./components/Form/methods/submit.md)
+    * [reset\(\)](./components/Form/methods/reset.md)
   * Callbacks
-    * [onReset](./callbacks/Form/onReset.md)
-    * [onInvalid](./callbacks/Form/onInvalid.md)
-    * [onSubmitStart](./callbacks/Form/onSubmitStart.md)
-    * [onSubmitted](./callbacks/Form/onSubmitted.md)
-    * [onSubmitFailed](./callbacks/Form/onSubmitFailed.md)
-    * [onSubmitEnd](./callbacks/Form/onSubmitEnd.md)
+    * [onReset](./components/Form/callbacks/onReset.md)
+    * [onInvalid](./components/Form/callbacks/onInvalid.md)
+    * [onSubmitStart](./components/Form/callbacks/onSubmitStart.md)
+    * [onSubmitted](./components/Form/callbacks/onSubmitted.md)
+    * [onSubmitFailed](./components/Form/callbacks/onSubmitFailed.md)
+    * [onSubmitEnd](./components/Form/callbacks/onSubmitEnd.md)
 
 * Field
   * Props
@@ -37,9 +39,9 @@
     * rule
     * asyncRule
   * Callbacks
-    * [onFocus](./callbacks/Field/onFocus.md)
-    * [onChange](./callbacks/Field/onChange.md)
-    * [onBlur](./callbacks/Field/onBlur.md)
+    * [onFocus](./components/Field/callbacks/onFocus.md)
+    * [onChange](./components/Field/callbacks/onChange.md)
+    * [onBlur](./components/Field/callbacks/onBlur.md)
 
 * [Field.Group](./components/Field.Group.md)
 
