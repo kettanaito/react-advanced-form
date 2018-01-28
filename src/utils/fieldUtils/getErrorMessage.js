@@ -47,10 +47,10 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
     /* Determine if this is the named error path */
     const errorPathType = errorPath[0];
     const isNamedPath = (errorPathType === 'name');
-    const isTypedPath = (errorPathType === 'type');
+    // const isTypedPath = (errorPathType === 'type');
 
     /* Bypass "type" error paths when named message is already present */
-    if (isTypedPath && hasNamedMessage) return messagesList;
+    // if (isTypedPath && hasNamedMessage) return messagesList;
 
     /* Attempt to get the message by "errorPath" directly */
     const message = messages.getIn(errorPath);
