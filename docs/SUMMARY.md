@@ -16,7 +16,7 @@
 
 * [FormProvider](./components/formprovider.md)
 * [Form](./components/Form.md)
-  * **Props**
+  * Props
     * action
     * rules
     * messages
