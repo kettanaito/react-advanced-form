@@ -1,19 +1,19 @@
 # React Advanced Form
 
 <p>
-  <a href="https://www.npmjs.com/package/react-advanced-form">
+  <a href="https://www.npmjs.com/package/react-advanced-form" target="_blank">
     <img src="https://img.shields.io/npm/v/react-advanced-form.svg" title="Latest version" />
   </a>
-  <a href="#">
+  <a href="https://circleci.com/gh/kettanaito/react-advanced-form/tree/master" target="_blank">
     <img src="https://circleci.com/gh/kettanaito/react-advanced-form/tree/master.svg?style=shield" title="Build status" />
   </a>
-  <a href="https://www.codefactor.io/repository/github/kettanaito/react-advanced-form" title="Code review">
+  <a href="https://www.codefactor.io/repository/github/kettanaito/react-advanced-form" title="Code review" target="_blank">
     <img src="https://www.codefactor.io/repository/github/kettanaito/react-advanced-form/badge" />
   </a>
-  <a href="https://david-dm.org/kettanaito/react-advanced-form" title="Dependencies status">
+  <a href="https://david-dm.org/kettanaito/react-advanced-form" title="Dependencies status" target="_blank">
     <img src="https://david-dm.org/kettanaito/react-advanced-form/status.svg" />
   </a>
-  <a href="https://david-dm.org/kettanaito/react-advanced-form?type=dev" title="devDependencies status">
+  <a href="https://david-dm.org/kettanaito/react-advanced-form?type=dev" title="devDependencies status" target="_blank">
     <img src="https://david-dm.org/kettanaito/react-advanced-form/dev-status.svg" />
   </a>
 </p>
