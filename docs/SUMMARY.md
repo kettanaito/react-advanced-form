@@ -14,21 +14,9 @@
 
 ## Components
 
-### [FormProvider](./components/formprovider.md)
-### [Form](./components/Form.md)
-  * Props
-    * action
-    * rules
-    * messages
-  * Methods
-    * [validate\(\)](./components/Form/methods/validate.md)
-    * [serialize\(\)](./components/Form/methods/serialize.md)
-    * [submit\(\)](./components/Form/methods/submit.md)
-    * [reset\(\)](./components/Form/methods/reset.md)
-
 * [FormProvider](./components/formprovider.md)
 * [Form](./components/Form.md)
-  * Props
+  * **Props**
     * action
     * rules
     * messages
