@@ -16,14 +16,14 @@
 
 * [FormProvider](./components/formprovider.md)
 * [Form](./components/Form.md)
-  * ### Props
+  * Props
     * action
-  * ### Methods
+  * Methods
     * [validate\(\)](./methods/Form/validate.md)
     * [serialize\(\)](./methods/Form/serialize.md)
     * [submit\(\)](./methods/Form/submit.md)
     * [reset\(\)](./methods/Form/reset.md)
-  * ### Callbacks
+  * Callbacks
     * [onReset](./callbacks/Form/onReset.md)
     * [onInvalid](./callbacks/Form/onInvalid.md)
     * [onSubmitStart](./callbacks/Form/onSubmitStart.md)
@@ -32,11 +32,11 @@
     * [onSubmitEnd](./callbacks/Form/onSubmitEnd.md)
 
 * Field
-  * ### Props
+  * Props
     * Generic props
     * rule
     * asyncRule
-  * ### Callbacks
+  * Callbacks
     * [onFocus](./callbacks/Field/onFocus.md)
     * [onChange](./callbacks/Field/onChange.md)
     * [onBlur](./callbacks/Field/onBlur.md)
