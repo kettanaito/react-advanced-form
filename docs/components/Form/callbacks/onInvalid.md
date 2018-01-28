@@ -1,4 +1,4 @@
-# `Form.onInvalid`
+# `Form.props.onInvalid`
 
 ## Specification
 Called once the submit is prevented due to invalid validation state of the form. Useful for any kind of custom logic based on the invalid fields.
@@ -17,7 +17,7 @@ import React from 'react';
 import { Form } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
-export default class MyForm extends React.Component {
+export default class Example extends React.Component {
     handleInvalidForm = ({ invalidFields, fields, form }) => {
         // ...
     }

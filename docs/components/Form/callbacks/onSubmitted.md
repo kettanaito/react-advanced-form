@@ -1,4 +1,4 @@
-# `Form.onSubmitted`
+# `Form.props.onSubmitted`
 
 ## Specification
 Called immediately in case asynchronous submit action resolves.

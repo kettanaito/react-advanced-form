@@ -17,7 +17,7 @@
 * [FormProvider](./components/formprovider.md)
 * [Form](./components/Form.md)
   * Props
-    * action
+    * [action](./components/Form/props/action.md)
     * rules
     * messages
   * Methods
@@ -36,8 +36,8 @@
 * Field
   * Props
     * Generic props
-    * rule
-    * asyncRule
+    * [rule](./components/Field/props/rule.md)
+    * [asyncRule](./components/Field/props/asyncRule.md)
   * Callbacks
     * [onFocus](./components/Field/callbacks/onFocus.md)
     * [onChange](./components/Field/callbacks/onChange.md)

@@ -15,7 +15,7 @@ import React from 'react';
 import { Form } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
-export default class MyForm extends React.Component {
+export default class Example extends React.Component {
     handleSubmit = () => {
         // Make sure to return a Promise here
     }

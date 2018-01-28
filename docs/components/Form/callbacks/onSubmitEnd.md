@@ -1,4 +1,4 @@
-# `Form.onSubmitEnd`
+# `Form.props.onSubmitEnd`
 
 ## Specification
 Called immediately after the submit ended, regardless of the submit status (on both successful and unsuccessful submit). Useful for interface changes, such as hiding a loader, to acknowledge the user that the submit action has ended.
@@ -18,7 +18,7 @@ import React from 'react';
 import { Form } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
-export default class MyForm extends React.Component {
+export default class Example extends React.Component {
     handleSubmitEnd = ({ res, serialized, fields, form }) => {
         // ...
     }

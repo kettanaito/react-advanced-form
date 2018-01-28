@@ -12,7 +12,7 @@ import React from 'react';
 import { Form } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
-export default class MyForm extends React.Component {
+export default class Example extends React.Component {
   handleSubmitted = ({ res, fields, form }) => {
     form.reset(); // resets "username" field to "admin"
   }

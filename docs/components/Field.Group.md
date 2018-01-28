@@ -17,17 +17,19 @@ import React from 'react';
 import { Form, Field } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
-export default function MyForm() {
-    return (
-        <Form action={ ... }>
-            <Field.Group name="primaryInfo">
-                <Input name="username" value="admin" />
-                <Input name="firstName" value="John" />
-            </Field.Group>
+export default class Example extends React.Component {
+    render() {
+        return (
+            <Form>
+                <Field.Group name="primaryInfo">
+                    <Input name="username" value="admin" />
+                    <Input name="firstName" value="John" />
+                </Field.Group>
 
-            <Input name="city" value="London" />
-        </Form>
-    );
+                <Input name="city" value="London" />
+            </Form>
+        );
+    }
 }
 ```
 
@@ -56,32 +58,34 @@ import React from 'react';
 import { Form, Field } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
-export default function MyForm() {
-    return (
-        <Form action={ ... }>
-            <Input name="email" value="admin@site.com" />
+export default class Example extends React.Component {
+    render() {
+        return (
+            <Form>
+                <Input name="email" value="admin@site.com" />
 
-            <h3>Billing address</h3>
-            <Field.Group name="billingAddress">
-                <Input name="firstName" value="John" />
-                <Input name="lastName" value="Maverick" />
-            </Field.Group>
+                <h3>Billing address</h3>
+                <Field.Group name="billingAddress">
+                    <Input name="firstName" value="John" />
+                    <Input name="lastName" value="Maverick" />
+                </Field.Group>
 
-            <h3>Delivery address</h3>
-            <Field.Group name="billingAddress">
-                <Field.Input name="firstName" value="Kate" />
-                <Field.Input name="lastName" value="Rosewood" />
-            </Field.Group>
+                <h3>Delivery address</h3>
+                <Field.Group name="billingAddress">
+                    <Field.Input name="firstName" value="Kate" />
+                    <Field.Input name="lastName" value="Rosewood" />
+                </Field.Group>
 
-            <h3>Contact details</h3>
-            <Field.Group name="billingAddress">
-                <Input name="phoneNumber" value="123456789" />
-            </Field.Group>
-            <Field.Group name="deliverAddress">
-                <Input name="address" value="Baker st." />
-            </Field.Group>
-        </Form>
-    );
+                <h3>Contact details</h3>
+                <Field.Group name="billingAddress">
+                    <Input name="phoneNumber" value="123456789" />
+                </Field.Group>
+                <Field.Group name="deliverAddress">
+                    <Input name="address" value="Baker st." />
+                </Field.Group>
+            </Form>
+        );
+    }
 }
 ```
 
@@ -104,6 +108,3 @@ The layout above will serialize into the following Object:
 ```
 
 This way grouping your fields dictates how their data will be handled when it comes to submit, reducing extra composition logic.
-
-
-
