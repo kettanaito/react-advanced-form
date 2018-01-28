@@ -27,10 +27,11 @@ const formMessages = {
   },
   name: {
     quantity: {
-      missing: 'Name-specific missing message',
-      invalid: 'Name-specific invalid message',
+      missing: 'Please provide the quantity',
+      invalid: 'The quantity is invalid',
       rules: {
-        forbidLetters: ({ value }) => `Does "${value}" look like a number to you?`
+        forbidLetters: ({ value }) => `Does "${value}" look like a number to you?`,
+        maxValue: 'Value should be less than 10'
       }
     }
   }
