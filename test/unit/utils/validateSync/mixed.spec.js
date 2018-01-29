@@ -45,5 +45,14 @@ describe('Mixed validation', function () {
     expect(resulTwo.errorPaths).to.deep.equal([
       ['type', 'text', 'invalid']
     ]);
+
+    const resultThree = fieldUtils.validateSync({
+      fieldProps: fieldProps.set('value', '4'),
+      fields,
+      formRules
+    }).toJS();
+
+    expect(resultThree.propsPatch).to.have.property('expected', true);
+    expect(resultThree).to.have.property('errorPaths').with.length(0);
   });
 });
