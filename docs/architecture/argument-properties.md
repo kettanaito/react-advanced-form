@@ -1,7 +1,7 @@
 # Argument properties
 
 ## Introduction
-Each callback function in React Advanced Form uses an "*Object as an argument*" approach, meaning that it exposes an argument Object with the set of fixed properties. Take a look at the example:
+Each callback function in React Advanced Form uses an "*Object as argument*" approach, meaning that it exposes an argument Object with the set of fixed properties. Take a look at the example:
 
 ```jsx
 export default class Example extends React.Component {
@@ -48,7 +48,7 @@ function foo({ c }) {
 // Common
 function handleFieldFocus(e, some, field) {}
 
-// Object-as-an-argument
+// Object-as-argument
 function handleFieldFocus({ event, field }) {}
 ```
 
@@ -60,7 +60,7 @@ const dynamicArgs = [4, true];
 
 function foo(...dynamicArgs) {}
 
-// Object-as-an-argument
+// Object-as-argument
 const dynamicArgs = {
   arg1: 4,
   arg2: true
