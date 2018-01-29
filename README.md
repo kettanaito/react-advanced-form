@@ -18,11 +18,9 @@
   </a>
 </p>
 
-> Thank you for deciding to try React Advanced Form! Please note that before the `1.0` release the package is under heavy development. Things may change, and things may break. We are doing our best to release breaking changes in the proper versions of the library. Help us reach `1.0` faster by [Contributing](#contributing) to the library. Thank you.
+> Thank you for trying React Advanced Form! Please note that before the `1.0` release the package is under heavy development. Things may change, and things may break. We are doing our best and releasing breaking changes in the proper versions. Help us reach `1.0` faster by [Contributing](#contributing) to the library. Thank you.
 
 [React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library for tailoring simple and flexible forms with a powerful functionality built-in.
-
-No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
 
 ## Features
 
@@ -59,10 +57,13 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
   </tr>
   <tr>
     <td align="center">Create custom styles of fields for your project like you have never done before.</td>
-    <td align="center">Love external field library? Connect it with RAF and enjoy <br>the benefits of both!</td>
+    <td align="center">Love external field library? Connect it with RAF and enjoy the benefits of both!</td>
     <td align="center">Know precisely what happens with the Form and react to that by the provided callback methods.</td>
   </tr>
 </table>
+
+There are also [field grouping](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html), dynamic props, API to create fields with your own custom logic, and much more.
+
 <br>
 
 ## Getting started
@@ -70,7 +71,7 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
 * [NodeJS](https://nodejs.org) (6.0+)
 
 #### Peer dependencies
-React Advanced Form requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below. It is your responsibility to install/have those in your project in order for it to function properly.
+This package requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below to function properly. It is your responsibility to install/have those in your project, alongside the installation of the package itself.
 * [React](https://github.com/facebook/react) (15.0+)
 * [ImmutableJS](https://github.com/facebook/immutable-js) (3.8+)
 
@@ -89,11 +90,11 @@ yarn add react-advanced-form
 ```jsx
 import React from 'react';
 import { Form, Field } from 'react-advanced-form';
-import { Input, Radio, Checkbox } from 'react-advanced-form-addons';
+import { Input, Radio } from 'react-advanced-form-addons';
 
-export default class MyForm extends React.Component {
-  handleSubmit = ({ serialized }) => {
-    return fetch('https://backend.dev/ws', {
+export default class RegistrationForm extends React.Component {
+  registerUser = ({ serialized, fields, form }) => {
+    return fetch('https://backend.dev/user', {
       method: 'POST',
       body: JSON.stringify(serialized)
     });
@@ -101,14 +102,12 @@ export default class MyForm extends React.Component {
 
   render() {
     return (
-      <Form action={ this.handleSubmit }>
+      <Form action={ this.registerUser }>
         <Input name="username" required />
         <Input name="password" type="password" required />
 
         <Radio name="gender" value="male" />
         <Radio name="gender" value="female" />
-
-        <Checkbox name="subscribe" />
 
         <button type="submit">Submit</button>
       </Form>
