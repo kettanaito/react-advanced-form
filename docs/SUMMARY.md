@@ -5,12 +5,12 @@
 * [Introduction](./README.md)
 * [Getting started](./general/getting-started.md)
 * [Concept](./general/concept.md)
-* [Referencing](./general/referencing.md)
 * [FAQ](./general/faq.md)
 
 ## Architecture
 
 * [Argument properties](./architecture/argument-properties.md)
+* [Referencing](./general/referencing.md)
 
 ## High-order Components
 
