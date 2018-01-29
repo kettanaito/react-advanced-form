@@ -46,10 +46,11 @@ ReactDOM.render(<App />, document.getElementById('root'));
 // src/app/components/MyForm.jsx
 import React from 'react';
 import { Form, Field } from 'react-adnvaced-form';
+import { Input, Radio } from 'react-adnvaced-form-addons';
 
 export default class RegistrationForm extends React.Component {
-  registerUser = ({ serialized }) => {
-    return fetch('https://backend.dev/ws', {
+  registerUser = ({ serialized, fields, form }) => {
+    return fetch('https://backend.dev/user', {
       method: 'POST',
       body: JSON.stringify(serialized)
     });
@@ -58,10 +59,10 @@ export default class RegistrationForm extends React.Component {
   render() {
     return (
       <Form action={ this.registerUser }>
-        <Field.Input name="username" required />
-        <Field.Input name="password" type="password" required />
-        <Field.Radio name="gender" value="male" />
-        <Field.Radio name="gender" value="female" />
+        <Input name="username" required />
+        <Input name="password" type="password" required />
+        <Radio name="gender" value="male" />
+        <Radio name="gender" value="female" />
         <button type="submit">Submit</button>
       </Form>
     );
@@ -75,4 +76,4 @@ Read more about how to use React Advanced Form to get the most out of its featur
 Any of your contributions are highly appreciated. Please read the [Contribution guidelines](./developers/contributing.md) before contributing to the library. Moreover, development isn't the only way to contribute, there are [many more](./developers/contributing.md#other-contributions).
 
 ## License
-This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE). See the license file for more details.
+This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE.md). See the license file for more details.
