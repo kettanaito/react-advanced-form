@@ -1,4 +1,4 @@
-# `Field.onFocus`
+# `Field.props.onFocus`
 
 ## Specification
 Event handler called after the field has been focused.

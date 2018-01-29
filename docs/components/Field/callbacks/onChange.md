@@ -1,4 +1,4 @@
-# `Field.onChange`
+# `Field.props.onChange`
 
 ## Specification
 Event handler called after the field has been blurred out.
