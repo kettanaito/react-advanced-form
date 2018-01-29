@@ -6,12 +6,16 @@ A provider component used to supply the application-wide form settings to all th
 
 You may think of it as a `<Provider>` from Redux, only for the forms. This way the forms in the application, regardless of the depth they are rendered in, follow the options passed to the `<FormProvider>` component, unless specified otherwise.
 
+## Props
+
+| Prop name | Type | Description |
+| --------- | ---- | ----------- |
+| `rule` | [`ValidationRules`](../validation/rules.md) | Map of the validation rules. |
+| `messages` | [`ValidationMessages`](../validation/messages.md) | Map of the validation messages. |
+
 ## Usage
 
-Currently `FormProvider` is used to propagate the [Validation rules](../validation/validation-rules.md) and the corresponding [Validation messages](../validation/validation-messages.md) to the underlying forms.
-
-* `rules: ValidationRules`
-* `messages: ValidationMessages`
+Currently `FormProvider` is used to propagate the [Validation rules](../validation/rules.md) and the corresponding [Validation messages](../validation/messages.md) to the underlying forms.
 
 ```jsx
 import React from 'react';
