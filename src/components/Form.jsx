@@ -430,8 +430,6 @@ export default class Form extends React.Component {
       formRules
     });
 
-    console.log('validationResult', validationResult.toJS());
-
     /* Update the validity state of the field */
     let propsPatch = validationResult.get('propsPatch');
     const expected = propsPatch.get('expected');
