@@ -58,11 +58,11 @@ import { Form } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
 export default class Example extends React.Component {
-  handleFieldFocus = ({ fieldProps, fields, form }) => {}
+  handleFieldFocus = ({ event, fieldProps, fields, form }) => {}
 
-  handleEmailChange = ({ nextValue, prevValue, fieldProps, fields, form }) => {}
+  handleEmailChange = ({ event, nextValue, prevValue, fieldProps, fields, form }) => {}
 
-  handleFieldBlur = ({ fieldProps, fields, form }) => {}
+  handleFieldBlur = ({ event, fieldProps, fields, form }) => {}
 
   render() {
     return (
