@@ -59,7 +59,7 @@ No boilerplate. No redundant state management. Embrace intuitive custom styling,
   </tr>
   <tr>
     <td align="center">Create custom styles of fields for your project like you have never done before.</td>
-    <td align="center">Love external field library? Connect it with RAF and enjoy <br>the benefits of both!</td>
+    <td align="center">Love external field library? Connect it with RAF and enjoy the benefits of both!</td>
     <td align="center">Know precisely what happens with the Form and react to that by the provided callback methods.</td>
   </tr>
 </table>
