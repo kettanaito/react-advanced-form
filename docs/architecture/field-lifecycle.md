@@ -25,12 +25,15 @@ Registration, or field record – is an Object of props which propagates to the 
 It is possible to affect the registraional record when creating your custom components, or integrating third-party solutions, using [`mapPropsToField`](../hoc/createField.md#mapPropsToField) option of the [`createField()`](../hoc/createField.md) high-order component:
 
 ```jsx
+import React from 'react';
 import { createField } from 'react-advanced-form';
+
+class CustomField extends React.Component {}
 
 export default createField({
   mapPropsToField: ({ props, fieldRecord, context }) => ({
     ...fieldRecord,
-    customProp: basedOnDirectProp(props.someProp)
+    customProp: composeByProp(props.someProp)
   })
 })(CustomField);
 ```
@@ -50,6 +53,10 @@ State updates are invoked and maintained internally within the `Form` component,
 Developer can react to the required event callbacks just as he would usually do:
 
 ```jsx
+import React from 'react';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
+
 export default class Example extends React.Component {
   handleFieldFocus = ({ fieldProps, fields, form }) => {}
 
