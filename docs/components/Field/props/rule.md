@@ -8,7 +8,7 @@ A synchronous rule applied to the field as the top priority validation. When the
 type rule = RegExp | ({ value, fieldProps, fields, form }) => Boolean
 ```
 
-| Property name | Type | Description |
+| Argument | Type | Description |
 | ------------- | ---- | ----------- |
 | `value` | `mixed` | The current value of the field. |
 | `fieldProps` | `Object` | Props of the current field. |

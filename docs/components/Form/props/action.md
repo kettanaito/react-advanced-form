@@ -8,7 +8,7 @@ Action performed on the successful submit of the form.
 type action = ({ serialized, fields, form }) => Promise
 ```
 
-| Property name | Type | Description |
+| Argument | Type | Description |
 | ------------- | ---- | ----------- |
 | `serialized` | `Object` | Serialized fields of the form. |
 | `fields` | `Object` | Map of all fields. |

@@ -2,11 +2,15 @@
 
 ## Specification
 
-This component is designed to provide the data separation on a layout level. Particularly useful for the scenarios when UI representation of fields doesn't match the data structure expected by the remote end-point. Field grouping affects the way you reference the field within the `fields` Object available in various callbacks methods.
+A component to separate the data on the layout level.
+
+Particularly useful for the scenarios when UI representation of fields doesn't match the data structure expected by the remote end-point. Field grouping affects the way you reference the field within the `fields` Object available in various callbacks methods.
 
 ## Props
 
-* `name: string` The name of the field group. All the fields wrapped in `Field.Group` will be available by the following reference path: `${groupName}.${field.name}`.
+| Prop name | Type | Description |
+| --------- | ---- | ----------- |
+| `name` | `String` | The name of the field group. All the fields wrapped in `Field.Group` will be available by the following reference path: `${groupName}.${fieldName}`. |
 
 ## Examples
 

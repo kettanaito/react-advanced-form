@@ -18,7 +18,7 @@ type AsyncRulePaylod = {
 }
 ```
 
-| Property name | Type | Description |
+| Argument | Type | Description |
 | ------------- | ---- | ----------- |
 | `value` | `mixed` | The current value of the field. |
 | `fieldProps` | `Object` | Props of the current field. |
