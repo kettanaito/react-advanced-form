@@ -239,10 +239,12 @@ export default function connectField(options) {
         if (innerRef) innerRef(Component);
       }
 
-      handleFocus = event => this.context.handleFieldFocus({
-        event,
-        fieldProps: this.contextProps
-      })
+      handleFocus = (event) => {
+        this.context.handleFieldFocus({
+          event,
+          fieldProps: this.contextProps
+        });
+      }
 
       handleChange = ({ event, nextValue: customNextValue, prevValue: customPrevValue }) => {
         const { contextProps } = this;
@@ -271,20 +273,10 @@ export default function connectField(options) {
         });
       }
 
-      handleBlur = event => this.context.handleFieldBlur({
-        event,
-        fieldProps: this.contextProps
-      })
-
-      handleFieldChange = ({ event, nextValue, prevValue }) => {
-        const { contextProps } = this;
-        const valuePropName = contextProps.get('valuePropName');
-
-        this.context.handleFieldChange({
+      handleBlur = (event) => {
+        this.context.handleFieldBlur({
           event,
-          fieldProps: contextProps,
-          nextValue,
-          prevValue: prevValue || contextProps.get(valuePropName)
+          fieldProps: this.contextProps
         });
       }
 
