@@ -21,6 +21,16 @@ function applyRulesSchema(schema, ruleArgs) {
   const { fieldProps } = ruleArgs;
 
   return schemaSelectors.reduce((errorPaths, schemaSelector) => {
+    /* Bypass type selectors if at least one name selector rejected previously */
+    if ((schemaSelector === 'type')) {
+      const hasNamedErrorPath = errorPaths.some(errorPath => (errorPath[0] === 'name'));
+
+      if (hasNamedErrorPath) {
+        return errorPaths;
+      }
+    }
+
+    /* Get rules declaration by the current schema selector */
     const rules = schema.getIn([schemaSelector, fieldProps[schemaSelector]]);
 
     /* Bypass empty rules set */
