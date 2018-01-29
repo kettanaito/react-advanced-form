@@ -10,7 +10,7 @@
 ## Architecture
 
 * [Argument properties](./architecture/argument-properties.md)
-* [Referencing](./general/referencing.md)
+* [Referencing](./architecture/referencing.md)
 
 ## High-order Components
 
