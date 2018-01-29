@@ -13,6 +13,7 @@ webpack*
 
 # Misc
 .storybook
+book.json
 FAQ.md
 coverage
 internal
