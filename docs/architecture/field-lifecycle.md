@@ -7,7 +7,7 @@ Mentioned lifecycle events are handled by React Advanced Form *automatically*. T
 
 ## Lifecycle
 1. [Registering](#registering)
-1. [Handling events](#handling-event)
+1. [Handling events](#handling-events)
 1. [Unregistering](#unregistering)
 
 ## Registering
