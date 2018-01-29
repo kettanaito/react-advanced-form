@@ -8,6 +8,10 @@
 * [Referencing](./general/referencing.md)
 * [FAQ](./general/faq.md)
 
+## Architecture
+
+* [Argument properties](./architecture/argument-properties.md)
+
 ## High-order Components
 
 * createField
