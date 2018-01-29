@@ -124,14 +124,12 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
    * A form-wide validation provided by "rules" property of the Form.
    * The latter property is also inherited from the context passed by FormProvider.
    */
-  const ruleArgs = {
+  const errorPaths = applyRulesSchema(formRules, {
     value,
     fieldProps: mutableFieldProps,
     fields: fields.toJS(),
     form
-  };
-
-  const errorPaths = applyRulesSchema(formRules, ruleArgs);
+  });
 
   if (errorPaths.size > 0) {
     return composeResult(false, errorPaths);
