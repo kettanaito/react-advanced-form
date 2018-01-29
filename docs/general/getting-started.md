@@ -55,7 +55,7 @@ import { Form } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
 export default class RegistrationForm extends React.Component {
-    handleSubmit = ({ serialized }) => {
+    registerUser = ({ serialized, fields, form }) => {
         return fetch('https://backend.dev/register', {
             method: 'POST',
             body: JSON.stringify(serialized)
@@ -64,7 +64,7 @@ export default class RegistrationForm extends React.Component {
 
     render() {
         return (
-            <Form action={ this.handleSubmit }>
+            <Form action={ this.registerUser }>
                 <Input name="email" required />
                 <Input name="password" type="password" required />
                 <button type="Submit">Register</button>

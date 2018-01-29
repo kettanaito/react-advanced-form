@@ -23,6 +23,8 @@ Notice how the argument of `action` handler (`this.handleSubmit`) is passed like
 
 This is the way how all arguments are passed to the custom callback functions. Argument properties like `fields` and `form` are always present in whichever callback method is being handled. On top of that, additional (or contextual) argument properties are passed to the argument Object as well.
 
+> **Note:** You may see argument Object properties including all the possible properties in the examples over here. That is done solely for demonstrational purposes, you *do not* need to include all argument properties – only the ones you need at the moment.
+
 ## Benefits
 Adopting this approach grants the following benefits:
 

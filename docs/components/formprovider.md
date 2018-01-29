@@ -2,7 +2,7 @@
 
 ## Specification
 
-A higher-order component used to provide the application-wide form settings to all the children forms.
+A provider component used to supply the application-wide form settings to all the children forms.
 
 You may think of it as a `<Provider>` from Redux, only for the forms. This way the forms in the application, regardless of the depth they are rendered in, follow the options passed to the `<FormProvider>` component, unless specified otherwise.
 
