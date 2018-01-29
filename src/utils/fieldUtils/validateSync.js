@@ -19,10 +19,11 @@ const commonErrorTypes = {
  */
 function applyRulesSchema(schema, ruleArgs) {
   const { fieldProps } = ruleArgs;
+  const hasNameSelectors = schema.has('name');
 
   return schemaSelectors.reduce((errorPaths, schemaSelector) => {
     /* Bypass type selectors if at least one name selector rejected previously */
-    if ((schemaSelector === 'type')) {
+    if (hasNameSelectors && (schemaSelector === 'type')) {
       const hasNamedErrorPath = errorPaths.some(errorPath => (errorPath[0] === 'name'));
 
       if (hasNamedErrorPath) {
