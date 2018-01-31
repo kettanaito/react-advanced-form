@@ -10,9 +10,12 @@ import { isset, debounce, fieldUtils, IterableInstance } from '../utils';
 
 export default class Form extends React.Component {
   static propTypes = {
+    /* General */
     action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
-    rules: TValidationRules,
-    messages: TValidationMessages,
+
+    /* Validation */
+    rules: TValidationRules, // validation rules
+    messages: TValidationMessages, // validation messages
 
     /* Events */
     onFirstChange: PropTypes.func,
@@ -71,7 +74,7 @@ export default class Form extends React.Component {
     const { rules: contextRules } = this.context;
     const { rules: mutableFormRules } = this.props;
 
-    if (!mutableFormRules) return contextRules || Map();
+    if (!mutableFormRules) return (contextRules || Map());
 
     const formRules = fromJS(mutableFormRules);
     const highestRules = formRules || contextRules || Map();
@@ -202,7 +205,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Removes the field's bindings from the Form's state/context.
+   * Removes the field's record from the state.
    * @param {Map} fieldProps
    */
   unregisterField = (fieldProps) => {
@@ -333,11 +336,13 @@ export default class Form extends React.Component {
 
     /**
      * Determine whether the validation is needed.
-     * Also, determine a type of the validation. In case the field has been validated sync and is valid sync, it's
-     * ready to be validated async (if any async validation is present). However, if the field hasn't been validated
-     * sync yet (hasn't been touched), first require sync validation. When the latter fails, user will be prompted
-     * to change the value of the field. Changing the value resets the "async" validation state as well. Hence, when
-     * the user will pass sync validation, upon blurring out the field, the validation type will be "async".
+     * Also, determine a type of the validation. In case the field has been validated sync
+     * and is valid sync, it's ready to be validated async (if any async validation is present).
+     * However, if the field hasn't been validated sync yet (hasn't been touched), first require
+     * sync validation. When the latter fails, user will be prompted to change the value of the
+     * field. Changing the value resets the "async" validation state as well. Hence, when the
+     * user will pass sync validation, upon blurring out the field, the validation type will
+     * be "async".
      */
     const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
 
@@ -370,9 +375,8 @@ export default class Form extends React.Component {
       }
     });
 
-    const onBlur = nextFieldProps.get('onBlur');
-
     /* Call custom onBlur handler */
+    const onBlur = nextFieldProps.get('onBlur');
     if (onBlur) {
       onBlur({
         event,
@@ -391,10 +395,10 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Validates a single provided field.
+   * Validates the provided field.
    * @param {Map} fieldProps
    * @param {ValidationType} type
-   * @param {boolean} forceProps Use direct props explicitly, without trying to grab props from the state.
+   * @param {boolean} forceProps Use direct props explicitly, without trying to grab field record from the state.
    * @return {boolean}
    */
   validateField = async ({ type = BothValidationType, fieldProps: directFieldProps, forceProps = false }) => {
@@ -454,7 +458,8 @@ export default class Form extends React.Component {
 
     /**
      * Get the next validity state.
-     * Based on the changed fieldProps, the field will aquire new validity state (valid/invalid).
+     * Based on the changed fieldProps, the field aquires a new validity state,
+     * which means its "valid" and "invalid" props values are updated.
      */
     const nextFieldProps = fieldProps.merge(propsPatch);
     const nextValidityState = fieldUtils.getValidityState(nextFieldProps);
@@ -470,8 +475,8 @@ export default class Form extends React.Component {
 
   /**
    * Validates the field in the debounce mode.
-   * That applies that in case multiple calls of this method will be executed, each next within the given timeout
-   * duration period postpones the method's execution.
+   * That applies that in case multiple calls of this method will be executed, each next within the
+   * given timeout duration period postpones the method's execution.
    */
   debounceValidateField = debounce(this.validateField, 250, false)
 
@@ -487,12 +492,12 @@ export default class Form extends React.Component {
     const validatingFields = fieldSelector ? fields.filter(fieldSelector) : fields;
 
     /* Validate only the fields matching the optional selection */
-    const pendingValidations = validatingFields.reduce((validations, fieldProps) => {
+    const validationSequence = validatingFields.reduce((validations, fieldProps) => {
       return validations.concat(this.validateField({ fieldProps }));
     }, []);
 
     /* Await for all validation promises to resolve before returning */
-    const validatedFields = await Promise.all(pendingValidations);
+    const validatedFields = await Promise.all(validationSequence);
 
     const isFormValid = !validatedFields.some(expected => !expected);
 
@@ -503,6 +508,9 @@ export default class Form extends React.Component {
       const nextMutableFields = nextFields.toJS();
 
       /* Reduce the invalid fields to the ordered Array */
+      //
+      // TODO This can be done on immutable instance as well, no need for conversion here
+      //
       const invalidFields = Object.keys(nextMutableFields).reduce((invalidFields, fieldName) => {
         const fieldProps = nextMutableFields[fieldName];
         return fieldProps.expected ? invalidFields : invalidFields.concat(fieldProps);
@@ -520,7 +528,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Resets the fields in the form.
+   * Resets all the fields in the form.
    */
   reset = () => {
     const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
@@ -549,13 +557,13 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Handles form submit.
+   * Submits the form.
    * @param {Event} event
    */
   submit = async (event) => {
     if (event) event.preventDefault();
 
-    /* Throw on submit attempt without "action" prop */
+    /* Throw on submit attempt without the "action" prop */
     const { action } = this.props;
     invariant(action, `Cannot submit the form without \`action\` prop specified explicitly. Expected a function which returns Promise, but received: ${action}.`);
 
@@ -630,8 +638,8 @@ export default class Form extends React.Component {
 
     return (
       <form
-        {...{ id }}
-        {...{ className }}
+        { ...{ id } }
+        { ...{ className } }
         onSubmit={ this.submit }
         noValidate>
         { children }
