@@ -2,70 +2,73 @@
  * Synchronously validate the provided field.
  */
 import { List } from 'immutable';
-import { composeResult } from './validate';
+import { commonErrorTypes, customRulesKey, composeResult } from './validate';
 
-const schemaSelectors = ['name', 'type'];
+function createRejectedRule({ name = null, path, selector = null, isCustom = false }) {
+  return { name, path, selector, isCustom };
+}
 
-const commonErrorTypes = {
-  missing: 'missing',
-  invalid: 'invalid'
-};
+function applyRule({ rule, name = 'invalid', selector, resolverArgs }) {
+  const isExpected = rule(resolverArgs);
+  if (isExpected) return;
 
-/**
- * Applies the given validation schema and returns the immutable map of invalid rules.
- * @param {Map} schema
- * @param {Object} ruleArgs
- * @return {Map}
- */
-function applyRulesSchema(schema, ruleArgs) {
-  const { fieldProps } = ruleArgs;
-  const hasNameSelectors = schema.has('name');
+  const { fieldProps } = resolverArgs;
+  const isCustom = !Object.keys(commonErrorTypes).includes(name);
+  const path = isCustom ? [customRulesKey, name] : [name];
 
-  return schemaSelectors.reduce((errorPaths, schemaSelector) => {
-    /* Bypass type selectors if at least one name selector rejected previously */
-    if (hasNameSelectors && (schemaSelector === 'type')) {
-      const hasNamedErrorPath = errorPaths.some(errorPath => (errorPath[0] === 'name'));
+  return createRejectedRule({
+    name,
+    path,
+    // path: [selector, fieldProps[selector], ...path],
+    selector,
+    isCustom
+  });
+}
 
-      if (hasNamedErrorPath) {
-        return errorPaths;
-      }
-    }
+function applyRules({ selector, rules, resolverArgs }) {
+  const { fieldProps } = resolverArgs;
 
-    /* Get rules declaration by the current schema selector */
-    const rules = schema.getIn([schemaSelector, fieldProps[schemaSelector]]);
+  if (typeof rules === 'function') {
+    const error = applyRule({ rule: rules, selector, resolverArgs });
+    return error ? [error] : [];
+  }
 
-    /* Bypass empty rules set */
-    if (!rules || (rules.size === 0)) return errorPaths;
+  console.log(' ');
+  console.log('applyRules', selector, rules, fieldProps, resolverArgs);
+  console.log('top-scope rules:', rules && rules.toJS());
+  console.log('selector:', selector);
 
-    /* Handle single functional rules */
-    if ((typeof rules === 'function')) {
-      const isExpected = rules(ruleArgs);
+  return rules.reduce((rejectedRules, rule, name) => {
+    const error = applyRule({ rule, name, selector, resolverArgs });
+    return error ? rejectedRules.concat(error) : rejectedRules;
+  }, []);
+}
 
-      return isExpected
-        ? errorPaths
-        : errorPaths.push([schemaSelector, fieldProps[schemaSelector], 'invalid']);
-    }
+function applyRulesSchema(rules, resolverArgs) {
+  const { fieldProps } = resolverArgs;
 
-    /**
-     * Keep error paths mutable to be able to get error message like:
-     * messages.getIn(errorPath);
-     * That doesn't work with List as "errorPath".
-     */
-    const nextErrorPaths = rules.reduce((list, rule, ruleName) => {
-      return rule(ruleArgs) ? list : list.concat([[
-        schemaSelector,
-        fieldProps[schemaSelector],
-        'rules',
-        ruleName
-      ]]);
-    }, []);
+  const nameRules = rules.getIn(['name', fieldProps.name]);
+  if (nameRules) {
+    const rejectedRules = applyRules({
+      selector: 'name',
+      rules: nameRules,
+      resolverArgs
+    });
 
-    if (nextErrorPaths.length > 0) {
-      return errorPaths.push(...nextErrorPaths);
-    }
+    console.log('rejected name-specific rules:', rejectedRules);
 
-    return errorPaths;
-  }, List());
+    if (rejectedRules.length > 0) return rejectedRules;
+  }
+
+  const typeRules = rules.getIn(['type', fieldProps.type]);
+  const rejectedRules = applyRules({
+    selector: 'type',
+    rules: typeRules,
+    resolverArgs
+  });
+
+  console.log('rejected type-specific rules:', rejectedRules);
+  return rejectedRules;
 }
 
 export default function validateSync({ fieldProps, fields, form, formRules }) {
@@ -89,7 +92,10 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
 
   /* Empty required fields are unexpected */
   if (!value && required) {
-    return composeResult(false, List([[commonErrorTypes.missing]]));
+    return composeResult(false, List([createRejectedRule({
+      name: commonErrorTypes.missing,
+      path: [commonErrorTypes.missing]
+    })]));
   }
 
   /* Assume Field doesn't have any relevant validation rules */
@@ -115,7 +121,10 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
       : rule.test(value);
 
     if (!isExpected) {
-      return composeResult(false, List([[commonErrorTypes.invalid]]));
+      return composeResult(false, List([createRejectedRule({
+        name: commonErrorTypes.invalid,
+        path: [commonErrorTypes.invalid]
+      })]));
     }
   }
 
@@ -124,15 +133,17 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
    * A form-wide validation provided by "rules" property of the Form.
    * The latter property is also inherited from the context passed by FormProvider.
    */
-  const errorPaths = applyRulesSchema(formRules, {
+  const rejectedRules = applyRulesSchema(formRules, {
     value,
     fieldProps: mutableFieldProps,
     fields: fields.toJS(),
     form
   });
 
-  if (errorPaths.size > 0) {
-    return composeResult(false, errorPaths);
+  console.warn('rejectedRules:', rejectedRules);
+
+  if (rejectedRules.length > 0) {
+    return composeResult(false, rejectedRules);
   }
 
   return composeResult(true);
