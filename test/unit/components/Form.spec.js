@@ -91,6 +91,7 @@ describe('Form', () => {
 
       /* Should have context props corresponding to the validation status */
       const input = wrapper.find(Input).instance();
+
       expect(input.contextProps.get('validatedSync')).to.be.true;
       expect(input.contextProps.get('validatedAsync')).to.be.false;
       expect(input.contextProps.get('validSync')).to.be.false;

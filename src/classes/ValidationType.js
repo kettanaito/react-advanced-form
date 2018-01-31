@@ -1,4 +1,8 @@
-import validationTypes from '../const/validation-types';
+export const validationTypes = {
+  sync: 'Sync',
+  async: 'Async',
+  both: 'Both'
+};
 
 export default class ValidationType {
   constructor(name) {

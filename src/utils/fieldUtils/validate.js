@@ -2,6 +2,7 @@ import { Map } from 'immutable';
 import validateSync from './validateSync';
 import validateAsync from './validateAsync';
 import Sequence from '../../classes/Sequence';
+import { validationTypes } from '../../classes/ValidationType';
 
 export const commonErrorTypes = {
   missing: 'missing',
@@ -72,7 +73,7 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   /* Sync validation */
   if (type.isBoth || type.isSync) {
     validationSeq.add({
-      name: 'Sync',
+      name: validationTypes.sync,
       resolver: () => validateSync({ fieldProps, fields, form, formRules })
     });
   }
@@ -80,7 +81,7 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   /* Async validation */
   if (type.isBoth || type.isAsync) {
     validationSeq.add({
-      name: 'Async',
+      name: validationTypes.async,
       resolver: () => validateAsync({ fieldProps, fields, form, formRules })
     });
   }
