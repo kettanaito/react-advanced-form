@@ -47,19 +47,60 @@ describe('getErrorMessages', function () {
     anotherField: fieldProps
   });
 
+  it('Display multiple named rule messages when present', async () => {
+    const firstMessage = 'First rule message';
+    const secondMessage = 'Second rule message';
+
+    const resolvedMessages = fieldUtils.getErrorMessages({
+      validationResult: await fieldUtils.validate({
+        type: BothValidationType,
+        fieldProps: fieldProps.set('value', 'foo'),
+        fields,
+        formRules: formRules.setIn(['name', fieldProps.get('name'), 'secondRule'], function ({ value }) {
+          return (value !== 'foo');
+        })
+      }),
+      fieldProps,
+      messages: messages
+        .setIn(['name', fieldProps.get('name'), 'rules', 'firstRule'], firstMessage)
+        .setIn(['name', fieldProps.get('name'), 'rules', 'secondRule'], secondMessage),
+      fields
+    });
+
+    expect(resolvedMessages).to.be.an.instanceof(Array).with.lengthOf(2);
+    expect(resolvedMessages).to.deep.equal([firstMessage, secondMessage]);
+  });
+
+  it('Name-specific named rule message is taken when present', async () => {
+    const firstMessage = 'First rule message';
+
+    const resolvedMessages = fieldUtils.getErrorMessages({
+      validationResult: await fieldUtils.validate({
+        type: BothValidationType,
+        fieldProps: fieldProps.set('value', 'foo'),
+        fields,
+        formRules
+      }),
+      fieldProps,
+      messages: messages.setIn(['name', fieldProps.get('name'), 'rules', 'firstRule'], firstMessage),
+      fields
+    });
+
+    expect(resolvedMessages).to.be.an.instanceof(Array).with.lengthOf(1);
+    expect(resolvedMessages).to.deep.equal([firstMessage]);
+  });
+
   /**
    * Test scenarios.
    */
   it('Name-specific "missing" message is taken when present', async () => {
-    const validationResult = await fieldUtils.validate({
-      type: BothValidationType,
-      fieldProps: fieldProps.set('value', null),
-      fields,
-      formRules
-    });
-
     const resolvedMessages = fieldUtils.getErrorMessages({
-      validationResult,
+      validationResult: await fieldUtils.validate({
+        type: BothValidationType,
+        fieldProps: fieldProps.set('value', null),
+        fields,
+        formRules
+      }),
       fieldProps,
       messages,
       fields
