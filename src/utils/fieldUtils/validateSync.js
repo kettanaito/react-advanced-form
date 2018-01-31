@@ -4,24 +4,18 @@
 import { List } from 'immutable';
 import { commonErrorTypes, customRulesKey, composeResult } from './validate';
 
-function createRejectedRule({ name = null, path, selector = null, isCustom = false }) {
-  return { name, path, selector, isCustom };
+function createRejectedRule({ name = null, selector = null, isCustom = false }) {
+  return { name, selector, isCustom };
 }
 
 function applyRule({ rule, name = 'invalid', selector, resolverArgs }) {
   const isExpected = rule(resolverArgs);
   if (isExpected) return;
 
-  const { fieldProps } = resolverArgs;
-  const isCustom = !Object.keys(commonErrorTypes).includes(name);
-  const path = isCustom ? [customRulesKey, name] : [name];
-
   return createRejectedRule({
     name,
-    path,
-    // path: [selector, fieldProps[selector], ...path],
     selector,
-    isCustom
+    isCustom: !Object.keys(commonErrorTypes).includes(name)
   });
 }
 

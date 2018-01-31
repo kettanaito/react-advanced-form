@@ -1,10 +1,12 @@
 import invariant from 'invariant';
+import { customRulesKey } from './validate';
 
 function resolveMessage({ messages, rejectedRule, resolverArgs }) {
   const { fieldProps } = resolverArgs;
-  const { name, path, selector, isCustom } = rejectedRule;
+  const { name, selector, isCustom } = rejectedRule;
 
   const primitiveErrorType = isCustom ? 'invalid' : name;
+  const path = isCustom ? [customRulesKey, name] : [name];
 
   console.log(' ');
   console.warn('resolveMessage');
