@@ -11,7 +11,7 @@ export validateSync from './validateSync';
 export validateAsync from './validateAsync';
 export validate from './validate';
 export getValidityState from './getValidityState';
-export getErrorMessage from './getErrorMessage';
+export getErrorMessages from './getErrorMessages';
 
 /* Other */
 export serializeFields from './serializeFields';

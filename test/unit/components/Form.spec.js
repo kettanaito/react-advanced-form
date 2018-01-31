@@ -50,7 +50,7 @@ describe('Form', () => {
     });
   });
 
-  it('Can be serialized manually', () => {
+  it('Supports manual serialization', () => {
     const wrapper = mount(
       <Form rules={ validationRules } messages={ validationMessages }>
         <Input name="username" value="doe" />
@@ -73,7 +73,7 @@ describe('Form', () => {
     });
   });
 
-  it('Can be validated manually', () => {
+  it('Supports manual validation', () => {
     const wrapper = mount(
       <Form rules={ validationRules } messages={ validationMessages }>
         <Input name="username" required />
@@ -101,7 +101,7 @@ describe('Form', () => {
     });
   });
 
-  it('Can be reset manually', () => {
+  it('Supports manual reset', () => {
     let resetCallbackCalled = false;
 
     function resetCallback({ fields, form }) {
