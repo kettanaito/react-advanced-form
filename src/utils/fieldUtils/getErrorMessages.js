@@ -27,14 +27,14 @@ function resolveMessage({ messages, rejectedRule, resolverArgs }) {
 }
 
 /**
- * Returns an error message based on the validity status and provided map of error messages.
+ * Returns the list of error messages on the validation results (rejected rules).
  * @param {Map} validationResult
  * @param {Map} messages
  * @param {Map} fieldProps
  * @param {object} form
  * @return {Array<string>}
  */
-export default function getErrorMessage({ validationResult, messages, fieldProps, fields, form }) {
+export default function getErrorMessages({ validationResult, messages, fieldProps, fields, form }) {
   /* No errors - no error messages */
   const rejectedRules = validationResult.get('rejectedRules');
   if (!rejectedRules || (rejectedRules.length === 0)) return;

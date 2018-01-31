@@ -56,13 +56,13 @@ const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
  * @return {boolean}
  */
 export default async function validate({ type, fieldProps, fields, form, formRules = Map() }) {
-  console.groupCollapsed(`fieldUtils @ validate "${fieldProps.get('fieldPath')}"`);
-  console.log('type', type);
-  console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-  console.log('fields', fields);
-  console.log('form', form);
-  console.log('formRules', formRules.toJS());
-  console.groupEnd();
+  // console.groupCollapsed(`fieldUtils @ validate "${fieldProps.get('fieldPath')}"`);
+  // console.log('type', type);
+  // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+  // console.log('fields', fields);
+  // console.log('form', form);
+  // console.log('formRules', formRules.toJS());
+  // console.groupEnd();
 
   /* Create a new validation sequence */
   const validationSeq = new Sequence({

@@ -443,7 +443,7 @@ export default class Form extends React.Component {
 
     /* Get the validation message based on the validation result */
     if (hasMessages && !expected) {
-      const errorMessages = fieldUtils.getErrorMessage({
+      const errorMessages = fieldUtils.getErrorMessages({
         validationResult,
         messages: this.formMessages,
         fieldProps,

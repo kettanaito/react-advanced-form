@@ -18,63 +18,9 @@ describe('utils', () => {
     });
 
     /**
-     * getErrorMessage
+     * getErrorMessages
      */
-    // it('getErrorMessage', () => {
-    //   const messages = fromJS({
-    //     general: {
-    //       missing: 'generalMissing',
-    //       invalid: 'generalInvalid'
-    //     },
-    //     type: {
-    //       tel: {
-    //         invalid: 'fieldTwoInvalid'
-    //       }
-    //     },
-    //     name: {
-    //       fieldOne: {
-    //         missing: 'fieldOneMissing',
-    //         invalid: 'fieldOneInvalid'
-    //       },
-    //       fieldTwo: {
-    //         async: {
-    //           customResolver: ({ fields }) => fields.fieldOne.value
-    //         }
-    //       }
-    //     }
-    //   });
-
-    //   const fieldOne = Map({ name: 'fieldOne', value: 'foo' });
-    //   const fieldTwo = Map({ name: 'fieldTwo', type: 'tel', value: '999' });
-    //   const fields = fromJS({ fieldOne, fieldTwo });
-
-    //   /* Name-specific missing message */
-    //   const messageOne = fieldUtils.getErrorMessage({
-    //     validationResult: Map({ errorPaths: [['missing']] }),
-    //     messages,
-    //     fieldProps: fieldOne,
-    //     fields
-    //   });
-    //   expect(messageOne).to.deep.equal([messages.getIn(['name', 'fieldOne', 'missing'])]);
-
-    //   /* Type-specific invalid message */
-    //   const messageTwo = fieldUtils.getErrorMessage({
-    //     validationResult: Map({ errorPaths: [['invalid']] }),
-    //     messages,
-    //     fieldProps: fieldTwo,
-    //     fields
-    //   });
-    //   expect(messageTwo).to.deep.equal([messages.getIn(['type', 'tel', 'invalid'])]);
-
-    //   /* Async type-specific message resolver */
-    //   const messageThree = fieldUtils.getErrorMessage({
-    //     validationResult: Map({ errorPaths: [['async']] }),
-    //     messages,
-    //     fieldProps: fieldTwo,
-    //     fields
-    //   });
-    //   expect(messageThree).to.deep.equal(['foo']);
-    // });
+    require('./getErrorMessages.spec');
 
     /**
      * getFieldPath
