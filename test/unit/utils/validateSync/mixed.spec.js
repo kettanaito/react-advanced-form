@@ -29,9 +29,13 @@ describe('Mixed validation', function () {
     }).toJS();
 
     expect(resultOne.propsPatch).to.have.property('expected', false);
-    expect(resultOne).to.have.property('errorPaths').with.length(1);
-    expect(resultOne.errorPaths).to.deep.equal([
-      ['name', fieldProps.get('name'), 'rules', 'namedRule']
+    expect(resultOne).to.have.property('rejectedRules').with.length(1);
+    expect(resultOne.rejectedRules).to.deep.equal([
+      {
+        name: 'namedRule',
+        selector: 'name',
+        isCustom: true
+      }
     ]);
 
     const resulTwo = fieldUtils.validateSync({
@@ -41,9 +45,13 @@ describe('Mixed validation', function () {
     }).toJS();
 
     expect(resulTwo.propsPatch).to.have.property('expected', false);
-    expect(resulTwo).to.have.property('errorPaths').with.length(1);
-    expect(resulTwo.errorPaths).to.deep.equal([
-      ['type', 'text', 'invalid']
+    expect(resulTwo).to.have.property('rejectedRules').with.length(1);
+    expect(resulTwo.rejectedRules).to.deep.equal([
+      {
+        name: 'invalid',
+        selector: 'type',
+        isCustom: false
+      }
     ]);
 
     const resultThree = fieldUtils.validateSync({
@@ -53,6 +61,6 @@ describe('Mixed validation', function () {
     }).toJS();
 
     expect(resultThree.propsPatch).to.have.property('expected', true);
-    expect(resultThree).to.have.property('errorPaths').with.length(0);
+    expect(resultThree).to.have.property('rejectedRules').with.length(0);
   });
 });
