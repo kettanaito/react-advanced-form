@@ -1,67 +1,129 @@
 # Validation rules
 
-## Specification
+* [Definition](#definition)
+* [Priority](#priority)
+* [Named rules](#named-rules)
+* [Multiple rules](#multiple-rules)
+* [Extending rules](#extending-rules)
+* [Example](#example)
+
+## Definition
 
 ```ts
 type ValidationRules = {
-    extend?: boolean,
-    type: {
-        [fieldType: string]: ValidatorFunction
-    },
-    name: {
-        [fieldName: string]: ValidatorFunction
+  extend?: boolean,
+  type: {
+    [fieldType: string]: RuleDeclaraion
+  },
+  name: {
+    [fieldName: string]: RuleDeclaraion
+  }
+}
+
+type ValidatorFunction = ({
+  value: mixed, // (shorthand) the value of the current field
+  fieldProps: Object, // props of the current field
+  fields: Object, // map of all fields present in the same Form
+  form: ReactComponent // reference to the Form itself
+}) => boolean
+
+type RuleDeclaraion = ValidationFunction | { [ruleName: string]: ValidatorFunction;
+```
+
+> **Note:** By providing `extend: true`, the current rules will extend the application-wide rules applied by `FormProvider`, if any. Otherwise, the rules will override any rules declared in the higher scope.
+
+A `ValidatorFunction` must always return a `boolean`, stating that the rule has been resolved.
+
+## Priority
+Validation rules are executed by a certain priority.
+
+### Context priority
+A synchronous rule declared under [`Field.props.rule`](../components/Field/props/rule.md) has the highest priority and is executed first, if present.
+
+### Selector priority
+There are two kinds of validation selectors:
+
+* `name`
+* `type`
+
+Name-specific validation rules always have higher priority over type-specific rules. That means whenever name-specific rule rejects, any following type-specific rules *will not be executed*.
+
+## Named rules
+Each rule may have its own unique name:
+
+```jsx
+export default {
+  type: {
+    email: {
+      isValid: ({ value }) => isEmail(value)
     }
+  }
 }
 ```
 
-> **Note:** By providing `extend: true`, the current rules will extend the application-wide rules applied by `FormProvider`, if any.
+Having named rules allows to precisely control the validation message displayed respectively to the rule's name. Read more in the [Validation messages](./messages.md) section.
 
-```ts
-type ValidatorFunction = ({
-    value: mixed, // (shorthand) the value of the current field
-    fieldProps: Object, // props of the current field
-    fields: Object, // map of all fields present in the same Form
-    form: ReactComponent // reference to the Form itself
-}) => boolean
-```
+## Multiple rules
+It is possible to have multiple rules on the same selector:
 
-The purpose of the validation function is to return a `boolean`, stating whether the field is valid.
-
-## Priority
-
-Validation rules are applied to the fields following a certain priority logic.
-
-### Context priority
-
-First of all, the rules provided into an individual `Form` component via `Form.props.rules` have higher priority than the application-wide rules provided by `FormProvider`. By default, Form-wide rules will **completely override** the application-wide rules.
-
-To change the overriding behavior pass `extend: true` to the Form-specific rules Object. By doing so, React Advanced Form will try to deeply merge both rules declarations and use the merged instance during the validation.
-
-## Type priority
-
-There are two types of the validation - `type`-specific validation and `name`-specific validation. Both those types refer to the validating Field. Name-specific rules have higher priority over type-specific rules, however, those **do not** override each other.
-
-When you have provided both `type` and `name` specific rules, the Field will be validated against both in a defined sequence \(first name rule, then type rule\). This way name-specific rules are the superset on top of the type-specific rules.
-
-## Examples
-
-### Basics
-
-```js
-// src/app/validation-rules.js
+```jsx
+// src/validation-rules.js
 export default {
-    type: {
-        /* Allow only numbers for the field[type="tel"] */
-        tel: ({ value }) => /^\d+$/.test(value)
-    },
-    name: {
-        /* Consider "lastName" valid only when "firstName" is provided */
-        lastName: ({ fields }) => fields.firstName && fields.firstName.value
+  name: {
+    userPassword: {
+      capitalLetter: ({ value }) => /[A-Z]/.test(value),
+      oneNumber: ({ value }) => /[0-9]/.test(value)
     }
+  }
 };
 ```
 
-Once declared, the validation rules can be reused in `FormProvider` or passed to the individual `Form` component directly. There is an example below how to pass the rules to the `FormProvider`, to apply them application-wise:
+> **Note:** Each of the multiple validation rules **must be named**.
+
+Multiple type-specific rules are declared in the very same way.
+
+Sibling rule declarations are always executed regardless of the status of the previous rule. Considering the example above, `oneNumber` rule will always be executed even if `capitalLetter` rejects.
+
+## Extending rules
+While having application-wide rules is the recommended approach, each `Form` instance can have its own validation rules, which may, or may not extend the application-wide rules.
+
+To extend the application-wide rules set the `extend` to `true`:
+
+```js
+const customRules = {
+  extend: true, // extend any rules from the higher scope
+  name: {
+      myField: ({ value }) => (value !== 'foo')
+  }
+};
+```
+
+## Example
+As an example, we will be creating a real-world registraion form for our imaginary application. This should give you an overview of how you can manage validation in your project.
+
+First, let's declare the validation rules:
+
+```js
+// src/app/validation-rules.js
+import isEmail from 'validator/lib/isEmail';
+
+export default {
+  type: {
+    email: ({ value }) => isEmail(value),
+    password: {
+      capitalLetter: ({ value }) => /[A-Z]/.test(value),
+      oneNumber: ({ value }) => /[0-9]/.test(value)
+    }
+  },
+  name: {
+    confirmPassword: ({ value, fields }) => {
+      return (value === fields.password.value);
+    }
+  }
+};
+```
+
+Now, let's apply those rules to the whole application, making *all* forms in our app abide by those rules:
 
 ```jsx
 // src/app/index.js
@@ -69,42 +131,94 @@ import React from 'react';
 import { FormProvider } from 'react-advanced-form';
 import validationRules from './validation-rules';
 
-const App = ({ children }) => (
-    <FormProvider rules={ validationRules }>
-        { children }
-    </FormProvider>
+const renderApp = ({ children }) => (
+  <FormProvider rules={ validationRules }>
+    { children }
+  </FormProvider>
 );
+
+// render the app using ReactDOM.render()
 ```
 
-### Extending rules
-
-Consider that we have already passed the `validationRules` to the `FormProvider`, as in the example above.
-
-```js
-// src/app/validation-rules-custom.js
-export default {
-    name: {
-        /* Use custom format validation on top of field[type="tel"] rule */
-        phoneNumber: ({ value }) => ensureFormat(value)
-    }
-};
-```
+Now, let's declare a `RegistrationForm` component:
 
 ```jsx
-// src/app/components/MyForm.jsx
+// src/app/components/Registration/Form.jsx
 import React from 'react';
 import { Form } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
-import customValidationRules from '../../validation-rules-custom';
 
-export default function MyForm() {
+export default class RegistrationForm extends React.Component {
+  render() {
     return (
-        <Form rules={ customValidationRules }>
-            <Input name="phoneNumber" type="tel" />
-        </Form>
+      <Form action={ this.registerUser }>
+        <Input
+          name="email"
+          type="email"
+          required />
+        <Input
+          name="password"
+          type="password"
+          required />
+        <Input
+          name="confirmPassword"
+          type="password"
+          required />
+      </Form>
     );
+  }
 }
 ```
 
-The `phoneNumber` field will be validated against `customValidationRules.name.phoneNumber` first, and then against `validationRules.type.tel`.
+Great! Our form is working, but let's take it one step further and create this form-specific validation rules for `confirmPassword` field to equal the entered `password`:
 
+```js
+// src/app/components/Registration/rules.js
+export default {
+  /**
+   * Set "extend" to "true" because our RegistrationForm should abide
+   * by the "email" and "password" application-wide rules as well.
+   */
+  extends: true,
+  name: {
+    confirmPassword: ({ value, fields }) => {
+      return (value === fields.password.value);
+    }
+  }
+}
+```
+
+Now let's pass this unique validation rules to our `RegistraionForm`:
+
+```jsx
+// src/app/components/Registration/Form.jsx
+import React from 'react';
+import { Form } from 'react-advanced-form';
+import { Input } from 'react-advanced-form-addons';
+
+/* Import form-specific rules */
+import validationRules from './rules';
+
+export default class RegistrationForm extends React.Component {
+  render() {
+    return (
+      <Form
+        action={ this.registerUser }
+        rules={ validationRules }>
+        <Input
+          name="email"
+          type="email"
+          required />
+        <Input
+          name="password"
+          type="password"
+          required />
+        <Input
+          name="confirmPassword"
+          type="password"
+          required />
+      </Form>
+    );
+  }
+}
+```
