@@ -49,77 +49,75 @@ describe('Type-specific validation', () => {
       })
     }).toJS();
 
-    console.log('resultTwo:', resultTwo);
-
     expect(resultTwo.propsPatch).to.have.property('expected', true);
     expect(resultTwo).to.have.property('rejectedRules').with.length(0);
   });
 
-  // it('Multiple named rules', () => {
-  //   const formRules = fromJS({
-  //     type: {
-  //       password: {
-  //         capitalLetter: ({ value }) => /[A-Z]/.test(value),
-  //         oneNumber: ({ value }) => /[0-9]/.test(value)
-  //       }
-  //     }
-  //   });
+  it('Multiple named rules', () => {
+    const formRules = fromJS({
+      type: {
+        password: {
+          capitalLetter: ({ value }) => /[A-Z]/.test(value),
+          oneNumber: ({ value }) => /[0-9]/.test(value)
+        }
+      }
+    });
 
-  //   const fieldProps = Map({ name: 'fieldName', type: 'password' });
+    const fieldProps = Map({ name: 'fieldName', type: 'password' });
 
-  //   /**
-  //    * Unexpected field (0/2).
-  //    */
-  //   const resultOne = fieldUtils.validateSync({
-  //     fieldProps: fieldProps.set('value', 'foo'),
-  //     fields,
-  //     formRules
-  //   }).toJS();
+    /**
+     * Unexpected field (0/2).
+     */
+    const resultOne = fieldUtils.validateSync({
+      fieldProps: fieldProps.set('value', 'foo'),
+      fields,
+      formRules
+    }).toJS();
 
-  //   expect(resultOne.propsPatch).to.have.property('expected', false);
-  //   expect(resultOne).to.have.property('rejectedRules').with.length(2);
-  //   expect(resultOne.rejectedRules).to.deep.equal([
-  //     {
-  //       name: 'capitalLetter',
-  //       selector: 'type',
-  //       isCustom: true
-  //     },
-  //     {
-  //       name: 'oneNumber',
-  //       selector: 'type',
-  //       isCustom: true
-  //     }
-  //   ]);
+    expect(resultOne.propsPatch).to.have.property('expected', false);
+    expect(resultOne).to.have.property('rejectedRules').with.length(2);
+    expect(resultOne.rejectedRules).to.deep.equal([
+      {
+        name: 'capitalLetter',
+        selector: 'type',
+        isCustom: true
+      },
+      {
+        name: 'oneNumber',
+        selector: 'type',
+        isCustom: true
+      }
+    ]);
 
-  //   /**
-  //    * Unexpected field (1/2).
-  //    */
-  //   const resultTwo = fieldUtils.validateSync({
-  //     fieldProps: fieldProps.set('value', 'Capital'),
-  //     fields,
-  //     formRules
-  //   }).toJS();
+    /**
+     * Unexpected field (1/2).
+     */
+    const resultTwo = fieldUtils.validateSync({
+      fieldProps: fieldProps.set('value', 'Capital'),
+      fields,
+      formRules
+    }).toJS();
 
-  //   expect(resultTwo.propsPatch).to.have.property('expected', false);
-  //   expect(resultTwo).to.have.property('rejectedRules').with.length(1);
-  //   expect(resultTwo.rejectedRules).to.deep.equal([
-  //     {
-  //       name: 'oneNumber',
-  //       selector: 'type',
-  //       isCustom: true
-  //     }
-  //   ]);
+    expect(resultTwo.propsPatch).to.have.property('expected', false);
+    expect(resultTwo).to.have.property('rejectedRules').with.length(1);
+    expect(resultTwo.rejectedRules).to.deep.equal([
+      {
+        name: 'oneNumber',
+        selector: 'type',
+        isCustom: true
+      }
+    ]);
 
-  //   /**
-  //    * Expected field (2/2).
-  //    */
-  //   const resultThree = fieldUtils.validateSync({
-  //     fieldProps: fieldProps.set('value', 'Capi5tal'),
-  //     fields,
-  //     formRules
-  //   }).toJS();
+    /**
+     * Expected field (2/2).
+     */
+    const resultThree = fieldUtils.validateSync({
+      fieldProps: fieldProps.set('value', 'Capi5tal'),
+      fields,
+      formRules
+    }).toJS();
 
-  //   expect(resultThree.propsPatch).to.have.property('expected', true);
-  //   expect(resultThree).to.have.property('rejectedRules').with.length(0);
-  // });
+    expect(resultThree.propsPatch).to.have.property('expected', true);
+    expect(resultThree).to.have.property('rejectedRules').with.length(0);
+  });
 });
