@@ -22,8 +22,10 @@ function resolveMessage({ messages, rejectedRule, resolverArgs }) {
   for (let i = 0; i < messagePaths.length; i++) {
     const messagePath = messagePaths[i];
     const message = messages.getIn(messagePath);
-    if (message) return message;
+    if (message) return { message, isResolvedDirectly: (i === 0) };
   }
+
+  return {};
 }
 
 /**
@@ -47,17 +49,32 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
     form
   };
 
+  let hasResolvedNameMessage = false;
+
   const resolvedMessages = rejectedRules.reduce((messagesList, rejectedRule) => {
-    const message = resolveMessage({
-      messages,
-      rejectedRule,
-      resolverArgs
-    });
+    const { selector } = rejectedRule;
+    const { message, isResolvedDirectly } = resolveMessage({ messages, rejectedRule, resolverArgs });
+
+    const isNameSelector = (selector === 'name');
+
+    /**
+     * When no previously directly resolved messages, and the current one is directly resolved,
+     * mark this within the respective variable.
+     */
+    if (!hasResolvedNameMessage && isNameSelector && isResolvedDirectly) {
+      hasResolvedNameMessage = true;
+    }
+
+    /**
+     * When current message is not resolved directly, yet there is a sibling message
+     * which was resolved directly before, bypass the current message.
+     */
+    if (hasResolvedNameMessage && isNameSelector && !isResolvedDirectly) {
+      return messagesList;
+    }
 
     const isFunctionalMessage = (typeof message === 'function');
-    const resolvedMessage = isFunctionalMessage
-      ? message(resolverArgs)
-      : message;
+    const resolvedMessage = isFunctionalMessage ? message(resolverArgs) : message;
 
     const isMessageValid = isFunctionalMessage ? !!resolvedMessage : true;
 

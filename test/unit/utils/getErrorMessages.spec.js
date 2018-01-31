@@ -71,6 +71,27 @@ describe('getErrorMessages', function () {
     expect(resolvedMessages).to.deep.equal([firstMessage, secondMessage]);
   });
 
+  it('Do not fallback for missing rule message when sibling rule message is present', async () => {
+    const firstMessage = 'First rule message';
+
+    const resolvedMessages = fieldUtils.getErrorMessages({
+      validationResult: await fieldUtils.validate({
+        type: BothValidationType,
+        fieldProps: fieldProps.set('value', 'foo'),
+        fields,
+        formRules: formRules.setIn(['name', fieldProps.get('name'), 'secondRule'], function ({ value }) {
+          return (value !== 'foo');
+        })
+      }),
+      fieldProps,
+      messages: messages.setIn(['name', fieldProps.get('name'), 'rules', 'firstRule'], firstMessage),
+      fields
+    });
+
+    expect(resolvedMessages).to.be.an.instanceof(Array).with.lengthOf(1);
+    expect(resolvedMessages).to.deep.equal([firstMessage]);
+  });
+
   it('Name-specific named rule message is taken when present', async () => {
     const firstMessage = 'First rule message';
 

@@ -31,7 +31,7 @@ const formMessages = {
       invalid: 'The quantity is invalid',
       rules: {
         forbidLetters: ({ value }) => `Does "${value}" look like a number to you?`,
-        maxValue: 'Value should be less than 10'
+        // maxValue: 'Value should be less than 10'
       }
     }
   }
