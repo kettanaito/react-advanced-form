@@ -5,7 +5,7 @@ import { MyInput, MySelect, MyCheckbox, MyTextarea } from './custom-fields';
 /* Form validation rules */
 const formRules = {
   type: {
-    text: ({ value }) => value !== 's'
+    text: ({ value }) => value !== 3
   },
   name: {
     quantity: {
@@ -75,7 +75,9 @@ export default class ValidationExample extends Component {
             name="quantity"
             initialValue="s"
             placeholder="Quantity"
-            required />
+            rule={({ value }) => (value !== 'foo')}
+            required
+            autocomplete="off" />
 
           <button type="submit">Submit</button>
         </Form>

@@ -13,14 +13,21 @@ import validateSync from './validateSync';
 import validateAsync from './validateAsync';
 import Sequence from '../../classes/Sequence';
 
+export const commonErrorTypes = {
+  missing: 'missing',
+  invalid: 'invalid'
+};
+
+export const customRulesKey = 'rules';
+
 /**
  * Shorthand function to return a unified validation result Object.
  * @param {Boolean} expected
- * @param {List<string>} errorPaths
+ * @param {List<[string]>} rejectedRules
  */
-export const composeResult = (expected, errorPaths = List()) => (Map({
+export const composeResult = (expected, rejectedRules = List()) => (Map({
   propsPatch: Map({ expected }),
-  errorPaths
+  rejectedRules
 }));
 
 /**

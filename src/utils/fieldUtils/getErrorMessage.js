@@ -1,22 +1,31 @@
-function getFallbackMessage({ errorPath, messages, fieldProps }) {
-  const errorType = errorPath[errorPath.length - 1];
-  const primitiveErrorType = ['missing', 'invalid'].includes(errorType) ? errorType : 'invalid';
+import invariant from 'invariant';
 
-  const fallbackPaths = [
-    ['name', fieldProps.get('name'), errorType],
-    ['name', fieldProps.get('name'), primitiveErrorType],
-    ['type', fieldProps.get('type'), errorType],
-    ['type', fieldProps.get('type'), primitiveErrorType],
+function resolveMessage({ messages, rejectedRule, resolverArgs }) {
+  const { fieldProps } = resolverArgs;
+  const { name, path, selector, isCustom } = rejectedRule;
+
+  const primitiveErrorType = isCustom ? 'invalid' : name;
+
+  console.log(' ');
+  console.warn('resolveMessage');
+  console.log('name:', name);
+  console.log('path:', path);
+  console.log('selector:', selector);
+  console.log('isCustom:', isCustom);
+
+  const messagePaths = [
+    selector && [selector, fieldProps[selector], ...path],
+    ['name', fieldProps.name, primitiveErrorType],
+    ['type', fieldProps.type, primitiveErrorType],
     ['general', primitiveErrorType]
-  ];
+  ].filter(Boolean);
 
-  for (let i = 0; i < fallbackPaths.length; i++) {
-    const fallbackPath = fallbackPaths[i];
-    const message = messages.getIn(fallbackPath);
+  console.log('messagePaths:', messagePaths);
 
-    if (message) {
-      return message;
-    }
+  for (let i = 0; i < messagePaths.length; i++) {
+    const messagePath = messagePaths[i];
+    const message = messages.getIn(messagePath);
+    if (message) return message;
   }
 }
 
@@ -30,10 +39,10 @@ function getFallbackMessage({ errorPath, messages, fieldProps }) {
  */
 export default function getErrorMessage({ validationResult, messages, fieldProps, fields, form }) {
   /* No errors - no error messages */
-  const errorPaths = validationResult.get('errorPaths');
-  if (!errorPaths || errorPaths.size === 0) return;
+  const rejectedRules = validationResult.get('rejectedRules');
+  if (!rejectedRules || (rejectedRules.length === 0)) return;
 
-  const messageResolverArgs = {
+  const resolverArgs = {
     // ...extra,
     value: fieldProps.get('value'),
     fieldProps: fieldProps.toJS(),
@@ -43,37 +52,23 @@ export default function getErrorMessage({ validationResult, messages, fieldProps
 
   let hasNamedMessage = false;
 
-  const resolvedMessages = errorPaths.reduce((messagesList, errorPath) => {
-    /* Determine if this is the named error path */
-    const errorPathType = errorPath[0];
-    const isNamedPath = (errorPathType === 'name');
-    // const isTypedPath = (errorPathType === 'type');
+  const resolvedMessages = rejectedRules.reduce((messagesList, rejectedRule) => {
+    const message = resolveMessage({
+      messages,
+      rejectedRule,
+      resolverArgs
+    });
 
-    /* Bypass "type" error paths when named message is already present */
-    // if (isTypedPath && hasNamedMessage) return messagesList;
-
-    /* Attempt to get the message by "errorPath" directly */
-    const message = messages.getIn(errorPath);
-
-    /* Bypass missing named error path with the named message already present */
-    if (!message && isNamedPath && hasNamedMessage) return messagesList;
-
-    if (isNamedPath && message) {
-      hasNamedMessage = true;
-    }
-
-    if (!message) {
-      /* Try to fallback to the "invalid" key of the current selector */
-      const fallbackMessage = getFallbackMessage({ errorPath, messages, fieldProps });
-      return fallbackMessage ? messagesList.concat(fallbackMessage) : messagesList;
-    }
-
-    /* Resolve the message if it's a function */
-    const resolvedMessage = (typeof message === 'function')
-      ? message(messageResolverArgs)
+    const isFunctionalMessage = (typeof message === 'function');
+    const resolvedMessage = isFunctionalMessage
+      ? message(resolverArgs)
       : message;
 
-    return messagesList.concat(resolvedMessage);
+    const isMessageValid = isFunctionalMessage ? !!resolvedMessage : true;
+
+    invariant(isMessageValid, `Expected the error message declaration of the rule "${rejectedRule.name}" to return a String, but got: ${resolvedMessage}. Please check the message declaration for the field "${fieldProps.get('name')}".`);
+
+    return resolvedMessage ? messagesList.concat(resolvedMessage) : messagesList;
   }, []);
 
   return resolvedMessages;
