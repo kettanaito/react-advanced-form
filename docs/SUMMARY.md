@@ -54,8 +54,8 @@
 
 * [Getting started](./validation/getting-started.md)
 * [Logic](./validation/logic.md)
-* [Declaring rules](./validation/rules.md)
-* [Declaring messages](./validation/messages.md)
+* [Rules](./validation/rules.md)
+* [Messages](./validation/messages.md)
 
 ## Developers
 
