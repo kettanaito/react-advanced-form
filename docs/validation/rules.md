@@ -30,8 +30,6 @@ type ValidatorFunction = ({
 type RuleDeclaraion = ValidationFunction | { [ruleName: string]: ValidatorFunction;
 ```
 
-> **Note:** By providing `extend: true`, the current rules will extend the application-wide rules applied by `FormProvider`, if any. Otherwise, the rules will override any rules declared in the higher scope.
-
 A `ValidatorFunction` must always return a `boolean`, stating that the rule has been resolved.
 
 ## Priority
@@ -114,11 +112,6 @@ export default {
       capitalLetter: ({ value }) => /[A-Z]/.test(value),
       oneNumber: ({ value }) => /[0-9]/.test(value)
     }
-  },
-  name: {
-    confirmPassword: ({ value, fields }) => {
-      return (value === fields.password.value);
-    }
   }
 };
 ```
@@ -170,14 +163,15 @@ export default class RegistrationForm extends React.Component {
 }
 ```
 
-Great! Our form is working, but let's take it one step further and create this form-specific validation rules for `confirmPassword` field to equal the entered `password`:
+Great! Our form is done, but let's take it one step further and declare some validation rules specific to this very form. We will use those to validate the `confirmPassword` field, to make sure it equals to the `password` field's value.
 
 ```js
 // src/app/components/Registration/rules.js
 export default {
   /**
    * Set "extend" to "true" because our RegistrationForm should abide
-   * by the "email" and "password" application-wide rules as well.
+   * by the "email" and "password" application-wide rules shipped by
+   * the <FormProvider> for all children forms.
    */
   extends: true,
   name: {
