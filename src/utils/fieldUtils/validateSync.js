@@ -1,8 +1,7 @@
 /**
- * Synchronously validate the provided field.
+ * Synchronous validation of the provided field.
  */
-import { List } from 'immutable';
-import { commonErrorTypes, customRulesKey, composeResult } from './validate';
+import { commonErrorTypes, composeResult } from './validate';
 
 function createRejectedRule({ name = null, selector = null, isCustom = false }) {
   return { name, selector, isCustom };
@@ -20,17 +19,10 @@ function applyRule({ rule, name = 'invalid', selector, resolverArgs }) {
 }
 
 function applyRules({ selector, rules, resolverArgs }) {
-  const { fieldProps } = resolverArgs;
-
   if (typeof rules === 'function') {
     const error = applyRule({ rule: rules, selector, resolverArgs });
     return error ? [error] : [];
   }
-
-  console.log(' ');
-  console.log('applyRules', selector, rules, fieldProps, resolverArgs);
-  console.log('top-scope rules:', rules && rules.toJS());
-  console.log('selector:', selector);
 
   return rules.reduce((rejectedRules, rule, name) => {
     const error = applyRule({ rule, name, selector, resolverArgs });
@@ -42,6 +34,10 @@ function applyRulesSchema(rules, resolverArgs) {
   const { fieldProps } = resolverArgs;
 
   const nameRules = rules.getIn(['name', fieldProps.name]);
+  const typeRules = rules.getIn(['type', fieldProps.type]);
+
+  if (!nameRules && !typeRules) return [];
+
   if (nameRules) {
     const rejectedRules = applyRules({
       selector: 'name',
@@ -49,20 +45,20 @@ function applyRulesSchema(rules, resolverArgs) {
       resolverArgs
     });
 
-    console.log('rejected name-specific rules:', rejectedRules);
-
     if (rejectedRules.length > 0) return rejectedRules;
   }
 
-  const typeRules = rules.getIn(['type', fieldProps.type]);
-  const rejectedRules = applyRules({
-    selector: 'type',
-    rules: typeRules,
-    resolverArgs
-  });
+  if (typeRules) {
+    const rejectedRules = applyRules({
+      selector: 'type',
+      rules: typeRules,
+      resolverArgs
+    });
 
-  console.log('rejected type-specific rules:', rejectedRules);
-  return rejectedRules;
+    return rejectedRules;
+  }
+
+  return [];
 }
 
 export default function validateSync({ fieldProps, fields, form, formRules }) {
@@ -86,10 +82,10 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
 
   /* Empty required fields are unexpected */
   if (!value && required) {
-    return composeResult(false, List([createRejectedRule({
+    return composeResult(false, createRejectedRule({
       name: commonErrorTypes.missing,
       path: [commonErrorTypes.missing]
-    })]));
+    }));
   }
 
   /* Assume Field doesn't have any relevant validation rules */
@@ -115,10 +111,10 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
       : rule.test(value);
 
     if (!isExpected) {
-      return composeResult(false, List([createRejectedRule({
+      return composeResult(false, createRejectedRule({
         name: commonErrorTypes.invalid,
         path: [commonErrorTypes.invalid]
-      })]));
+      }));
     }
   }
 
@@ -133,8 +129,6 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
     fields: fields.toJS(),
     form
   });
-
-  console.warn('rejectedRules:', rejectedRules);
 
   if (rejectedRules.length > 0) {
     return composeResult(false, rejectedRules);

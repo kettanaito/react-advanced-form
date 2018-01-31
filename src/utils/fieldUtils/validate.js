@@ -1,14 +1,4 @@
-/**
- * Determines whether the given Field is valid.
- * Validation of each field is a complex process consisting of several steps.
- * It is important to resolve the validation immediately once the field becomes invalid.
- * @param {Map} fieldProps
- * @param {Map} fields
- * @param {object} form
- * @param {Map} formRules
- * @return {boolean}
- */
-import { List, Map } from 'immutable';
+import { Map } from 'immutable';
 import validateSync from './validateSync';
 import validateAsync from './validateAsync';
 import Sequence from '../../classes/Sequence';
@@ -25,10 +15,10 @@ export const customRulesKey = 'rules';
  * @param {Boolean} expected
  * @param {List<[string]>} rejectedRules
  */
-export const composeResult = (expected, rejectedRules = List()) => (Map({
+export const composeResult = (expected, rejectedRules = []) => Map({
   propsPatch: Map({ expected }),
-  rejectedRules
-}));
+  rejectedRules: Array.isArray(rejectedRules) ? rejectedRules : [rejectedRules]
+});
 
 /**
  * @param {Map} acc
@@ -54,6 +44,16 @@ const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
   return nextAcc;
 };
 
+/**
+ * Determines whether the given Field is valid.
+ * Validation of each field is a complex process consisting of several steps.
+ * It is important to resolve the validation immediately once the field becomes invalid.
+ * @param {Map} fieldProps
+ * @param {Map} fields
+ * @param {object} form
+ * @param {Map} formRules
+ * @return {boolean}
+ */
 export default async function validate({ type, fieldProps, fields, form, formRules = Map() }) {
   console.groupCollapsed(`fieldUtils @ validate "${fieldProps.get('fieldPath')}"`);
   console.log('type', type);

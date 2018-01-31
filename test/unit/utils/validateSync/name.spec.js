@@ -23,11 +23,15 @@ describe('Name-specific validation', () => {
       formRules
     }).toJS();
 
-    expect(resultOne).to.have.all.keys(['errorPaths', 'propsPatch']);
+    expect(resultOne).to.have.all.keys(['rejectedRules', 'propsPatch']);
     expect(resultOne.propsPatch).to.have.property('expected', false);
-    expect(resultOne).to.have.property('errorPaths').with.length(1);
-    expect(resultOne).to.have.property('errorPaths').to.deep.equal([
-      ['name', 'fieldName', 'invalid']
+    expect(resultOne).to.have.property('rejectedRules').with.length(1);
+    expect(resultOne).to.have.property('rejectedRules').to.deep.equal([
+      {
+        name: 'invalid',
+        selector: 'name',
+        isCustom: false,
+      }
     ]);
 
     const resultTwo = fieldUtils.validateSync({
@@ -37,7 +41,7 @@ describe('Name-specific validation', () => {
     }).toJS();
 
     expect(resultTwo.propsPatch).to.have.property('expected', true);
-    expect(resultTwo).to.have.property('errorPaths').with.length(0);
+    expect(resultTwo).to.have.property('rejectedRules').with.length(0);
   });
 
   it('Multiple named rules', () => {
@@ -62,10 +66,18 @@ describe('Name-specific validation', () => {
     }).toJS();
 
     expect(resultOne.propsPatch).to.have.property('expected', false);
-    expect(resultOne).to.have.property('errorPaths').with.length(2);
-    expect(resultOne.errorPaths).to.deep.equal([
-      ['name', 'fieldName', 'rules', 'capitalLetter'],
-      ['name', 'fieldName', 'rules', 'oneNumber']
+    expect(resultOne).to.have.property('rejectedRules').with.length(2);
+    expect(resultOne.rejectedRules).to.deep.equal([
+      {
+        name: 'capitalLetter',
+        selector: 'name',
+        isCustom: true
+      },
+      {
+        name: 'oneNumber',
+        selector: 'name',
+        isCustom: true
+      }
     ]);
 
     /**
@@ -78,9 +90,13 @@ describe('Name-specific validation', () => {
     }).toJS();
 
     expect(resultTwo.propsPatch).to.have.property('expected', false);
-    expect(resultTwo).to.have.property('errorPaths').with.length(1);
-    expect(resultTwo.errorPaths).to.deep.equal([
-      ['name', 'fieldName', 'rules', 'oneNumber']
+    expect(resultTwo).to.have.property('rejectedRules').with.length(1);
+    expect(resultTwo.rejectedRules).to.deep.equal([
+      {
+        name: 'oneNumber',
+        selector: 'name',
+        isCustom: true
+      }
     ]);
 
     /**
@@ -93,6 +109,6 @@ describe('Name-specific validation', () => {
     }).toJS();
 
     expect(resultThree.propsPatch).to.have.property('expected', true);
-    expect(resultThree).to.have.property('errorPaths').with.length(0);
+    expect(resultThree).to.have.property('rejectedRules').with.length(0);
   });
 });
