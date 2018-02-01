@@ -12,5 +12,6 @@ export default function IterableInstance(props, propName, componentName) {
 
   if (!isset(propValue)) return null;
 
-  invariant(Iterable.isIterable(propValue), `Invalid prop \`${propName}\` of type \`${typeof propValue}\` supplied to \`${componentName}\`, expected an instance of Iterable.`);
+  invariant(Iterable.isIterable(propValue), 'Invalid prop `%s` of type `%s` supplied to `%s`, ' +
+  'expected an instance of Iterable.', propName, typeof propValue, componentName);
 }
