@@ -1,6 +1,6 @@
 {
   "name": "react-advanced-form",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Tailor simple and flexible React forms with a powerful functionality built-in.",
   "module": "src/index.js",
   "main": "lib/index.js",
