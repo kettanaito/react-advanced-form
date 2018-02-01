@@ -263,7 +263,7 @@ export default function connectField(options) {
         console.log('this.context.handleFieldChange', this.context.handleFieldChange);
         console.groupEnd();
 
-        invariant(hasChangeHandler, `Cannot update the controlled field \`${contextProps.get('name')}\`. Expected custom \`onChange\` handler, but received: ${this.props.onChange}.`);
+        invariant(hasChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, but received: %s.', contextProps.get('name'), this.props.onChange);
 
         this.context.handleFieldChange({
           event,

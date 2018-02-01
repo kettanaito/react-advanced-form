@@ -565,7 +565,7 @@ export default class Form extends React.Component {
 
     /* Throw on submit attempt without the "action" prop */
     const { action } = this.props;
-    invariant(action, `Cannot submit the form without \`action\` prop specified explicitly. Expected a function which returns Promise, but received: ${action}.`);
+    invariant(action, 'Cannot submit the form without `action` prop specified explicitly. Expected a function which returns Promise, but received: %s.', action);
 
     /* Ensure form should submit (has no unexpected field values) */
     const shouldSubmit = await this.validate();
@@ -597,37 +597,22 @@ export default class Form extends React.Component {
      * Form's action is a function which returns a Promise. You must pass a req, or async action
      * as a prop to the form in order for it to work.
      */
-    action(callbackArgs).then((res) => {
-      /* Event: Submit has passed */
-      if (onSubmitted) {
-        onSubmitted({
-          ...callbackArgs,
-          res
-        });
-      }
+    const dispatchedAction = action(callbackArgs);
+
+    invariant(dispatchedAction instanceof Promise, 'Cannot handle the dispatched action. ' +
+    'Expecting `action` prop of the Form to return an instance of Promise, but got: %s. ' +
+    'Make sure you return a Promise from your action.', dispatchedAction);
+
+    return dispatchedAction.then((res) => {
+      if (onSubmitted) onSubmitted({ ...callbackArgs, res });
 
       return res;
     }).catch((res) => {
-      /* Event: Submit has failed */
-      if (onSubmitFailed) {
-        onSubmitFailed({
-          ...callbackArgs,
-          res
-        });
-      }
+      if (onSubmitFailed) onSubmitFailed({ ...callbackArgs, res });
 
       return res;
     }).then((res) => {
-      /**
-       * Event: Submit has ended.
-       * Called each time after the submit regardless of the its status (success/failure).
-       */
-      if (onSubmitEnd) {
-        onSubmitEnd({
-          ...callbackArgs,
-          res
-        });
-      }
+      if (onSubmitEnd) onSubmitEnd({ ...callbackArgs, res });
 
       this.setState({ submitting: false });
     });
