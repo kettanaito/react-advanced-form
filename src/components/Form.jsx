@@ -34,8 +34,7 @@ export default class Form extends React.Component {
   state = {
     fields: Map(),
     dynamicFields: Map(),
-    dirty: false,
-    submitting: false
+    dirty: false
   }
 
   /* Context which is accepted by Form */
@@ -590,7 +589,6 @@ export default class Form extends React.Component {
      * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
     if (onSubmitStart) onSubmitStart(callbackArgs);
-    this.setState({ submitting: true });
 
     /**
      * Perform the action.
@@ -613,8 +611,6 @@ export default class Form extends React.Component {
       return res;
     }).then((res) => {
       if (onSubmitEnd) onSubmitEnd({ ...callbackArgs, res });
-
-      this.setState({ submitting: false });
     });
   }
 
