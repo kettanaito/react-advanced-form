@@ -92,8 +92,8 @@ export default class Form extends React.Component {
      * Moreover, messages are unlikely to change during the component's lifecycle. It should be safe to store them.
      * Note: Messages passed from FormProvider (context messages) are already immutable.
      */
-    const { messages: formMessages } = this.props;
-    this.formMessages = formMessages ? fromJS(formMessages) : this.context.messages;
+    const { messages } = this.props;
+    this.messages = messages ? fromJS(messages) : this.context.messages;
   }
 
   /**
@@ -158,9 +158,9 @@ export default class Form extends React.Component {
    * @param {object} propsPath A partical Object of the props to merge into the existing field props.
    * @return {Promise<any>}
    */
-  updateField = ({ fieldPath, fieldProps: directFieldProps, propsPatch = null }) => {
+  updateField = ({ fieldPath, fieldProps: customFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
-    const fieldProps = directFieldProps || fields.getIn([fieldPath]);
+    const fieldProps = customFieldProps || fields.getIn([fieldPath]);
 
     const nextFieldProps = propsPatch ? fieldProps.merge(fromJS(propsPatch)) : fieldProps;
 
@@ -284,8 +284,6 @@ export default class Form extends React.Component {
         [valuePropName]: nextValue,
 
         /* Reset previous validation states */
-        error: null,
-        invalid: false,
         validating: false,
         validSync: false,
         validAsync: false,
@@ -351,6 +349,11 @@ export default class Form extends React.Component {
      * user will pass sync validation, upon blurring out the field, the validation type will
      * be "async".
      */
+    //
+    //
+    // TODO Review if this is really needed. Why not just "validationType.shouldValidate()"?
+    //
+    //
     const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldBlur');
@@ -360,16 +363,17 @@ export default class Form extends React.Component {
 
     if (shouldValidate) {
       /* Indicate that the validation is running */
-      this.updateField({
+      const { nextFieldProps } = await this.updateField({
         fieldPath,
         propsPatch: {
+          errors: null,
           invalid: false,
           validating: true
         }
       });
 
       /* Validate the field */
-      await this.validateField({ fieldProps });
+      await this.validateField({ fieldProps: nextFieldProps });
     }
 
     /* Make field enabled, update its props */
@@ -392,7 +396,11 @@ export default class Form extends React.Component {
       });
     }
 
+    //
+    //
     // TODO Find more efficient way of updating the fields with dynamic props
+    //
+    //
     nextFields.map((fieldProps) => {
       if (fieldProps.has('dynamicProps')) {
         this.validateField({ fieldProps });
@@ -404,15 +412,16 @@ export default class Form extends React.Component {
    * Validates the provided field.
    * @param {Map} fieldProps
    * @param {ValidationType} type
-   * @param {boolean} forceProps Use direct props explicitly, without trying to grab field record from the state.
+   * @param {boolean} forceProps Use direct props explicitly, without trying to grab field record
+   * from the state.
    * @return {boolean}
    */
-  validateField = async ({ type = BothValidationType, fieldProps: directFieldProps, forceProps = false }) => {
+  validateField = async ({ type = BothValidationType, fieldProps: customFieldProps, forceProps = false }) => {
     const { formRules } = this;
     const { fields } = this.state;
     const fieldProps = forceProps
-      ? directFieldProps
-      : fields.getIn([directFieldProps.get('fieldPath')]) || directFieldProps;
+      ? customFieldProps
+      : fields.getIn([customFieldProps.get('fieldPath')]) || customFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
     const shouldValidate = type.shouldValidate({
@@ -445,13 +454,14 @@ export default class Form extends React.Component {
     const expected = propsPatch.get('expected');
 
     /* Determine if there are any messages available to form */
-    const hasMessages = this.formMessages && (this.formMessages.size > 0);
+    const { messages } = this;
+    const hasMessages = messages && (messages.size > 0);
 
     /* Get the validation message based on the validation result */
     if (hasMessages && !expected) {
       const errorMessages = fieldUtils.getErrorMessages({
         validationResult,
-        messages: this.formMessages,
+        messages,
         fieldProps,
         fields,
         form: this
@@ -515,7 +525,9 @@ export default class Form extends React.Component {
 
       /* Reduce the invalid fields to the ordered Array */
       //
-      // TODO This can be done on immutable instance as well, no need for conversion here
+      //
+      // TODO This can be done using immutable instance as well, no need for conversion here
+      //
       //
       const invalidFields = Object.keys(nextMutableFields).reduce((invalidFields, fieldName) => {
         const fieldProps = nextMutableFields[fieldName];
@@ -534,7 +546,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Resets all the fields in the form.
+   * Resets value and state of all the fields.
    */
   reset = () => {
     const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
@@ -556,7 +568,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Serializes the fields in the Form into a plain Object.
+   * Serializes the fields' values into a plain Object.
    */
   serialize = () => {
     return fieldUtils.serializeFields(this.state.fields).toJS();
@@ -604,7 +616,7 @@ export default class Form extends React.Component {
      */
     const dispatchedAction = action(callbackArgs);
 
-    invariant(dispatchedAction instanceof Promise, 'Cannot handle the dispatched action. ' +
+    invariant(dispatchedAction instanceof Promise, 'Cannot submit the form. ' +
     'Expecting `action` prop of the Form to return an instance of Promise, but got: %s. ' +
     'Make sure you return a Promise from your action.', dispatchedAction);
 

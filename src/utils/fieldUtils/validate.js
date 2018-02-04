@@ -16,10 +16,15 @@ export const customRulesKey = 'rules';
  * @param {Boolean} expected
  * @param {List<[string]>} rejectedRules
  */
-export const composeResult = (expected, rejectedRules = []) => Map({
+export const composeResult = (expected, rejectedRules = [], extra) => Map({
   propsPatch: Map({ expected }),
-  rejectedRules: Array.isArray(rejectedRules) ? rejectedRules : [rejectedRules]
+  rejectedRules: Array.isArray(rejectedRules) ? rejectedRules : [rejectedRules],
+  extra
 });
+
+export function createRejectedRule({ name = null, selector = null, isCustom = false }) {
+  return { name, selector, isCustom };
+}
 
 /**
  * @param {Map} acc
@@ -28,14 +33,16 @@ export const composeResult = (expected, rejectedRules = []) => Map({
  * @param {Boolean} isLast
  * @param {Function} stop
  */
-const sequenceIterator = ({ acc, entry, resolved, isLast, stop }) => {
+const sequenceIterator = ({ acc, variables, resolved, isLast, breakIteration }) => {
+  console.log('resolved': resolved);
+
   const expected = resolved.getIn(['propsPatch', 'expected']);
 
   /* Prevent any following validation once the previous one fails */
-  if (!isLast && !expected) stop();
+  if (!isLast && !expected) breakIteration();
 
   /* Get the name of the sequence entry (which is the validation type) */
-  const { name: validationType } = entry;
+  const { validationType } = variables;
 
   const nextAcc = acc
     .merge(resolved)
@@ -73,7 +80,9 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   /* Sync validation */
   if (type.isBoth || type.isSync) {
     validationSeq.add({
-      name: validationTypes.sync,
+      variables: {
+        validationType: validationTypes.sync
+      },
       resolver: () => validateSync({ fieldProps, fields, form, formRules })
     });
   }
@@ -81,7 +90,9 @@ export default async function validate({ type, fieldProps, fields, form, formRul
   /* Async validation */
   if (type.isBoth || type.isAsync) {
     validationSeq.add({
-      name: validationTypes.async,
+      variables: {
+        validationType: validationTypes.async
+      },
       resolver: () => validateAsync({ fieldProps, fields, form, formRules })
     });
   }

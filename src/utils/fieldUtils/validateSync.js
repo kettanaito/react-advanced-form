@@ -1,11 +1,7 @@
 /**
  * Synchronous validation of the provided field.
  */
-import { commonErrorTypes, composeResult } from './validate';
-
-function createRejectedRule({ name = null, selector = null, isCustom = false }) {
-  return { name, selector, isCustom };
-}
+import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
 
 function applyRule({ rule, name = 'invalid', selector, resolverArgs }) {
   const isExpected = rule(resolverArgs);
