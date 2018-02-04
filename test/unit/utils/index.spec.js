@@ -116,6 +116,6 @@ describe('utils', () => {
     /**
      * Asynchronous validation.
      */
-    // require('./validateAsync.spec');
+    require('./validateAsync.spec');
   });
 });
