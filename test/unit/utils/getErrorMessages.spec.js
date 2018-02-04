@@ -74,6 +74,29 @@ describe('getErrorMessages', function () {
     expect(resolvedMessages).to.deep.equal([asyncMessage({ errorCode })]);
   });
 
+  it('Async error message fallbacks to the closest sibling message', async () => {
+    const validationResult = await fieldUtils.validate({
+      type: AsyncValidationType,
+      fieldProps: fieldProps
+        .set('value', '5')
+        .set('asyncRule', () => new Promise(resolve => resolve({
+            valid: false
+          }))),
+      formRules: formRules.delete('name'),
+      fields
+    });
+
+    const resolvedMessages = fieldUtils.getErrorMessages({
+      validationResult,
+      fieldProps,
+      messages,
+      fields
+    });
+
+    expect(resolvedMessages).to.be.an.instanceof(Array).with.lengthOf(1);
+    expect(resolvedMessages).to.deep.equal([messages.getIn(['name', fieldProps.get('name'), 'invalid'])]);
+  });
+
   it('Display multiple named rule messages when present', async () => {
     const firstMessage = 'First rule message';
     const secondMessage = 'Second rule message';

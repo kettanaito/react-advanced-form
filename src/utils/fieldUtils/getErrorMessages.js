@@ -5,6 +5,12 @@ function resolveMessage({ messages, rejectedRule, resolverArgs }) {
   const { fieldProps } = resolverArgs;
   const { name, selector, isCustom } = rejectedRule;
 
+  //
+  // Async rejected rule breaks here.
+  // If it's "isCustom", it will prompt to get a general "invalid" message, which is wrong.
+  // If it's not custom, it will attempt named "async" message, but if missing - it will
+  // return nothing, because it doesn't fallback to "name, invalid" message.
+  //
   const primitiveErrorType = isCustom ? 'invalid' : name;
   const path = isCustom ? [customRulesKey, name] : [name];
 
@@ -16,6 +22,9 @@ function resolveMessage({ messages, rejectedRule, resolverArgs }) {
 
   if (selector) {
     messagePaths.unshift([selector, fieldProps[selector], ...path]);
+  } else if (name === 'async') {
+    /* In case of async rejected rule, prepend the name-specific "async" message key */
+    messagePaths.unshift(['name', fieldProps.name, name]);
   }
 
   /* Iterate through each message path and return at the first match */
