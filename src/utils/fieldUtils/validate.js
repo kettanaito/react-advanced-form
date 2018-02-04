@@ -6,7 +6,8 @@ import { validationTypes } from '../../classes/ValidationType';
 
 export const commonErrorTypes = {
   missing: 'missing',
-  invalid: 'invalid'
+  invalid: 'invalid',
+  async: 'async'
 };
 
 export const customRulesKey = 'rules';
@@ -34,8 +35,6 @@ export function createRejectedRule({ name = null, selector = null, isCustom = fa
  * @param {Function} stop
  */
 const sequenceIterator = ({ acc, variables, resolved, isLast, breakIteration }) => {
-  console.log('resolved': resolved);
-
   const expected = resolved.getIn(['propsPatch', 'expected']);
 
   /* Prevent any following validation once the previous one fails */
