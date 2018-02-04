@@ -6,7 +6,6 @@ export getDynamicProps from './getDynamicProps';
 export resetField from './resetField';
 
 /* Validation */
-export shouldValidate from './shouldValidate';
 export validateSync from './validateSync';
 export validateAsync from './validateAsync';
 export validate from './validate';

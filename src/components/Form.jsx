@@ -275,13 +275,18 @@ export default class Form extends React.Component {
 
     /**
      * Update the value of the changed field.
-     * Also, reset all validation statuses since those are useless after the value has changed. This is important for
-     * validation chain, as proper validation statuses trigger proper validations.
+     * Also, reset all validation states since those are useless after the value has changed.
+     * This is important forvalidation chain, as proper validation statuses trigger proper validations.
      */
     const { nextFields, nextFieldProps } = await this.updateField({
       fieldProps,
       propsPatch: {
         [valuePropName]: nextValue,
+
+        /* Reset previous validation states */
+        error: null,
+        invalid: false,
+        validating: false,
         validSync: false,
         validAsync: false,
         validatedSync: false,
@@ -290,11 +295,14 @@ export default class Form extends React.Component {
     });
 
     /**
-     * Perform appropriate field validation.
-     * When field has a value set, perform debounced sync validation. For the cases the user clear the field instantly
-     * perform the corresponding immediate sync validation.
+     * Perform appropriate field validation on change.
+     * When field has a value set, perform debounced sync validation. For the cases
+     * when the user clears the field instantly, perform instant sync validation.
      */
-    const appropriateValidation = nextFieldProps.get('value') ? this.debounceValidateField : this.validateField;
+    const appropriateValidation = nextFieldProps.get('value')
+      ? this.debounceValidateField
+      : this.validateField;
+
     appropriateValidation({
       type: SyncValidationType,
       fieldProps: nextFieldProps
@@ -355,7 +363,6 @@ export default class Form extends React.Component {
       this.updateField({
         fieldPath,
         propsPatch: {
-          valid: false,
           invalid: false,
           validating: true
         }
@@ -408,7 +415,7 @@ export default class Form extends React.Component {
       : fields.getIn([directFieldProps.get('fieldPath')]) || directFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
-    const shouldValidate = fieldUtils.shouldValidate({
+    const shouldValidate = type.shouldValidate({
       validationType: type,
       fieldProps,
       formRules
