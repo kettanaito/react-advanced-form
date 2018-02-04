@@ -22,13 +22,14 @@ const formMessages = {
   },
   type: {
     text: {
-      invalid: 'Type "text" invalid message'
+      invalid: 'Type "text" invalid message',
     }
   },
   name: {
     quantity: {
       missing: 'Please provide the quantity',
       invalid: 'The quantity is invalid',
+      // async: ({ errorMessage }) => errorMessage,
       rules: {
         forbidLetters: ({ value }) => `Does "${value}" look like a number to you?`,
         // maxValue: 'Value should be less than 10'
@@ -79,7 +80,8 @@ export default class ValidationExample extends Component {
               return new Promise((resolve) => {
                 setTimeout(resolve, 2000);
               }).then(() => ({
-                valid: (value !== '5')
+                valid: (value !== '5'),
+                errorMessage: 'Error message from back-end'
               }));
             }}
             required />

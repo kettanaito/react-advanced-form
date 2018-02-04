@@ -39,16 +39,12 @@ function resolveMessage({ messages, rejectedRule, resolverArgs }) {
 export default function getErrorMessages({ validationResult, messages, fieldProps, fields, form }) {
   /* No errors - no error messages */
   const rejectedRules = validationResult.get('rejectedRules');
-  console.log('need to get error messages');
-  console.log('has no rejected rules?', !rejectedRules || (rejectedRules.length === 0));
-  console.log('current errors:', fieldProps.get('errors'));
-
   if (!rejectedRules || (rejectedRules.length === 0)) return;
 
-  console.log('valid', validationResult && validationResult.toJS());
+  const extra = validationResult.get('extra');
 
   const resolverArgs = {
-    // ...extra,
+    ...extra,
     value: fieldProps.get('value'),
     fieldProps: fieldProps.toJS(),
     fields: fields.toJS(),
@@ -90,8 +86,6 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
 
     return resolvedMessage ? messagesList.concat(resolvedMessage) : messagesList;
   }, []);
-
-  console.log('resolvedMessages:', resolvedMessages);
 
   return resolvedMessages;
 }
