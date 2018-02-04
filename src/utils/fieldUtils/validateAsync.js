@@ -36,7 +36,8 @@ export default async function validateAsync({ fieldProps, fields, form }) {
   const { valid, ...extra } = res;
 
   const rejectedRules = valid ? [] : createRejectedRule({
-    name: commonErrorTypes.async
+    name: commonErrorTypes.async,
+    isCustom: true
   });
 
   return composeResult(valid, rejectedRules, extra);

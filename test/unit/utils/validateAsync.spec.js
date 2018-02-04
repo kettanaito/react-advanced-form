@@ -98,7 +98,7 @@ describe('validateAsync', () => {
       {
         name: 'async',
         selector: null,
-        isCustom: false
+        isCustom: true,
       }
     ]);
   });
@@ -132,7 +132,7 @@ describe('validateAsync', () => {
       {
         name: 'async',
         selector: null,
-        isCustom: false
+        isCustom: true,
       }
     ]);
   });
@@ -156,7 +156,7 @@ describe('validateAsync', () => {
       {
         name: 'async',
         selector: null,
-        isCustom: false
+        isCustom: true
       }
     ]);
   });
