@@ -8,10 +8,10 @@ const formRules = {
     // text: ({ value }) => value !== 3
   },
   name: {
-    quantity: {
-      forbidLetters: ({ value }) => /^\d+$/.test(value),
-      maxValue: ({ value }) => (value <= 10)
-    }
+    // quantity: {
+    //   forbidLetters: ({ value }) => /^\d+$/.test(value),
+    //   maxValue: ({ value }) => (value <= 10)
+    // }
   }
 };
 
@@ -73,15 +73,16 @@ export default class ValidationExample extends Component {
 
           <MyInput
             name="quantity"
-            initialValue="s"
             placeholder="Quantity"
             rule={({ value }) => (value !== 'foo')}
-            required
-            autocomplete="off" />
-
-          <MyInput
-            name="foo"
-            initialValue="123" />
+            asyncRule={({ value }) => {
+              return new Promise((resolve) => {
+                setTimeout(resolve, 2000);
+              }).then(() => ({
+                valid: true
+              }));
+            }}
+            required />
 
           <button type="submit">Submit</button>
         </Form>

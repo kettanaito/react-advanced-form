@@ -27,7 +27,8 @@ class Input extends React.Component {
         <div style={{ display: 'inline-flex', position: 'relative' }}>
           <input
             { ...fieldProps }
-            style={{ ...inputStyles, borderColor }} />
+            style={{ ...inputStyles, borderColor }}
+            autoComplete="off" />
 
           { (valid || invalid) && (
             <span

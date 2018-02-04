@@ -22,6 +22,46 @@ export default class ValidationType {
   isValidated(fieldProps) {
     return this.types.every(type => fieldProps.get(`validated${type.name}`));
   }
+
+  shouldValidate({ fieldProps, formRules }) {
+    /* Field with dynamic "required" props should always validate */
+    if (fieldProps.hasIn(['dynamicProps', 'required'])) {
+      return true;
+    }
+
+    /* When the current validation type has already been validated, no validation needed */
+    const isAlreadyValidated = this.types.every(type => fieldProps.get(`validated${type.name}`));
+    if (isAlreadyValidated) return false;
+
+    const fieldName = fieldProps.get('name');
+    const fieldType = fieldProps.get('type');
+    const hasValue = !!fieldProps.get('value');
+
+    if (this.types.includes(validationTypes.sync)) {
+      if (hasValue && fieldProps.has('rule')) {
+        return true;
+      }
+
+      if (hasValue && (formRules.hasIn(['name', fieldName]) || formRules.hasIn(['type', fieldType]))) {
+        return true;
+      }
+    }
+
+    if (this.types.includes(validationTypes.async)) {
+      if (hasValue && fieldProps.has('asyncRule')) {
+        return true;
+      }
+    }
+
+    /* Empty required fields are to validate */
+    if (fieldProps.get('required') && !hasValue) {
+      return true;
+    }
+
+    console.log('nothing matched, no need to validate');
+
+    return false;
+  }
 }
 
 /* Validation types instances */
