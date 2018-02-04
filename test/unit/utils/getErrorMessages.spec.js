@@ -1,6 +1,6 @@
 import { fromJS, Map } from 'immutable';
 import { expect } from 'chai';
-import { BothValidationType } from '../../../src/classes/ValidationType';
+import { AsyncValidationType, BothValidationType } from '../../../src/classes/ValidationType';
 import { fieldUtils } from '../../../src/utils';
 
 describe('getErrorMessages', function () {
@@ -45,6 +45,33 @@ describe('getErrorMessages', function () {
 
   const fields = fromJS({
     anotherField: fieldProps
+  });
+
+  it('Get "async" message for async validation error', async () => {
+    const errorCode = 100;
+    const asyncMessage = ({ errorCode }) => `Async message: ${errorCode}`;
+
+    const validationResult = await fieldUtils.validate({
+      type: AsyncValidationType,
+      fieldProps: fieldProps
+        .set('value', '5')
+        .set('asyncRule', () => new Promise(resolve => resolve({
+            valid: false,
+            errorCode
+          }))),
+      formRules: formRules.delete('name'),
+      fields
+    });
+
+    const resolvedMessages = fieldUtils.getErrorMessages({
+      validationResult,
+      fieldProps,
+      messages: messages.setIn(['name', fieldProps.get('name'), 'async'], asyncMessage),
+      fields
+    });
+
+    expect(resolvedMessages).to.be.an.instanceof(Array).with.lengthOf(1);
+    expect(resolvedMessages).to.deep.equal([asyncMessage({ errorCode })]);
   });
 
   it('Display multiple named rule messages when present', async () => {
