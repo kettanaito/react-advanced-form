@@ -23,7 +23,7 @@ describe('Name-specific validation', () => {
       formRules
     }).toJS();
 
-    expect(resultOne).to.have.all.keys(['rejectedRules', 'propsPatch']);
+    expect(resultOne).to.include.keys(['rejectedRules', 'propsPatch']);
     expect(resultOne.propsPatch).to.have.property('expected', false);
     expect(resultOne).to.have.property('rejectedRules').with.length(1);
     expect(resultOne).to.have.property('rejectedRules').to.deep.equal([
