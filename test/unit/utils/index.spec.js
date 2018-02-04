@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { fieldUtils } from '../../../src/utils';
-import { BothValidationType, SyncValidationType } from '../../../src/classes/ValidationType';
 
 describe('utils', () => {
   describe('fieldUtils', () => {
@@ -107,63 +106,6 @@ describe('utils', () => {
           fieldThree: 'doe'
         }
       });
-    });
-
-    /**
-     * shouldValidate
-     */
-    it('shouldValidate', () => {
-      const dynamicRequiredField = Map({ validaredSync: false, required: () => false });
-      const validatedField = Map({ validatedSync: true });
-      const requiredField = Map({ validatedSync: false, required: true });
-      const optionalField = Map({ validatedSync: false, required: false });
-      const optionalFieldWithNameRule = Map({ name: 'field', required: false, value: 'foo '});
-      const optionalFieldWithTypeRule = Map({ type: 'text', name: 'field', required: false, value: 'foo '});
-
-      expect(fieldUtils.shouldValidate({
-        validationType: BothValidationType,
-        fieldProps: dynamicRequiredField,
-        formRules: Map()
-      })).to.be.true;
-
-      expect(fieldUtils.shouldValidate({
-        validationType: BothValidationType,
-        fieldProps: validatedField,
-        formRules: Map()
-      })).to.be.false;
-
-      expect(fieldUtils.shouldValidate({
-        validationType: BothValidationType,
-        fieldProps: requiredField,
-        formRules: Map()
-      })).to.be.true;
-
-      expect(fieldUtils.shouldValidate({
-        validationType: BothValidationType,
-        fieldProps: optionalField,
-        formRules: Map()
-      })).to.be.false;
-
-      expect(fieldUtils.shouldValidate({
-        validationType: BothValidationType,
-        fieldProps: optionalFieldWithNameRule,
-        formRules: fromJS({
-          name: {
-            field: ({ value }) => (value !== 'foo')
-          }
-        })
-      })).to.be.true;
-
-      expect(fieldUtils.shouldValidate({
-        validationType: BothValidationType,
-        fieldProps: optionalFieldWithTypeRule,
-        formRules: fromJS({
-          type: {
-            text: ({ value }) => (value !== 'foo')
-          }
-        })
-      })).to.be.true;
-
     });
 
     /**

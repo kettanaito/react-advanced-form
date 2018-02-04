@@ -44,6 +44,7 @@ module.exports = {
     'no-prototype-builtins': 0,
     'no-await-in-loop': 0,
     'no-return-assign': 0,
+    'function-paren-newline': 0,
 
     /* React */
     'react/jsx-uses-react': 2,
