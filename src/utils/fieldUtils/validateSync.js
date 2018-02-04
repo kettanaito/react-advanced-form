@@ -79,8 +79,7 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   /* Empty required fields are unexpected */
   if (!value && required) {
     return composeResult(false, createRejectedRule({
-      name: commonErrorTypes.missing,
-      path: [commonErrorTypes.missing]
+      name: commonErrorTypes.missing
     }));
   }
 
@@ -108,8 +107,7 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
 
     if (!isExpected) {
       return composeResult(false, createRejectedRule({
-        name: commonErrorTypes.invalid,
-        path: [commonErrorTypes.invalid]
+        name: commonErrorTypes.invalid
       }));
     }
   }
