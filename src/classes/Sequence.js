@@ -24,7 +24,7 @@ export default class Sequence {
   /**
    * Stops the iteration of the running sequence.
    */
-  stop = () => {
+  breakIteration = () => {
     this.shouldRun = false;
     return this;
   }
@@ -48,11 +48,11 @@ export default class Sequence {
       acc = this.iterator({
         acc,
         entries,
-        entry,
+        variables: entry.variables,
         resolved,
         index,
         isLast,
-        stop: this.stop
+        breakIteration: this.breakIteration
       });
     }
 

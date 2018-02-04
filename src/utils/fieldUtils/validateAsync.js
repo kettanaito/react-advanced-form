@@ -4,10 +4,11 @@
  * @param {Map} fields
  * @param {Object} form
  */
-import { composeResult } from './validate';
+import invariant from 'invariant';
+import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
 
 export default async function validateAsync({ fieldProps, fields, form }) {
-  /* Bypass validation for an already valid field */
+  /* Already async validated fields are bypassed */
   if (fieldProps.get('validAsync')) {
     return composeResult(true);
   }
@@ -15,13 +16,12 @@ export default async function validateAsync({ fieldProps, fields, form }) {
   const value = fieldProps.get('value');
   const asyncRule = fieldProps.get('asyncRule');
 
-  /* Bypass optional empty fields */
+  /* Optional empty fields are bypassed */
   if (!asyncRule || !value) {
     return composeResult(true);
   }
 
-  let expected = false;
-  let extra = {};
+  /* Call the async rule resolver */
   const res = await asyncRule({
     value,
     fieldProps: fieldProps.toJS(),
@@ -29,17 +29,14 @@ export default async function validateAsync({ fieldProps, fields, form }) {
     form
   });
 
-  if (res) {
-    const { valid, ...rest } = res;
-    expected = valid;
-    extra = rest;
-  }
+  invariant(res && res.hasOwnProperty('valid'), 'Failed to async validate the `%s` field. ' +
+  'Expected `asyncRule` to resolve with an Object containing a `valid` prop, but got: %s',
+  fieldProps.get('name'), res);
 
-  const validationResult = { expected };
+  const { valid, ...extra } = res;
 
-  /* Include additional properties for unexpected fields only */
-  if (!expected) validationResult.errorType = 'async';
-  if (Object.keys(extra).length > 0) validationResult.extra = extra;
-
-  return validationResult;
+  return composeResult(valid, createRejectedRule({
+    name: commonErrorTypes.invalid,
+    path: [commonErrorTypes.invalid]
+  }), extra);
 }
