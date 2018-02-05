@@ -6,7 +6,7 @@
  */
 import invariant from 'invariant';
 import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
-import { withCancel } from '../../utils';
+import { makeCancelable } from '../../utils';
 
 export default async function validateAsync({ fieldProps, fields, form }) {
   /* Already async validated fields are bypassed */
@@ -23,18 +23,23 @@ export default async function validateAsync({ fieldProps, fields, form }) {
   }
 
   /* Call the async rule resolver */
-  const wrappedPromise = withCancel(asyncRule({
+  const wrappedPromise = makeCancelable(asyncRule({
     value,
     fieldProps: fieldProps.toJS(),
     fields: fields.toJS(),
     form
   }));
 
-  //
-  //
-  // Pass "wrappedPromise" reference to the field to call "wrappedPromise.cancel()" when needed.
-  //
-  //
+  /**
+   * Pass the reference to the cancelable promise to the field record so it would be possible
+   * to cancel the async validation on field validation state reset (i.e. onChange).
+   */
+  form.updateField({
+    fieldProps,
+    propsPatch: {
+      pendingAsyncValidation: wrappedPromise
+    }
+  });
 
   const res = await wrappedPromise.itself;
 
