@@ -617,9 +617,10 @@ export default class Form extends React.Component {
      */
     const dispatchedAction = action(callbackArgs);
 
-    invariant(dispatchedAction instanceof Promise, 'Cannot submit the form. ' +
-    'Expecting `action` prop of the Form to return an instance of Promise, but got: %s. ' +
-    'Make sure you return a Promise from your action.', dispatchedAction);
+    invariant(dispatchedAction && (typeof dispatchedAction.then === 'function'),
+      'Cannot submit the form. Expecting `action` prop of the Form to return an instance ' +
+      'of Promise, but got: %s. Make sure you return a Promise from your action.',
+      dispatchedAction);
 
     return dispatchedAction.then((res) => {
       if (onSubmitted) onSubmitted({ ...callbackArgs, res });
