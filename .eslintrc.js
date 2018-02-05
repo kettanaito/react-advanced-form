@@ -41,6 +41,8 @@ module.exports = {
     'no-await-in-loop': 0,
     'no-return-assign': 0,
     'function-paren-newline': 0,
+    'prefer-promise-reject-errors': 0,
+    'no-confusing-arrow': 0,
 
     /* React */
     'react/jsx-uses-react': 2,
