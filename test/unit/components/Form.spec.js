@@ -6,6 +6,28 @@ import { FormProvider, Form, Field } from '../../../lib';
 import { defer, validationRules, validationMessages } from '../../common';
 
 describe('Form', () => {
+  it('"Form.props.ref" references the Form component', () => {
+    const handleInnerRef = (formComponent) => {
+      expect(formComponent).not.to.be.undefined;
+      expect(formComponent).to.be.instanceOf(React.Component);
+    }
+
+    const wrapper = mount(
+      <Form ref={ handleInnerRef } />
+    );
+  });
+
+  it('"Form.props.innerRef" references the <form> element', () => {
+    const handleInnerRef = (formElement) => {
+      expect(formElement).not.to.be.undefined;
+      expect(formElement).to.be.instanceOf(HTMLElement);
+    }
+
+    const wrapper = mount(
+      <Form innerRef={ handleInnerRef } />
+    );
+  });
+
   it('Uses default "action" prop when none provided', () => {
     const wrapper = mount(
       <FormProvider rules={ validationRules } messages={ validationMessages }>
