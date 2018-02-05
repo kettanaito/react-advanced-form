@@ -88,6 +88,12 @@ export default class ValidationExample extends Component {
             }}
             required />
 
+          <MyInput
+            name="firstName"
+            required />
+
+          <MyInput name="lastName" />
+
           <button type="submit">Submit</button>
         </Form>
       </FormProvider>

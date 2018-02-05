@@ -52,7 +52,7 @@ export default class ValidationType {
     }
 
     /* Empty required fields are to validate */
-    if (fieldProps.get('required') && !hasValue) {
+    if (fieldProps.get('required')) {
       return true;
     }
 
