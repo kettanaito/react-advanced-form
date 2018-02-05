@@ -40,6 +40,11 @@ const formMessages = {
       rules: {
         match: 'Provided passwords do not match'
       }
+    },
+    quantity: {
+      missing: 'Please provide the quantity',
+      invalid: 'The quantity is invalid',
+      async: ({ errorMessage }) => errorMessage
     }
   }
 };
@@ -89,7 +94,7 @@ export default class ValidationExample extends Component {
             rule={({ value }) => (value !== 'foo')}
             asyncRule={({ value }) => {
               return new Promise((resolve) => {
-                setTimeout(resolve, 2000);
+                setTimeout(resolve, 3000);
               }).then(() => ({
                 valid: (value !== '5'),
                 errorMessage: 'Error message from back-end'
