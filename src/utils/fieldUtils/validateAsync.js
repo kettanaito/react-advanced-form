@@ -6,6 +6,7 @@
  */
 import invariant from 'invariant';
 import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
+import { withCancel } from '../../utils';
 
 export default async function validateAsync({ fieldProps, fields, form }) {
   /* Already async validated fields are bypassed */
@@ -22,12 +23,20 @@ export default async function validateAsync({ fieldProps, fields, form }) {
   }
 
   /* Call the async rule resolver */
-  const res = await asyncRule({
+  const wrappedPromise = withCancel(asyncRule({
     value,
     fieldProps: fieldProps.toJS(),
     fields: fields.toJS(),
     form
-  });
+  }));
+
+  //
+  //
+  // Pass "wrappedPromise" reference to the field to call "wrappedPromise.cancel()" when needed.
+  //
+  //
+
+  const res = await wrappedPromise.itself;
 
   invariant(res && res.hasOwnProperty('valid'), 'Failed to async validate the `%s` field. ' +
   'Expected `asyncRule` to resolve with an Object containing a `valid` prop, but got: %s',
