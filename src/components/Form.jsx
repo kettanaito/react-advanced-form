@@ -11,6 +11,7 @@ import { isset, debounce, fieldUtils, IterableInstance } from '../utils';
 export default class Form extends React.Component {
   static propTypes = {
     /* General */
+    innerRef: PropTypes.func,
     action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
 
     /* Validation */
@@ -634,10 +635,11 @@ export default class Form extends React.Component {
   }
 
   render() {
-    const { id, className, children } = this.props;
+    const { innerRef, id, className, children } = this.props;
 
     return (
       <form
+        ref={ innerRef }
         { ...{ id } }
         { ...{ className } }
         onSubmit={ this.submit }

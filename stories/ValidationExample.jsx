@@ -67,6 +67,8 @@ export default class ValidationExample extends Component {
         rules={ formRules }
         messages={ formMessages }>
         <Form
+          ref={ form => console.log('ref:', form) }
+          innerRef={ form => console.log('innerRef:', form) }
           id="default-form-example"
           ref={ form => this.form = form }
           action={ this.handleFormAction }
