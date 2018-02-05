@@ -7,8 +7,8 @@ export default function makeCancelable(promise) {
 
   const wrappedPromise = new Promise((resolve, reject) => {
     promise
-      .then(payload => isCanceled ? reject({ isCanceled: true }) : resolve(payload))
-      .catch(error => isCanceled ? reject({ isCanceled: true }) : reject(error));
+      .then(payload => isCanceled || resolve(payload))
+      .catch(error => isCanceled || reject(error));
   });
 
   return {
