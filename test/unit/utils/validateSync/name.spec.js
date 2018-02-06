@@ -15,7 +15,11 @@ describe('Name-specific validation', () => {
       }
     });
 
-    const fieldProps = Map({ name: 'fieldName', type: 'text' });
+    const fieldProps = Map({
+      name: 'fieldName',
+      type: 'text',
+      valuePropName: 'value'
+    });
 
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'letters'),
@@ -54,7 +58,11 @@ describe('Name-specific validation', () => {
       }
     });
 
-    const fieldProps = Map({ name: 'fieldName', type: 'text' });
+    const fieldProps = Map({
+      name: 'fieldName',
+      type: 'text',
+      valuePropName: 'value'
+    });
 
     /**
      * Unexpected field (0/2).

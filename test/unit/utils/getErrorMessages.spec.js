@@ -40,7 +40,8 @@ describe('getErrorMessages', function () {
   const fieldProps = Map({
     name: 'userEmail',
     type: 'email',
-    required: true
+    required: true,
+    valuePropName: 'value'
   });
 
   const fields = fromJS({
