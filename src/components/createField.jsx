@@ -273,7 +273,7 @@ export default function connectField(options) {
          */
         const changeHandler = (contextProps.get('controllable'))
           ? this.props.onChange
-          : this.context.handleFieldChange
+          : this.context.handleFieldChange;
 
         changeHandler({
           event,
