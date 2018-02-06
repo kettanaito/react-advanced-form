@@ -96,7 +96,7 @@ export default function connectField(options) {
           initialValue: this.props.hasOwnProperty('initialValue') ? initialValue : registeredValue,
 
           /* States */
-          controllable: isset(value),
+          controllable: this.props.hasOwnProperty('value'),
           focused: false,
           disabled: this.props.disabled,
 
@@ -215,7 +215,7 @@ export default function connectField(options) {
       /**
        * Handle field and inner field component refenreces.
        */
-      handleWrappedRef = (Component) => {
+      getWrappedRef = (Component) => {
         /**
          * Store inner component reference internally.
          * This way inner reference is accessible by custom field reference like
@@ -293,7 +293,7 @@ export default function connectField(options) {
         const fieldProps = {
           name: fieldState.name,
           type: fieldState.type,
-          value: fieldState.controllable ? props.value : fieldState.value,
+          value: fieldState.controllable ? (props.value || '') : fieldState.value,
           required: fieldState.required,
           disabled: fieldState.disabled,
 
@@ -301,7 +301,7 @@ export default function connectField(options) {
           ...enforcedProps,
 
           /* Reference */
-          ref: this.handleWrappedRef,
+          ref: this.getWrappedRef,
 
           /* Explicitly assign event handlers to prevent unwanted override */
           onFocus: this.handleFocus,

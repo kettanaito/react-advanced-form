@@ -297,14 +297,21 @@ export default class Form extends React.Component {
      * Perform appropriate field validation on change.
      * When field has a value set, perform debounced sync validation. For the cases
      * when the user clears the field instantly, perform instant sync validation.
+     *
+     * The presence of "value" alone is not enough to determine the necessity for debounced
+     * validation. For instance, it is only when the previous and next value exist we can
+     * assume that the user is typing in the field. Change from "undefined" to some value
+     * most likely means the value update of the controlled field, which must be validated
+     * instantly.
      */
-    const appropriateValidation = nextFieldProps.get('value')
+    const appropriateValidation = (prevValue && nextValue)
       ? this.debounceValidateField
       : this.validateField;
 
     appropriateValidation({
       type: SyncValidationType,
-      fieldProps: nextFieldProps
+      fieldProps: nextFieldProps,
+      forceProps: true
     });
 
     const onChange = fieldProps.get('onChange');
@@ -322,7 +329,9 @@ export default class Form extends React.Component {
     }
 
     /* Mark form as dirty if it's not already */
-    if (!this.state.dirty) this.handleFirstChange({ event, nextValue, prevValue, fieldProps });
+    if (!this.state.dirty) {
+      this.handleFirstChange({ event, nextValue, prevValue, fieldProps });
+    }
   }
 
   /**

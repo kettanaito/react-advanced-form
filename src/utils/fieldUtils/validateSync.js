@@ -66,7 +66,8 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   /* Get properties shorthand references */
   const name = fieldProps.get('name');
   const type = fieldProps.get('type');
-  const value = fieldProps.get('value');
+  const valuePropName = fieldProps.get('valuePropName');
+  const value = fieldProps.get(valuePropName);
   const required = fieldProps.get('required');
   const rule = fieldProps.get('rule');
   const asyncRule = fieldProps.get('asyncRule');

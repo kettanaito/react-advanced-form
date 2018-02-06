@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Condition } from '../lib';
+import { Form, Condition } from '../src';
 import { MyInput } from './custom-fields';
 
 const validationMessages = {
@@ -11,8 +11,7 @@ const validationMessages = {
 
 export default class ControlledForm extends React.Component {
   state = {
-    username: '',
-    password: ''
+    userinfo: {}
   }
 
   handleSubmitStart = ({ fields, serialized, form }) => {
@@ -24,7 +23,7 @@ export default class ControlledForm extends React.Component {
   }
 
   render() {
-    const { username, password } = this.state;
+    const { userinfo } = this.state;
 
     return (
       <Form
@@ -35,8 +34,7 @@ export default class ControlledForm extends React.Component {
             Username:
             <MyInput
               name="username"
-              value={ username }
-              onChange={({ nextValue }) => this.setState({ username: nextValue })}
+              value={ userinfo.username }
               required />
           </label>
         </div>
@@ -46,11 +44,26 @@ export default class ControlledForm extends React.Component {
             Password:
             <MyInput
               name="password"
-              value={ password }
-              onChange={({ nextValue }) => this.setState({ password: nextValue })}
+              value={ userinfo.password }
               required />
           </label>
         </div>
+
+        <a href="#" onClick={ (event) => {
+          event.preventDefault();
+          this.setState({ userinfo: {
+            username: 'foo',
+            password: '123123'
+          } });
+        }}>Load source A</a>
+
+        <a href="#" onClick={ (event) => {
+          event.preventDefault();
+          this.setState({ userinfo: {
+            username: 'admin',
+            password: null
+          } });
+        }}>Load source B</a>
 
         <button type="submit">Submit</button>
       </Form>
