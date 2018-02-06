@@ -39,12 +39,26 @@ export default class ControlledForm extends React.Component {
           </label>
         </div>
 
+        <MyInput
+          name="sdfsdf"
+          required />
+
         <div>
           <label>
             Password:
             <MyInput
               name="password"
               value={ userinfo.password }
+              onChange={ ({ nextValue }) => {
+                console.log('onchange', nextValue);
+
+                this.setState(({ userinfo }) => ({
+                  userinfo: {
+                    ...userinfo,
+                    password: nextValue
+                  }
+                }));
+              }}
               required />
           </label>
         </div>

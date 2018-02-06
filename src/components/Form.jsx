@@ -264,6 +264,8 @@ export default class Form extends React.Component {
    * @param {mixed} nextValue
    */
   handleFieldChange = async ({ event, fieldProps, nextValue, prevValue }) => {
+    console.warn('handleFieldChange');
+
     /* Bypass events called from an unregistered Field */
     if (!this.isRegistered(fieldProps)) return;
 

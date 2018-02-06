@@ -171,6 +171,7 @@ export default function connectField(options) {
         const prevValue = this.props[valuePropName];
 
         if (controllable && (nextValue !== prevValue)) {
+          console.log('hey, i will call handleFieldChange once more!');
           this.context.handleFieldChange({
             nextValue,
             prevValue,
@@ -265,7 +266,16 @@ export default function connectField(options) {
 
         invariant(hasChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, but received: %s.', contextProps.get('name'), this.props.onChange);
 
-        this.context.handleFieldChange({
+        /**
+         * Determine proper change handler based on the controllable state.
+         * Controlled fields must dispatch direct "onChange" handler, while
+         * uncontrolled fields must dispatch internal "handleFieldChange" method.
+         */
+        const changeHandler = (contextProps.get('controllable'))
+          ? this.props.onChange
+          : this.context.handleFieldChange
+
+        changeHandler({
           event,
           fieldProps: contextProps,
           nextValue,
