@@ -14,7 +14,11 @@ describe('Type-specific validation', () => {
   });
 
   it('Functional rule', () => {
-    const fieldProps = Map({ name: 'fieldName', type: 'text' });
+    const fieldProps = Map({
+      name: 'fieldName',
+      type: 'text',
+      valuePropName: 'value'
+    });
 
     /* Unexpected field */
     const resultOne = fieldUtils.validateSync({
@@ -63,7 +67,11 @@ describe('Type-specific validation', () => {
       }
     });
 
-    const fieldProps = Map({ name: 'fieldName', type: 'password' });
+    const fieldProps = Map({
+      name: 'fieldName',
+      type: 'password',
+      valuePropName: 'value'
+    });
 
     /**
      * Unexpected field (0/2).

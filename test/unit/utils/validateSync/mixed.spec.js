@@ -20,7 +20,11 @@ describe('Mixed validation', function () {
       }
     });
 
-    const fieldProps = Map({ name: 'fieldName', type: 'text' });
+    const fieldProps = Map({
+      name: 'fieldName',
+      type: 'text',
+      valuePropName: 'value'
+    });
 
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'foo'),
