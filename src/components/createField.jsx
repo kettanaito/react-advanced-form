@@ -2,7 +2,6 @@
  * A high-order component to create custom instances of form elements based on the generic Field class.
  * Also suitable for third-party fields integration.
  */
-import invariant from 'invariant';
 import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
