@@ -50,7 +50,7 @@ export default class ControlledForm extends React.Component {
               name="password"
               value={ userinfo.password }
               onChange={ ({ nextValue }) => {
-                console.log('onchange', nextValue);
+                console.log('ControlledForm @ password.onChange', nextValue);
 
                 this.setState(({ userinfo }) => ({
                   userinfo: {

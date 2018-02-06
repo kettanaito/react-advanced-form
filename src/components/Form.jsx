@@ -264,8 +264,6 @@ export default class Form extends React.Component {
    * @param {mixed} nextValue
    */
   handleFieldChange = async ({ event, fieldProps, nextValue, prevValue }) => {
-    console.warn('handleFieldChange');
-
     /* Bypass events called from an unregistered Field */
     if (!this.isRegistered(fieldProps)) return;
 
@@ -273,6 +271,34 @@ export default class Form extends React.Component {
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.log('nextValue', nextValue);
     console.groupEnd();
+
+    /**
+     * Handle "onChange" events dispatched by controlled field.
+     * Controlled field must execute its custom "CustomField.props.onChange" handler since that
+     * is the updater for the state/etc. controlling its value. Internal RAF change handling
+     * must be omitted in that scenario, as it will bubble to it eventually via
+     * "createField.Field.componentReceiveProps()", when comparing previous and next values of
+     * controlled fields.
+     */
+    const isChangeEvent = event && (event.nativeEvent.inputType === 'insertText');
+    const controllable = fieldProps.get('controllable');
+
+    if (isChangeEvent && controllable) {
+      const changeHandler = fieldProps.get('onChange');
+
+      invariant(changeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, but received: %s.', fieldProps.get('name'), changeHandler);
+
+      return changeHandler({
+        event,
+        nextValue,
+        prevValue,
+        fieldProps: fieldProps.toJS(),
+        fields: this.state.fields.toJS(),
+        form: this
+      });
+    }
+
+    console.warn('Form @ handleFieldChange');
 
     const valuePropName = fieldProps.get('valuePropName');
 
