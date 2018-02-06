@@ -280,8 +280,7 @@ export default class Form extends React.Component {
      * "createField.Field.componentReceiveProps()", when comparing previous and next values of
      * controlled fields.
      */
-    const nativeEvent = event.nativeEvent || event;
-    const isChangeEvent = (nativeEvent.inputType === 'insertText');
+    const isChangeEvent = event && ((event.nativeEvent || event).inputType === 'insertText');
     const controllable = fieldProps.get('controllable');
 
     if (isChangeEvent && controllable) {
