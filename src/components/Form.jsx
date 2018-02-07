@@ -267,7 +267,7 @@ export default class Form extends React.Component {
     /* Bypass events called from an unregistered Field */
     if (!this.isRegistered(fieldProps)) return;
 
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
+    console.groupCollapsed(fieldProps.get('fieldPath'), '@ Form @ handleFieldChange');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.log('nextValue', nextValue);
     console.groupEnd();
@@ -280,15 +280,16 @@ export default class Form extends React.Component {
      * "createField.Field.componentReceiveProps()", when comparing previous and next values of
      * controlled fields.
      */
-    const isChangeEvent = event && ((event.nativeEvent || event).inputType === 'insertText');
+    const isChangeEvent = event && !((event.nativeEvent || event).isManualUpdate);
     const controllable = fieldProps.get('controllable');
+    const onChangeHandler = fieldProps.get('onChange');
 
     if (isChangeEvent && controllable) {
-      const changeHandler = fieldProps.get('onChange');
+      console.log('controlled and from change event, call Field.props.onChange directly...');
 
-      invariant(changeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, but received: %s.', fieldProps.get('name'), changeHandler);
+      invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, but received: %s.', fieldProps.get('name'), onChangeHandler);
 
-      return changeHandler({
+      return onChangeHandler({
         event,
         nextValue,
         prevValue,
@@ -297,8 +298,6 @@ export default class Form extends React.Component {
         form: this
       });
     }
-
-    console.warn('Form @ handleFieldChange');
 
     const valuePropName = fieldProps.get('valuePropName');
 
@@ -342,11 +341,13 @@ export default class Form extends React.Component {
       forceProps: true
     });
 
-    const onChange = fieldProps.get('onChange');
-
-    if (onChange) {
-      /* Call custom onChange handler */
-      onChange({
+    /**
+     * Call custom onChange handler for uncontrolled fields only.
+     * Controlled fields dispatch "onChange" handler at the beginning of "Form.handleFieldChange".
+     * There is no need to dispatch the handler method once more.
+     */
+    if (!controllable && onChangeHandler) {
+      onChangeHandler({
         event,
         nextValue,
         prevValue,

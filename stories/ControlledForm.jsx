@@ -39,9 +39,9 @@ export default class ControlledForm extends React.Component {
           </label>
         </div>
 
-        <MyInput
+        {/* <MyInput
           name="sdfsdf"
-          required />
+          required /> */}
 
         <div>
           <label>
@@ -50,7 +50,7 @@ export default class ControlledForm extends React.Component {
               name="password"
               value={ userinfo.password }
               onChange={ ({ nextValue }) => {
-                console.log('ControlledForm @ password.onChange', nextValue);
+                console.warn('ControlledForm @ password.onChange', nextValue);
 
                 this.setState(({ userinfo }) => ({
                   userinfo: {

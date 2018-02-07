@@ -177,13 +177,22 @@ export default function connectField(options) {
 
         if (controllable && (nextValue !== prevValue)) {
           this.context.handleFieldChange({
+            event: {
+              nativeEvent: {
+                isManualUpdate: true
+              }
+            },
             nextValue,
             prevValue,
             fieldProps: contextProps
           });
         }
 
+        //
+        //
         // TODO This is worth re-doing!
+        //
+        //
         /**
          * Handle direct props updates.
          * When direct props receive new values, those should be updated in the Form's state as well.
