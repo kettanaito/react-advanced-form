@@ -43,6 +43,7 @@
     * Generic props
     * [rule](./components/Field/props/rule.md)
     * [asyncRule](./components/Field/props/asyncRule.md)
+    * [skip](./components/Field/props/skip.md)
   * Callbacks
     * [onFocus](./components/Field/callbacks/onFocus.md)
     * [onChange](./components/Field/callbacks/onChange.md)
