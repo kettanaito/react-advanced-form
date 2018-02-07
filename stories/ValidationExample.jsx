@@ -5,34 +5,39 @@ import { MyInput, MySelect, MyCheckbox, MyTextarea } from './custom-fields';
 /* Form validation rules */
 const formRules = {
   type: {
-    // text: ({ value }) => value !== 3
+    email: ({ value }) => isEmail(value),
+    password: {
+      capitalLetter: ({ value }) => /[A-Z]/.test(value),
+      oneNumber: ({ value }) => /[0-9]/.test(value),
+      minLength: ({ value }) => (value.length > 6)
+    }
   },
   name: {
-    quantity: {
-      forbidLetters: ({ value }) => /^\d+$/.test(value),
-      maxValue: ({ value }) => (value <= 10)
+    confirmPassword: {
+      match: ({ value, fields }) => {
+        return (value === fields.userPassword.value);
+      }
     }
   }
 };
 
 const formMessages = {
   general: {
-    missing: 'General missing message',
-    invalid: 'General invalid message'
+    missing: 'Please provide the required field',
+    invalid: 'Provided value is invalid'
   },
   type: {
-    text: {
-      invalid: 'Type "text" invalid message',
+    password: {
+      rules: {
+        capitalLetter: 'Password must include at least one capital letter',
+        oneNumber: 'Please include at least one number'
+      }
     }
   },
   name: {
-    quantity: {
-      missing: 'Please provide the quantity',
-      invalid: 'The quantity is invalid',
-      // async: ({ errorMessage }) => errorMessage,
+    confirmPassword: {
       rules: {
-        forbidLetters: ({ value }) => `Does "${value}" look like a number to you?`,
-        // maxValue: 'Value should be less than 10'
+        match: 'Provided passwords do not match'
       }
     }
   }
@@ -93,6 +98,26 @@ export default class ValidationExample extends Component {
             required />
 
           <MyInput name="lastName" />
+
+          <hr />
+
+          <MyInput
+            name="userEmail"
+            type="email"
+            label="E-mail"
+            required />
+
+          <MyInput
+            name="userPassword"
+            type="password"
+            label="Password"
+            required />
+
+          <MyInput
+            name="confirmPassword"
+            type="password"
+            label="Confirm password"
+            required />
 
           <button type="submit">Submit</button>
         </Form>

@@ -31,7 +31,12 @@ function resolveMessage({ messages, rejectedRule, resolverArgs }) {
   for (let i = 0; i < messagePaths.length; i++) {
     const messagePath = messagePaths[i];
     const message = messages.getIn(messagePath);
-    if (message) return { message, isResolvedDirectly: (i === 0) };
+
+    if (message) {
+      return {
+        message,
+        isResolvedDirectly: (i === 0) };
+    }
   }
 
   return {};
@@ -60,27 +65,15 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
     form
   };
 
-  let hasResolvedNameMessage = false;
-
-  const resolvedMessages = rejectedRules.reduce((messagesList, rejectedRule) => {
-    const { selector } = rejectedRule;
+  const resolvedMessages = rejectedRules.reduce((messagesList, rejectedRule, ruleIndex) => {
     const { message, isResolvedDirectly } = resolveMessage({ messages, rejectedRule, resolverArgs });
 
-    const isNameSelector = (selector === 'name');
-
     /**
-     * When no previously directly resolved messages, and the current one is directly resolved,
-     * mark this within the respective variable.
+     * Bypass indirectly resolved messages which are coming after the primary (0) rule.
+     * Indirectly resolved messages serve as helpers when there are no direct messages.
+     * In case direct messages are present, displaying the indirect ones is confusing.
      */
-    if (!hasResolvedNameMessage && isNameSelector && isResolvedDirectly) {
-      hasResolvedNameMessage = true;
-    }
-
-    /**
-     * When current message is not resolved directly, yet there is a sibling message
-     * which was resolved directly before, bypass the current message.
-     */
-    if (hasResolvedNameMessage && isNameSelector && !isResolvedDirectly) {
+    if (ruleIndex > 0 && !isResolvedDirectly) {
       return messagesList;
     }
 
