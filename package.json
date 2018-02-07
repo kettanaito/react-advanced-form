@@ -67,6 +67,7 @@
     "eslint-plugin-mocha": "^4.11.0",
     "eslint-plugin-react": "^7.5.1",
     "feather-icons": "^4.5.0",
+    "gitbook-plugin-prism": "^2.3.0",
     "immutable": "^3.8.2",
     "istanbul": "^0.4.5",
     "jsdom": "^11.5.1",
