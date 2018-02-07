@@ -91,22 +91,7 @@ describe('utils', () => {
     /**
      * serializeFields
      */
-    it('serializeFields', () => {
-      const fields = fromJS({
-        fieldOne: { fieldPath: 'fieldOne', value: 'foo', valuePropName: 'value' },
-        fieldTwo: { fieldPath: 'fieldTwo', value: '', valuePropName: 'value' },
-        fieldThree: { fieldPath: 'groupOne.fieldThree', value: 'doe', valuePropName: 'value' }
-      });
-
-      const serialized = fieldUtils.serializeFields(fields).toJS();
-
-      expect(serialized).to.deep.eq({
-        fieldOne: 'foo',
-        groupOne: {
-          fieldThree: 'doe'
-        }
-      });
-    });
+    require('./serializeFields.spec');
 
     /**
      * Synchronous validation.
