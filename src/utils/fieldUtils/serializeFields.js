@@ -8,13 +8,18 @@ import { Map } from 'immutable';
 
 export default function serializeFields(fields, valueResolver = null) {
   return fields.reduceRight((serialized, fieldProps) => {
-    const isCheckbox = (fieldProps.get('type') === 'checkbox');
-    const hasEmptyValue = (fieldProps.get('value') === '');
+    /* Bypass the fields with "skip" prop */
+    if (fieldProps.get('skip')) return serialized;
 
-    if (!isCheckbox && hasEmptyValue) return serialized;
-
+    /* Grab the field's value */
     const valuePropName = fieldProps.get('valuePropName');
     const defaultValue = fieldProps.get(valuePropName);
+
+    /* Bypass checkboxes with no value */
+    const isCheckbox = (fieldProps.get('type') === 'checkbox');
+    const hasEmptyValue = (defaultValue === '');
+    if (!isCheckbox && hasEmptyValue) return serialized;
+
     const value = valueResolver ? valueResolver(fieldProps) : defaultValue;
 
     return serialized.setIn(fieldProps.get('fieldPath').split('.'), value);

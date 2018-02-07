@@ -31,10 +31,15 @@ export default function connectField(options) {
     class Field extends React.Component {
       static displayName = `Field.${getComponentName(WrappedComponent)}`
 
+      static propTypes = {
+        skip: PropTypes.bool
+      }
+
       static defaultProps = {
         type: 'text',
         disabled: false,
-        required: false
+        required: false,
+        skip: false
       }
 
       static contextTypes = {
@@ -103,6 +108,7 @@ export default function connectField(options) {
           errors: null,
           required: this.props.required,
           expected: true,
+          skip: this.props.skip,
           valid: false,
           invalid: false,
           validating: false,
