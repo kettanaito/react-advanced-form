@@ -5,21 +5,26 @@
  * @param {boolean} immediate
  * @return {func}
  */
-export default function debounce(func, duration, immediate) {
+export default function debounce(func, duration, immediate = false) {
   let timeout;
 
-  return function (...args) {
+  return async function (...args) {
     const context = this;
 
     const later = function () {
       timeout = null;
-      if (!immediate) func.apply(context, args);
+
+      if (!immediate) {
+        return func.apply(context, args);
+      }
     };
 
-    const shouldResolve = (immediate && !timeout);
     clearTimeout(timeout);
+
     timeout = setTimeout(later, duration);
 
-    if (shouldResolve) func.apply(context, args);
+    if (immediate && !timeout) {
+      return func.apply(context, args);
+    }
   };
 }
