@@ -8,23 +8,24 @@
 export default function debounce(func, duration, immediate = false) {
   let timeout;
 
-  return async function (...args) {
+  return function (...args) {
     const context = this;
 
-    const later = function () {
-      timeout = null;
+    return new Promise((resolve) => {
+      const later = function () {
+        timeout = null;
 
-      if (!immediate) {
-        return func.apply(context, args);
+        if (!immediate) {
+          resolve(func.apply(context, args));
+        }
+      };
+
+      clearTimeout(timeout);
+      timeout = setTimeout(later, duration);
+
+      if (immediate && !timeout) {
+        resolve(func.apply(context, args));
       }
-    };
-
-    clearTimeout(timeout);
-
-    timeout = setTimeout(later, duration);
-
-    if (immediate && !timeout) {
-      return func.apply(context, args);
-    }
+    });
   };
 }

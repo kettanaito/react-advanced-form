@@ -168,7 +168,11 @@ export default class Form extends React.Component {
     /* Update the validity state of the field */
     const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
 
+    //
+    //
     // FIXME Update the fields with dynamic props
+    //
+    //
     const nextResolvedFields = nextFields.map((fieldProps) => {
       if (!fieldProps.has('dynamicProps')) return fieldProps;
 
@@ -191,8 +195,6 @@ export default class Form extends React.Component {
     console.log('nextFields:', Object.assign({}, nextFields.toJS()));
     console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
     console.groupEnd();
-
-    console.log('Update finished!');
 
     return new Promise((resolve, reject) => {
       try {
@@ -337,15 +339,11 @@ export default class Form extends React.Component {
       ? this.debounceValidateField
       : this.validateField;
 
-    const payload = await appropriateValidation({
+    const { nextFieldProps: validatedFieldProps } = await appropriateValidation({
       type: SyncValidationType,
       fieldProps: updatedFieldProps,
       forceProps: true
     });
-
-    console.log({ payload });
-
-    const validatedFieldProps = payload ? payload.nextFieldProps : updatedFieldProps;
 
     /**
      * Call custom "onChange" handler for uncontrolled fields only.
@@ -353,8 +351,6 @@ export default class Form extends React.Component {
      * There is no need to dispatch the handler method once more.
      */
     if (!controllable && onChangeHandler) {
-      console.log('should dispatch "onChange" callback!', validatedFieldProps.toJS());
-
       onChangeHandler({
         event,
         nextValue,
@@ -484,7 +480,12 @@ export default class Form extends React.Component {
     console.groupEnd();
 
     /* Bypass unnecessary validation */
-    if (!shouldValidate) return true;
+    if (!shouldValidate) {
+      return {
+        nextFieldProps: fieldProps,
+        nextFields: fields
+      };
+    }
 
     /* Perform the validation */
     const validationResult = await fieldUtils.validate({
@@ -559,7 +560,11 @@ export default class Form extends React.Component {
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(validationSequence);
 
-    const isFormValid = !validatedFields.some(expected => !expected);
+    console.log('validatedFields', validatedFields);
+
+    const isFormValid = !validatedFields.some(({ nextFieldProps }) => {
+      return !nextFieldProps.get('expected');
+    });
 
     const { onInvalid } = this.props;
 
