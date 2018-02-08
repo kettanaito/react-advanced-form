@@ -5,7 +5,7 @@ import { MyInput, MySelect, MyCheckbox, MyTextarea } from './custom-fields';
 /* Form validation rules */
 const formRules = {
   type: {
-    email: ({ value }) => isEmail(value),
+    email: ({ value }) => value,
     password: {
       capitalLetter: ({ value }) => /[A-Z]/.test(value),
       oneNumber: ({ value }) => /[0-9]/.test(value),
@@ -13,6 +13,7 @@ const formRules = {
     }
   },
   name: {
+    firstName: ({ value }) => (value !== 'foo'),
     confirmPassword: {
       match: ({ value, fields }) => {
         return (value === fields.userPassword.value);
@@ -93,15 +94,19 @@ export default class ValidationExample extends Component {
             }}
             required />
 
+          First name:
           <MyInput
             name="firstName"
+            onChange={({ fieldProps }) => {
+              console.log('valid:', fieldProps.valid);
+            }}
             required />
 
           <MyInput name="lastName" />
 
           <hr />
 
-          <MyInput
+          {/* <MyInput
             name="userEmail"
             type="email"
             label="E-mail"
@@ -117,7 +122,7 @@ export default class ValidationExample extends Component {
             name="confirmPassword"
             type="password"
             label="Confirm password"
-            required />
+            required /> */}
 
           <button type="submit">Submit</button>
         </Form>

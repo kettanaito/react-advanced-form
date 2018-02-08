@@ -192,6 +192,8 @@ export default class Form extends React.Component {
     console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
     console.groupEnd();
 
+    console.log('Update finished!');
+
     return new Promise((resolve, reject) => {
       try {
         this.setState({ fields: nextResolvedFields }, () => resolve({
@@ -306,7 +308,7 @@ export default class Form extends React.Component {
      * Also, reset all validation states since those are useless after the value has changed.
      * This is important forvalidation chain, as proper validation statuses trigger proper validations.
      */
-    const { nextFields, nextFieldProps } = await this.updateField({
+    const { nextFields, nextFieldProps: updatedFieldProps } = await this.updateField({
       fieldProps,
       propsPatch: {
         [valuePropName]: nextValue,
@@ -335,23 +337,29 @@ export default class Form extends React.Component {
       ? this.debounceValidateField
       : this.validateField;
 
-    appropriateValidation({
+    const payload = await appropriateValidation({
       type: SyncValidationType,
-      fieldProps: nextFieldProps,
+      fieldProps: updatedFieldProps,
       forceProps: true
     });
 
+    console.log({ payload });
+
+    const validatedFieldProps = payload ? payload.nextFieldProps : updatedFieldProps;
+
     /**
-     * Call custom onChange handler for uncontrolled fields only.
+     * Call custom "onChange" handler for uncontrolled fields only.
      * Controlled fields dispatch "onChange" handler at the beginning of "Form.handleFieldChange".
      * There is no need to dispatch the handler method once more.
      */
     if (!controllable && onChangeHandler) {
+      console.log('should dispatch "onChange" callback!', validatedFieldProps.toJS());
+
       onChangeHandler({
         event,
         nextValue,
         prevValue,
-        fieldProps: nextFieldProps.toJS(),
+        fieldProps: validatedFieldProps.toJS(),
         fields: nextFields.toJS(),
         form: this
       });
@@ -453,7 +461,6 @@ export default class Form extends React.Component {
    * @param {ValidationType} type
    * @param {boolean} forceProps Use direct props explicitly, without trying to grab field record
    * from the state.
-   * @return {boolean}
    */
   validateField = async ({ type = BothValidationType, fieldProps: customFieldProps, forceProps = false }) => {
     const { formRules } = this;
@@ -520,12 +527,10 @@ export default class Form extends React.Component {
     const nextValidityState = fieldUtils.getValidityState(nextFieldProps);
 
     /* Update the field in the state to reflect the changes */
-    this.updateField({
+    return this.updateField({
       fieldProps,
       propsPatch: propsPatch.merge(nextValidityState)
     });
-
-    return expected;
   }
 
   /**
@@ -533,7 +538,7 @@ export default class Form extends React.Component {
    * That applies that in case multiple calls of this method will be executed, each next within the
    * given timeout duration period postpones the method's execution.
    */
-  debounceValidateField = debounce(this.validateField, 250, false)
+  debounceValidateField = debounce(this.validateField, 250)
 
   /**
    * Validates the form.
