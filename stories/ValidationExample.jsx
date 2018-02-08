@@ -45,6 +45,10 @@ const formMessages = {
 };
 
 export default class ValidationExample extends Component {
+  serialize = () => {
+    this.form.serialize();
+  }
+
   handleFormAction = () => {
     return new Promise((resolve, reject) => {
       setTimeout(() => reject({ errorMessage: 'foo' }), 2000);
@@ -73,8 +77,7 @@ export default class ValidationExample extends Component {
         rules={ formRules }
         messages={ formMessages }>
         <Form
-          ref={ form => console.log('ref:', form) }
-          innerRef={ form => console.log('innerRef:', form) }
+          ref={ form => this.form = form }
           id="default-form-example"
           ref={ form => this.form = form }
           action={ this.handleFormAction }
@@ -103,6 +106,8 @@ export default class ValidationExample extends Component {
             required />
 
           <MyInput name="lastName" />
+
+          <button onClick={ this.serialize }>Serialize</button>
 
           <hr />
 
