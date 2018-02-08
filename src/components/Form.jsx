@@ -560,8 +560,6 @@ export default class Form extends React.Component {
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(validationSequence);
 
-    console.log('validatedFields', validatedFields);
-
     const isFormValid = !validatedFields.some(({ nextFieldProps }) => {
       return !nextFieldProps.get('expected');
     });
