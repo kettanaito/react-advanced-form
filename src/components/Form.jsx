@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { fromJS, Map } from 'immutable';
+import { fromJS, Map, Iterable } from 'immutable';
 
 /* Internal modules */
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
@@ -89,8 +89,9 @@ export default class Form extends React.Component {
     this.formRules = this.defineRules();
 
     /**
-     * Define validation messages once, since those should be converted to immutable, which is an expensive procedure.
-     * Moreover, messages are unlikely to change during the component's lifecycle. It should be safe to store them.
+     * Define validation messages once, since those should be converted to immutable, which is
+     * an expensive procedure. Moreover, messages are unlikely to change during the component's
+     * lifecycle. It should be safe to store them.
      * Note: Messages passed from FormProvider (context messages) are already immutable.
      */
     const { messages } = this.props;
@@ -116,22 +117,25 @@ export default class Form extends React.Component {
 
     /* Warn upon duplicate registrations */
     if (isAlreadyExist && !isRadioButton) {
-      return console.warn(`Cannot register field \`${fieldProps.get('fieldPath')}\`, the field with the provided name is already registered. Make sure the fields on the same level of \`Form\` or \`Field.Group\` have unique names.`);
+      return console.warn('Cannot register field `%s`, the field with the ' +
+      'provided name is already registered. Make sure the fields on the same level of `Form` or ' +
+      '`Field.Group` have unique names.', fieldPath);
     }
 
+    const valuePropName = fieldProps.get('valuePropName');
+    const fieldValue = fieldProps.get(valuePropName);
+
     if (isRadioButton && isAlreadyExist) {
-      const existingValue = fields.getIn([fieldPath, 'value']);
+      const existingValue = fields.getIn([fieldPath, valuePropName]);
       if (existingValue) return;
 
-      const currentValue = fieldProps.get('value');
-
-      if (currentValue) {
-        fieldProps = fieldProps.set('value', currentValue);
+      if (fieldValue) {
+        fieldProps = fieldProps.set(valuePropName, fieldValue);
       }
     }
 
     /* Validate the field when it has initial value */
-    const shouldValidate = isset(fieldProps.get('value')) && (fieldProps.get('value') !== '');
+    const shouldValidate = isset(fieldValue) && (fieldValue !== '');
     if (shouldValidate) {
       this.validateField({
         fieldProps,
@@ -156,16 +160,18 @@ export default class Form extends React.Component {
    * Updates the props of the field stored in the state.
    * @param {string} fieldPath The name of the field.
    * @param {Map} fieldProps A directly specified nextProps of the field.
-   * @param {object} propsPath A partical Object of the props to merge into the existing field props.
+   * @param {object} propsPath A partial Object of the props to merge with the existing field record.
    * @return {Promise<any>}
    */
   updateField = ({ fieldPath, fieldProps: customFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
     const fieldProps = customFieldProps || fields.getIn([fieldPath]);
 
-    const nextFieldProps = propsPatch ? fieldProps.merge(fromJS(propsPatch)) : fieldProps;
+    /* Certain updates are being provided an iterable instances already, bypass conversion */
+    const iterablePropsPatch = Iterable.isIterable(propsPatch) ? propsPatch : fromJS(propsPatch);
+    const nextFieldProps = propsPatch ? fieldProps.merge(iterablePropsPatch) : fieldProps;
 
-    /* Update the validity state of the field */
+    /* Update the field's record in the state to produce the next fields */
     const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
 
     //
@@ -247,11 +253,10 @@ export default class Form extends React.Component {
       }
     });
 
-    const onFocus = fieldProps.get('onFocus');
-
-    if (onFocus) {
-      /* Call custom onFocus handler */
-      onFocus({
+    /* Call custom onFocus handler */
+    const onFocusHandler = fieldProps.get('onFocus');
+    if (onFocusHandler) {
+      onFocusHandler({
         event,
         fieldProps: nextFieldProps.toJS(),
         fields: nextFields.toJS(),
@@ -394,7 +399,7 @@ export default class Form extends React.Component {
      */
     //
     //
-    // TODO Review if this is really needed. Why not just "validationType.shouldValidate()"?
+    // TODO Review if this is really needed. Why not just "ValidationType.shouldValidate()"?
     //
     //
     const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
@@ -535,9 +540,9 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Validates the field in the debounce mode.
-   * That applies that in case multiple calls of this method will be executed, each next within the
-   * given timeout duration period postpones the method's execution.
+   * Debounced wrapper for the field validation method.
+   * That applies that in case multiple calls of this method will be executed, each one executed
+   * within the given timeout duration period postpones the following one's execution.
    */
   debounceValidateField = debounce(this.validateField, 250)
 
@@ -570,12 +575,12 @@ export default class Form extends React.Component {
       const { fields: nextFields } = this.state;
       const nextMutableFields = nextFields.toJS();
 
-      /* Reduce the invalid fields to the ordered Array */
       //
       //
       // TODO This can be done using immutable instance as well, no need for conversion here
       //
       //
+      /* Reduce the invalid fields to the ordered Array */
       const invalidFields = Object.keys(nextMutableFields).reduce((invalidFields, fieldName) => {
         const fieldProps = nextMutableFields[fieldName];
         return fieldProps.expected ? invalidFields : invalidFields.concat(fieldProps);
