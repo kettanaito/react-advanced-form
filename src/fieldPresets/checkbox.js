@@ -6,7 +6,7 @@ export default {
     checked: !!checked,
     initialValue: checked
   }),
-  enforceProps: (props, contextProps) => ({
+  enforceProps: ({ contextProps }) => ({
     checked: contextProps.get('checked')
   })
 };

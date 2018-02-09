@@ -33,7 +33,7 @@ export default {
   shouldUpdateRecord: ({ nextValue, nextProps, contextProps }) => {
     return nextProps.checked && (nextValue !== contextProps.get('value'));
   },
-  enforceProps: (props, contextProps) => ({
+  enforceProps: ({ props, contextProps }) => ({
     value: props.value,
     checked: contextProps.get('controlled') ? props.checked : contextProps.get('checked')
   })

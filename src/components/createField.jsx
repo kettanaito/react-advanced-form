@@ -307,7 +307,7 @@ export default function connectField(options) {
         const { props, contextProps } = this;
 
         /** Reference to the enforced props from the HOC options */
-        const enforcedProps = hocOptions.enforceProps(props, contextProps);
+        const enforcedProps = hocOptions.enforceProps({ props, contextProps });
 
         /** A mirror reference to "contextProps", an internal field record stored in Form's state */
         const fieldState = contextProps.toJS();
