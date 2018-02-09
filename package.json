@@ -6,16 +6,7 @@
     "name": "Artem Zakharchenko",
     "email": "kettanaito@gmail.com"
   },
-  "module": "src/index.js",
-  "main": "lib/index.js",
-  "scripts": {
-    "start": "webpack-dev-server",
-    "storybook": "start-storybook -p 6006",
-    "build": "NODE_ENV=production BABEL_ENV=production webpack",
-    "test": "mocha --require babel-core/register --require babel-polyfill",
-    "build-storybook": "build-storybook",
-    "prepublishOnly": "npm run build && npm test"
-  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kettanaito/react-advanced-form.git"
@@ -25,6 +16,7 @@
     "form",
     "react-form",
     "react-advanced-form",
+    "raf",
     "advanced",
     "dynamic props",
     "field group",
@@ -35,7 +27,20 @@
     "async validation",
     "multi-level validation"
   ],
-  "license": "MIT",
+  "module": "src/index.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "storybook": "start-storybook -p 6006",
+    "build": "NODE_ENV=production BABEL_ENV=production webpack",
+    "test": "mocha --require babel-core/register --require babel-polyfill",
+    "build-storybook": "build-storybook",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "pre-commit": [
+    "build",
+    "test"
+  ],
   "peerDependencies": {
     "react": "^15.0.0",
     "immutable": "^3.8.2"
@@ -75,6 +80,7 @@
     "istanbul": "^0.4.5",
     "jsdom": "^11.6.2",
     "mocha": "^5.0.0",
+    "pre-commit": "^1.2.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
