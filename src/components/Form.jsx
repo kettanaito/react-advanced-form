@@ -122,10 +122,16 @@ export default class Form extends React.Component {
       '`Field.Group` have unique names.', fieldPath);
     }
 
+    /* Get the value-like property of the field */
     const valuePropName = fieldProps.get('valuePropName');
     const fieldValue = fieldProps.get(valuePropName);
 
     if (isRadioButton && isAlreadyExist) {
+      /**
+       * When the Radio field with the same name is already registered, check if it had
+       * some value in the record. Radio fields with "checked" prop are propagating their value
+       * to the field's record. Other Radio fields are registered, but their value is ignored.
+       */
       const existingValue = fields.getIn([fieldPath, valuePropName]);
       if (existingValue) return;
 
@@ -139,6 +145,12 @@ export default class Form extends React.Component {
     if (shouldValidate) {
       this.validateField({
         fieldProps,
+
+        /**
+         * Enforce the validation function to use the "fieldProps" provided directly.
+         * By default, it will try to grab the field record from the state, which is
+         * missing at this point of execution.
+         */
         forceProps: true
       });
     }
@@ -148,7 +160,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Shorthand: Checks if the provided field is registered in the state.
+   * Determines if the provided field has its record within the state.
    * @param {Map} fieldProps
    * @return {boolean}
    */
@@ -180,6 +192,7 @@ export default class Form extends React.Component {
     //
     //
     const nextResolvedFields = nextFields.map((fieldProps) => {
+      /* Bypass fields without dynamic props */
       if (!fieldProps.has('dynamicProps')) return fieldProps;
 
       const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
@@ -282,7 +295,7 @@ export default class Form extends React.Component {
     console.groupEnd();
 
     /**
-     * Handle "onChange" events dispatched by controlled field.
+     * Handle "onChange" events dispatched by the controlled field.
      * Controlled field must execute its custom "CustomField.props.onChange" handler since that
      * is the updater for the state/etc. controlling its value. Internal RAF change handling
      * must be omitted in that scenario, as it will bubble to it eventually via
@@ -290,10 +303,10 @@ export default class Form extends React.Component {
      * controlled fields.
      */
     const isChangeEvent = event && !((event.nativeEvent || event).isManualUpdate);
-    const controllable = fieldProps.get('controllable');
+    const isControlled = fieldProps.get('controlled');
     const onChangeHandler = fieldProps.get('onChange');
 
-    if (isChangeEvent && controllable) {
+    if (isChangeEvent && isControlled) {
       console.log('controlled and from change event, call Field.props.onChange directly...');
 
       invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, but received: %s.', fieldProps.get('name'), onChangeHandler);
@@ -355,7 +368,7 @@ export default class Form extends React.Component {
      * Controlled fields dispatch "onChange" handler at the beginning of "Form.handleFieldChange".
      * There is no need to dispatch the handler method once more.
      */
-    if (!controllable && onChangeHandler) {
+    if (!isControlled && onChangeHandler) {
       onChangeHandler({
         event,
         nextValue,

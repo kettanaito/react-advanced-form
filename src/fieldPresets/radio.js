@@ -9,7 +9,7 @@ export default {
    */
   mapPropsToField: ({ fieldRecord, props: { checked, value, onChange } }) => {
     fieldRecord.type = 'radio';
-    fieldRecord.controllable = !!onChange;
+    fieldRecord.controlled = !!onChange;
 
     delete fieldRecord.initialValue;
 
@@ -23,6 +23,6 @@ export default {
   },
   enforceProps: (props, contextProps) => ({
     value: props.value,
-    checked: contextProps.get('controllable') ? props.checked : contextProps.get('checked')
+    checked: contextProps.get('controlled') ? props.checked : contextProps.get('checked')
   })
 };

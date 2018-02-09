@@ -100,7 +100,7 @@ export default function connectField(options) {
           initialValue: this.props.hasOwnProperty('initialValue') ? initialValue : registeredValue,
 
           /* States */
-          controllable: this.props.hasOwnProperty('value'),
+          controlled: this.props.hasOwnProperty('value'),
           focused: false,
           disabled: this.props.disabled,
 
@@ -171,11 +171,11 @@ export default function connectField(options) {
          * However, that still means that the new value should be propagated to the Form's state to guarantee
          * the field's internal record is updated respectively.
          */
-        const controllable = contextProps.get('controllable');
+        const controlled = contextProps.get('controlled');
         const nextValue = nextProps[valuePropName];
         const prevValue = this.props[valuePropName];
 
-        if (controllable && (nextValue !== prevValue)) {
+        if (controlled && (nextValue !== prevValue)) {
           this.context.handleFieldChange({
             event: {
               nativeEvent: {
@@ -303,7 +303,7 @@ export default function connectField(options) {
         const fieldProps = {
           name: fieldState.name,
           type: fieldState.type,
-          value: fieldState.controllable ? (props.value || '') : fieldState.value,
+          value: fieldState.controlled ? (props.value || '') : fieldState.value,
           required: fieldState.required,
           disabled: fieldState.disabled,
 
