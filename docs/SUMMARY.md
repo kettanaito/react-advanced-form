@@ -60,4 +60,4 @@
 
 ## Developers
 
-* [Contributing](./developers/contributing.md)
+* [Contributing](./CONTRIBUTING.md)

@@ -9,8 +9,10 @@ import ControlledForm from './ControlledForm';
 import Conditional from './Conditional';
 import BugWithForm from './BugWithForm';
 import InvalidFields from './InvalidFields';
+import Messages from './Messages';
 
 storiesOf('Form', module)
+  .add('Messages', () => (<Messages />))
   .add('ValidationExample', () => (<ValidationExample />))
   .add('Native fields', () => (<NativeFields />))
   .add('Dynamic "required"', () => <Rfq />)

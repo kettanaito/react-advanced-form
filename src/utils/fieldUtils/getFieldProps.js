@@ -1,6 +1,6 @@
 /**
- * Returns the props of the given field based on the presence of the latter in the form's state/context.
- * In case the field is not yet registered in the form's state, returns the fallback props provided.
+ * Returns the props of the given field based on the presence of its record within the form's state.
+ * In case the field is not yet registered, returns the fallback props provided.
  * @param {string} fieldPath
  * @param {Map} fields
  * @param {object} fallbackProps

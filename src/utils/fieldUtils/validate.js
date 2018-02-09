@@ -10,12 +10,17 @@ export const commonErrorTypes = {
   async: 'async'
 };
 
+/**
+ * A key which groups the messages of the named validation rules.
+ * Example: "messages.name.fieldName.rules.someCutomRule".
+ */
 export const customRulesKey = 'rules';
 
 /**
- * Shorthand function to return a unified validation result Object.
+ * Returns a unified validation result interface based on the received arguments.
  * @param {Boolean} expected
  * @param {List<[string]>} rejectedRules
+ * @return {Map}
  */
 export const composeResult = (expected, rejectedRules = [], extra) => Map({
   propsPatch: Map({ expected }),
@@ -23,6 +28,13 @@ export const composeResult = (expected, rejectedRules = [], extra) => Map({
   extra
 });
 
+/**
+ * Returns a unified interface of the rejected rule.
+ * @param {string} name The name of the rejected rule.
+ * @param {string} selector The rule's selector ("type", "name", or null)
+ * @param {boolean} isCustom States the rule as custom (named rule).
+ * @return {Object}
+ */
 export function createRejectedRule({ name = null, selector = null, isCustom = false }) {
   return { name, selector, isCustom };
 }

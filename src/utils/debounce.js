@@ -1,5 +1,5 @@
 /**
- * Returns a wrapped function with debounce logic built-in.
+ * Returns a debounced wrapper function over the provided function.
  * @param {function} func
  * @param {number} duration
  * @param {boolean} immediate

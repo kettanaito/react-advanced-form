@@ -55,6 +55,7 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
   const rejectedRules = validationResult.get('rejectedRules');
   if (!rejectedRules || (rejectedRules.length === 0)) return;
 
+  /* Get the extra properties coming from the async validation result */
   const extra = validationResult.get('extra');
 
   const resolverArgs = {

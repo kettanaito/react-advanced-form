@@ -1,5 +1,5 @@
 /**
- * Custom iterable prop type validator.
+ * Custom iterable instance prop type validator.
  * This is needed since "PropTypes.instanceOf(Immutable.Map)" doesn't resolve to "true".
  * Multiple bugs are issued relatively to that, hence there is a custom validation.
  */
@@ -9,7 +9,6 @@ import { isset } from '../utils';
 
 export default function IterableInstance(props, propName, componentName) {
   const propValue = props[propName];
-
   if (!isset(propValue)) return null;
 
   invariant(Iterable.isIterable(propValue), 'Invalid prop `%s` of type `%s` supplied to `%s`, ' +
