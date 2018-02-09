@@ -85,7 +85,8 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
 
     /* Throw on functional messages that return falsy values */
     invariant(isMessageValid, 'Expected the error message declaration of the rule `%s` to return a String, ' +
-    'but got: %s. Please check the message declaration for the field `%s`.', rejectedRule.name, resolvedMessage, fieldProps.get('name'));
+    'but got: %s. Please check the message declaration for the field `%s`.',
+    rejectedRule.name, resolvedMessage, fieldProps.get('name'));
 
     return resolvedMessage ? messagesList.concat(resolvedMessage) : messagesList;
   }, []);

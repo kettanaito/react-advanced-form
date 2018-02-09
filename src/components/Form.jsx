@@ -307,9 +307,8 @@ export default class Form extends React.Component {
     const onChangeHandler = fieldProps.get('onChange');
 
     if (isChangeEvent && isControlled) {
-      console.log('controlled and from change event, call Field.props.onChange directly...');
-
-      invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, but received: %s.', fieldProps.get('name'), onChangeHandler);
+      invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
+      'but received: %s.', fieldProps.get('name'), onChangeHandler);
 
       return onChangeHandler({
         event,
@@ -648,7 +647,8 @@ export default class Form extends React.Component {
 
     /* Throw on submit attempt without the "action" prop */
     const { action } = this.props;
-    invariant(action, 'Cannot submit the form without `action` prop specified explicitly. Expected a function which returns Promise, but received: %s.', action);
+    invariant(action, 'Cannot submit the form without `action` prop specified explicitly. Expected a function ' +
+    'which returns Promise, but received: %s.', action);
 
     /* Ensure form should submit (has no unexpected field values) */
     const shouldSubmit = await this.validate();

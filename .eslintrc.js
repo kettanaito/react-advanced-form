@@ -24,11 +24,7 @@ module.exports = {
   rules: {
     'strict': [2, 'never'],
     'no-console': 0,
-    'max-len': [1, 120, {
-      ignoreStrings: true,
-      ignoreComments: true,
-      ignoreTemplateLiterals: true
-    }],
+    'max-len': [1, 120],
     'consistent-return': 0,
     'array-callback-return': 0,
     'import/no-extraneous-dependencies': 0,
