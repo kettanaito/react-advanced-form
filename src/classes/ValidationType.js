@@ -33,20 +33,19 @@ export default class ValidationType {
 
     const fieldName = fieldProps.get('name');
     const fieldType = fieldProps.get('type');
-    const hasValue = !!fieldProps.get('value');
 
     if (this.types.includes(validationTypes.sync)) {
-      if (hasValue && fieldProps.has('rule')) {
+      if (fieldProps.has('rule')) {
         return true;
       }
 
-      if (hasValue && (formRules.hasIn(['name', fieldName]) || formRules.hasIn(['type', fieldType]))) {
+      if ((formRules.hasIn(['name', fieldName]) || formRules.hasIn(['type', fieldType]))) {
         return true;
       }
     }
 
     if (this.types.includes(validationTypes.async)) {
-      if (hasValue && fieldProps.has('asyncRule')) {
+      if (fieldProps.has('asyncRule')) {
         return true;
       }
     }

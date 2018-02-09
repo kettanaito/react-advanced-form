@@ -327,7 +327,7 @@ export default class Form extends React.Component {
      * Also, reset all validation states since those are useless after the value has changed.
      * This is important forvalidation chain, as proper validation statuses trigger proper validations.
      */
-    const { nextFields, nextFieldProps: updatedFieldProps } = await this.updateField({
+    const { nextFieldProps: updatedFieldProps } = await this.updateField({
       fieldProps,
       propsPatch: {
         [valuePropName]: nextValue,
@@ -352,14 +352,13 @@ export default class Form extends React.Component {
      * most likely means the value update of the controlled field, which must be validated
      * instantly.
      */
-    const appropriateValidation = (prevValue && nextValue)
+    const appropriateValidation = (nextValue)
       ? this.debounceValidateField
       : this.validateField;
 
-    const { nextFieldProps: validatedFieldProps } = await appropriateValidation({
+    const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({
       type: SyncValidationType,
-      fieldProps: updatedFieldProps,
-      forceProps: true
+      fieldProps: updatedFieldProps
     });
 
     /**

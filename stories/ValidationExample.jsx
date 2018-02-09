@@ -105,7 +105,8 @@ export default class ValidationExample extends Component {
             }}
             required />
 
-          <MyInput name="lastName" />
+          NUMBERS:
+          <MyInput name="lastName" rule={/^\d+$/} />
 
           <button onClick={ this.serialize }>Serialize</button>
 
