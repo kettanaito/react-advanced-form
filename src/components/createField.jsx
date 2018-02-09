@@ -12,7 +12,7 @@ import { isset, IterableInstance, getComponentName, getPropsPatch, fieldUtils } 
 const defaultOptions = {
   valuePropName: 'value',
   mapPropsToField: ({ fieldRecord }) => fieldRecord,
-  shouldUpdateRecord: null,
+  shouldUpdateRecord: ({ prevValue, nextValue }) => (prevValue !== nextValue),
   enforceProps: () => ({})
 };
 
@@ -176,13 +176,13 @@ export default function connectField(options) {
         const nextValue = nextProps[valuePropName];
         const prevValue = this.props[valuePropName];
 
-        const shouldUpdateRecord = hocOptions.shouldUpdateRecord ? hocOptions.shouldUpdateRecord({
+        const shouldUpdateRecord = hocOptions.shouldUpdateRecord({
           nextValue,
           prevValue,
           prevProps: this.props,
           nextProps,
           contextProps
-        }) : (prevValue !== nextValue);
+        });
 
         if (controlled && shouldUpdateRecord) {
           this.context.handleFieldChange({
