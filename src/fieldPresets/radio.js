@@ -21,6 +21,18 @@ export default {
 
     return fieldRecord;
   },
+  /**
+   * Should update record.
+   * Determines when it is needed to execute the native "Form.handleFieldChange" during the
+   * "Field.componentWillReceiveProps" for controlled fields.
+   *
+   * This is needed for the Radio field since on "Field.componentWillReceiveProps" the "prevValue" and "nextValue"
+   * will always be the same - Radio field controlled updates do NOT update the value, but a "checked" prop. Regardless,
+   * what should be compared is the next value and the current value in the field's record.
+   */
+  shouldUpdateRecord: ({ nextValue, nextProps, contextProps }) => {
+    return nextProps.checked && (nextValue !== contextProps.get('value'));
+  },
   enforceProps: (props, contextProps) => ({
     value: props.value,
     checked: contextProps.get('controlled') ? props.checked : contextProps.get('checked')

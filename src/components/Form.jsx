@@ -307,6 +307,7 @@ export default class Form extends React.Component {
     const onChangeHandler = fieldProps.get('onChange');
 
     if (isChangeEvent && isControlled) {
+      console.log('is change event and field is controlled - call its own "onChange" handler');
       invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
       'but received: %s.', fieldProps.get('name'), onChangeHandler);
 
@@ -362,12 +363,16 @@ export default class Form extends React.Component {
       forceProps: true
     });
 
+    console.log('executing native "handleFieldChange"...');
+
     /**
      * Call custom "onChange" handler for uncontrolled fields only.
      * Controlled fields dispatch "onChange" handler at the beginning of "Form.handleFieldChange".
      * There is no need to dispatch the handler method once more.
      */
     if (!isControlled && onChangeHandler) {
+      console.log('field is not controlled and has custom "onChange", calling a callback!');
+
       onChangeHandler({
         event,
         nextValue,
