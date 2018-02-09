@@ -21,22 +21,26 @@ export const TValidationMessages = PropTypes.shape({
 export default class FormProvider extends React.Component {
   static propTypes = {
     rules: TValidationRules,
-    messages: TValidationMessages
+    messages: TValidationMessages,
+    withImmutable: PropTypes.bool
   }
 
   static defaultProps = {
-    messages: {}
+    messages: {},
+    withImmutable: false
   }
 
   static childContextTypes = {
     rules: TValidationRules,
-    messages: TValidationMessages
+    messages: TValidationMessages,
+    withImmutable: PropTypes.bool
   }
 
   getChildContext() {
     return {
       rules: fromJS(this.props.rules),
-      messages: fromJS(this.props.messages)
+      messages: fromJS(this.props.messages),
+      withImmutable: this.props.withImmutable
     };
   }
 

@@ -41,7 +41,8 @@ export default class Form extends React.Component {
   /* Context which is accepted by Form */
   static contextTypes = {
     rules: IterableInstance,
-    messages: IterableInstance
+    messages: IterableInstance,
+    withImmutable: PropTypes.bool
   }
 
   /* Context which Form passes to Fields */
@@ -196,9 +197,9 @@ export default class Form extends React.Component {
       if (!fieldProps.has('dynamicProps')) return fieldProps;
 
       const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
-        return resolver({
-          fieldProps: nextFieldProps.toJS(),
-          fields: nextFields.toJS(),
+        return this.handleCallback(resolver, {
+          fieldProps: nextFieldProps,
+          fields: nextFields,
           form: this
         });
       });
@@ -238,6 +239,23 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Handles callback. Conditionaly return props with Immutable
+   */
+  handleCallback = (callback, props) => {
+    const { withImmutable } = this.context;
+
+    const immutableProps = Object.keys(props)
+      .reduce((nextProps, propName) => {
+        const prop = props[propName];
+        return {
+          ...nextProps,
+          [propName]: (prop instanceof Map && !withImmutable) ? prop.toJS() : prop
+        };
+      }, {});
+    callback({ ...immutableProps });
+  }
+
+  /**
    * Handles the change which marks form as dirty.
    */
   handleFirstChange = ({ event, nextValue, prevValue, fieldProps }) => {
@@ -269,10 +287,10 @@ export default class Form extends React.Component {
     /* Call custom onFocus handler */
     const onFocusHandler = fieldProps.get('onFocus');
     if (onFocusHandler) {
-      onFocusHandler({
+      this.handleCallback(onFocusHandler, {
         event,
-        fieldProps: nextFieldProps.toJS(),
-        fields: nextFields.toJS(),
+        fieldProps: nextFieldProps,
+        fields: nextFields,
         form: this
       });
     }
@@ -310,12 +328,12 @@ export default class Form extends React.Component {
       invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
       'but received: %s.', fieldProps.get('name'), onChangeHandler);
 
-      return onChangeHandler({
+      return this.handleCallback(onChangeHandler, {
         event,
         nextValue,
         prevValue,
-        fieldProps: fieldProps.toJS(),
-        fields: this.state.fields.toJS(),
+        fieldProps,
+        fields: this.state.fields,
         form: this
       });
     }
@@ -372,12 +390,12 @@ export default class Form extends React.Component {
      * There is no need to dispatch the handler method once more.
      */
     if (!isControlled && onChangeHandler) {
-      onChangeHandler({
+      this.handleCallback(onChangeHandler, {
         event,
         nextValue,
         prevValue,
-        fieldProps: validatedFieldProps.toJS(),
-        fields: nextFields.toJS(),
+        fieldProps: validatedFieldProps,
+        fields: nextFields,
         form: this
       });
     }
@@ -452,10 +470,10 @@ export default class Form extends React.Component {
     /* Call custom onBlur handler */
     const onBlur = nextFieldProps.get('onBlur');
     if (onBlur) {
-      onBlur({
+      this.handleCallback(onBlur, {
         event,
-        fieldProps: nextFieldProps.toJS(),
-        fields: nextFields.toJS(),
+        fieldProps: nextFieldProps,
+        fields: nextFields,
         form: this
       });
     }
@@ -639,7 +657,11 @@ export default class Form extends React.Component {
    * Serializes the fields' values into a plain Object.
    */
   serialize = () => {
-    return fieldUtils.serializeFields(this.state.fields).toJS();
+    const { withImmutable } = this.context;
+    const { fields } = this.state;
+
+    const serialized = fieldUtils.serializeFields(fields);
+    return withImmutable ? serialized : serialized.toJS();
   }
 
   /**
@@ -667,7 +689,7 @@ export default class Form extends React.Component {
     /* Compose a single Object of arguments passed to each custom handler */
     const callbackArgs = {
       serialized,
-      fields: fields.toJS(),
+      fields,
       form: this
     };
 
@@ -676,7 +698,7 @@ export default class Form extends React.Component {
      * The submit is consideres started immediately when the submit button is pressed.
      * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
-    if (onSubmitStart) onSubmitStart(callbackArgs);
+    if (onSubmitStart) this.handleCallback(onSubmitStart, callbackArgs);
 
     /**
      * Perform the action.
