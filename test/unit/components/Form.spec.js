@@ -51,6 +51,25 @@ describe('Form', () => {
     expect(messages.toJS()).to.deep.equal(validationMessages);
   });
 
+  it('Return Immutable props when specified in FormProvider', () => {
+    const handleOnChange = ({ fieldProps }) => {
+      expect(fieldProps.to.be.instanceOf(Map));
+    };
+
+    const wrapper = mount(
+      <FormProvider withImmutable={ true } >
+        <Form>
+          <Input name="foo" onChange={ handleOnChange }/>
+        </Form>
+      </FormProvider>
+    );
+
+    return defer(async () => {
+      const input = wrapper.find(Input);
+      input.simulate('change', { currentTarget: { value: 'foo' } });
+    });
+  });
+
   it('Mark form as dirty properly', () => {
     let sum = 0;
 
