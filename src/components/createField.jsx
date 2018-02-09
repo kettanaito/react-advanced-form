@@ -176,10 +176,6 @@ export default function connectField(options) {
         const nextValue = nextProps[valuePropName];
         const prevValue = this.props[valuePropName];
 
-        console.groupCollapsed(this.props.name, '@ Field @ componentWillReceiveProps');
-        console.log({ controlled, prevValue, nextValue });
-        console.groupEnd();
-
         const shouldUpdateRecord = hocOptions.shouldUpdateRecord ? hocOptions.shouldUpdateRecord({
           nextValue,
           prevValue,
