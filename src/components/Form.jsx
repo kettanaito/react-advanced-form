@@ -342,8 +342,8 @@ export default class Form extends React.Component {
     });
 
     /* Cancel any async validation in progress due to validation state reset */
-    if (nextFieldProps.has('pendingAsyncValidation')) {
-      nextFieldProps.getIn(['pendingAsyncValidation', 'cancel'])();
+    if (updatedFieldProps.has('pendingAsyncValidation')) {
+      updatedFieldProps.getIn(['pendingAsyncValidation', 'cancel'])();
     }
 
     /**
