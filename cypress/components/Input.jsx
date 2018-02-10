@@ -4,7 +4,6 @@ import feather from 'feather-icons';
 
 const inputStyles = {
   border: '1px solid #ccc',
-  borderRadius: 3,
   margin: 0,
   padding: '.45rem .65rem',
   fontSize: '14px'
