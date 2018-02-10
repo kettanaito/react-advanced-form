@@ -19,7 +19,7 @@ describe('utils', () => {
     /**
      * getErrorMessages
      */
-    require('./getErrorMessages.spec');
+    // require('./getErrorMessages.spec');
 
     /**
      * getFieldPath
@@ -97,10 +97,5 @@ describe('utils', () => {
      * Synchronous validation.
      */
     require('./validateSync');
-
-    /**
-     * Asynchronous validation.
-     */
-    require('./validateAsync.spec');
   });
 });

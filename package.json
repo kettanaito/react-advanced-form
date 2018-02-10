@@ -32,8 +32,11 @@
   "scripts": {
     "start": "webpack-dev-server",
     "storybook": "start-storybook -p 6006",
+    "cypress": "node_modules/.bin/cypress open",
     "build": "NODE_ENV=production BABEL_ENV=production webpack",
-    "test": "mocha --require babel-core/register --require babel-polyfill",
+    "test:unit": "mocha --require babel-core/register --require babel-polyfill",
+    "test:integration": "node_modules/.bin/cypress run --spec cypress/integration/index.spec.js",
+    "test": "npm run test:unit && npm run test:integration",
     "build-storybook": "build-storybook",
     "prepublishOnly": "npm run build && npm test"
   },
@@ -46,6 +49,7 @@
     "immutable": "^3.8.2"
   },
   "devDependencies": {
+    "@cypress/webpack-preprocessor": "^1.1.3",
     "@storybook/addon-actions": "^3.3.12",
     "@storybook/addon-links": "^3.3.12",
     "@storybook/addons": "^3.3.12",
@@ -65,6 +69,8 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
+    "cypress": "^1.4.2",
+    "cypress-react-unit-test": "^1.2.1",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.17.0",
@@ -83,6 +89,7 @@
     "pre-commit": "^1.2.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
+    "react-advanced-form-addons": "^1.2.0",
     "react-dom": "^16.2.0",
     "storybook": "^1.0.0",
     "webpack": "^3.10.0",

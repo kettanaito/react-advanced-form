@@ -161,7 +161,7 @@ describe('validateAsync', () => {
     ]);
   });
 
-  it('asyncRule based on "fields"', async () => {
+  it('supports async rule based on "fields"', async () => {
     const result = await fieldUtils.validateAsync({
       fieldProps: Map({
         value: 'abc',
