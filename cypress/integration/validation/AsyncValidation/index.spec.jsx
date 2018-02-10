@@ -1,15 +1,14 @@
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import AsyncValidation from './scenarios/AsyncValidation';
+import Scenario, { fieldSelector } from '@scenarios/AsyncValidation/Field.props.asyncRule';
 
 describe('Asynchronous validation', function () {
   beforeEach(() => {
-    mount(<AsyncValidation />);
+    mount(<Scenario />);
   });
 
   describe('Logic', () => {
     it('empty optional field with async rule resolves', () => {
-      const fieldSelector = '[name="fieldOne"]';
       cy.get(fieldSelector)
         .focus()
         .blur()
@@ -18,9 +17,8 @@ describe('Asynchronous validation', function () {
     });
 
     it('empty required field with async rule rejects', () => {
-      mount(<AsyncValidation required />);
+      mount(<Scenario required />);
 
-      const fieldSelector = '[name="fieldOne"]';
       cy.get(fieldSelector)
         .focus()
         .blur()
@@ -29,9 +27,7 @@ describe('Asynchronous validation', function () {
     });
 
     it('field with expected value resolves', () => {
-      const fieldSelector = '[name="fieldOne"]';
       cy.get(fieldSelector)
-        // .focus()
         .type('expected value').should('have.value', 'expected value')
         .blur().should('have.class', 'validating')
         .wait(500)
@@ -40,9 +36,7 @@ describe('Asynchronous validation', function () {
     });
 
     it('field with unexpected value rejects', () => {
-      const fieldSelector = '[name="fieldOne"]';
       cy.get(fieldSelector)
-        // .focus()
         .type('foo').should('have.value', 'foo')
         .blur().should('have.class', 'validating')
         .wait(500)
@@ -51,7 +45,6 @@ describe('Asynchronous validation', function () {
     });
 
     it('cancels pending async validation on state reset', () => {
-      const fieldSelector = '[name="fieldOne"]';
       cy.get(fieldSelector)
         .type('foo').should('have.value', 'foo')
         .blur({ force: true }).should('have.class', 'validating')
@@ -69,9 +62,7 @@ describe('Asynchronous validation', function () {
 
   describe('Messages', () => {
     it('error message can access "extra" received from response', () => {
-      mount(<AsyncValidation extra="extra string" />);
-
-      const fieldSelector = '[name="fieldOne"]';
+      mount(<Scenario extra="extra string" />);
 
       cy.get(fieldSelector)
         .type('foo').should('have.value', 'foo')

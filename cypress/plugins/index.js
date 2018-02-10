@@ -11,6 +11,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const path = require('path');
 const webpack = require('@cypress/webpack-preprocessor');
 
 const webpackOptions = {
@@ -27,7 +28,12 @@ const webpackOptions = {
     ]
   },
   resolve: {
-    extensions: ['.jsx', '.js']
+    alias: {
+      '@scenarios': path.resolve(__dirname, '../scenarios'),
+      '@components': path.resolve(__dirname, '../components'),
+      '@lib': path.resolve(__dirname, '../../lib')
+    },
+    extensions: ['.spec.jsx', '.spec.js', '.jsx', '.js']
   }
 }
 
