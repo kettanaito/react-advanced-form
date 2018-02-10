@@ -35,7 +35,7 @@
     "cypress": "node_modules/.bin/cypress open",
     "build": "NODE_ENV=production BABEL_ENV=production webpack",
     "test:unit": "mocha --require babel-core/register --require babel-polyfill",
-    "test:integration": "node_modules/.bin/cypress run --spec cypress/integration/index.spec.js",
+    "test:integration": "node_modules/.bin/cypress run --spec cypress/integration/index.js",
     "test": "npm run test:unit && npm run test:integration",
     "build-storybook": "build-storybook",
     "prepublishOnly": "npm run build && npm test"

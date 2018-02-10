@@ -1,6 +1,8 @@
 import React from 'react';
-import { Form } from '../../../lib';
-import { Input } from '../components';
+import { Form } from '@lib';
+import { Input } from '@components';
+
+export const fieldSelector = '[name="fieldOne"]';
 
 const messages = {
   name: {
@@ -10,7 +12,7 @@ const messages = {
   }
 }
 
-export default class AsyncValidation extends React.Component {
+export default class FieldPropsAsyncRule extends React.Component {
   validateAsync = ({ value }) => {
     return new Promise((resolve, reject) => {
       setTimeout(resolve, 500);

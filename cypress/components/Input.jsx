@@ -1,5 +1,5 @@
 import React from 'react';
-import { createField } from '../../../lib';
+import { createField } from '@lib';
 import feather from 'feather-icons';
 
 const inputStyles = {

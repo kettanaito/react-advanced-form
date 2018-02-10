@@ -1,0 +1,4 @@
+/**
+ * Integration tests.
+ */
+require('./validation');
