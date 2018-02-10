@@ -74,16 +74,9 @@ npm run build
 This will build the production bundle of the library.
 
 ### Test
-Regardless of whether your changes are aimed to provide a new feature, fix an existing bug or improve the current architecture, you should always test them. Pull requests which do not pass the CI tests are not going to be merged, unless you resolve the failing tests.
+Providing unit or/and integration tests is a **must** regardless of whether your change was a bugfix, or a brand new feature.
 
-To test React Advanced Form run:
-```
-npm test
-```
-
-> **Note:** Beware that tests are executed against the *built* version of the library. Make sure to build the latter by `npm run build` for objective test results.
-
-You are responsible for writing the new tests to test your changes, if any. Please see existing tests to learn how those are written and organized.
+Please read more about [Testing](./TESTING.md) in the dedicated section. Thank you.
 
 ### Create a Pull request
 Create a new pull request featuring your changes in the RAF repository. Pass the code review and your changes will be ready for the next release.

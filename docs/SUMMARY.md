@@ -61,3 +61,4 @@
 ## Developers
 
 * [Contributing](./CONTRIBUTING.md)
+* [Testing](./TESTING.md)
