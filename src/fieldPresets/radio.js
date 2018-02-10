@@ -35,6 +35,8 @@ export default {
   },
   enforceProps: ({ props, contextProps }) => ({
     value: props.value,
-    checked: contextProps.get('controlled') ? props.checked : contextProps.get('checked')
+    checked: contextProps.get('controlled')
+      ? props.checked
+      : (props.value === contextProps.get('value'))
   })
 };
