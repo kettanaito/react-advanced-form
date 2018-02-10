@@ -13,7 +13,18 @@ const inputStyles = {
 class Input extends React.Component {
   render() {
     const { fieldProps, fieldState } = this.props;
-    const { valid, invalid, errors, validating, focused, disabled } = fieldState;
+    const {
+      valid,
+      invalid,
+      errors,
+      validating,
+      validatedSync,
+      validSync,
+      validatedAsync,
+      validAsync,
+      focused,
+      disabled
+    } = fieldState;
 
     const iconOptions = { width: 16, height: 16 };
 
@@ -37,6 +48,10 @@ class Input extends React.Component {
             className={ inputClassNames.join(' ') }
             style={{ ...inputStyles, borderColor }}
             data-errors={ errors && errors.join(' ') }
+            data-validated-sync={ validatedSync }
+            data-valid-sync={ validSync }
+            data-validated-async={ validatedAsync }
+            data-valid-async={ validAsync}
             autoComplete="off" />
 
           { (valid || invalid) && (

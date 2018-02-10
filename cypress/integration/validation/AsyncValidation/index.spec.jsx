@@ -22,8 +22,22 @@ describe('Asynchronous validation', function () {
       cy.get(fieldSelector)
         .focus()
         .blur()
+        .should('have.attr', 'data-validated-async', 'false')
+        .should('have.attr', 'data-valid-async', 'false')
         .should('not.have.class', 'valid')
         .should('have.class', 'invalid');
+    });
+
+    it('field with rejected sync rule does not call async rule', () => {
+      mount(<Scenario rule={/^\d+$/} />);
+
+      cy.get(fieldSelector)
+        .type('foo').should('have.value', 'foo')
+        .should('have.attr', 'data-validated-sync', 'true')
+        .should('have.attr', 'data-valid-sync', 'false')
+        .should('have.attr', 'data-validated-async', 'false')
+        .should('have.attr', 'data-valid-async', 'false')
+        .should('have.class', 'invalid')
     });
 
     it('field with expected value resolves', () => {
