@@ -29,7 +29,7 @@ export default async function validateAsync({ fieldProps, fields, form }) {
     fieldProps,
     fields,
     form
-  }));
+  }, form.context));
 
   /**
    * Pass the reference to the cancelable promise to the field record so it would be possible
