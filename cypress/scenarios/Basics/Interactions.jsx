@@ -20,7 +20,7 @@ export default class Interactions extends React.Component {
         </Select>
 
         <Textarea name="textareaOne" />
-        <Textarea name="textareaTwo" initialValue="Something" />
+        <Textarea name="textareaTwo" initialValue="something" />
       </Form>
     );
   }

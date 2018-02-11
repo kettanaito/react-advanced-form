@@ -5,23 +5,23 @@ import Scenario from '@scenarios/Basics/Interactions';
 import ScenarioControlled from '@scenarios/Basics/Interactions.controlled';
 
 describe('Interactions', function () {
-  beforeEach(() => {
-    mount(<Scenario getRef={ form => this.form = form } />);
-  });
-
   it('uncontrolled fields render with proper form state', () => {
+    mount(<Scenario getRef={ form => this.form = form } />);
+
     cy.get('#form').should(() => {
       const serialized = this.form.serialize();
       expect(serialized).to.deep.equal({
         inputTwo: 'foo',
         select: 'two',
         radio: 'potato',
-        textareaTwo: 'Something'
+        textareaTwo: 'something'
       });
     });
   });
 
   it('uncontrolled fields interactions change form state properly', () => {
+    mount(<Scenario getRef={ form => this.form = form } />);
+
     cy.get('[name="inputOne"]').type('first value');
     cy.get('[name="inputTwo"]').clear().type('second value')
     cy.get('#radio3').check();
@@ -42,6 +42,40 @@ describe('Interactions', function () {
   });
 
   it('controlled fields render with proper form state', () => {
-    mount(<ScenarioControlled />);
+    mount(<ScenarioControlled getRef={ form => this.form = form } />);
+
+    cy.get('#form').should(() => {
+      const serialized = this.form.serialize();
+      expect(serialized).to.deep.equal({
+        inputTwo: 'foo',
+        select: 'two',
+        radio: 'potato',
+        textareaTwo: 'something'
+      });
+    });
+  });
+
+  it('controlled fields interactions change form state properly', () => {
+    mount(<ScenarioControlled getRef={ form => this.form = form } />);
+
+    cy.get('[name="inputOne"]').type('first value').should('have.value', 'first value');
+    cy.get('[name="inputTwo"]').clear().type('second value').should('have.value', 'second value');
+    cy.get('#radio3').check().should('be.checked');
+    cy.get('[name="select"]').select('three');
+    cy.get('[name="textareaOne"]').clear().type('foo').should('have.value', 'foo');
+    cy.get('[name="textareaTwo"]').clear().type('another').should('have.value', 'another');
+    cy.then(() => {
+      const serialized = this.form.serialize();
+      console.log(serialized);
+
+      return expect(serialized).to.deep.equal({
+        inputOne: 'first value',
+        inputTwo: 'second value',
+        radio: 'cucumber',
+        select: 'three',
+        textareaOne: 'foo',
+        textareaTwo: 'another'
+      });
+    });
   });
 });
