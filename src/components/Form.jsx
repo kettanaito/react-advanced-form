@@ -5,6 +5,7 @@ import invariant from 'invariant';
 import { fromJS, Iterable, List, Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/scan';
+import 'rxjs/add/operator/bufferTime';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/observable/empty';
@@ -51,7 +52,6 @@ export default class Form extends React.Component {
 
   state = {
     fields: Map(),
-    dynamicFields: Map(),
     subscriptions: Map(),
     dirty: false
   }
@@ -69,12 +69,7 @@ export default class Form extends React.Component {
     fields: IterableInstance,
     eventEmitter: PropTypes.instanceOf(EventEmitter),
     subscriptions: IterableInstance,
-    // registerField: PropTypes.func.isRequired,
-    updateField: PropTypes.func.isRequired,
-    unregisterField: PropTypes.func.isRequired,
-    handleFieldFocus: PropTypes.func.isRequired,
-    handleFieldBlur: PropTypes.func.isRequired,
-    // handleFieldChange: PropTypes.func.isRequired
+    updateField: PropTypes.func.isRequired
   }
 
   getChildContext() {
@@ -82,12 +77,7 @@ export default class Form extends React.Component {
       fields: this.state.fields,
       eventEmitter: this.eventEmitter,
       subscriptions: this.state.subscriptions,
-      // registerField: this.registerField,
-      updateField: this.updateField,
-      unregisterField: this.unregisterField,
-      handleFieldFocus: this.handleFieldFocus,
-      handleFieldBlur: this.handleFieldBlur,
-      // handleFieldChange: this.handleFieldChange
+      updateField: this.updateField
     };
   }
 
@@ -106,29 +96,19 @@ export default class Form extends React.Component {
     const { messages } = this.props;
     this.messages = messages ? fromJS(messages) : this.context.messages;
 
-    /* Create a private event emitter */
+    /* Create a private event emitter to communicate between form and its fields */
     this.eventEmitter = new EventEmitter();
 
-    /**
-     * Field lifecycle observers.
-     */
-    const onRegisterField = Observable.fromEvent(this.eventEmitter, 'registerField')
-      .scan((acc, fieldProps) => acc.concat(fieldProps), [])
-      .debounceTime(500);
+    /* Field lifecycle observerables */
+    const { eventEmitter } = this;
 
-    onRegisterField.subscribe(props => props.forEach(this.registerField));
-
-    const onFieldChange = Observable.fromEvent(this.eventEmitter, 'fieldChange');
-    onFieldChange.subscribe(this.handleFieldChange);
-
-    const onFieldFocus = Observable.fromEvent(this.eventEmitter, 'fieldFocus');
-    onFieldFocus.subscribe(this.handleFieldFocus);
-
-    const onFieldBlur = Observable.fromEvent(this.eventEmitter, 'fieldBlur');
-    onFieldBlur.subscribe(this.handleFieldBlur);
-
-    const onUnregisterField = Observable.fromEvent(this.eventEmitter, 'unregisterField')
-    onUnregisterField.subscribe(this.unregisterField);
+    Observable.fromEvent(eventEmitter, 'fieldRegister')
+      .bufferTime(200)
+      .subscribe(pendingFields => pendingFields.forEach(this.registerField));
+    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange);
+    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus);
+    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur);
+    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField);
   }
 
   /**
@@ -197,12 +177,33 @@ export default class Form extends React.Component {
     const nextFields = fields.mergeIn([fieldPath], fieldProps);
 
     /**
+     * Add default props subscriptions to update the field's record upon the changes
+     * of props which affect the record.
+     */
+    const nativeSubscriptions = subscriptionUtils.addPropsListener({
+      fieldPath,
+      subscriber: fieldPath,
+      props: ['type', 'disabled'],
+      resolver: (observer) => {
+        observer.subscribe(({ type, disabled }) => {
+          console.warn('SOMETHING CHANGED!');
+
+          this.updateField({
+            fieldPath,
+            propsPatch: { type, disabled }
+          });
+        });
+      },
+      eventEmitter: this.eventEmitter
+    });
+
+    /**
      * RxProps subscriptions.
      * Update the current subscriptions map based on the newly registered field. In case the field has no
      * reactive props, the provided subscriptions map will be returned immediately.
      */
     const nextSubscriptions = subscriptionUtils.getSubscriptions({
-      subscriptions,
+      subscriptions: nativeSubscriptions,
       fieldProps,
       fields: nextFields,
       form: this,
@@ -217,6 +218,11 @@ export default class Form extends React.Component {
         });
 
         /* (???) Validate the field to reflect "required" changed on the fly? */
+        //
+        //
+        // EXPERIMENTAL
+        //
+        //
         this.validateField({
           fieldProps: nextFieldProps,
           forceProps: true,

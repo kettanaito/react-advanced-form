@@ -43,11 +43,12 @@ export default class Messages extends React.Component {
     });
 
   state = {
-    foo: true
+    foo: true,
+    type: 'text'
   }
 
   render() {
-    const { foo } = this.state;
+    const { foo, type } = this.state;
     return (
       <FormProvider rules={ providerRules } messages={ providerMessages }>
         <Form rules={ rules } messages={ messages }>
@@ -68,7 +69,10 @@ export default class Messages extends React.Component {
           <MyInput name="vu" /> */}
 
           { foo && (
-            <MyInput name="fieldOne" initialValue="foo" />
+            <MyInput
+              name="fieldOne"
+              type={ type }
+              initialValue="foo" />
           ) }
 
           <MyInput
@@ -77,11 +81,17 @@ export default class Messages extends React.Component {
               return fields.fieldOne && fields.fieldOne.subscribe('value', ({ value }) => !!value);
             } } />
 
-
           <button onClick={(event) => {
             event.preventDefault();
             this.setState(({ foo }) => ({ foo: !foo }));
-          }}>Toggle</button>
+          }}>Toggle render</button>
+
+          <button onClick={(event) => {
+            event.preventDefault();
+            this.setState(({ type }) => ({
+              type: (type === 'text') ? 'password' : 'text'
+            }))
+          }}>Toggle type</button>
 
         </Form>
       </FormProvider>
