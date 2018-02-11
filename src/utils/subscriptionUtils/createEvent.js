@@ -1,5 +1,5 @@
 /**
- * Returns a camelCase event name based on the provided set of strings.
+ * Returns a unified camelCase event name based on the provided set of strings.
  * @param {string[]} args
  * @return {string}
  */

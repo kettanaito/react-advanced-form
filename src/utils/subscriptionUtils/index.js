@@ -1,5 +1,5 @@
 export addPropsListener from './addPropsListener';
 export createEvent from './createEvent';
-export createSubscription from './createSubscription';
+export generateSubscribeFunction from './generateSubscribeFunction';
 export getSubscriptions from './getSubscriptions';
 export handlePropsChange from './handlePropsChange';

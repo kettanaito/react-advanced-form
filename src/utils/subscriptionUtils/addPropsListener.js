@@ -10,7 +10,7 @@ export default function addPropsListener({ fieldPath, subscriber, props, resolve
     const observer = Observable.fromEvent(eventEmitter, eventName);
 
     /**
-     * Wrap the instance of Observable in a handler function.
+     * Wrap the instance of Observable in a modifier function.
      * This way the behavior of observer can be modified per use case. For example, some events must be captured
      * in a debounced mode, some may require accumulation or buffering. Nothing should be enforced.
      */
