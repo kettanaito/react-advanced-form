@@ -4,6 +4,7 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { fieldUtils } from '../../../../src/utils';
+import { form } from '../../../common';
 
 describe('Name-specific validation', () => {
   const fields = Map({});
@@ -24,6 +25,7 @@ describe('Name-specific validation', () => {
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'letters'),
       fields,
+      form,
       formRules
     }).toJS();
 
@@ -34,13 +36,14 @@ describe('Name-specific validation', () => {
       {
         name: 'invalid',
         selector: 'name',
-        isCustom: false,
+        isCustom: false
       }
     ]);
 
     const resultTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', '123'),
       fields,
+      form,
       formRules
     }).toJS();
 
@@ -70,6 +73,7 @@ describe('Name-specific validation', () => {
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'foo'),
       fields,
+      form,
       formRules
     }).toJS();
 
@@ -94,6 +98,7 @@ describe('Name-specific validation', () => {
     const resultTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'Capital'),
       fields,
+      form,
       formRules
     }).toJS();
 
@@ -113,6 +118,7 @@ describe('Name-specific validation', () => {
     const resultThree = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'Capi5tal'),
       fields,
+      form,
       formRules
     }).toJS();
 

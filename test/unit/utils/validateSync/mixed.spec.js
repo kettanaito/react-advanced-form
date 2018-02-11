@@ -4,6 +4,7 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { fieldUtils } from '../../../../src/utils';
+import { form } from '../../../common';
 
 describe('Mixed validation', function () {
   const fields = Map({});
@@ -29,6 +30,7 @@ describe('Mixed validation', function () {
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'foo'),
       fields,
+      form,
       formRules
     }).toJS();
 
@@ -45,6 +47,7 @@ describe('Mixed validation', function () {
     const resulTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', '1234567890'),
       fields,
+      form,
       formRules
     }).toJS();
 
@@ -61,6 +64,7 @@ describe('Mixed validation', function () {
     const resultThree = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', '4'),
       fields,
+      form,
       formRules
     }).toJS();
 

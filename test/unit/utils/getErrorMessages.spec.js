@@ -2,6 +2,7 @@ import { fromJS, Map } from 'immutable';
 import { expect } from 'chai';
 import { AsyncValidationType, BothValidationType } from '../../../src/classes/ValidationType';
 import { fieldUtils } from '../../../src/utils';
+import { form } from '../../common';
 
 describe('getErrorMessages', function () {
   /**
@@ -61,14 +62,16 @@ describe('getErrorMessages', function () {
             errorCode
           }))),
       formRules: formRules.delete('name'),
-      fields
+      fields,
+      form
     });
 
     const resolvedMessages = fieldUtils.getErrorMessages({
       validationResult,
       fieldProps,
       messages: messages.setIn(['name', fieldProps.get('name'), 'async'], asyncMessage),
-      fields
+      fields,
+      form
     });
 
     expect(resolvedMessages).to.be.an.instanceof(Array).with.lengthOf(1);
@@ -84,14 +87,15 @@ describe('getErrorMessages', function () {
             valid: false
           }))),
       formRules: formRules.delete('name'),
-      fields
+      fields,
+      form
     });
 
     const resolvedMessages = fieldUtils.getErrorMessages({
       validationResult,
       fieldProps,
       messages,
-      fields
+      form
     });
 
     expect(resolvedMessages).to.be.an.instanceof(Array).with.lengthOf(1);
@@ -107,6 +111,7 @@ describe('getErrorMessages', function () {
         type: BothValidationType,
         fieldProps: fieldProps.set('value', 'foo'),
         fields,
+        form,
         formRules: formRules.setIn(['name', fieldProps.get('name'), 'secondRule'], function ({ value }) {
           return (value !== 'foo');
         })
@@ -130,6 +135,7 @@ describe('getErrorMessages', function () {
         type: BothValidationType,
         fieldProps: fieldProps.set('value', 'foo'),
         fields,
+        form,
         formRules: formRules.setIn(['name', fieldProps.get('name'), 'secondRule'], function ({ value }) {
           return (value !== 'foo');
         })
@@ -151,6 +157,7 @@ describe('getErrorMessages', function () {
         type: BothValidationType,
         fieldProps: fieldProps.set('value', 'foo'),
         fields,
+        form,
         formRules
       }),
       fieldProps,
@@ -171,11 +178,13 @@ describe('getErrorMessages', function () {
         type: BothValidationType,
         fieldProps: fieldProps.set('value', null),
         fields,
+        form,
         formRules
       }),
       fieldProps,
       messages,
-      fields
+      fields,
+      form
     });
 
     expect(resolvedMessages).to.be.an.instanceof(Array).with.lengthOf(1);
@@ -188,11 +197,13 @@ describe('getErrorMessages', function () {
         type: BothValidationType,
         fieldProps: fieldProps.set('value', 'foo'),
         fields,
+        form,
         formRules
       }),
       fieldProps,
       messages,
-      fields
+      fields,
+      form
     });
 
     expect(resolvedMessages).to.be.an.instanceOf(Array).with.lengthOf(1);
@@ -204,6 +215,7 @@ describe('getErrorMessages', function () {
       type: BothValidationType,
       fieldProps: fieldProps.set('value', null),
       fields,
+      form,
       formRules
     });
 
@@ -211,7 +223,8 @@ describe('getErrorMessages', function () {
       validationResult,
       fieldProps,
       messages: messages.deleteIn(['name', fieldProps.get('name'), 'missing']),
-      fields
+      fields,
+      form
     });
 
     expect(resolvedMessages).to.be.an.instanceOf(Array).with.lengthOf(1);
@@ -224,11 +237,13 @@ describe('getErrorMessages', function () {
         type: BothValidationType,
         fieldProps: fieldProps.set('value', 'foo'),
         fields,
+        form,
         formRules
       }),
       fieldProps,
       messages: messages.deleteIn(['name', fieldProps.get('name'), 'invalid']),
-      fields
+      fields,
+      form
     });
 
     expect(resolvedMessages).to.be.an.instanceOf(Array).with.lengthOf(1);
@@ -241,13 +256,15 @@ describe('getErrorMessages', function () {
         type: BothValidationType,
         fieldProps: fieldProps.set('value', null),
         fields,
+        form,
         formRules
       }),
       fieldProps,
       messages: messages
         .deleteIn(['name', fieldProps.get('name'), 'missing'])
         .deleteIn(['type', fieldProps.get('type'), 'missing']),
-      fields
+      fields,
+      form
     });
 
     expect(resolvedMessages).to.be.an.instanceOf(Array).with.lengthOf(1);
@@ -260,13 +277,15 @@ describe('getErrorMessages', function () {
         type: BothValidationType,
         fieldProps: fieldProps.set('value', 'foo'),
         fields,
+        form,
         formRules
       }),
       fieldProps,
       messages: messages
         .deleteIn(['name', fieldProps.get('name'), 'invalid'])
         .deleteIn(['type', fieldProps.get('type'), 'invalid']),
-      fields
+      fields,
+      form
     });
 
     expect(resolvedMessages).to.be.an.instanceOf(Array).with.lengthOf(1);

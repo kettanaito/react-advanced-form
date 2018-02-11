@@ -4,6 +4,7 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { fieldUtils } from '../../../../src/utils';
+import { form } from '../../../common';
 
 describe('Type-specific validation', () => {
   const fields = fromJS({
@@ -24,6 +25,7 @@ describe('Type-specific validation', () => {
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'letters'),
       fields,
+      form,
       formRules: fromJS({
         type: {
           text: ({ value }) => /^\d+$/.test(value)
@@ -46,6 +48,7 @@ describe('Type-specific validation', () => {
     const resultTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'example@domain.com'),
       fields,
+      form,
       formRules: fromJS({
         type: {
           email: ({ value }) => value.includes('@')
@@ -79,6 +82,7 @@ describe('Type-specific validation', () => {
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'foo'),
       fields,
+      form,
       formRules
     }).toJS();
 
@@ -103,6 +107,7 @@ describe('Type-specific validation', () => {
     const resultTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'Capital'),
       fields,
+      form,
       formRules
     }).toJS();
 
@@ -122,6 +127,7 @@ describe('Type-specific validation', () => {
     const resultThree = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'Capi5tal'),
       fields,
+      form,
       formRules
     }).toJS();
 

@@ -80,6 +80,7 @@ export default class ValidationExample extends Component {
     return (
       <FormProvider
         rules={ formRules }
+        withImmutable
         messages={ formMessages }>
         <Form
           ref={ form => this.form = form }
@@ -92,7 +93,8 @@ export default class ValidationExample extends Component {
             name="quantity"
             placeholder="Quantity"
             rule={({ value }) => (value !== 'foo')}
-            asyncRule={({ value }) => {
+            asyncRule={({ value, fieldProps }) => {
+              console.log(fieldProps);
               return new Promise((resolve) => {
                 setTimeout(resolve, 3000);
               }).then(() => ({
