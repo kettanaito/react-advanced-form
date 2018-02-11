@@ -8,12 +8,11 @@ import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/bufferTime';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/observable/empty';
 
 /* Internal modules */
 import { TValidationRules, TValidationMessages } from './FormProvider';
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
-import { isset, debounce, dispatch, getFormRules, fieldUtils, IterableInstance } from '../utils';
+import { isset, debounce, dispatch, getFormRules, fieldUtils, IterableInstance, rxUtils } from '../utils';
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
@@ -180,7 +179,7 @@ export default class Form extends React.Component {
      * Add default props subscriptions to update the field's record upon the changes
      * of props which affect the record.
      */
-    const nativeSubscriptions = subscriptionUtils.addPropsListener({
+    const nativeSubscriptions = rxUtils.addPropsListener({
       fieldPath,
       subscriber: fieldPath,
       props: ['type', 'disabled'],
@@ -190,19 +189,24 @@ export default class Form extends React.Component {
 
           this.updateField({
             fieldPath,
-            propsPatch: { type, disabled }
+            propsPatch: {
+              type,
+              disabled
+            }
           });
         });
       },
       eventEmitter: this.eventEmitter
     });
 
+    console.log({ subscriptions });
+
     /**
      * RxProps subscriptions.
      * Update the current subscriptions map based on the newly registered field. In case the field has no
      * reactive props, the provided subscriptions map will be returned immediately.
      */
-    const nextSubscriptions = subscriptionUtils.getSubscriptions({
+    const nextSubscriptions = rxUtils.getSubscriptions({
       subscriptions: nativeSubscriptions,
       fieldProps,
       fields: nextFields,
@@ -277,7 +281,7 @@ export default class Form extends React.Component {
       try {
         this.setState({ fields: nextFields }, () => resolve({
           nextFieldProps,
-          nextFields: nextFields
+          nextFields
         }));
       } catch (error) {
         return reject(error);
@@ -536,7 +540,7 @@ export default class Form extends React.Component {
       : fields.getIn([customFieldProps.get('fieldPath')]) || customFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
-    const shouldValidate = force ? force : type.shouldValidate({
+    const shouldValidate = force || type.shouldValidate({
       validationType: type,
       fieldProps,
       formRules

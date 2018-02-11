@@ -9,11 +9,10 @@ export withImmutable from './withImmutable';
 
 /* React utils */
 export getComponentName from './getComponentName';
-export getProperty from './getProperty';
 
 /* Form utils */
 export getFormRules from './getFormRules';
 
 /* Composite utils */
 export * as fieldUtils from './fieldUtils';
-export * as subscriptionUtils from './subscriptionUtils';
+export * as rxUtils from './rxUtils';

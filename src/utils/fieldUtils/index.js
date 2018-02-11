@@ -1,7 +1,5 @@
 /* Props management */
 export getFieldPath from './getFieldPath';
-export getFieldProps from './getFieldProps';
-export resolveProp from './resolveProp';
 export getRxProps from './getRxProps';
 export resetField from './resetField';
 
