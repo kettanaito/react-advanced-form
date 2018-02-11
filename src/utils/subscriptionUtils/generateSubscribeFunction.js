@@ -3,7 +3,7 @@
  * @param {string} fieldPath Path of the subscribed field.
  * @return {Function<Object>}
  */
-export default function createSubscription(fieldPath) {
+export default function generateSubscribeFunction(fieldPath) {
   return function (props, resolver) {
     return {
       props: Array.isArray(props) ? props : [props],

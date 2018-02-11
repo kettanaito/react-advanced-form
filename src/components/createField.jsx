@@ -90,7 +90,7 @@ export default function connectField(options) {
           /* Internals */
           ref: this,
           fieldPath,
-          subscribe: subscriptionUtils.createSubscription(fieldPath),
+          subscribe: subscriptionUtils.generateSubscribeFunction(fieldPath),
 
           /* General */
           name: this.props.name,
@@ -140,9 +140,7 @@ export default function connectField(options) {
           fieldRecord.fieldGroup = fieldGroup;
         }
 
-        /**
-         * Get the reactive props, if any.
-         */
+        /* Get the reactive props and store them in the field's record */
         const reactiveProps = fieldUtils.getRxProps(fieldRecord);
         if (reactiveProps.size > 0) {
           fieldRecord.reactiveProps = reactiveProps;
@@ -216,7 +214,7 @@ export default function connectField(options) {
           // fieldProps: fromJS(nextProps),
           // prevFieldProps: fromJS(this.props)
 
-          fieldProps: this.contextProps,
+          fieldProps: nextContextProps,
           prevFieldProps: prevContextProps
         });
       }

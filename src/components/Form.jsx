@@ -186,7 +186,7 @@ export default class Form extends React.Component {
       props: ['type', 'disabled'],
       resolver: (observer) => {
         observer.subscribe(({ type, disabled }) => {
-          console.warn('SOMETHING CHANGED!');
+          console.warn('Dependent prop(s) changed, updating field record...');
 
           this.updateField({
             fieldPath,
@@ -217,12 +217,12 @@ export default class Form extends React.Component {
           }
         });
 
-        /* (???) Validate the field to reflect "required" changed on the fly? */
         //
         //
         // EXPERIMENTAL
         //
         //
+        /* (???) Validate the field to reflect "required" changed on the fly? */
         this.validateField({
           fieldProps: nextFieldProps,
           forceProps: true,
@@ -264,41 +264,20 @@ export default class Form extends React.Component {
     /* Update the field's record in the state to produce the next fields */
     const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
 
-    //
-    //
-    // FIXME Update the fields with dynamic props
-    //
-    //
-    const nextResolvedFields = nextFields.map((fieldProps) => {
-      /* Bypass fields without dynamic props */
-      if (!fieldProps.has('dynamicProps')) return fieldProps;
-
-      const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
-        return dispatch(resolver, {
-          fieldProps: nextFieldProps,
-          fields: nextFields,
-          form: this
-        }, this.context);
-      });
-
-      return fieldProps.merge(resolvedProps);
-    });
-
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
     console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
     console.log('propsPatch:', propsPatch);
     console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
     console.log('next value:', nextFieldProps.get('value'));
     console.log('nextFields:', Object.assign({}, nextFields.toJS()));
-    console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
     console.groupEnd();
 
     /* Promisify the state update in order to "await" it */
     return new Promise((resolve, reject) => {
       try {
-        this.setState({ fields: nextResolvedFields }, () => resolve({
+        this.setState({ fields: nextFields }, () => resolve({
           nextFieldProps,
-          nextFields: nextResolvedFields
+          nextFields: nextFields
         }));
       } catch (error) {
         return reject(error);
