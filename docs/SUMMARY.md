@@ -19,7 +19,7 @@
 
 ## Components
 
-* [FormProvider](./components/FormProvider.md)
+* [FormProvider](./components/Provider.md)
 * [Form](./components/Form.md)
   * Props
     * [action](./components/Form/props/action.md)
