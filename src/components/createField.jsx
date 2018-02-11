@@ -3,7 +3,7 @@
  * Also suitable for third-party fields integration.
  */
 import { EventEmitter } from 'events';
-import { Map } from 'immutable';
+import { fromJS, Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
@@ -152,30 +152,11 @@ export default function connectField(options) {
         console.log('register with:', Object.assign({}, fieldRecord));
         console.groupEnd();
 
-        /**
-         * Create immutable field props from the mutable field record.
-         */
+        /* Create immutable field props from the mutable field record */
         const fieldProps = Map(fieldRecord);
 
-        /**
-         * Notify the parent Form that a new field attempts to register.
-         * Timeout makes this action async, hence each registration attempt may access
-         * the actual state of the form by the time the registration happens. Otherwise,
-         * registrations happen at approximately same time, resulting into fields being
-         * unaware of each other.
-         */
-
-        //
-        //
-        // EXPERIMENTAL
-        //
-        //
-        console.log('SHOULD REGISTER FIELD', fieldPath);
-        this.context.eventEmitter.emit('registerField', fieldProps);
-
-        //
-        //
-        // setTimeout(() => this.context.registerField(fieldProps), 0);
+        /* Notify the parent Form that a new field prompts to register */
+        this.context.eventEmitter.emit('fieldRegister', fieldProps);
 
         return fieldProps;
       }
@@ -231,16 +212,20 @@ export default function connectField(options) {
         subscriptionUtils.handlePropsChange({
           eventEmitter: this.context.eventEmitter,
           subscriptions: this.context.subscriptions,
+          fieldPath: this.fieldPath,
+          // fieldProps: fromJS(nextProps),
+          // prevFieldProps: fromJS(this.props)
+
           fieldProps: this.contextProps,
           prevFieldProps: prevContextProps
         });
       }
 
       /**
-       * Deletes the field's bindings from the Form on unmounting.
+       * Deletes the field's record upon unmounting.
        */
       componentWillUnmount() {
-        this.context.eventEmitter.emit('unregisterField', this.contextProps);
+        this.context.eventEmitter.emit('fieldUnregister', this.contextProps);
       }
 
       /**
