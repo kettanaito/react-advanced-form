@@ -1,15 +1,22 @@
 /**
- * A high-order component to create custom instances of form elements based on the generic Field class.
- * Also suitable for third-party fields integration.
+ * A high-order component which provides the reference of the field's record to the wrapped custom
+ * component. May be used for custom field styling, implementing fields with custom logic or
+ * third-party field components integration.
  */
 import { EventEmitter } from 'events';
-import { fromJS, Map } from 'immutable';
+import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import { isset, IterableInstance, getComponentName, fieldUtils } from '../utils';
+import {
+  isset,
+  IterableInstance,
+  getComponentName,
+  fieldUtils,
+  rxUtils
+} from '../utils';
 
-/** Default options of "connectField()" HOC. */
+/* Default options for `connectField()` HOC */
 const defaultOptions = {
   valuePropName: 'value',
   mapPropsToField: ({ fieldRecord }) => fieldRecord,
@@ -25,7 +32,6 @@ const defaultOptions = {
 const inheritedProps = ['rule', 'asyncRule', 'onFocus', 'onChange', 'onBlur'];
 
 export default function connectField(options) {
-  /* Merge default and custom options. */
   const hocOptions = { ...defaultOptions, ...options };
   const { valuePropName } = hocOptions;
 
@@ -49,7 +55,7 @@ export default function connectField(options) {
         fieldGroup: PropTypes.string,
         eventEmitter: PropTypes.instanceOf(EventEmitter),
         subscriptions: IterableInstance,
-        updateField: PropTypes.func.isRequired,
+        updateField: PropTypes.func.isRequired
       }
 
       constructor(props, context) {
@@ -90,7 +96,7 @@ export default function connectField(options) {
           /* Internals */
           ref: this,
           fieldPath,
-          subscribe: subscriptionUtils.generateSubscribeFunction(fieldPath),
+          subscribe: rxUtils.generateSubscribeFunction(fieldPath),
 
           /* General */
           name: this.props.name,
@@ -207,7 +213,7 @@ export default function connectField(options) {
         const { contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
-        subscriptionUtils.handlePropsChange({
+        rxUtils.handlePropsChange({
           eventEmitter: this.context.eventEmitter,
           subscriptions: this.context.subscriptions,
           fieldPath: this.fieldPath,

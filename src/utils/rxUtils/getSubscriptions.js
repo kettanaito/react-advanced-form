@@ -1,8 +1,4 @@
 import { Map, List } from 'immutable';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/observable/fromEvent';
-// import createEvent from './createEvent';
 import addPropsListener from './addPropsListener';
 
 export default function getSubscriptions({ subscriptions, subscribe, fieldProps, fields, form }) {
@@ -28,9 +24,6 @@ export default function getSubscriptions({ subscriptions, subscribe, fieldProps,
     const { props: subscribedProps, fieldPath: subscribedFieldPath, resolver } = originPayload;
 
     // const subscribedFieldProps = fields.getIn([subscribedFieldPath]);
-
-    console.log('should add props listener');
-    console.log({ subscribedProps })
 
     addPropsListener({
       fieldPath: subscribedFieldPath,

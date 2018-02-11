@@ -1,6 +1,7 @@
 import createEvent from './createEvent';
 
-export default function handlePropsChange({ eventEmitter, subscriptions, fieldPath, fieldProps, prevFieldProps = null }) {
+export default function handlePropsChange(args) {
+  const { eventEmitter, subscriptions, fieldPath, fieldProps, prevFieldProps = null } = args;
   if (!subscriptions) return;
 
   const relevantSubscription = subscriptions.getIn([fieldPath]);
@@ -12,7 +13,7 @@ export default function handlePropsChange({ eventEmitter, subscriptions, fieldPa
   if (!relevantSubscription) return;
 
   const subscribedProps = relevantSubscription.get('props');
-  const subscribers = relevantSubscription.get('subscribers');
+  // const subscribers = relevantSubscription.get('subscribers');
 
   // console.log({ subscribedProps: subscribedProps && subscribedProps.toJS() });
 
