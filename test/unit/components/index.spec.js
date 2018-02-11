@@ -4,6 +4,9 @@ describe('Components', () => {
   /* createField */
   require('./createField.spec');
 
+  /* FormProvider */
+  require('./FormProvider.spec');
+
   /* Form */
   require('./Form.spec');
 

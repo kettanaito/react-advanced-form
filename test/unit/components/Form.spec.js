@@ -2,7 +2,7 @@ import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
 import { Input, Select, Checkbox, Radio, Textarea } from '../../components';
-import { FormProvider, Form, Field } from '../../../lib';
+import { Form, Field } from '../../../lib';
 import { defer, validationRules, validationMessages } from '../../common';
 
 describe('Form', () => {
@@ -30,44 +30,10 @@ describe('Form', () => {
 
   it('Uses default "action" prop when none provided', () => {
     const wrapper = mount(
-      <FormProvider rules={ validationRules } messages={ validationMessages }>
-        <Form />
-      </FormProvider>
+      <Form />
     );
 
     expect(wrapper.find(Form).props().action).to.not.be.undefined;
-  });
-
-  it('Inherits "rules" and "messages" from FormProvider', () => {
-    const wrapper = mount(
-      <FormProvider rules={ validationRules } messages={ validationMessages }>
-        <Form />
-      </FormProvider>
-    );
-
-    const { context: { rules, messages } } = wrapper.find(Form).instance();
-
-    expect(rules.toJS()).to.deep.equal(validationRules);
-    expect(messages.toJS()).to.deep.equal(validationMessages);
-  });
-
-  it('Return Immutable props when specified in FormProvider', () => {
-    const handleOnChange = ({ fieldProps }) => {
-      expect(fieldProps.to.be.instanceOf(Map));
-    };
-
-    const wrapper = mount(
-      <FormProvider withImmutable={ true } >
-        <Form>
-          <Input name="foo" onChange={ handleOnChange }/>
-        </Form>
-      </FormProvider>
-    );
-
-    return defer(async () => {
-      const input = wrapper.find(Input);
-      input.simulate('change', { currentTarget: { value: 'foo' } });
-    });
   });
 
   it('Mark form as dirty properly', () => {
