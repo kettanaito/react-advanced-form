@@ -1,15 +1,13 @@
+import { EventEmitter } from 'events';
 import React from 'react';
 import PropTypes from 'prop-types';
 import invariant from 'invariant';
 import { fromJS, Iterable, List, Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
-// import 'rxjs/add/operator/mapTo';
-// import 'rxjs/add/operator/reduce';
-// import 'rxjs/add/operator/takeUntil';
-// import 'rxjs/add/operator/throttle';
-// import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/observable/fromEvent';
+import 'rxjs/add/observable/empty';
 
 /* Internal modules */
 import { TValidationRules, TValidationMessages } from './FormProvider';
@@ -69,25 +67,27 @@ export default class Form extends React.Component {
   /* Context which Form passes to Fields */
   static childContextTypes = {
     fields: IterableInstance,
+    eventEmitter: PropTypes.instanceOf(EventEmitter),
     subscriptions: IterableInstance,
-    registerField: PropTypes.func.isRequired,
+    // registerField: PropTypes.func.isRequired,
     updateField: PropTypes.func.isRequired,
     unregisterField: PropTypes.func.isRequired,
     handleFieldFocus: PropTypes.func.isRequired,
     handleFieldBlur: PropTypes.func.isRequired,
-    handleFieldChange: PropTypes.func.isRequired
+    // handleFieldChange: PropTypes.func.isRequired
   }
 
   getChildContext() {
     return {
       fields: this.state.fields,
+      eventEmitter: this.eventEmitter,
       subscriptions: this.state.subscriptions,
-      registerField: this.registerField,
+      // registerField: this.registerField,
       updateField: this.updateField,
       unregisterField: this.unregisterField,
       handleFieldFocus: this.handleFieldFocus,
       handleFieldBlur: this.handleFieldBlur,
-      handleFieldChange: this.handleFieldChange
+      // handleFieldChange: this.handleFieldChange
     };
   }
 
@@ -105,6 +105,30 @@ export default class Form extends React.Component {
      */
     const { messages } = this.props;
     this.messages = messages ? fromJS(messages) : this.context.messages;
+
+    /* Create a private event emitter */
+    this.eventEmitter = new EventEmitter();
+
+    /**
+     * Field lifecycle observers.
+     */
+    const onRegisterField = Observable.fromEvent(this.eventEmitter, 'registerField')
+      .scan((acc, fieldProps) => acc.concat(fieldProps), [])
+      .debounceTime(500);
+
+    onRegisterField.subscribe(props => props.forEach(this.registerField));
+
+    const onFieldChange = Observable.fromEvent(this.eventEmitter, 'fieldChange');
+    onFieldChange.subscribe(this.handleFieldChange);
+
+    const onFieldFocus = Observable.fromEvent(this.eventEmitter, 'fieldFocus');
+    onFieldFocus.subscribe(this.handleFieldFocus);
+
+    const onFieldBlur = Observable.fromEvent(this.eventEmitter, 'fieldBlur');
+    onFieldBlur.subscribe(this.handleFieldBlur);
+
+    const onUnregisterField = Observable.fromEvent(this.eventEmitter, 'unregisterField')
+    onUnregisterField.subscribe(this.unregisterField);
   }
 
   /**
@@ -173,66 +197,33 @@ export default class Form extends React.Component {
     const nextFields = fields.mergeIn([fieldPath], fieldProps);
 
     /**
-     * Reactive props.
-     * Should update the subscriptions map in case the newly registered field is subscribed to any props.
+     * RxProps subscriptions.
+     * Update the current subscriptions map based on the newly registered field. In case the field has no
+     * reactive props, the provided subscriptions map will be returned immediately.
      */
-    let nextSubscriptions = subscriptions;
+    const nextSubscriptions = subscriptionUtils.getSubscriptions({
+      subscriptions,
+      fieldProps,
+      fields: nextFields,
+      form: this,
+      subscribe: async ({ rxPropName, resolvedPropValue }) => {
+        console.warn(`next value of "${rxPropName}":`, resolvedPropValue);
 
-    if (fieldProps.has('reactiveProps')) {
-      nextSubscriptions = fieldProps.get('reactiveProps').reduce((subscriptions, rxPropValue, rxPropName) => {
-        /**
-         * Execute the reactive prop value.
-         * The resolver function must return an interface of `field.subscribe()` method. This way the target field
-         * becomes exposed to the context of current iteration, as well as the subscribed props and the actual value
-         * resolver, which is defined inside `field.subscribe(props: string[], resolver: Function)`.
-         */
-        const { props: subscribedProps, fieldPath: subscribedFieldPath, resolver } = rxPropValue({
-          fieldProps,
-          fields: nextFields.toJS(),
-          form: this
+        const { nextFieldProps } = await this.updateField({
+          fieldPath,
+          propsPatch: {
+            [rxPropName]: resolvedPropValue
+          }
         });
 
-        const subscribedFieldProps = nextFields.getIn([subscribedFieldPath]);
-
-        subscribedProps.forEach((subscribedPropName) => {
-          console.log('subscribed to:', subscribedFieldProps && subscribedFieldProps.toJS());
-          console.log('should subscribe to', subscribedPropName, 'of the field:', subscribedFieldPath);
-
-          const eventEmitter = subscribedFieldProps.get('eventEmitter');
-          const propChangeEvent = subscriptionUtils.composeEventName({
-            fieldProps: subscribedFieldProps,
-            propName: subscribedPropName
-          });
-
-          /**
-           * Create an observer which would liten to the dispatched prop change events, debounce them
-           * and update the subscribed field upon prop change.
-           */
-          const eventObserver = Observable.fromEvent(eventEmitter, propChangeEvent).debounceTime(250);
-
-          /**
-           * Subscribe to the props change event.
-           * Listen to the change event emitted upon the change of the subscribed props and update the
-           * subscribed field based on the next values of those props.
-           */
-          eventObserver.subscribe((subscribedProps) => {
-            const nextPropValue = resolver(subscribedProps);
-            console.warn(`next value of "${rxPropName}":`, nextPropValue);
-
-            this.updateField({
-              fieldPath,
-              propsPatch: {
-                [rxPropName]: nextPropValue
-              }
-            });
-          });
+        /* (???) Validate the field to reflect "required" changed on the fly? */
+        this.validateField({
+          fieldProps: nextFieldProps,
+          forceProps: true,
+          force: true
         });
-
-        const prevSubscribedProps = subscriptions.getIn([subscribedFieldPath]) || List();
-        const nextSubscribedProps = prevSubscribedProps.push(subscribedProps);
-        return subscriptions.set(subscribedFieldPath, nextSubscribedProps);
-      }, Map());
-    }
+      }
+    });
 
     return this.setState({
       fields: nextFields,
@@ -314,6 +305,10 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   unregisterField = (fieldProps) => {
+    console.groupCollapsed(`${fieldProps.get('fieldPath')} @ unregisterField`);
+    console.log({ fieldProps });
+    console.groupEnd();
+
     return this.setState(prevState => ({
       fields: prevState.fields.deleteIn([fieldProps.get('fieldPath')])
     }));
@@ -546,8 +541,9 @@ export default class Form extends React.Component {
    * @param {ValidationType} type
    * @param {boolean} forceProps Use direct props explicitly, without trying to grab field record
    * from the state.
+   * @param {boolean} force Force validation. Bypass "shouldValidate" logic.
    */
-  validateField = async ({ type = BothValidationType, fieldProps: customFieldProps, forceProps = false }) => {
+  validateField = async ({ type = BothValidationType, fieldProps: customFieldProps, forceProps = false, force = false }) => {
     const { formRules } = this;
     const { fields } = this.state;
     const fieldProps = forceProps
@@ -555,7 +551,7 @@ export default class Form extends React.Component {
       : fields.getIn([customFieldProps.get('fieldPath')]) || customFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
-    const shouldValidate = type.shouldValidate({
+    const shouldValidate = force ? force : type.shouldValidate({
       validationType: type,
       fieldProps,
       formRules

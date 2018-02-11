@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, FormProvider } from '../src';
+import { Form, FormProvider, Field } from '../src';
 import { MyInput } from './custom-fields';
 
 const providerRules = {
@@ -21,6 +21,9 @@ const rules = {
 };
 
 const messages = {
+  general: {
+    missing: 'Please provide the required field'
+  },
   name: {
     foo: {
       invalid: 'Foo!'
@@ -38,9 +41,13 @@ export default class Messages extends React.Component {
         });
       }, 1000);
     });
+
+  state = {
+    foo: true
   }
 
   render() {
+    const { foo } = this.state;
     return (
       <FormProvider rules={ providerRules } messages={ providerMessages }>
         <Form rules={ rules } messages={ messages }>
@@ -52,13 +59,30 @@ export default class Messages extends React.Component {
 
           <MyInput name="fieldOne" initialValue="foo" />
 
+          {/* <MyInput name="abc" />
+          <MyInput name="def" />
+          <MyInput name="ghi" />
+          <MyInput name="klm" />
+          <MyInput name="opq" />
+          <MyInput name="rst" />
+          <MyInput name="vu" /> */}
+
+          { foo && (
+            <MyInput name="fieldOne" initialValue="foo" />
+          ) }
+
           <MyInput
             name="fieldTwo"
             required={({ fields }) => {
-              return fields.fieldOne.subscribe('value', ({ value }) => {
-                return (value === 'foo');
-              });
-            }} />
+              return fields.fieldOne && fields.fieldOne.subscribe('value', ({ value }) => !!value);
+            } } />
+
+
+          <button onClick={(event) => {
+            event.preventDefault();
+            this.setState(({ foo }) => ({ foo: !foo }));
+          }}>Toggle</button>
+
         </Form>
       </FormProvider>
     );
