@@ -10,4 +10,5 @@ export getProperty from './getProperty';
 export getPropsPatch from './getPropsPatch';
 
 /* Field utils */
+export withImmutable from './withImmutable';
 export * as fieldUtils from './fieldUtils';

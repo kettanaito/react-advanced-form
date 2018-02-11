@@ -2,9 +2,11 @@
  * Synchronous validation of the provided field.
  */
 import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
+import withImmutable from '../withImmutable';
 
 function applyRule({ rule, name = 'invalid', selector, resolverArgs }) {
-  const isExpected = rule(resolverArgs);
+  const { form } = resolverArgs;
+  const isExpected = withImmutable(rule, resolverArgs, form.context);
   if (isExpected) return;
 
   return createRejectedRule({
@@ -29,8 +31,8 @@ function applyRules({ selector, rules, resolverArgs }) {
 function applyRulesSchema(rules, resolverArgs) {
   const { fieldProps } = resolverArgs;
 
-  const nameRules = rules.getIn(['name', fieldProps.name]);
-  const typeRules = rules.getIn(['type', fieldProps.type]);
+  const nameRules = rules.getIn(['name', fieldProps.get('name')]);
+  const typeRules = rules.getIn(['type', fieldProps.get('type')]);
 
   if (!nameRules && !typeRules) return [];
 
@@ -93,17 +95,14 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
     return composeResult(true);
   }
 
-  /* Format validation */
-  const mutableFieldProps = fieldProps.toJS();
-
   if (rule) {
     const isExpected = (typeof rule === 'function')
-      ? rule({
+      ? withImmutable(rule, {
         value,
-        fieldProps: mutableFieldProps,
-        fields: fields.toJS(),
+        fieldProps,
+        fields,
         form
-      })
+      }, form.context)
       : rule.test(value);
 
     if (!isExpected) {
@@ -120,8 +119,8 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
    */
   const rejectedRules = applyRulesSchema(formRules, {
     value,
-    fieldProps: mutableFieldProps,
-    fields: fields.toJS(),
+    fieldProps,
+    fields,
     form
   });
 

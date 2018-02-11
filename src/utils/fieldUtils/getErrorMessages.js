@@ -1,5 +1,6 @@
 import invariant from 'invariant';
 import { customRulesKey } from './validate';
+import withImmutable from '../withImmutable';
 
 function resolveMessage({ messages, rejectedRule, resolverArgs }) {
   const { fieldProps } = resolverArgs;
@@ -9,16 +10,16 @@ function resolveMessage({ messages, rejectedRule, resolverArgs }) {
   const path = isCustom ? [customRulesKey, name] : [name];
 
   const messagePaths = [
-    ['name', fieldProps.name, primitiveErrorType],
-    ['type', fieldProps.type, primitiveErrorType],
+    ['name', fieldProps.get('name'), primitiveErrorType],
+    ['type', fieldProps.get('type'), primitiveErrorType],
     ['general', primitiveErrorType]
   ];
 
   if (selector) {
-    messagePaths.unshift([selector, fieldProps[selector], ...path]);
+    messagePaths.unshift([selector, fieldProps.get(selector), ...path]);
   } else if (name === 'async') {
     /* In case of async rejected rule, prepend the name-specific "async" message key */
-    messagePaths.unshift(['name', fieldProps.name, name]);
+    messagePaths.unshift(['name', fieldProps.get('name'), name]);
   }
 
   /* Iterate through each message path and return at the first match */
@@ -55,8 +56,8 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
   const resolverArgs = {
     ...extra,
     value: fieldProps.get('value'),
-    fieldProps: fieldProps.toJS(),
-    fields: fields.toJS(),
+    fieldProps,
+    fields,
     form
   };
 
@@ -73,7 +74,7 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
     }
 
     const isFunctionalMessage = (typeof message === 'function');
-    const resolvedMessage = isFunctionalMessage ? message(resolverArgs) : message;
+    const resolvedMessage = isFunctionalMessage ? withImmutable(message, resolverArgs, form.context) : message;
 
     const isMessageValid = isFunctionalMessage ? !!resolvedMessage : true;
 

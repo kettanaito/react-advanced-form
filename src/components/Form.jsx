@@ -6,7 +6,7 @@ import { fromJS, Map, Iterable } from 'immutable';
 /* Internal modules */
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
 import { TValidationRules, TValidationMessages } from './FormProvider';
-import { isset, debounce, fieldUtils, IterableInstance } from '../utils';
+import { isset, debounce, fieldUtils, IterableInstance, withImmutable } from '../utils';
 
 export default class Form extends React.Component {
   static propTypes = {
@@ -197,11 +197,11 @@ export default class Form extends React.Component {
       if (!fieldProps.has('dynamicProps')) return fieldProps;
 
       const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
-        return this.handleCallback(resolver, {
+        return withImmutable(resolver, {
           fieldProps: nextFieldProps,
           fields: nextFields,
           form: this
-        });
+        }, this.context);
       });
 
       return fieldProps.merge(resolvedProps);
@@ -239,23 +239,6 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Handles callback. Conditionaly return props with Immutable
-   */
-  handleCallback = (callback, props) => {
-    const { withImmutable } = this.context;
-
-    const immutableProps = Object.keys(props)
-      .reduce((nextProps, propName) => {
-        const prop = props[propName];
-        return {
-          ...nextProps,
-          [propName]: (prop instanceof Map && !withImmutable) ? prop.toJS() : prop
-        };
-      }, {});
-    callback({ ...immutableProps });
-  }
-
-  /**
    * Handles the change which marks form as dirty.
    */
   handleFirstChange = ({ event, nextValue, prevValue, fieldProps }) => {
@@ -287,12 +270,12 @@ export default class Form extends React.Component {
     /* Call custom onFocus handler */
     const onFocusHandler = fieldProps.get('onFocus');
     if (onFocusHandler) {
-      this.handleCallback(onFocusHandler, {
+      withImmutable(onFocusHandler, {
         event,
         fieldProps: nextFieldProps,
         fields: nextFields,
         form: this
-      });
+      }, this.context);
     }
   }
 
@@ -328,14 +311,14 @@ export default class Form extends React.Component {
       invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
       'but received: %s.', fieldProps.get('name'), onChangeHandler);
 
-      return this.handleCallback(onChangeHandler, {
+      return withImmutable(onChangeHandler, {
         event,
         nextValue,
         prevValue,
         fieldProps,
         fields: this.state.fields,
         form: this
-      });
+      }, this.context);
     }
 
     const valuePropName = fieldProps.get('valuePropName');
@@ -390,14 +373,14 @@ export default class Form extends React.Component {
      * There is no need to dispatch the handler method once more.
      */
     if (!isControlled && onChangeHandler) {
-      this.handleCallback(onChangeHandler, {
+      withImmutable(onChangeHandler, {
         event,
         nextValue,
         prevValue,
         fieldProps: validatedFieldProps,
         fields: nextFields,
         form: this
-      });
+      }, this.context);
     }
 
     /* Mark form as dirty if it's not already */
@@ -470,12 +453,12 @@ export default class Form extends React.Component {
     /* Call custom onBlur handler */
     const onBlur = nextFieldProps.get('onBlur');
     if (onBlur) {
-      this.handleCallback(onBlur, {
+      withImmutable(onBlur, {
         event,
         fieldProps: nextFieldProps,
         fields: nextFields,
         form: this
-      });
+      }, this.context);
     }
 
     //
@@ -607,25 +590,19 @@ export default class Form extends React.Component {
 
     if (!isFormValid && onInvalid) {
       const { fields: nextFields } = this.state;
-      const nextMutableFields = nextFields.toJS();
 
-      //
-      //
-      // TODO This can be done using immutable instance as well, no need for conversion here
-      //
-      //
       /* Reduce the invalid fields to the ordered Array */
-      const invalidFields = Object.keys(nextMutableFields).reduce((invalidFields, fieldName) => {
-        const fieldProps = nextMutableFields[fieldName];
+      const invalidFields = nextFields.keys().reduce((invalidFields, fieldName) => {
+        const fieldProps = nextFields.get(fieldName);
         return fieldProps.expected ? invalidFields : invalidFields.concat(fieldProps);
       }, []);
 
       /* Call custom callback */
-      onInvalid({
-        fields: nextMutableFields,
+      withImmutable(onInvalid, {
+        fields: nextFields,
         invalidFields,
         form: this
-      });
+      }, this.context);
     }
 
     return isFormValid;
@@ -698,7 +675,7 @@ export default class Form extends React.Component {
      * The submit is consideres started immediately when the submit button is pressed.
      * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
-    if (onSubmitStart) this.handleCallback(onSubmitStart, callbackArgs);
+    if (onSubmitStart) withImmutable(onSubmitStart, callbackArgs, this.context);
 
     /**
      * Perform the action.
@@ -713,15 +690,15 @@ export default class Form extends React.Component {
       dispatchedAction);
 
     return dispatchedAction.then((res) => {
-      if (onSubmitted) onSubmitted({ ...callbackArgs, res });
+      if (onSubmitted) withImmutable(onSubmitted, { ...callbackArgs, res }, this.context);
 
       return res;
     }).catch((res) => {
-      if (onSubmitFailed) onSubmitFailed({ ...callbackArgs, res });
+      if (onSubmitFailed) withImmutable(onSubmitFailed, { ...callbackArgs, res }, this.context);
 
       return res;
     }).then((res) => {
-      if (onSubmitEnd) onSubmitEnd({ ...callbackArgs, res });
+      if (onSubmitEnd) withImmutable(onSubmitEnd, { ...callbackArgs, res }, this.context);
     });
   }
 
