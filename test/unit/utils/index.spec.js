@@ -5,15 +5,15 @@ import { fieldUtils } from '../../../src/utils';
 describe('utils', () => {
   describe('fieldUtils', () => {
     /**
-     * getDynamicProps
+     * getRxProps
      */
-    it('getDynamicProps', () => {
+    it('getRxProps', () => {
       const fieldProps = {
         disabled: false,
         required: () => true
       };
 
-      expect(fieldUtils.getDynamicProps(fieldProps).toJS()).to.have.all.keys(['required']);
+      expect(fieldUtils.getRxProps(fieldProps).toJS()).to.have.all.keys(['required']);
     });
 
     /**

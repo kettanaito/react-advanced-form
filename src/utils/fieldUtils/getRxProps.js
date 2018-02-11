@@ -7,15 +7,15 @@ import { Map } from 'immutable';
 // resolver interface.
 //
 //
-export const dynamicProps = ['required', 'disabled'];
+export const supportedReactiveProps = ['required', 'disabled'];
 
 /**
  * Returns the collection of the dynamic props present on the provided field.
  * @param {object} fieldProps
  * @return {Map}
  */
-export default function getDynamicProps(fieldProps) {
-  return dynamicProps.reduce((props, dynamicProp) => {
+export default function getReactiveProps(fieldProps) {
+  return supportedReactiveProps.reduce((props, dynamicProp) => {
     const propValue = fieldProps[dynamicProp];
 
     if (typeof propValue === 'function') {

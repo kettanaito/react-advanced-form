@@ -12,7 +12,8 @@ module.exports = {
   entry: path.resolve(__dirname, packageJson.module),
   externals: {
     react: 'umd react',
-    immutable: 'umd immutable'
+    immutable: 'umd immutable',
+    events: 'umd events' // TODO Will this result into a properly working library?
   },
   output: {
     path: __dirname,
