@@ -55,8 +55,6 @@ This layout will result into the following `serialized` Object upon submit:
 
 One of the benefits of `Field.Group` is an ability to have multiple groups with the same name, which will group the elements under one property upon the serialization. This is particularly useful when UI was not, or cannot be designed according to the data structure expected by the remote end-point.
 
-Consider this:
-
 ```jsx
 import React from 'react';
 import { Form, Field } from 'react-advanced-form';

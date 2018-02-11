@@ -42,9 +42,9 @@ const App = ({ children }) => (
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-`FormProvider` serves as a HOC to ensure all the `Form` components in your application abide by the provided `validationRules` and corresponding `validationMessages`.
+[`FormProvider`](../components/FormProvider.md) serves as a HOC to ensure all the `Form` components in your application abide by the provided `validationRules` and corresponding `validationMessages`.
 
-> **Note: **Although `FormProvider` is not mandatory for the forms to work, it is highly recommended to handle application-wide validation this way. The latter ensures a consistent user and developer experience.
+> **Note: **`FormProvider` is not mandatory for the forms to work, but it is highly recommended to handle application-wide form settings in this way. The latter ensures a consistent user and developer experience.
 
 ### Create a custom form
 We are going to use a [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) package designed as a fast prototyping tool for React Advanced Form. You can, and most likely will, use your own custom fields which suit your project's visual needs.

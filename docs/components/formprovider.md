@@ -2,16 +2,16 @@
 
 ## Specification
 
-A provider component which provides the application-wide form settings to all children forms.
+A provider component which propagates the application-wide form settings to all nested children forms.
 
-You may think of it as a `<Provider>` from Redux, only for the forms. This way the forms in the application, regardless of the depth they are rendered in, follow the options passed to the `<FormProvider>` component.
+Imagine it as a `Provider` from Redux, only for the forms. This way the forms in your application, regardless of the depth they are rendered in, inherit the options passed to the `<FormProvider>` component.
 
 ## Props
 
 | Prop name | Type | Description |
 | --------- | ---- | ----------- |
-| `rule` | [`ValidationRules`](../validation/rules.md) | Validation rules declaration. |
-| `messages` | [`ValidationMessages`](../validation/messages.md) | Validation messages declaration. |
+| `rules` | [`[ValidationRules: Object]`](../validation/rules.md) | Validation rules declaration. |
+| `messages` | [`[ValidationMessages: Object]`](../validation/messages.md) | Validation messages declaration. |
 
 ## Example
 
