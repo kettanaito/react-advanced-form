@@ -25,7 +25,7 @@ const defaultOptions = {
 const inheritedProps = ['rule', 'asyncRule', 'onFocus', 'onChange', 'onBlur'];
 
 export default function connectField(options) {
-  /** Merge default and custom options. */
+  /* Merge default and custom options. */
   const hocOptions = { ...defaultOptions, ...options };
   const { valuePropName } = hocOptions;
 
@@ -45,15 +45,11 @@ export default function connectField(options) {
       }
 
       static contextTypes = {
-        fieldGroup: PropTypes.string,
         fields: IterableInstance,
+        fieldGroup: PropTypes.string,
+        eventEmitter: PropTypes.instanceOf(EventEmitter),
         subscriptions: IterableInstance,
-        registerField: PropTypes.func.isRequired,
         updateField: PropTypes.func.isRequired,
-        unregisterField: PropTypes.func.isRequired,
-        handleFieldFocus: PropTypes.func.isRequired,
-        handleFieldBlur: PropTypes.func.isRequired,
-        handleFieldChange: PropTypes.func.isRequired
       }
 
       constructor(props, context) {
@@ -61,7 +57,7 @@ export default function connectField(options) {
 
         /* Compose proper field path */
         this.fieldPath = fieldUtils.getFieldPath({
-          ...props,
+          name: props.name,
           fieldGroup: context.fieldGroup
         });
 
@@ -94,7 +90,7 @@ export default function connectField(options) {
           /* Internals */
           ref: this,
           fieldPath,
-          eventEmitter: new EventEmitter(),
+          subscribe: subscriptionUtils.createSubscription(fieldPath),
 
           /* General */
           name: this.props.name,
@@ -140,21 +136,25 @@ export default function connectField(options) {
         console.log('fieldRecord:', fieldRecord);
 
         /* Prevent { fieldGroup: undefined } for fields without a group */
-        if (fieldGroup) fieldRecord.fieldGroup = fieldGroup;
+        if (fieldGroup) {
+          fieldRecord.fieldGroup = fieldGroup;
+        }
 
-        /* Store reactive props if present */
+        /**
+         * Get the reactive props, if any.
+         */
         const reactiveProps = fieldUtils.getRxProps(fieldRecord);
-        if (reactiveProps.size > 0) fieldRecord.reactiveProps = reactiveProps;
+        if (reactiveProps.size > 0) {
+          fieldRecord.reactiveProps = reactiveProps;
+        }
 
         console.log('reactiveProps', reactiveProps);
         console.log('register with:', Object.assign({}, fieldRecord));
         console.groupEnd();
 
         /**
-         * Methods.
+         * Create immutable field props from the mutable field record.
          */
-        fieldRecord.subscribe = subscriptionUtils.createSubscriber(fieldRecord.fieldPath);
-
         const fieldProps = Map(fieldRecord);
 
         /**
@@ -164,7 +164,18 @@ export default function connectField(options) {
          * registrations happen at approximately same time, resulting into fields being
          * unaware of each other.
          */
-        setTimeout(() => this.context.registerField(fieldProps), 0);
+
+        //
+        //
+        // EXPERIMENTAL
+        //
+        //
+        console.log('SHOULD REGISTER FIELD', fieldPath);
+        this.context.eventEmitter.emit('registerField', fieldProps);
+
+        //
+        //
+        // setTimeout(() => this.context.registerField(fieldProps), 0);
 
         return fieldProps;
       }
@@ -192,7 +203,7 @@ export default function connectField(options) {
         });
 
         if (controlled && shouldUpdateRecord) {
-          this.context.handleFieldChange({
+          this.context.eventEmitter.emit('fieldChange', {
             event: {
               nativeEvent: {
                 isForcedUpdate: true
@@ -205,46 +216,31 @@ export default function connectField(options) {
         }
       }
 
-      /** Ensures "this.contextProps" is always actual. */
+      /**
+       * Ensure "this.contextProps" reference is updated according to the context updates.
+       */
       componentWillUpdate(nextProps, nextState, nextContext) {
-        const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
-
         /* Bypass scenarios when field is being updated, but not yet registred within the Form */
+        const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
         if (!nextContextProps) return;
 
         /* Update the internal reference to contextProps */
         const { contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
-        const { contextProps } = this;
-        const { subscriptions } = this.context;
-        const fieldPath = contextProps.get('fieldPath');
-        const isSubscribedTo = subscriptions.hasIn([fieldPath]);
-        if (!isSubscribedTo) return;
-
-        const relativeSubscriptions = subscriptions.getIn([fieldPath]);
-        relativeSubscriptions.forEach((propsList) => {
-          propsList.forEach((propName) => {
-            const prevPropValue = prevContextProps.get(propName);
-            const nextPropValue = contextProps.get(propName);
-            const hasPropChanged = (prevPropValue !== nextPropValue);
-            if (!hasPropChanged) return;
-
-            const propChangeEvent = subscriptionUtils.composeEventName({
-              fieldProps: contextProps,
-              propName
-            });
-
-            contextProps.get('eventEmitter').emit(propChangeEvent, {
-              [propName]: nextPropValue
-            });
-          });
+        subscriptionUtils.handlePropsChange({
+          eventEmitter: this.context.eventEmitter,
+          subscriptions: this.context.subscriptions,
+          fieldProps: this.contextProps,
+          prevFieldProps: prevContextProps
         });
       }
 
+      /**
+       * Deletes the field's bindings from the Form on unmounting.
+       */
       componentWillUnmount() {
-        /* Deletes the field's bindings from the Form on unmounting */
-        this.context.unregisterField(this.contextProps);
+        this.context.eventEmitter.emit('unregisterField', this.contextProps);
       }
 
       /**
@@ -275,7 +271,7 @@ export default function connectField(options) {
       }
 
       handleFocus = (event) => {
-        this.context.handleFieldFocus({
+        this.context.eventEmitter.emit('fieldFocus', {
           event,
           fieldProps: this.contextProps
         });
@@ -293,10 +289,9 @@ export default function connectField(options) {
         console.log('contextProps', Object.assign({}, contextProps.toJS()));
         console.log('prevValue', prevValue);
         console.log('nextValue', nextValue);
-        console.log('this.context.handleFieldChange', this.context.handleFieldChange);
         console.groupEnd();
 
-        this.context.handleFieldChange({
+        this.context.eventEmitter.emit('fieldChange', {
           event,
           nextValue,
           prevValue,
@@ -305,7 +300,7 @@ export default function connectField(options) {
       }
 
       handleBlur = (event) => {
-        this.context.handleFieldBlur({
+        this.context.eventEmitter.emit('fieldBlur', {
           event,
           fieldProps: this.contextProps
         });
