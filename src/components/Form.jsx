@@ -2,6 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import invariant from 'invariant';
 import { fromJS, Iterable, List, Map } from 'immutable';
+import { Observable } from 'rxjs/Observable';
+// import 'rxjs/add/operator/mapTo';
+// import 'rxjs/add/operator/reduce';
+// import 'rxjs/add/operator/takeUntil';
+// import 'rxjs/add/operator/throttle';
+// import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/observable/fromEvent';
 
 /* Internal modules */
 import { TValidationRules, TValidationMessages } from './FormProvider';
@@ -46,6 +54,7 @@ export default class Form extends React.Component {
   state = {
     fields: Map(),
     dynamicFields: Map(),
+    subscriptions: Map(),
     dirty: false
   }
 
@@ -60,6 +69,7 @@ export default class Form extends React.Component {
   /* Context which Form passes to Fields */
   static childContextTypes = {
     fields: IterableInstance,
+    subscriptions: IterableInstance,
     registerField: PropTypes.func.isRequired,
     updateField: PropTypes.func.isRequired,
     unregisterField: PropTypes.func.isRequired,
@@ -71,6 +81,7 @@ export default class Form extends React.Component {
   getChildContext() {
     return {
       fields: this.state.fields,
+      subscriptions: this.state.subscriptions,
       registerField: this.registerField,
       updateField: this.updateField,
       unregisterField: this.unregisterField,
@@ -103,7 +114,7 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   registerField = (fieldProps) => {
-    const { fields } = this.state;
+    const { fields, subscriptions } = this.state;
     const fieldPath = fieldProps.get('fieldPath');
     const isAlreadyExist = fields.hasIn([fieldPath]);
     const isRadioButton = (fieldProps.get('type') === 'radio');
@@ -160,7 +171,73 @@ export default class Form extends React.Component {
     fieldProps = fieldProps.set('debounceValidate', debounce(this.validateField, this.context.debounceTime));
 
     const nextFields = fields.mergeIn([fieldPath], fieldProps);
-    return this.setState({ fields: nextFields });
+
+    /**
+     * Reactive props.
+     * Should update the subscriptions map in case the newly registered field is subscribed to any props.
+     */
+    let nextSubscriptions = subscriptions;
+
+    if (fieldProps.has('reactiveProps')) {
+      nextSubscriptions = fieldProps.get('reactiveProps').reduce((subscriptions, rxPropValue, rxPropName) => {
+        /**
+         * Execute the reactive prop value.
+         * The resolver function must return an interface of `field.subscribe()` method. This way the target field
+         * becomes exposed to the context of current iteration, as well as the subscribed props and the actual value
+         * resolver, which is defined inside `field.subscribe(props: string[], resolver: Function)`.
+         */
+        const { props: subscribedProps, fieldPath: subscribedFieldPath, resolver } = rxPropValue({
+          fieldProps,
+          fields: nextFields.toJS(),
+          form: this
+        });
+
+        const subscribedFieldProps = nextFields.getIn([subscribedFieldPath]);
+
+        subscribedProps.forEach((subscribedPropName) => {
+          console.log('subscribed to:', subscribedFieldProps && subscribedFieldProps.toJS());
+          console.log('should subscribe to', subscribedPropName, 'of the field:', subscribedFieldPath);
+
+          const eventEmitter = subscribedFieldProps.get('eventEmitter');
+          const propChangeEvent = subscriptionUtils.composeEventName({
+            fieldProps: subscribedFieldProps,
+            propName: subscribedPropName
+          });
+
+          /**
+           * Create an observer which would liten to the dispatched prop change events, debounce them
+           * and update the subscribed field upon prop change.
+           */
+          const eventObserver = Observable.fromEvent(eventEmitter, propChangeEvent).debounceTime(250);
+
+          /**
+           * Subscribe to the props change event.
+           * Listen to the change event emitted upon the change of the subscribed props and update the
+           * subscribed field based on the next values of those props.
+           */
+          eventObserver.subscribe((subscribedProps) => {
+            const nextPropValue = resolver(subscribedProps);
+            console.warn(`next value of "${rxPropName}":`, nextPropValue);
+
+            this.updateField({
+              fieldPath,
+              propsPatch: {
+                [rxPropName]: nextPropValue
+              }
+            });
+          });
+        });
+
+        const prevSubscribedProps = subscriptions.getIn([subscribedFieldPath]) || List();
+        const nextSubscribedProps = prevSubscribedProps.push(subscribedProps);
+        return subscriptions.set(subscribedFieldPath, nextSubscribedProps);
+      }, Map());
+    }
+
+    return this.setState({
+      fields: nextFields,
+      subscriptions: nextSubscriptions
+    });
   }
 
   /**

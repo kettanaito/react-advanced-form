@@ -2,6 +2,7 @@
  * A high-order component to create custom instances of form elements based on the generic Field class.
  * Also suitable for third-party fields integration.
  */
+import { EventEmitter } from 'events';
 import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -46,6 +47,7 @@ export default function connectField(options) {
       static contextTypes = {
         fieldGroup: PropTypes.string,
         fields: IterableInstance,
+        subscriptions: IterableInstance,
         registerField: PropTypes.func.isRequired,
         updateField: PropTypes.func.isRequired,
         unregisterField: PropTypes.func.isRequired,
@@ -92,6 +94,7 @@ export default function connectField(options) {
           /* Internals */
           ref: this,
           fieldPath,
+          eventEmitter: new EventEmitter(),
 
           /* General */
           name: this.props.name,
@@ -139,13 +142,18 @@ export default function connectField(options) {
         /* Prevent { fieldGroup: undefined } for fields without a group */
         if (fieldGroup) fieldRecord.fieldGroup = fieldGroup;
 
-        /* Assign dynamic props in case they are present */
-        const dynamicProps = fieldUtils.getDynamicProps(fieldRecord);
-        if (dynamicProps.size > 0) fieldRecord.dynamicProps = dynamicProps;
+        /* Store reactive props if present */
+        const reactiveProps = fieldUtils.getRxProps(fieldRecord);
+        if (reactiveProps.size > 0) fieldRecord.reactiveProps = reactiveProps;
 
-        console.log('dynamicProps', dynamicProps);
+        console.log('reactiveProps', reactiveProps);
         console.log('register with:', Object.assign({}, fieldRecord));
         console.groupEnd();
+
+        /**
+         * Methods.
+         */
+        fieldRecord.subscribe = subscriptionUtils.createSubscriber(fieldRecord.fieldPath);
 
         const fieldProps = Map(fieldRecord);
 
@@ -205,7 +213,33 @@ export default function connectField(options) {
         if (!nextContextProps) return;
 
         /* Update the internal reference to contextProps */
+        const { contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
+
+        const { contextProps } = this;
+        const { subscriptions } = this.context;
+        const fieldPath = contextProps.get('fieldPath');
+        const isSubscribedTo = subscriptions.hasIn([fieldPath]);
+        if (!isSubscribedTo) return;
+
+        const relativeSubscriptions = subscriptions.getIn([fieldPath]);
+        relativeSubscriptions.forEach((propsList) => {
+          propsList.forEach((propName) => {
+            const prevPropValue = prevContextProps.get(propName);
+            const nextPropValue = contextProps.get(propName);
+            const hasPropChanged = (prevPropValue !== nextPropValue);
+            if (!hasPropChanged) return;
+
+            const propChangeEvent = subscriptionUtils.composeEventName({
+              fieldProps: contextProps,
+              propName
+            });
+
+            contextProps.get('eventEmitter').emit(propChangeEvent, {
+              [propName]: nextPropValue
+            });
+          });
+        });
       }
 
       componentWillUnmount() {

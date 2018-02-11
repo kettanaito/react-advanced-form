@@ -47,8 +47,18 @@ export default class Messages extends React.Component {
           <MyInput name="foo" />
 
           <MyInput
-            name="fieldTwo"
+            name="fieldThree"
             asyncRule={ this.handleAsyncValidation } />
+
+          <MyInput name="fieldOne" initialValue="foo" />
+
+          <MyInput
+            name="fieldTwo"
+            required={({ fields }) => {
+              return fields.fieldOne.subscribe('value', ({ value }) => {
+                return (value === 'foo');
+              });
+            }} />
         </Form>
       </FormProvider>
     );
