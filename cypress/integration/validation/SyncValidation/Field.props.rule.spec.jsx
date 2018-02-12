@@ -1,12 +1,16 @@
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import Scenario, { fieldSelector } from '@scenarios/SyncValidation/Field.props.rule';
+import Scenario from '@scenarios/SyncValidation/Field.props.rule';
 
 describe('Field.props.rule', function () {
-  it('empty optional field with sync rule resolves', () => {
-    mount(<Scenario />);
+  before(() => {
+    mount(<Scenario getRef={ form => this.form = form } />);
+  });
 
-    cy.get(fieldSelector)
+  afterEach(() => this.form.reset());
+
+  it('empty optional field with sync rule resolves', () => {
+    cy.get('#fieldOne')
       .focus()
       .blur()
       .should('not.have.class', 'valid')
@@ -14,9 +18,7 @@ describe('Field.props.rule', function () {
   });
 
   it('empty required field with sync rule rejects', () => {
-    mount(<Scenario required />);
-
-    cy.get(fieldSelector)
+    cy.get('#fieldTwo')
       .focus()
       .blur()
       .should('not.have.class', 'valid')
@@ -24,9 +26,7 @@ describe('Field.props.rule', function () {
   });
 
   it('filled optional field with matching value resolves', () => {
-    mount(<Scenario />);
-
-    cy.get(fieldSelector)
+    cy.get('#fieldOne')
       .type('123').should('have.value', '123')
       .blur()
       .should('have.class', 'valid')
@@ -34,9 +34,7 @@ describe('Field.props.rule', function () {
   });
 
   it('filled optional field with unmatching value rejects', () => {
-    mount(<Scenario />);
-
-    cy.get(fieldSelector)
+    cy.get('#fieldOne')
       .type('foo').should('have.value', 'foo')
       .blur()
       .should('have.class', 'invalid')
@@ -44,19 +42,15 @@ describe('Field.props.rule', function () {
   });
 
   it('filled required field with matching value resolves', () => {
-    mount(<Scenario required />);
-
-    cy.get(fieldSelector)
-    .type('123').should('have.value', '123')
-    .blur()
-    .should('have.class', 'valid')
-    .should('not.have.class', 'invalid');
+    cy.get('#fieldTwo')
+      .type('123').should('have.value', '123')
+      .blur()
+      .should('have.class', 'valid')
+      .should('not.have.class', 'invalid');
   });
 
   it('filled required field with unmatching value rejects', () => {
-    mount(<Scenario required />);
-
-    cy.get(fieldSelector)
+    cy.get('#fieldTwo')
       .type('foo').should('have.value', 'foo')
       .blur()
       .should('have.class', 'invalid')

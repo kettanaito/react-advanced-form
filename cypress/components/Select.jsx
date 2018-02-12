@@ -5,7 +5,10 @@ class Select extends React.Component {
   render() {
     return (
       <div>
-        <select { ...this.props.fieldProps }>
+        <select
+          id={ this.props.id }
+          className={ this.props.className }
+          { ...this.props.fieldProps }>
           { this.props.children }
         </select>
       </div>

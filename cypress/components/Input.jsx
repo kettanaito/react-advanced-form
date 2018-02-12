@@ -11,7 +11,7 @@ const inputStyles = {
 
 class Input extends React.Component {
   render() {
-    const { fieldProps, fieldState } = this.props;
+    const { id, className, label, fieldProps, fieldState } = this.props;
     const {
       valid,
       invalid,
@@ -33,6 +33,7 @@ class Input extends React.Component {
     const opacity = disabled ? '0.5' : 1;
 
     const inputClassNames = [
+      className,
       focused && 'focused',
       validating && 'validating',
       valid && 'valid',
@@ -41,8 +42,14 @@ class Input extends React.Component {
 
     return (
       <div className="form-group" style={{ marginBottom: '1rem', opacity }}>
+        { label && (
+          <div>
+            <label>{ label }</label>
+          </div>
+        ) }
         <div style={{ display: 'inline-flex', position: 'relative' }}>
           <input
+            id={ id }
             { ...fieldProps }
             className={ inputClassNames.join(' ') }
             style={{ ...inputStyles, borderColor }}

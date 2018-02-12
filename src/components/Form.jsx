@@ -118,9 +118,8 @@ export default class Form extends React.Component {
 
     /* Warn upon duplicate registrations */
     if (isAlreadyExist && !isRadioButton) {
-      return console.warn('Cannot register field `%s`, the field with the ' +
-      'provided name is already registered. Make sure the fields on the same level of `Form` or ' +
-      '`Field.Group` have unique names.', fieldPath);
+      return console.warn('Cannot register field `%s`, the field with the provided name is already registered. '
+      + 'Make sure the fields on the same level of `Form` or `Field.Group` have unique names.', fieldPath);
     }
 
     /* Get the value-like property of the field */
@@ -460,17 +459,6 @@ export default class Form extends React.Component {
         form: this
       }, this.context);
     }
-
-    //
-    //
-    // TODO Find more efficient way of updating the fields with dynamic props
-    //
-    //
-    nextFields.map((fieldProps) => {
-      if (fieldProps.has('dynamicProps')) {
-        this.validateField({ fieldProps });
-      }
-    });
   }
 
   /**
@@ -634,11 +622,8 @@ export default class Form extends React.Component {
    * Serializes the fields' values into a plain Object.
    */
   serialize = () => {
-    const { withImmutable } = this.context;
-    const { fields } = this.state;
-
-    const serialized = fieldUtils.serializeFields(fields);
-    return withImmutable ? serialized : serialized.toJS();
+    const serialized = fieldUtils.serializeFields(this.state.fields);
+    return this.context.withImmutable ? serialized : serialized.toJS();
   }
 
   /**

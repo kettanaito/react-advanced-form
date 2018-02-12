@@ -1,3 +1,4 @@
 describe('Basics', function () {
-  require('./Interactions');
+  require('./Interactions.controlled');
+  require('./Interactions.uncontrolled');
 });

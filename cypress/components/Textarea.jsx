@@ -5,7 +5,10 @@ class Textarea extends React.Component {
   render() {
     return (
       <div>
-        <textarea { ...this.props.fieldProps } />
+        <textarea
+          id={ this.props.id }
+          className={ this.props.className }
+          { ...this.props.fieldProps } />
       </div>
     );
   }

@@ -3,16 +3,12 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 
 import ValidationExample from './ValidationExample';
-import NativeFields from './NativeFields';
-import Rfq from './Rfq';
+import ReactiveProps from './ReactiveProps';
 import ControlledForm from './ControlledForm';
-import Conditional from './Conditional';
 import Messages from './Messages';
 
 storiesOf('Form', module)
   .add('Messages', () => (<Messages />))
-  .add('ValidationExample', () => (<ValidationExample />))
-  .add('Native fields', () => (<NativeFields />))
-  .add('Dynamic "required"', () => <Rfq />)
+  .add('Validation example', () => (<ValidationExample />))
+  .add('Reactive props', () => <ReactiveProps />)
   .add('Controlled form', () => <ControlledForm />)
-  .add('Conditional fields', () => <Conditional />);

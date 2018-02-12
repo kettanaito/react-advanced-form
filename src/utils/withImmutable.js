@@ -1,4 +1,3 @@
-// utils/withImmutable.js
 import { Iterable } from 'immutable';
 
 export default function withImmutable(func, params, context) {
@@ -10,6 +9,7 @@ export default function withImmutable(func, params, context) {
     : Object.keys(params).reduce((nextParams, paramName) => {
       const paramValue = params[paramName];
       nextParams[paramName] = Iterable.isIterable(paramValue) ? paramValue.toJS() : paramValue;
+
       return nextParams;
     }, {});
 

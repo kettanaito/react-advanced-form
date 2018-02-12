@@ -5,7 +5,10 @@ class Radio extends React.Component {
   render() {
     return (
       <div>
-        <input id={ this.props.id } { ...this.props.fieldProps } />
+        <input
+          id={ this.props.id }
+          className={ this.props.className }
+          { ...this.props.fieldProps } />
       </div>
     );
   }
