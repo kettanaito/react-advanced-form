@@ -17,11 +17,6 @@ describe('utils', () => {
     });
 
     /**
-     * getErrorMessages
-     */
-    // require('./getErrorMessages.spec');
-
-    /**
      * getFieldPath
      */
     it('getFieldPath', () => {

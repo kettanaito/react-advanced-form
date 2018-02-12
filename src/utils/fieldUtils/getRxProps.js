@@ -14,7 +14,7 @@ export const supportedReactiveProps = ['required', 'disabled'];
  * @param {object} fieldProps
  * @return {Map}
  */
-export default function getReactiveProps(fieldProps) {
+export default function getRxProps(fieldProps) {
   return supportedReactiveProps.reduce((props, dynamicProp) => {
     const propValue = fieldProps[dynamicProp];
 
