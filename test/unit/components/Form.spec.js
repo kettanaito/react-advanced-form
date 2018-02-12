@@ -12,9 +12,7 @@ describe('Form', () => {
       expect(formComponent).to.be.instanceOf(React.Component);
     }
 
-    const wrapper = mount(
-      <Form ref={ handleInnerRef } />
-    );
+    const wrapper = mount(<Form ref={ handleInnerRef } />);
   });
 
   it('"Form.props.innerRef" references the <form> element', () => {
@@ -23,16 +21,11 @@ describe('Form', () => {
       expect(formElement).to.be.instanceOf(HTMLElement);
     }
 
-    const wrapper = mount(
-      <Form innerRef={ handleInnerRef } />
-    );
+    const wrapper = mount(<Form innerRef={ handleInnerRef } />);
   });
 
   it('Uses default "action" prop when none provided', () => {
-    const wrapper = mount(
-      <Form />
-    );
-
+    const wrapper = mount(<Form />);
     expect(wrapper.find(Form).props().action).to.not.be.undefined;
   });
 
@@ -94,6 +87,9 @@ describe('Form', () => {
 
       /* Should return a promise stating whether the Form is valid */
       const isFormValid = await validate();
+
+      console.log({ isFormValid });
+
       expect(isFormValid).to.be.false;
 
       /* Should have context props corresponding to the validation status */
