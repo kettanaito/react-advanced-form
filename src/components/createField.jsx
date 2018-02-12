@@ -8,13 +8,7 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import {
-  isset,
-  IterableInstance,
-  getComponentName,
-  fieldUtils,
-  rxUtils
-} from '../utils';
+import { isset, IterableInstance, getComponentName, fieldUtils, rxUtils } from '../utils';
 
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
