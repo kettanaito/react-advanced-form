@@ -118,15 +118,27 @@ First, let's create a new integration test file under the `validation/SyncValida
 // cypress/integration/validation/SyncValidation/enhanced.algorithm.spec.jsx
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import Scenario, { fieldSelector } from '@scenarios/SyncValidation/EnhancedAlgorithm.jsx';
+import Scenario from '@scenarios/SyncValidation/EnhancedAlgorithm.jsx';
 
 describe('Enhanced algorithm', () => {
-  it('Does what it is meant to do', () => {
-    mount(<Scenario someProp="foo" />);
+  before(() => {
+    /* Note how we are getting the reference to the form */
+    mount(<Scenario getRef={ form => this.form = form } />);
+  });
 
-    cy.get(fieldSelector)
+  afterEach(() => {
+    /* Let's clear our form after each test */
+    this.form.reset();
+  });
+
+  it('Does what it is meant to do', () => {
+    cy.get('#fieldOne')
       .type('foo').should('have.value', 'foo')
       .should('have.class', 'valid');
+  });
+
+  it('Does another great thing', () => {
+    // ...
   });
 });
 ```
@@ -142,8 +154,8 @@ import { Input } from '@components';
 export default class EnhancedAlgorithm extends React.Component {
   render() {
     return (
-      <Form>
-        <Input name="foo" { ...this.props } />
+      <Form ref={ this.props.getRef }>
+        <Input name="fieldOne" />
       </Form>
     );
   }
