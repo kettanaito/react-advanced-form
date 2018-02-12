@@ -13,7 +13,7 @@ module.exports = {
   externals: {
     react: 'umd react',
     immutable: 'umd immutable',
-    events: 'umd events' // TODO Will this result into a properly working library?
+    // events: 'umd events' // TODO Will this result into a properly working library?
   },
   output: {
     path: __dirname,

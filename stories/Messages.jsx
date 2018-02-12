@@ -49,6 +49,7 @@ export default class Messages extends React.Component {
 
   render() {
     const { foo, type } = this.state;
+
     return (
       <FormProvider rules={ providerRules } messages={ providerMessages }>
         <Form rules={ rules } messages={ messages }>
@@ -59,6 +60,10 @@ export default class Messages extends React.Component {
             asyncRule={ this.handleAsyncValidation } />
 
           <MyInput name="fieldOne" initialValue="foo" />
+        <Form
+          rules={ rules }
+          messages={ messages }
+          onSubmitStart={ console.warn }>
 
           {/* <MyInput name="abc" />
           <MyInput name="def" />
@@ -92,6 +97,8 @@ export default class Messages extends React.Component {
               type: (type === 'text') ? 'password' : 'text'
             }))
           }}>Toggle type</button>
+
+          <button>Submit</button>
 
         </Form>
       </FormProvider>

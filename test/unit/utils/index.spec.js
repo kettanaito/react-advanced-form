@@ -33,17 +33,6 @@ describe('utils', () => {
     });
 
     /**
-     * getFieldProps
-     */
-    it('getFieldProps', () => {
-      const fields = fromJS({ fieldOne: { value: 'context' } });
-      const fallbackProps = { value: 'fallback' };
-
-      expect(fieldUtils.getFieldProps('fieldOne', fields, fallbackProps)).to.deep.eq(fields.get('fieldOne').toJS());
-      expect(fieldUtils.getFieldProps('fieldTwo', fields, fallbackProps)).to.deep.eq(fallbackProps);
-    });
-
-    /**
      * getValidityState
      */
     it('getValidityState', () => {
@@ -74,18 +63,6 @@ describe('utils', () => {
       expect(fieldUtils.getValidityState(fieldOne).toJS()).to.deep.eq({ valid: false, invalid: true });
       expect(fieldUtils.getValidityState(fieldTwo).toJS()).to.deep.eq({ valid: true, invalid: false });
       expect(fieldUtils.getValidityState(fieldThree).toJS()).to.deep.eq({ valid: false, invalid: false });
-    });
-
-    /**
-     * resolveProp
-     */
-    it('resolveProp', () => {
-      const fieldOne = { disabled: true, value: 'foo' };
-      const fieldTwo = { required: ({ fields }) => fields.fieldOne.disabled };
-      const fields = fromJS({ fieldOne, fieldTwo });
-
-      expect(fieldUtils.resolveProp({ propName: 'value', fieldProps: fieldOne })).to.equal('foo');
-      expect(fieldUtils.resolveProp({ propName: 'required', fieldProps: fieldTwo, fields })).to.equal(true);
     });
 
     /**

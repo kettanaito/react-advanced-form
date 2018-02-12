@@ -8,7 +8,7 @@ describe('createField', function () {
   it('Supports custom event handlers', () => {
     let sum = 0;
 
-    class CustomComponent extends React.Component {
+    class CustomField extends React.Component {
       handleFocus = () => sum++
       handleBlur = () => sum++
 
@@ -20,28 +20,24 @@ describe('createField', function () {
       }
 
       render() {
-        return (<input { ...this.props.fieldProps } onChange={ this.handleChangeFoo } />);
+        return (<input { ...this.props.fieldProps } onChange={ this.handleChange } />);
       }
     }
 
-    const EnhancedField = createField({
-      mapPropsToField: ({ fieldRecord }) => ({
-        ...fieldRecord,
-        type: 'text'
-      })
-    })(CustomComponent);
+    const EnhancedField = createField()(CustomField);
 
-    const wrapped = mount(
+    const wrapper = mount(
       <Form>
         <EnhancedField name="enhanced-field" />
       </Form>
     );
 
     return defer(() => {
-      const form = wrapped.find(Form).instance();
-      const input = wrapped.find(CustomComponent).instance();
+      const form = wrapper.find(Form).instance();
+      const input = wrapper.find(CustomField).instance();
 
-      input.handleChange({ currentTarget: { value: 'foo' } });
+      // input.handleChange({ currentTarget: { value: 'foo' } });
+      wrapper.simulate('change', { currentTarget: { value: 'foo' } });
       expect(sum).to.equal(1);
 
       input.handleFocus();
@@ -49,6 +45,8 @@ describe('createField', function () {
 
       input.handleBlur();
       expect(sum).to.equal(3);
+
+      console.log(form.state.fields)
 
       expect(form.state.fields.getIn(['enhanced-field', 'value'])).to.equal('foo');
     });

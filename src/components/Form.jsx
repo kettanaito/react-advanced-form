@@ -102,7 +102,7 @@ export default class Form extends React.Component {
     const { eventEmitter } = this;
 
     Observable.fromEvent(eventEmitter, 'fieldRegister')
-      .bufferTime(200)
+      .bufferTime(150)
       .subscribe(pendingFields => pendingFields.forEach(this.registerField));
     Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange);
     Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus);
@@ -117,7 +117,7 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   registerField = (fieldProps) => {
-    const { fields, subscriptions } = this.state;
+    const { fields } = this.state;
     const fieldPath = fieldProps.get('fieldPath');
     const isAlreadyExist = fields.hasIn([fieldPath]);
     const isRadioButton = (fieldProps.get('type') === 'radio');
@@ -179,65 +179,63 @@ export default class Form extends React.Component {
      * Add default props subscriptions to update the field's record upon the changes
      * of props which affect the record.
      */
-    const nativeSubscriptions = rxUtils.addPropsListener({
-      fieldPath,
-      subscriber: fieldPath,
-      props: ['type', 'disabled'],
-      resolver: (observer) => {
-        observer.subscribe(({ type, disabled }) => {
-          console.warn('Dependent prop(s) changed, updating field record...');
+    // const nativeSubscriptions = rxUtils.addPropsListener({
+    //   fieldPath,
+    //   subscriber: fieldPath,
+    //   props: ['type', 'disabled'],
+    //   resolver: (observer) => {
+    //     observer.subscribe(({ type, disabled }) => {
+    //       console.warn('Dependent prop(s) changed, updating field record...');
 
-          this.updateField({
-            fieldPath,
-            propsPatch: {
-              type,
-              disabled
-            }
-          });
-        });
-      },
-      eventEmitter: this.eventEmitter
-    });
-
-    console.log({ subscriptions });
+    //       this.updateField({
+    //         fieldPath,
+    //         propsPatch: {
+    //           type,
+    //           disabled
+    //         }
+    //       });
+    //     });
+    //   },
+    //   eventEmitter: this.eventEmitter
+    // });
 
     /**
      * RxProps subscriptions.
      * Update the current subscriptions map based on the newly registered field. In case the field has no
      * reactive props, the provided subscriptions map will be returned immediately.
      */
-    const nextSubscriptions = rxUtils.getSubscriptions({
-      subscriptions: nativeSubscriptions,
-      fieldProps,
-      fields: nextFields,
-      form: this,
-      subscribe: async ({ rxPropName, resolvedPropValue }) => {
-        console.warn(`next value of "${rxPropName}":`, resolvedPropValue);
+    // const nextSubscriptions = rxUtils.getSubscriptions({
+    //   subscriptions: nativeSubscriptions,
+    //   fieldProps,
+    //   fields: nextFields,
+    //   form: this,
+    //   subscribe: async ({ rxPropName, resolvedPropValue }) => {
+    //     console.warn(`next value of "${rxPropName}":`, resolvedPropValue);
 
-        const { nextFieldProps } = await this.updateField({
-          fieldPath,
-          propsPatch: {
-            [rxPropName]: resolvedPropValue
-          }
-        });
+    //     const { nextFieldProps } = await this.updateField({
+    //       fieldPath,
+    //       propsPatch: {
+    //         [rxPropName]: resolvedPropValue
+    //       }
+    //     });
 
-        //
-        //
-        // EXPERIMENTAL
-        //
-        //
-        /* (???) Validate the field to reflect "required" changed on the fly? */
-        this.validateField({
-          fieldProps: nextFieldProps,
-          forceProps: true,
-          force: true
-        });
-      }
-    });
+    //     //
+    //     //
+    //     // EXPERIMENTAL
+    //     //
+    //     //
+    //     /* (???) Validate the field to reflect "required" changed on the fly? */
+    //     this.validateField({
+    //       fieldProps: nextFieldProps,
+    //       forceProps: true,
+    //       force: true
+    //     });
+    //   }
+    // });
 
     return this.setState({
-      fields: nextFields,
-      subscriptions: nextSubscriptions
+      fields: nextFields
+      // subscriptions: nextSubscriptions
     });
   }
 
@@ -532,7 +530,14 @@ export default class Form extends React.Component {
    * from the state.
    * @param {boolean} force Force validation. Bypass "shouldValidate" logic.
    */
-  validateField = async ({ type = BothValidationType, fieldProps: customFieldProps, forceProps = false, force = false }) => {
+  validateField = async (args) => {
+    const {
+      type = BothValidationType,
+      fieldProps: customFieldProps,
+      forceProps = false,
+      force = false
+    } = args;
+
     const { formRules } = this;
     const { fields } = this.state;
     const fieldProps = forceProps
