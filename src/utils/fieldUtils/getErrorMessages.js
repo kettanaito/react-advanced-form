@@ -1,25 +1,27 @@
 import invariant from 'invariant';
 import { customRulesKey } from './validate';
+import warn from '../warn';
 import dispatch from '../dispatch';
 
-function resolveMessage({ messages, rejectedRule, resolverArgs }) {
-  const { fieldProps } = resolverArgs;
-  const { name, selector, isCustom } = rejectedRule;
+function resolveMessage({ messages, rejectedRule, fieldProps }) {
+  const { name: ruleName, selector, isCustom } = rejectedRule;
+  const fieldName = fieldProps.get('name');
+  const fieldType = fieldProps.get('type');
 
-  const primitiveErrorType = isCustom ? 'invalid' : name;
-  const path = isCustom ? [customRulesKey, name] : [name];
+  const primitiveErrorType = isCustom ? 'invalid' : ruleName;
+  const path = isCustom ? [customRulesKey, ruleName] : [ruleName];
 
   const messagePaths = [
-    ['name', fieldProps.get('name'), primitiveErrorType],
-    ['type', fieldProps.get('type'), primitiveErrorType],
+    ['name', fieldName, primitiveErrorType],
+    ['type', fieldType, primitiveErrorType],
     ['general', primitiveErrorType]
   ];
 
   if (selector) {
     messagePaths.unshift([selector, fieldProps.get(selector), ...path]);
-  } else if (name === 'async') {
+  } else if (ruleName === 'async') {
     /* In case of async rejected rule, prepend the name-specific "async" message key */
-    messagePaths.unshift(['name', fieldProps.get('name'), name]);
+    messagePaths.unshift(['name', fieldName, ruleName]);
   }
 
   /* Iterate through each message path and return at the first match */
@@ -50,32 +52,43 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
   const rejectedRules = validationResult.get('rejectedRules');
   if (!rejectedRules || (rejectedRules.length === 0)) return;
 
-  /* Get the extra properties coming from the async validation result */
-  const extra = validationResult.get('extra');
-
-  const resolverArgs = {
-    ...extra,
+  const defaultResolverArgs = {
     value: fieldProps.get('value'),
     fieldProps,
     fields,
     form
   };
+  const defaultResolverKeys = Object.keys(defaultResolverArgs);
+
+  /* Get the extra properties coming from the async validation result */
+  const extra = validationResult.get('extra');
+  const extraKeys = extra && Object.keys(extra);
+  const overridesExtras = extraKeys && extraKeys.some(defaultResolverKeys.includes);
+
+  /* Warn about keys override */
+  warn(!overridesExtras, 'Extra keys received from the async response (%s) overlap with the ' +
+  'default resolver arguments (%s). Note that the overlapping keys will be overriden in the `%` field ' +
+  'message resolver.', extraKeys, defaultResolverKeys, fieldProps.get('name'));
+
+  const resolverArgs = {
+    ...extra,
+    ...defaultResolverArgs
+  };
 
   const resolvedMessages = rejectedRules.reduce((messagesList, rejectedRule, ruleIndex) => {
-    const { message, isResolvedDirectly } = resolveMessage({ messages, rejectedRule, resolverArgs });
+    const { message, isResolvedDirectly } = resolveMessage({ messages, rejectedRule, fieldProps });
 
     /**
      * Bypass indirectly resolved messages which are coming after the primary (0) rule.
      * Indirectly resolved messages serve as helpers when there are no direct messages.
      * In case direct messages are present, displaying the indirect ones is confusing.
      */
-    if (ruleIndex > 0 && !isResolvedDirectly) {
+    if ((ruleIndex > 0) && !isResolvedDirectly) {
       return messagesList;
     }
 
     const isFunctionalMessage = (typeof message === 'function');
     const resolvedMessage = isFunctionalMessage ? dispatch(message, resolverArgs, form.context) : message;
-
     const isMessageValid = isFunctionalMessage ? !!resolvedMessage : true;
 
     /* Throw on functional messages that return falsy values */

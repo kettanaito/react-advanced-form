@@ -1,5 +1,6 @@
 /* Primitives */
 export isset from './isset';
+export warn from './warn';
 export debounce from './debounce';
 export dispatch from './dispatch';
 export makeCancelable from './makeCancelable';
