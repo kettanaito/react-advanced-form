@@ -215,6 +215,7 @@ export default class Form extends React.Component {
     console.log('nextResolvedFields:', Object.assign({}, nextResolvedFields.toJS()));
     console.groupEnd();
 
+    /* Promisify the state update in order to "await" it */
     return new Promise((resolve, reject) => {
       try {
         this.setState({ fields: nextResolvedFields }, () => resolve({
@@ -297,8 +298,8 @@ export default class Form extends React.Component {
     /**
      * Handle "onChange" events dispatched by the controlled field.
      * Controlled field must execute its custom "CustomField.props.onChange" handler since that
-     * is the updater for the state/etc. controlling its value. Internal RAF change handling
-     * must be omitted in that scenario, as it will bubble to it eventually via
+     * is the updater for the source (i.e. state) controlling its value. Internal RAF change handling
+     * must be omitted in that scenario, as it will be bubbled to eventually via
      * "createField.Field.componentReceiveProps()", when comparing previous and next values of
      * controlled fields.
      */
@@ -325,7 +326,7 @@ export default class Form extends React.Component {
     /**
      * Update the value of the changed field.
      * Also, reset all validation states since those are useless after the value has changed.
-     * This is important forvalidation chain, as proper validation statuses trigger proper validations.
+     * This is important for the validation chain, as proper validation statuses trigger proper validations.
      */
     const { nextFieldProps: updatedFieldProps } = await this.updateField({
       fieldProps,
@@ -341,7 +342,7 @@ export default class Form extends React.Component {
       }
     });
 
-    /* Cancel any async validation in progress due to validation state reset */
+    /* Cancel any pending async validation due to the validation states reset */
     if (updatedFieldProps.has('pendingAsyncValidation')) {
       updatedFieldProps.getIn(['pendingAsyncValidation', 'cancel'])();
     }
@@ -506,7 +507,7 @@ export default class Form extends React.Component {
       formRules
     });
 
-    /* Update the validity state of the field */
+    /* Update the validity state (valid/invalid) of the field */
     let propsPatch = validationResult.get('propsPatch');
     const expected = propsPatch.get('expected');
 
@@ -514,7 +515,7 @@ export default class Form extends React.Component {
     const { messages } = this;
     const hasMessages = messages && (messages.size > 0);
 
-    /* Get the validation message based on the validation result */
+    /* Get the validation messages based on the validation result */
     if (hasMessages && !expected) {
       const errorMessages = fieldUtils.getErrorMessages({
         validationResult,
@@ -530,7 +531,7 @@ export default class Form extends React.Component {
     }
 
     /**
-     * Get the next validity state.
+     * Get the next validity (valid/invalid) state.
      * Based on the changed fieldProps, the field aquires a new validity state,
      * which means its "valid" and "invalid" props values are updated.
      */
@@ -545,7 +546,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Debounced wrapper for the field validation method.
+   * Debounce wrapper for the field validation method.
    * That applies that in case multiple calls of this method will be executed, each one executed
    * within the given timeout duration period postpones the following one's execution.
    */
@@ -608,12 +609,11 @@ export default class Form extends React.Component {
 
       /* Call custom callback methods to be able to reset controlled fields */
       const { onReset } = this.props;
-
       if (onReset) {
-        onReset({
+        withImmutable(onReset, {
           fields: nextFields,
           form: this
-        });
+        }, this.context);
       }
     });
   }
@@ -667,7 +667,7 @@ export default class Form extends React.Component {
      * Form's action is a function which returns a Promise. You must pass a req, or async action
      * as a prop to the form in order for it to work.
      */
-    const dispatchedAction = action(callbackArgs);
+    const dispatchedAction = withImmutable(action, callbackArgs, this.context);
 
     invariant(dispatchedAction && (typeof dispatchedAction.then === 'function'),
       'Cannot submit the form. Expecting `action` prop of the Form to return an instance ' +
