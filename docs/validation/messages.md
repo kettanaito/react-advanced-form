@@ -31,7 +31,7 @@ Resolver is an Object which maps the rule name to its actual message, or another
 
 ```ts
 type MessageResolver = {
-  [validationState: string]: Message,
+  [genericState: string]: Message,
   rules?: {
     [ruleName: string]: Message
   }
@@ -39,6 +39,15 @@ type MessageResolver = {
 
 type Message = string | ({ fieldProps, fields, form, ...extra }) => string;
 ```
+
+### Generic states
+There are multiple generic states provided within each resolver by default.
+
+| Generic state | Description |
+| ------------- | ----------- |
+| `missing` | Resolves for the empty required field. |
+| `invalid` | Resolvers for the field with unexpected value when there are no higher specificity resolvers present. |
+| `async` | Resolves for the [asynchronous validation](../components/Field/props/asyncRule.md) of the field. |
 
 ### Named resolvers
 It is possible to define named resolvers to return the messages for specific rules. These resolvers are defined under the `rules` key of the main resolver.
