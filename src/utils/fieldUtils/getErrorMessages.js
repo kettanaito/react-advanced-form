@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import { customRulesKey } from './validate';
-import withImmutable from '../withImmutable';
+import dispatch from '../dispatch';
 
 function resolveMessage({ messages, rejectedRule, resolverArgs }) {
   const { fieldProps } = resolverArgs;
@@ -74,7 +74,7 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
     }
 
     const isFunctionalMessage = (typeof message === 'function');
-    const resolvedMessage = isFunctionalMessage ? withImmutable(message, resolverArgs, form.context) : message;
+    const resolvedMessage = isFunctionalMessage ? dispatch(message, resolverArgs, form.context) : message;
 
     const isMessageValid = isFunctionalMessage ? !!resolvedMessage : true;
 

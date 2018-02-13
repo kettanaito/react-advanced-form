@@ -1,6 +1,13 @@
 import { Iterable } from 'immutable';
 
-export default function withImmutable(func, params, context) {
+/**
+ * Dispatches the provided function after applying conditional transformations to its params
+ * based on the passed context options.
+ * @param {Function} func
+ * @param {Object} params
+ * @param {Object} context
+ */
+export default function dispatch(func, params, context) {
   const { withImmutable } = context;
 
   /* When Immutable params allowed, bypass any transformation */
