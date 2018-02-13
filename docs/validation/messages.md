@@ -1,116 +1,115 @@
 # Validation messages
 
-## Introduction
-Having an ability to display different validation messages at different states of the validation is a common requirement toward any modern form. Just as with the validation rules, we have refined an approach of declaring validation messages which serves gracefully in full-scale applications.
+* [Selectors](#selectors)
+* [Resolvers](#resolvers)
+  * [Named resolvers](#named-resolvers)
+* [Fallbacks](#fallbacks)
+  * [Fallback sequence](#fallback-sequence)
+  * [Fallback example](#fallback-example)
 
-## Specification
+## Selectors
+Selectors are used to map the [message resolvers](#resolvers) to the relevant field(s).
 
-### Message groups
-
-| Group name | Description |
+| Selector | Description |
 | ---- | ----------- |
-| `general` | The least specific, general validation messages. Those are the values used as fallback when other message groups are not present. |
-| `type` | Type-specific messages  |
-| `name` | The highest priority, name-specific messages control  |
+| `name` | Name-specific messages. |
+| `type` | Type-specific messages. |
+| `general` | General messages. Those are used as fallback values in case more specific messages are not present. |
 
-### Message types
-
-| Type | Description |
-| ---- | ----------- |
-| `missing` | The field's value is required, but missing. |
-| `invalid` | The field's value is not expected (doesn't match the provided rules). Applied always once the field has `rule` or `asyncRule` specified. |
-| `async` | Asynchronous messages. The most flexible ones, async messages let you define custom logic based on the current state of the field and form, as well as on the received async validation payload. |
-
-### Resolver format
-The values supplied to the mentioned groups are expected to be in a certain format.
+Each selector expects the map of the selector values and its [resolvers](#resolvers):
 
 ```ts
-{
-  [messageGroup: string]: {
-    [messageType: string]: string | ({ value, fields, fieldProps, form, res, ...extra }) => string
+type ValidationMessages = {
+  [selector: string]: {
+    [selectorValue: string]: MessageResolver
   }
 }
 ```
 
-Message value can be a plain `string` or a resolver function which returns a string. The resolver function accepts the following argument properties:
+## Resolvers
+Resolver is an Object which maps the rule name to its actual message, or another resolver.
 
-| Property | Type | Description |
-| -------- | ---- | ----------- |
-| `value` | `mixed` | The value of the validated field. |
-| `fields` | `Object` | The current state of all the fields in the form. |
-| `fieldProps` | `Object` | The props of the current field (the one getting validated). |
-| `form` | `Object` | The current state of the form. |
-| `res` | `mixed` | A payload from the `asyncRule` function. It allows you to map error messages from back-end directly, or create a custom logic based on whichever response properties you need. |
-| `...extra` | `mixed` | Custom properties return within the `asyncRule` resolved Object. |
+```ts
+type MessageResolver = {
+  [validationState: string]: Message,
+  rules?: {
+    [ruleName: string]: Message
+  }
+}
 
-## Example
-You would generally want to create and maintain validation messages at one place, probably, next to your validation rules.
+type Message = string | ({ fieldProps, fields, form, ...extra }) => string;
+```
+
+### Named resolvers
+It is possible to define named resolvers to return the messages for specific rules. These resolvers are defined under the `rules` key of the main resolver.
 
 ```js
-// src/app/validation-rules.js
+export default {
+  type: {
+    password: {
+      missing: 'Please provide the password',
+      invalid: 'The passwords is invalid',
+      rules: {
+        minLength: 'Password must be at least 6 characters long'
+      }
+    }
+  }
+}
+```
+
+> **Note:** Named resolver *must* have the corresponding validation rule with the same name in order to resolve. Otherwise, the closest validation message will be returned by the resolver. Considering the example above, if `minLength` rule doesn't exist and the `type=["password"]` field is invalid, the closest `invalid` resolver will be used (which is `type.password.invalid` in this case).
+
+## Fallbacks
+Whenever the resolver cannot resolve it would attempt to grab the closest resolver recursively and resolve it instead. Fallback resolvers are iterated by their specificity, which can be presented as follows:
+
+### Fallback sequence
+1. Named resolver for the same level selector.
+1. General resolver for the same level selector.
+1. General resolver for the next level selector.
+1. General resolver for the general selector.
+
+### Fallback example
+Consider the following validation messages:
+
+```js
 export default {
   general: {
-    missing: 'Please provide the required field.', // message for any missing field
-    invalid: 'Please provide a proper value.' // message for any field which value doesn't match the provided rules
+    invalid: 'General invalid message'
   },
   type: {
-    tel: {
-      missing: 'Please provide the phone number.', // message for any input[type="tel"] with missing value
-      invalid: 'The phone number you provided is invalid.' // message for any input[type="tel"] with value not matching the specified rules
+    email: {
+      invalid: 'E-mail is invalid'
     }
   },
   name: {
-    username: {
-      missing: 'Please provide the username.', // message for "username" field with missing value
-      invalid: 'Please type only letters into the field.', // message for "username" field which value doesn't match the provided rules
-      async: {
-        userExists: ({ backendMessage }) => {
-          return backendMessage; // return the property from the response payload directly
-        }
+    userEmail: {
+      invalid: 'User e-mail is invalid',
+      rules: {
+        includesAt: 'E-mail must include "@" character'
       }
     }
   }
 };
 ```
 
+And the following component layout:
+
 ```jsx
-// src/app/components/MyForm.jsx
-import React from 'react';
-import { Form } from 'react-advanced-form';
-import { Input } from 'react-advanced-form-addons';
-import validationMessages from '../validation-messages';
-
-export default class MyForm extends React.Component {
-  /**
-   * Validates the provided username.
-   * Note: There are multiple properties exposed to your validation logic by React Advanced Form.
-   */
-  validateUsername = ({ value: username, fieldProps, fields, form }) => {
-    return fetch('https://backend.dev/user/validate', {
-      method: 'POST',
-      body: JSON.stringify({ username })
-    })
-    .then(res => res.json())
-    .then((payload) => {
-      return {
-        valid: (payload.statusCode === 'SUCCESS'),
-        backendMessage: payload.message // available as "backendMessage" in resolver arguments
-      }
-    });
-  }
-
-  render() {
-    return (
-      <Form messages={ validationMessages }>
-        <Input
-          name="username"
-          asyncRule={ this.validateUsername }
-          required />
-      </Form>
-    );
-  }
-}
+<Form>
+  <Input
+    type="email"
+    name="userEmail"
+    value="foo" />
+</Form>
 ```
 
+With the given scenario the `includesAt` validation rule would reject, marking the field as unexpected. This must be reflected in the UI using the validation messages schema.
 
+This is the priority sequence in which resolvers will attempt to resolve the validation message:
 
+1. `name.userEmail.rules.includesAt`
+1. `name.userEmail.invalid`
+1. `type.email.invalid`
+1. `general.invalid`
+
+The validation message resolves as soon as the resolver returns the value. The same sequence applies for the type-specific named resolvers.
