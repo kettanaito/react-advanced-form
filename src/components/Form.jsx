@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { fromJS, Map, Iterable } from 'immutable';
+import { fromJS, Iterable, List, Map } from 'immutable';
 
 /* Internal modules */
 import { TValidationRules, TValidationMessages } from './FormProvider';
@@ -581,10 +581,7 @@ export default class Form extends React.Component {
       const { fields: nextFields } = this.state;
 
       /* Reduce the invalid fields to the ordered Array */
-      const invalidFields = nextFields.keys().reduce((invalidFields, fieldName) => {
-        const fieldProps = nextFields.get(fieldName);
-        return fieldProps.expected ? invalidFields : invalidFields.concat(fieldProps);
-      }, []);
+      const invalidFields = List(nextFields.filter(fieldProps => !fieldProps.get('expected')));
 
       /* Call custom callback */
       dispatch(onInvalid, {

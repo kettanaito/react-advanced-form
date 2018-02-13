@@ -80,13 +80,13 @@ export default class ValidationExample extends Component {
     return (
       <FormProvider
         rules={ formRules }
-        withImmutable
         messages={ formMessages }>
         <Form
           ref={ form => this.form = form }
           id="default-form-example"
           ref={ form => this.form = form }
           action={ this.handleFormAction }
+          onInvalid={ console.log }
           onSubmitStart={ this.handleSubmitStart }>
 
           <MyInput
