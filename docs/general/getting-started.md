@@ -34,9 +34,9 @@ import validationRules from './path/to/your/validation/rules';
 import validationMessages from './path/to/your/validation/messages';
 
 const App = ({ children }) => (
-    <FormProvider rules={ validationRules } messages={ validationMessages }>
-        { children }
-    </FormProvider>
+  <FormProvider rules={ validationRules } messages={ validationMessages }>
+    { children }
+  </FormProvider>
 );
 
 ReactDOM.render(<App />, document.getElementById('root'));
@@ -47,7 +47,7 @@ ReactDOM.render(<App />, document.getElementById('root'));
 > **Note: **`FormProvider` is not mandatory for the forms to work, but it is highly recommended to handle application-wide form settings in this way. The latter ensures a consistent user and developer experience.
 
 ### Create a custom form
-We are going to use a [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) package designed as a fast prototyping tool for React Advanced Form. You can, and most likely will, use your own custom fields which suit your project's visual needs.
+We are going to use a [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) package designed as a fast prototyping tool for React Advanced Form. You can, and *should*, use your own custom fields which suit your project's visual needs.
 
 ```jsx
 import React from 'react';
@@ -55,25 +55,21 @@ import { Form } from 'react-advanced-form';
 import { Input } from 'react-advanced-form-addons';
 
 export default class RegistrationForm extends React.Component {
-    registerUser = ({ serialized, fields, form }) => {
-        return fetch('https://backend.dev/register', {
-            method: 'POST',
-            body: JSON.stringify(serialized)
-        }).
-    }
+  registerUser = ({ serialized, fields, form }) => {
+    return fetch('https://backend.dev/register', {
+      method: 'POST',
+      body: JSON.stringify(serialized)
+    }).
+  }
 
-    render() {
-        return (
-            <Form action={ this.registerUser }>
-                <Input name="email" required />
-                <Input name="password" type="password" required />
-                <button type="Submit">Register</button>
-            </Form>
-        );
-    }
+  render() {
+    return (
+      <Form action={ this.registerUser }>
+        <Input name="email" required />
+        <Input name="password" type="password" required />
+        <button type="Submit">Register</button>
+      </Form>
+    );
+  }
 }
 ```
-
-Now you have the `RegistrationForm` working with close to no effort.
-
-> **Note: **Although this is a working example, you would rarely use `Field` component directly in your forms. You may want to read about Custom Styling to use form element which would stun your customers.
