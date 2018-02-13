@@ -50,7 +50,7 @@ There are multiple generic states provided within each resolver by default.
 | `async` | Resolves for the [asynchronous validation](../components/Field/props/asyncRule.md) of the field. |
 
 ### Named resolvers
-It is possible to define named resolvers to return the messages for specific rules. These resolvers are defined under the `rules` key of the main resolver.
+It is possible to define named resolvers corresponding to the [named validation rules](./rules.md#named-rules). These resolvers are defined under the `rules` key of the main resolver.
 
 ```js
 export default {
