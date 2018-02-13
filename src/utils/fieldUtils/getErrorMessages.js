@@ -63,12 +63,13 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
   /* Get the extra properties coming from the async validation result */
   const extra = validationResult.get('extra');
   const extraKeys = extra && Object.keys(extra);
-  const overridesExtras = extraKeys && extraKeys.some(defaultResolverKeys.includes);
+  const overridesExtras = extraKeys && extraKeys.some(extraKey => defaultResolverKeys.includes(extraKey));
 
   /* Warn about keys override */
-  warn(!overridesExtras, 'Extra keys received from the async response (%s) overlap with the ' +
-  'default resolver arguments (%s). Note that the overlapping keys will be overriden in the `%` field ' +
-  'message resolver.', extraKeys, defaultResolverKeys, fieldProps.get('name'));
+  warn(!overridesExtras, 'Extra keys received from the async response %s overlap with the ' +
+  'default resolver arguments %s. Note that the overlapping keys will be overriden in the `%s` field ' +
+  'message resolver.', JSON.stringify(extraKeys), JSON.stringify(defaultResolverKeys),
+  fieldProps.get('name'));
 
   const resolverArgs = {
     ...extra,

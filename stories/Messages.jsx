@@ -29,11 +29,26 @@ const messages = {
 }
 
 export default class Messages extends React.Component {
+  handleAsyncValidation = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          valid: false,
+          fields: true
+        });
+      }, 1000);
+    });
+  }
+
   render() {
     return (
       <FormProvider rules={ providerRules } messages={ providerMessages }>
         <Form rules={ rules } messages={ messages }>
           <MyInput name="foo" />
+
+          <MyInput
+            name="fieldTwo"
+            asyncRule={ this.handleAsyncValidation } />
         </Form>
       </FormProvider>
     );
