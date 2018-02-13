@@ -3,15 +3,17 @@ src
 test
 docs
 stories
+cypress
 
 # Configurations
 .babelrc
 .eslintrc*
 .circleci
+book.json
+cypress.json
 npm-*
 webpack*
 
 # Misc
 .storybook
-book.json
 internal
