@@ -59,7 +59,7 @@ export default {
 }
 ```
 
-Having named rules allows to precisely control the validation message displayed respectively to the rule's name. Read more in the [Validation messages](./messages.md) section.
+Named rules allow to precisely control the validation messages displayed respectively to the rule's name. Read more about this in [Validation messages: Named resolvers](./messages.md#named-resolvers) section.
 
 ## Multiple rules
 It is possible to have multiple rules on the same selector:
