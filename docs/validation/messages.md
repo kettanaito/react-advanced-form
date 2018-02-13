@@ -2,6 +2,7 @@
 
 * [Selectors](#selectors)
 * [Resolvers](#resolvers)
+  * [Generic states](#generic-states)
   * [Named resolvers](#named-resolvers)
 * [Fallbacks](#fallbacks)
   * [Fallback sequence](#fallback-sequence)
