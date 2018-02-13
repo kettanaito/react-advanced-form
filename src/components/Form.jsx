@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { fromJS, Map, Iterable } from 'immutable';
 
 /* Internal modules */
-import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
 import { TValidationRules, TValidationMessages } from './FormProvider';
-import { isset, debounce, fieldUtils, IterableInstance, withImmutable } from '../utils';
+import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
+import { isset, debounce, dispatch, fieldUtils, IterableInstance } from '../utils';
 
 export default class Form extends React.Component {
   static propTypes = {
@@ -196,7 +196,7 @@ export default class Form extends React.Component {
       if (!fieldProps.has('dynamicProps')) return fieldProps;
 
       const resolvedProps = fieldProps.get('dynamicProps').map((resolver) => {
-        return withImmutable(resolver, {
+        return dispatch(resolver, {
           fieldProps: nextFieldProps,
           fields: nextFields,
           form: this
@@ -270,7 +270,7 @@ export default class Form extends React.Component {
     /* Call custom onFocus handler */
     const onFocusHandler = fieldProps.get('onFocus');
     if (onFocusHandler) {
-      withImmutable(onFocusHandler, {
+      dispatch(onFocusHandler, {
         event,
         fieldProps: nextFieldProps,
         fields: nextFields,
@@ -311,7 +311,7 @@ export default class Form extends React.Component {
       invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
       'but received: %s.', fieldProps.get('name'), onChangeHandler);
 
-      return withImmutable(onChangeHandler, {
+      return dispatch(onChangeHandler, {
         event,
         nextValue,
         prevValue,
@@ -373,7 +373,7 @@ export default class Form extends React.Component {
      * There is no need to dispatch the handler method once more.
      */
     if (!isControlled && onChangeHandler) {
-      withImmutable(onChangeHandler, {
+      dispatch(onChangeHandler, {
         event,
         nextValue,
         prevValue,
@@ -453,7 +453,7 @@ export default class Form extends React.Component {
     /* Call custom onBlur handler */
     const onBlur = nextFieldProps.get('onBlur');
     if (onBlur) {
-      withImmutable(onBlur, {
+      dispatch(onBlur, {
         event,
         fieldProps: nextFieldProps,
         fields: nextFields,
@@ -587,7 +587,7 @@ export default class Form extends React.Component {
       }, []);
 
       /* Call custom callback */
-      withImmutable(onInvalid, {
+      dispatch(onInvalid, {
         fields: nextFields,
         invalidFields,
         form: this
@@ -610,7 +610,7 @@ export default class Form extends React.Component {
       /* Call custom callback methods to be able to reset controlled fields */
       const { onReset } = this.props;
       if (onReset) {
-        withImmutable(onReset, {
+        dispatch(onReset, {
           fields: nextFields,
           form: this
         }, this.context);
@@ -660,14 +660,14 @@ export default class Form extends React.Component {
      * The submit is consideres started immediately when the submit button is pressed.
      * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
-    if (onSubmitStart) withImmutable(onSubmitStart, callbackArgs, this.context);
+    if (onSubmitStart) dispatch(onSubmitStart, callbackArgs, this.context);
 
     /**
      * Perform the action.
      * Form's action is a function which returns a Promise. You must pass a req, or async action
      * as a prop to the form in order for it to work.
      */
-    const dispatchedAction = withImmutable(action, callbackArgs, this.context);
+    const dispatchedAction = dispatch(action, callbackArgs, this.context);
 
     invariant(dispatchedAction && (typeof dispatchedAction.then === 'function'),
       'Cannot submit the form. Expecting `action` prop of the Form to return an instance ' +
@@ -675,15 +675,15 @@ export default class Form extends React.Component {
       dispatchedAction);
 
     return dispatchedAction.then((res) => {
-      if (onSubmitted) withImmutable(onSubmitted, { ...callbackArgs, res }, this.context);
+      if (onSubmitted) dispatch(onSubmitted, { ...callbackArgs, res }, this.context);
 
       return res;
     }).catch((res) => {
-      if (onSubmitFailed) withImmutable(onSubmitFailed, { ...callbackArgs, res }, this.context);
+      if (onSubmitFailed) dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context);
 
       return res;
     }).then((res) => {
-      if (onSubmitEnd) withImmutable(onSubmitEnd, { ...callbackArgs, res }, this.context);
+      if (onSubmitEnd) dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context);
     });
   }
 

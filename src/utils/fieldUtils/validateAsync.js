@@ -6,8 +6,7 @@
  */
 import invariant from 'invariant';
 import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
-import { makeCancelable } from '../../utils';
-import withImmutable from '../withImmutable';
+import { dispatch, makeCancelable } from '../../utils';
 
 export default async function validateAsync({ fieldProps, fields, form }) {
   /* Already async validated fields are bypassed */
@@ -24,7 +23,7 @@ export default async function validateAsync({ fieldProps, fields, form }) {
   }
 
   /* Call the async rule resolver */
-  const wrappedPromise = makeCancelable(withImmutable(asyncRule, {
+  const wrappedPromise = makeCancelable(dispatch(asyncRule, {
     value,
     fieldProps,
     fields,

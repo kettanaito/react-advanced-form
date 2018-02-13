@@ -2,11 +2,11 @@
  * Synchronous validation of the provided field.
  */
 import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
-import withImmutable from '../withImmutable';
+import dispatch from '../dispatch';
 
 function applyRule({ rule, name = 'invalid', selector, resolverArgs }) {
   const { form } = resolverArgs;
-  const isExpected = withImmutable(rule, resolverArgs, form.context);
+  const isExpected = dispatch(rule, resolverArgs, form.context);
   if (isExpected) return;
 
   return createRejectedRule({
@@ -97,7 +97,7 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
 
   if (rule) {
     const isExpected = (typeof rule === 'function')
-      ? withImmutable(rule, {
+      ? dispatch(rule, {
         value,
         fieldProps,
         fields,

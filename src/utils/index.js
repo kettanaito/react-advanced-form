@@ -1,6 +1,7 @@
 /* Primitives */
 export isset from './isset';
 export debounce from './debounce';
+export dispatch from './dispatch';
 export makeCancelable from './makeCancelable';
 export IterableInstance from './IterableInstance';
 
@@ -10,5 +11,4 @@ export getProperty from './getProperty';
 export getPropsPatch from './getPropsPatch';
 
 /* Field utils */
-export withImmutable from './withImmutable';
 export * as fieldUtils from './fieldUtils';
