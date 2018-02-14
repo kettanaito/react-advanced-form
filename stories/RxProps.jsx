@@ -32,40 +32,33 @@ const messages = {
 }
 
 export default class Messages extends React.Component {
+  state = {
+    type: 'text'
+  }
+
   render() {
+    const { type } = this.state;
     return (
-      <FormProvider rules={ providerRules } messages={ providerMessages }>
         <Form rules={ rules } messages={ messages }>
-          <MyInput name="foo" />
+          <h2>Reactive props</h2>
 
           <MyInput
-            name="fieldThree"
-            asyncRule={ this.handleAsyncValidation } />
-
-          <MyInput name="fieldOne" initialValue="foo" />
+            name="fieldOne"
+            type={ type } />
 
           <MyInput
             name="fieldTwo"
-            required={({ fields }) => {
-              return fields.fieldOne && fields.fieldOne.subscribe('value', ({ value }) => !!value);
-            } } />
+            required={({ form }) => {
+              form.subscribe(['fieldOne'], ({ value }) => {
+                return !!nextProps.value;
+              });
+            }} />
 
           <button onClick={(event) => {
             event.preventDefault();
-            this.setState(({ foo }) => ({ foo: !foo }));
-          }}>Toggle render</button>
-
-          <button onClick={(event) => {
-            event.preventDefault();
-            this.setState(({ type }) => ({
-              type: (type === 'text') ? 'password' : 'text'
-            }))
+            this.setState(({ type }) => ({ type: (type === 'text') ? 'password' : 'text' }));
           }}>Toggle type</button>
-
-          <button>Submit</button>
-
         </Form>
-      </FormProvider>
     );
   }
 }
