@@ -1,5 +1,6 @@
 import { Map, List } from 'immutable';
-import addPropsListener from './addPropsListener';
+import 'rxjs/add/operator/debounceTime';
+import addPropsObserver from './addPropsObserver';
 
 export default function getSubscriptions({ subscriptions, subscribe, fieldProps, fields, form }) {
   /* Bypass field with no reactive props */
@@ -25,7 +26,7 @@ export default function getSubscriptions({ subscriptions, subscribe, fieldProps,
 
     // const subscribedFieldProps = fields.getIn([subscribedFieldPath]);
 
-    addPropsListener({
+    addPropsObserver({
       fieldPath: subscribedFieldPath,
       props: subscribedProps,
       subscriber: fieldPath,

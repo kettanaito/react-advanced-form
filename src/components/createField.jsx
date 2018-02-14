@@ -90,7 +90,6 @@ export default function connectField(options) {
           /* Internals */
           ref: this,
           fieldPath,
-          subscribe: rxUtils.generateSubscribeFunction(fieldPath),
 
           /* General */
           name: this.props.name,
@@ -207,15 +206,12 @@ export default function connectField(options) {
         const { contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
-        rxUtils.handlePropsChange({
-          eventEmitter: this.context.eventEmitter,
-          subscriptions: this.context.subscriptions,
-          fieldPath: this.fieldPath,
-          // fieldProps: fromJS(nextProps),
-          // prevFieldProps: fromJS(this.props)
-
-          fieldProps: nextContextProps,
-          prevFieldProps: prevContextProps
+        const fieldPropsChange = rxUtils.createEvent(this.contextProps.get('fieldPath'), 'props', 'change');
+        this.context.eventEmitter.emit(fieldPropsChange, {
+          nextProps,
+          prevProps: this.props,
+          prevContextProps,
+          nextContextProps
         });
       }
 

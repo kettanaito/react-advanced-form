@@ -4,9 +4,7 @@ import PropTypes from 'prop-types';
 import invariant from 'invariant';
 import { fromJS, Iterable, List, Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/bufferTime';
-import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/observable/fromEvent';
 
 /* Internal modules */
@@ -174,30 +172,24 @@ export default class Form extends React.Component {
     fieldProps = fieldProps.set('debounceValidate', debounce(this.validateField, this.context.debounceTime));
 
     const nextFields = fields.mergeIn([fieldPath], fieldProps);
+    const { eventEmitter } = this;
 
     /**
-     * Add default props subscriptions to update the field's record upon the changes
-     * of props which affect the record.
+     * Create a props change observer to keep field's record in sync with the props changes
+     * of the respective field component. Only the changes in the props relative to the record
+     * should be observed and synchronized in the field's record.
      */
-    // const nativeSubscriptions = rxUtils.addPropsListener({
-    //   fieldPath,
-    //   subscriber: fieldPath,
-    //   props: ['type', 'disabled'],
-    //   resolver: (observer) => {
-    //     observer.subscribe(({ type, disabled }) => {
-    //       console.warn('Dependent prop(s) changed, updating field record...');
-
-    //       this.updateField({
-    //         fieldPath,
-    //         propsPatch: {
-    //           type,
-    //           disabled
-    //         }
-    //       });
-    //     });
-    //   },
-    //   eventEmitter: this.eventEmitter
-    // });
+    rxUtils.addPropsObserver({
+      fieldPath,
+      props: ['type', 'disabled'],
+      eventEmitter
+    }).subscribe((changedProps) => {
+      console.warn('Props has changed:', changedProps);
+      this.updateField({
+        fieldPath,
+        propsPatch: changedProps
+      })
+    });
 
     /**
      * RxProps subscriptions.

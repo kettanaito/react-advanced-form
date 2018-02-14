@@ -13,9 +13,6 @@ export default function handlePropsChange(args) {
   if (!relevantSubscription) return;
 
   const subscribedProps = relevantSubscription.get('props');
-  // const subscribers = relevantSubscription.get('subscribers');
-
-  // console.log({ subscribedProps: subscribedProps && subscribedProps.toJS() });
 
   subscribedProps.forEach((propName) => {
     const nextPropValue = fieldProps.get(propName);
