@@ -16,7 +16,7 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
  * @param {EventEmitter} eventEmitter
  * @return {Observable}
  */
-export default function addPropsListener({ fieldPath, props, predicate, eventEmitter }) {
+export default function addPropsListener({ fieldPath, props, predicate, getNextValue, eventEmitter }) {
   const fieldPropsChange = createEvent(fieldPath, 'props', 'change');
   const resolvedPredicated = predicate || defaultPredicate;
 
@@ -29,7 +29,7 @@ export default function addPropsListener({ fieldPath, props, predicate, eventEmi
         const hasChanged = resolvedPredicated({ ...args, propName });
 
         if (hasChanged) {
-          acc[propName] = nextProps[propName];
+          acc[propName] = getNextValue ? getNextValue({ ...args, propName }) : nextProps[propName];
         }
 
         return acc;
