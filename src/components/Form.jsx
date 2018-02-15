@@ -191,6 +191,20 @@ export default class Form extends React.Component {
       })
     });
 
+    rxUtils.addPropsObserver({
+      fieldPath,
+      props: ['value'],
+      predicate({ propName, prevContextProps, nextContextProps }) {
+        return prevContextProps.get(propName) !== nextContextProps.get(propName);
+      },
+      getNextValue({ propName, nextContextProps }) {
+        return nextContextProps.get(propName);
+      },
+      eventEmitter
+    }).subscribe((changedProps) => {
+      console.warn('Context subscription', changedProps);
+    });
+
     /**
      * RxProps subscriptions.
      * Update the current subscriptions map based on the newly registered field. In case the field has no
