@@ -7,7 +7,7 @@ import { Map } from 'immutable';
 // resolver interface.
 //
 //
-export const supportedReactiveProps = ['required', 'disabled'];
+export const supportedRxProps = ['required', 'disabled'];
 
 /**
  * Returns the collection of the dynamic props present on the provided field.
@@ -15,11 +15,11 @@ export const supportedReactiveProps = ['required', 'disabled'];
  * @return {Map}
  */
 export default function getRxProps(fieldProps) {
-  return supportedReactiveProps.reduce((props, dynamicProp) => {
-    const propValue = fieldProps[dynamicProp];
+  return supportedRxProps.reduce((props, rxPropName) => {
+    const rxPropValue = fieldProps[rxPropName];
 
-    if (typeof propValue === 'function') {
-      return props.set(dynamicProp, propValue);
+    if (typeof rxPropValue === 'function') {
+      return props.set(rxPropName, rxPropValue);
     }
 
     return props;

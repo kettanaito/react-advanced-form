@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/filter';
-import createEvent from './createEvent';
+import camelize from '../camelize';
 
 const defaultPredicate = ({ propName, prevProps, nextProps }) => {
   return (prevProps[propName] !== nextProps[propName]);
@@ -17,15 +17,16 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
  * @return {Observable}
  */
 export default function addPropsListener({ fieldPath, props, predicate, getNextValue, eventEmitter }) {
-  const fieldPropsChange = createEvent(fieldPath, 'props', 'change');
+  const fieldPropsChange = camelize(fieldPath, 'props', 'change');
   const resolvedPredicated = predicate || defaultPredicate;
+  const iterableProps = Array.isArray(props) ? props : [props];
 
   return Observable.fromEvent(eventEmitter, fieldPropsChange)
     .map((args) => {
       const { prevProps, nextProps } = args;
 
       /* Compose the changed props Object */
-      const changedProps = props.reduce((acc, propName) => {
+      const changedProps = iterableProps.reduce((acc, propName) => {
         const hasChanged = resolvedPredicated({ ...args, propName });
 
         if (hasChanged) {

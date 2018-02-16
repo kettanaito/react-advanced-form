@@ -10,7 +10,7 @@ import 'rxjs/add/observable/fromEvent';
 /* Internal modules */
 import { TValidationRules, TValidationMessages } from './FormProvider';
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
-import { isset, debounce, dispatch, getFormRules, fieldUtils, IterableInstance, rxUtils } from '../utils';
+import { isset, camelize, debounce, dispatch, getFormRules, fieldUtils, IterableInstance, rxUtils } from '../utils';
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
@@ -49,7 +49,6 @@ export default class Form extends React.Component {
 
   state = {
     fields: Map(),
-    subscriptions: Map(),
     dirty: false
   }
 
@@ -65,7 +64,6 @@ export default class Form extends React.Component {
   static childContextTypes = {
     fields: IterableInstance,
     eventEmitter: PropTypes.instanceOf(EventEmitter),
-    subscriptions: IterableInstance,
     updateField: PropTypes.func.isRequired
   }
 
@@ -73,7 +71,6 @@ export default class Form extends React.Component {
     return {
       fields: this.state.fields,
       eventEmitter: this.eventEmitter,
-      subscriptions: this.state.subscriptions,
       updateField: this.updateField
     };
   }
@@ -100,12 +97,16 @@ export default class Form extends React.Component {
     const { eventEmitter } = this;
 
     Observable.fromEvent(eventEmitter, 'fieldRegister')
-      .bufferTime(150)
+      .bufferTime(100)
       .subscribe(pendingFields => pendingFields.forEach(this.registerField));
     Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange);
     Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus);
     Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur);
     Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField);
+
+    Observable.fromEvent(eventEmitter, 'updateField')
+      .bufferTime(25)
+      .subscribe(pendingFields => pendingFields.forEach(this.updateField));
   }
 
   /**
@@ -175,6 +176,7 @@ export default class Form extends React.Component {
     const { eventEmitter } = this;
 
     /**
+     * Synchronize field record and field props.
      * Create a props change observer to keep field's record in sync with the props changes
      * of the respective field component. Only the changes in the props relative to the record
      * should be observed and synchronized in the field's record.
@@ -191,7 +193,7 @@ export default class Form extends React.Component {
       })
     });
 
-    rxUtils.addPropsObserver({
+    /* rxUtils.addPropsObserver({
       fieldPath,
       props: ['value'],
       predicate({ propName, prevContextProps, nextContextProps }) {
@@ -203,46 +205,47 @@ export default class Form extends React.Component {
       eventEmitter
     }).subscribe((changedProps) => {
       console.warn('Context subscription', changedProps);
+    }); */
+
+    this.setState({ fields: nextFields });
+    eventEmitter.emit(camelize(fieldPath, 'registered'), fieldProps);
+
+    rxUtils.handleRxProps({
+      fieldProps,
+      fields: nextFields,
+      form: this
+    });
+  }
+
+  subscribe = (fieldPath, props, resolver) => {
+    const createObserver = ({ subscriber, rxPropName }) => rxUtils.addPropsObserver({
+      fieldPath,
+      props,
+      predicate({ propName, prevContextProps, nextContextProps}) {
+        return (prevContextProps.get(propName) !== nextContextProps.get(propName));
+      },
+      getNextValue({ propName, nextContextProps }) {
+        return nextContextProps.get(propName)
+      },
+      eventEmitter: this.eventEmitter
+    }).subscribe((changedProps) => {
+      const nextValue = resolver(changedProps);
+
+      console.log('Should update prop `%s` of the field `%s` to `%s`',
+      rxPropName, subscriber, nextValue);
+
+      this.eventEmitter.emit('updateField', {
+        fieldPath: subscriber,
+        propsPatch: {
+          [rxPropName]: nextValue
+        }
+      });
     });
 
-    /**
-     * RxProps subscriptions.
-     * Update the current subscriptions map based on the newly registered field. In case the field has no
-     * reactive props, the provided subscriptions map will be returned immediately.
-     */
-    // const nextSubscriptions = rxUtils.getSubscriptions({
-    //   subscriptions: nativeSubscriptions,
-    //   fieldProps,
-    //   fields: nextFields,
-    //   form: this,
-    //   subscribe: async ({ rxPropName, resolvedPropValue }) => {
-    //     console.warn(`next value of "${rxPropName}":`, resolvedPropValue);
-
-    //     const { nextFieldProps } = await this.updateField({
-    //       fieldPath,
-    //       propsPatch: {
-    //         [rxPropName]: resolvedPropValue
-    //       }
-    //     });
-
-    //     //
-    //     //
-    //     // EXPERIMENTAL
-    //     //
-    //     //
-    //     /* (???) Validate the field to reflect "required" changed on the fly? */
-    //     this.validateField({
-    //       fieldProps: nextFieldProps,
-    //       forceProps: true,
-    //       force: true
-    //     });
-    //   }
-    // });
-
-    return this.setState({
-      fields: nextFields
-      // subscriptions: nextSubscriptions
-    });
+    return {
+      target: fieldPath,
+      createObserver
+    };
   }
 
   /**

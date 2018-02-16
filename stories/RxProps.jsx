@@ -36,28 +36,45 @@ export default class Messages extends React.Component {
     type: 'text'
   }
 
+  submit = ({ serialized }) => {
+    console.warn(serialized);
+    return new Promise(resolve => resolve());
+  }
+
   render() {
     const { type } = this.state;
     return (
-        <Form rules={ rules } messages={ messages }>
+        <Form
+          rules={ rules }
+          messages={ messages }
+          action={ this.submit }>
           <h2>Reactive props</h2>
 
           <MyInput
             name="fieldOne"
-            type={ type } />
+            required={({ form }) => {
+              return form.subscribe('fieldTwo', 'value', ({ value }) => !!value);
+            }} />
 
           <MyInput
             name="fieldTwo"
+            type={ type }
+            initialValue="foo" />
+
+          <MyInput
+            name="fieldThree"
             required={({ form }) => {
-              form.subscribe(['fieldOne'], ({ value }) => {
-                return !!nextProps.value;
-              });
+              return form.subscribe('fieldTwo', 'value', ({ value }) => !!value);
             }} />
 
           <button onClick={(event) => {
             event.preventDefault();
-            this.setState(({ type }) => ({ type: (type === 'text') ? 'password' : 'text' }));
+            this.setState(({ type }) => ({
+              type: (type === 'text') ? 'password' : 'text'
+            }));
           }}>Toggle type</button>
+
+          <button>Submit</button>
         </Form>
     );
   }

@@ -8,7 +8,7 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import { isset, IterableInstance, getComponentName, fieldUtils, rxUtils } from '../utils';
+import { isset, camelize, IterableInstance, getComponentName, fieldUtils } from '../utils';
 
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
@@ -19,7 +19,7 @@ const defaultOptions = {
 };
 
 /**
- * Map of common event handlers.
+ * Map of common event rs.
  * When any of those are passed to the end instance of the custom field, they are mapped to the
  * field's internal record and called during the field's lifecycle methods in the Form.
  */
@@ -48,7 +48,6 @@ export default function connectField(options) {
         fields: IterableInstance,
         fieldGroup: PropTypes.string,
         eventEmitter: PropTypes.instanceOf(EventEmitter),
-        subscriptions: IterableInstance,
         updateField: PropTypes.func.isRequired
       }
 
@@ -143,6 +142,9 @@ export default function connectField(options) {
         const reactiveProps = fieldUtils.getRxProps(fieldRecord);
         if (reactiveProps.size > 0) {
           fieldRecord.reactiveProps = reactiveProps;
+
+          /* Delete reactive props declarations from the field record */
+          reactiveProps.forEach((_, rxPropName) => delete fieldRecord[rxPropName]);
         }
 
         console.log('reactiveProps', reactiveProps);
@@ -206,7 +208,7 @@ export default function connectField(options) {
         const { contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
-        const fieldPropsChange = rxUtils.createEvent(this.contextProps.get('fieldPath'), 'props', 'change');
+        const fieldPropsChange = camelize(this.contextProps.get('fieldPath'), 'props', 'change');
         this.context.eventEmitter.emit(fieldPropsChange, {
           nextProps,
           prevProps: this.props,
