@@ -218,11 +218,11 @@ export default class Form extends React.Component {
     const createObserver = ({ subscriber, rxPropName }) => rxUtils.addPropsObserver({
       target,
       props,
-      predicate({ propName, prevContextProps, nextContextProps}) {
+      predicate({ propName, prevContextProps, nextContextProps }) {
         return (prevContextProps.get(propName) !== nextContextProps.get(propName));
       },
       getNextValue({ propName, nextContextProps }) {
-        return nextContextProps.get(propName)
+        return nextContextProps.get(propName);
       },
       eventEmitter: this.eventEmitter
     }).subscribe((changedProps) => {
@@ -749,11 +749,9 @@ export default class Form extends React.Component {
     return dispatchedAction.then((res) => {
       if (onSubmitted) dispatch(onSubmitted, { ...callbackArgs, res }, this.context);
       return res;
-
     }).catch((res) => {
       if (onSubmitFailed) dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context);
       return res;
-
     }).then((res) => {
       if (onSubmitEnd) dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context);
     });

@@ -23,14 +23,12 @@ export default function addPropsListener({ target, props, predicate, getNextValu
 
   return Observable.fromEvent(eventEmitter, propsChangeEvent)
     .map((args) => {
-      const { prevProps, nextProps } = args;
-
       /* Compose the changed props Object */
       const changedProps = iterableProps.reduce((acc, propName) => {
         const hasChanged = resolvedPredicated({ ...args, propName });
 
         if (hasChanged) {
-          acc[propName] = getNextValue ? getNextValue({ ...args, propName }) : nextProps[propName];
+          acc[propName] = getNextValue ? getNextValue({ ...args, propName }) : args.nextProps[propName];
         }
 
         return acc;
