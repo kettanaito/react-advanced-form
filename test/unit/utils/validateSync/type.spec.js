@@ -3,8 +3,8 @@
  */
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
+import { form } from '../../../utils';
 import { fieldUtils } from '../../../../src/utils';
-import { form } from '../../../common';
 
 describe('Type-specific validation', () => {
   const fields = fromJS({

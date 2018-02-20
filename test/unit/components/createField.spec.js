@@ -1,8 +1,8 @@
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
+import { defer } from '../../utils';
 import { createField, Form } from '../../../lib';
-import { defer } from '../../common';
 
 describe('createField', function () {
   it('Supports custom event handlers', () => {

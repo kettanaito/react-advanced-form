@@ -1,8 +1,8 @@
 import { fromJS, Map } from 'immutable';
 import { expect } from 'chai';
 import { AsyncValidationType, BothValidationType } from '../../../src/classes/ValidationType';
+import { form } from '../../utils';
 import { fieldUtils } from '../../../src/utils';
-import { form } from '../../common';
 
 describe('getErrorMessages', function () {
   /**
