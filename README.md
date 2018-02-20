@@ -4,7 +4,7 @@
 
 > Thank you for trying React Advanced Form! Please note that before the `1.0` release the package is under heavy development. Things may change, and things may break. We are doing our best and releasing breaking changes in the proper versions. Help us reach `1.0` faster by [Contributing](#contributing) to the library. Thank you.
 
-[React Advanced Form](https://github.com/kettanaito/react-advanced-form) allows you to tailor complex forms using declerative simplistic components and built-in powerful functionality. A form how it should be.
+[React Advanced Form](https://github.com/kettanaito/react-advanced-form) allows you to tailor complex forms with ease, using declerative components and powerful built-in features. Write forms like you have never done before!
 
 ## Features
 
@@ -46,7 +46,7 @@
   </tr>
 </table>
 
-There are also [field grouping](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html), dynamic props, API to create fields with your own custom logic, and much more.
+There are also [field grouping](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html), dynamic props, API to create fields with your own custom logic, and much more. Make sure to take your time in the official documentation.
 
 <br>
 
@@ -100,12 +100,12 @@ export default class RegistrationForm extends React.Component {
 }
 ```
 
-> **Note:** For illustrational purposes [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) is used in the example above. That is a package designed for fast form prototyping using React Advanced Form. You *don't need* to use that package in your projects.
+> **Note:** We are using [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) prototyping library in this example. You *don't need* to use it in your projects, as you are about to implement your custom fields easily with the tools exposed by React Advanced Form.
 
 See the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more information on components, methods and usage examples.
 
 ## Contributing
-Any of your contributions are highly appreciated. Please read the [Contribution guidelines](./docs/CONTRIBUTING.md) before contributing to the library. Developing isn't the only way to contribute – there are [many more](./docs/CONTRIBUTING.md#other-contributions).
+Any of your contributions are highly appreciated. Please read the [Contribution guidelines](./docs/CONTRIBUTING.md) before contributing to the library. Development isn't the only way to contribute – there are [many more](./docs/CONTRIBUTING.md#other-contributions).
 
 ## License
 This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE.md). See the license file for more details.
