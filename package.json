@@ -55,7 +55,7 @@
     "@storybook/addons": "^3.3.13",
     "@storybook/react": "^3.3.13",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.1",
+    "babel-eslint": "^8.2.2",
     "babel-loader": "^7.1.2",
     "babel-minify-webpack-plugin": "^0.3.0",
     "babel-plugin-async-to-promises": "^1.0.5",
@@ -69,7 +69,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
-    "cypress": "^2.0.1",
+    "cypress": "^2.0.2",
     "cypress-react-unit-test": "^1.2.1",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
@@ -79,7 +79,7 @@
     "eslint-loader": "^1.9.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-mocha": "^4.11.0",
-    "eslint-plugin-react": "^7.6.1",
+    "eslint-plugin-react": "^7.7.0",
     "feather-icons": "^4.5.0",
     "gitbook-plugin-prism": "^2.3.0",
     "immutable": "^3.8.2",
@@ -98,6 +98,6 @@
   },
   "dependencies": {
     "hoist-non-react-statics": "^2.5.0",
-    "invariant": "^2.2.2"
+    "invariant": "^2.2.3"
   }
 }
