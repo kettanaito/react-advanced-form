@@ -36,46 +36,46 @@ export default class Messages extends React.Component {
     type: 'text'
   }
 
-  submit = ({ serialized }) => {
+  handleSubmitStart = ({ serialized }) => {
     console.warn(serialized);
-    return new Promise(resolve => resolve());
   }
 
   render() {
     const { type } = this.state;
+
     return (
-        <Form
-          rules={ rules }
-          messages={ messages }
-          action={ this.submit }>
-          <h2>Reactive props</h2>
+      <Form
+        rules={ rules }
+        messages={ messages }
+        onSubmitStart={ this.handleSubmitStart }>
+        <h2>Reactive props</h2>
 
-          <MyInput
-            name="fieldOne"
-            required={({ form }) => {
-              return form.subscribe('fieldTwo', 'value', ({ value }) => !!value);
-            }} />
+        <MyInput
+          name="fieldOne"
+          required={({ fields, form }) => {
+            return form.subscribe('fieldTwo', 'type', ({ type }) => (type === 'password'));
+          }} />
 
-          <MyInput
-            name="fieldTwo"
-            type={ type }
-            initialValue="foo" />
+        <MyInput
+          name="fieldTwo"
+          type={ type }
+          initialValue="foo" />
 
-          <MyInput
-            name="fieldThree"
-            required={({ form }) => {
-              return form.subscribe('fieldTwo', 'value', ({ value }) => !!value);
-            }} />
+        {/* <MyInput
+          name="fieldThree"
+          required={({ fields, form }) => {
+            return form.subscribe('fieldTwo', 'value', ({ value }) => !!value);
+          }} /> */}
 
-          <button onClick={(event) => {
-            event.preventDefault();
-            this.setState(({ type }) => ({
-              type: (type === 'text') ? 'password' : 'text'
-            }));
-          }}>Toggle type</button>
+        <button onClick={(event) => {
+          event.preventDefault();
+          this.setState(({ type }) => ({
+            type: (type === 'text') ? 'password' : 'text'
+          }));
+        }}>Toggle type</button>
 
-          <button>Submit</button>
-        </Form>
+        <button>Submit</button>
+      </Form>
     );
   }
 }

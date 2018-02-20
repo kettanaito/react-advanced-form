@@ -10,18 +10,18 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
 /**
  * Creates an observer listening to the changes of the provided props of the specified field.
  * Only the changes which satisfy the predicate function will be emitted.
- * @param {string} fieldPath
- * @param {string[]} props
+ * @param {string} target Field path of the subscribed target field.
+ * @param {Array<string>|string} props
  * @param {Function: boolean} predicate
  * @param {EventEmitter} eventEmitter
  * @return {Observable}
  */
-export default function addPropsListener({ fieldPath, props, predicate, getNextValue, eventEmitter }) {
-  const fieldPropsChange = camelize(fieldPath, 'props', 'change');
+export default function addPropsListener({ target, props, predicate, getNextValue, eventEmitter }) {
+  const propsChangeEvent = camelize(target, 'props', 'change');
   const resolvedPredicated = predicate || defaultPredicate;
   const iterableProps = Array.isArray(props) ? props : [props];
 
-  return Observable.fromEvent(eventEmitter, fieldPropsChange)
+  return Observable.fromEvent(eventEmitter, propsChangeEvent)
     .map((args) => {
       const { prevProps, nextProps } = args;
 
