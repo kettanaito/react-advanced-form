@@ -3,7 +3,7 @@ import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
 import { Input } from '../../components';
-import { defer } from '../../common';
+import { defer } from '../../utils';
 import { Form } from '../../../lib';
 import { fieldUtils } from '../../../src/utils';
 

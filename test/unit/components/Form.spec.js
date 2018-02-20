@@ -2,8 +2,8 @@ import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
 import { Input, Select, Checkbox, Radio, Textarea } from '../../components';
+import { defer, validationRules, validationMessages } from '../../utils';
 import { Form, Field } from '../../../lib';
-import { defer, validationRules, validationMessages } from '../../common';
 
 describe('Form', () => {
   it('"Form.props.ref" references the Form component', () => {

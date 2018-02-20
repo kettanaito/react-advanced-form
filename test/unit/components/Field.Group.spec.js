@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import { Map } from 'immutable';
 import { mount } from 'enzyme';
 import { Input } from '../../components';
+import { validationRules, validationMessages } from '../../utils';
 import { Form, Field } from '../../../lib';
-import { validationRules, validationMessages } from '../../common';
 
 describe('Field.Group', () => {
   const wrapper = mount(
