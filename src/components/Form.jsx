@@ -127,10 +127,9 @@ export default class Form extends React.Component {
     console.groupEnd();
 
     /* Warn upon duplicate registrations */
-    if (isAlreadyExist && !isRadioButton) {
-      return console.warn('Cannot register field `%s`, the field with the provided name is already registered. '
-      + 'Make sure the fields on the same level of `Form` or `Field.Group` have unique names.', fieldPath);
-    }
+    invariant(!(isAlreadyExist && !isRadioButton), 'Cannot register field `%s`, the field with ' +
+      'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
+      'or `Field.Group` have unique names.', fieldPath);
 
     /* Get the value-like property of the field */
     const valuePropName = fieldProps.get('valuePropName');
@@ -176,50 +175,48 @@ export default class Form extends React.Component {
     const { eventEmitter } = this;
 
     /**
-     * Synchronize field record and field props.
+     * Synchronize the field record with the field props.
      * Create a props change observer to keep field's record in sync with the props changes
      * of the respective field component. Only the changes in the props relative to the record
      * should be observed and synchronized in the field's record.
      */
     rxUtils.addPropsObserver({
-      fieldPath,
+      target: fieldPath,
       props: ['type', 'disabled'],
       eventEmitter
-    }).subscribe((changedProps) => {
+    }).subscribe(async (changedProps) => {
       console.warn('Props has changed:', changedProps);
-      this.updateField({
+
+      const { nextFieldProps } = await this.updateField({
         fieldPath,
         propsPatch: changedProps
-      })
+      });
+
+      this.validateField({ fieldProps: nextFieldProps });
     });
 
-    /* rxUtils.addPropsObserver({
-      fieldPath,
-      props: ['value'],
-      predicate({ propName, prevContextProps, nextContextProps }) {
-        return prevContextProps.get(propName) !== nextContextProps.get(propName);
-      },
-      getNextValue({ propName, nextContextProps }) {
-        return nextContextProps.get(propName);
-      },
-      eventEmitter
-    }).subscribe((changedProps) => {
-      console.warn('Context subscription', changedProps);
-    }); */
+    this.setState({ fields: nextFields }, () => {
+      /* Emit the field registered event */
+      eventEmitter.emit(camelize(fieldPath, 'registered'), fieldProps);
 
-    this.setState({ fields: nextFields });
-    eventEmitter.emit(camelize(fieldPath, 'registered'), fieldProps);
-
-    rxUtils.handleRxProps({
-      fieldProps,
-      fields: nextFields,
-      form: this
+      rxUtils.handleRxProps({
+        fieldProps,
+        fields: nextFields,
+        form: this
+      });
     });
   }
 
-  subscribe = (fieldPath, props, resolver) => {
+  /**
+   * Generates the props subscription interface.
+   * @param {string} target Field path of the target field to subscribe to.
+   * @param {Array<string>|string} props
+   * @param {function} resolver
+   * @returns {Object}
+   */
+  subscribe = (target, props, resolver) => {
     const createObserver = ({ subscriber, rxPropName }) => rxUtils.addPropsObserver({
-      fieldPath,
+      target,
       props,
       predicate({ propName, prevContextProps, nextContextProps}) {
         return (prevContextProps.get(propName) !== nextContextProps.get(propName));
@@ -231,8 +228,7 @@ export default class Form extends React.Component {
     }).subscribe((changedProps) => {
       const nextValue = resolver(changedProps);
 
-      console.log('Should update prop `%s` of the field `%s` to `%s`',
-      rxPropName, subscriber, nextValue);
+      console.log('Should update prop `%s` of the field `%s` to `%s`', rxPropName, subscriber, nextValue);
 
       this.eventEmitter.emit('updateField', {
         fieldPath: subscriber,
@@ -243,7 +239,7 @@ export default class Form extends React.Component {
     });
 
     return {
-      target: fieldPath,
+      target,
       createObserver
     };
   }
@@ -311,11 +307,23 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Handles the change which marks form as dirty.
+   * Handles the first field change of the form.
+   * @param {Event} event
+   * @param {any} nextValue
+   * @param {any} prevValue
+   * @param {Map} fieldProps
    */
   handleFirstChange = ({ event, nextValue, prevValue, fieldProps }) => {
     const { onFirstChange } = this.props;
-    if (onFirstChange) onFirstChange({ event, nextValue, prevValue, fieldProps });
+    if (!onFirstChange) return;
+
+    dispatch(onFirstChange, {
+      event,
+      nextValue,
+      prevValue,
+      fieldProps
+    }, this.context);
+
     this.setState({ dirty: true });
   }
 
@@ -332,7 +340,7 @@ export default class Form extends React.Component {
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.groupEnd();
 
-    const { nextFields, nextFieldProps } = await this.updateField({
+    const { nextFieldProps, nextFields } = await this.updateField({
       fieldPath: fieldProps.get('fieldPath'),
       propsPatch: {
         focused: true
@@ -341,14 +349,14 @@ export default class Form extends React.Component {
 
     /* Call custom onFocus handler */
     const onFocusHandler = fieldProps.get('onFocus');
-    if (onFocusHandler) {
-      dispatch(onFocusHandler, {
-        event,
-        fieldProps: nextFieldProps,
-        fields: nextFields,
-        form: this
-      }, this.context);
-    }
+    if (!onFocusHandler) return;
+
+    dispatch(onFocusHandler, {
+      event,
+      fieldProps: nextFieldProps,
+      fields: nextFields,
+      form: this
+    }, this.context);
   }
 
   /**
@@ -521,14 +529,14 @@ export default class Form extends React.Component {
 
     /* Call custom onBlur handler */
     const onBlur = nextFieldProps.get('onBlur');
-    if (onBlur) {
-      dispatch(onBlur, {
-        event,
-        fieldProps: nextFieldProps,
-        fields: nextFields,
-        form: this
-      }, this.context);
-    }
+    if (!onBlur) return;
+
+    dispatch(onBlur, {
+      event,
+      fieldProps: nextFieldProps,
+      fields: nextFields,
+      form: this
+    }, this.context);
   }
 
   /**
@@ -666,7 +674,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Resets value and state of all the fields.
+   * Resets all the fields to their value/state upon initial render.
    */
   reset = () => {
     const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
@@ -677,12 +685,12 @@ export default class Form extends React.Component {
 
       /* Call custom callback methods to be able to reset controlled fields */
       const { onReset } = this.props;
-      if (onReset) {
-        dispatch(onReset, {
-          fields: nextFields,
-          form: this
-        }, this.context);
-      }
+      if (!onReset) return;
+
+      dispatch(onReset, {
+        fields: nextFields,
+        form: this
+      }, this.context);
     });
   }
 
@@ -708,7 +716,7 @@ export default class Form extends React.Component {
     invariant(action, 'Cannot submit the form without `action` prop specified explicitly. Expected a function ' +
       'which returns Promise, but received: %s.', action);
 
-    /* Ensure form should submit (has no unexpected field values) */
+    /* Ensure form has no unexpected fields and, therefore, should be submitted */
     const shouldSubmit = await this.validate();
     if (!shouldSubmit) return;
 
@@ -734,9 +742,9 @@ export default class Form extends React.Component {
 
     const dispatchedAction = dispatch(action, callbackArgs, this.context);
 
-    invariant(dispatchedAction && (typeof dispatchedAction.then === 'function'),
-      'Cannot submit the form. Expecting `action` prop of the Form to return an instance of Promise, but got: %s. ' +
-      'Make sure you return a Promise from your action.', dispatchedAction);
+    invariant(dispatchedAction && (typeof dispatchedAction.then === 'function'), 'Cannot submit the form. ' +
+      'Expected `action` prop of the Form to return an instance of Promise, but got: %s. Make sure you return a ' +
+      'Promise from your action handler.', dispatchedAction);
 
     return dispatchedAction.then((res) => {
       if (onSubmitted) dispatch(onSubmitted, { ...callbackArgs, res }, this.context);
