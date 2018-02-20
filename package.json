@@ -30,8 +30,7 @@
   "module": "src/index.js",
   "main": "lib/index.js",
   "scripts": {
-    "start": "webpack-dev-server",
-    "storybook": "start-storybook -p 6006",
+    "start": "start-storybook -p 6009",
     "cypress": "node_modules/.bin/cypress open",
     "build": "NODE_ENV=production BABEL_ENV=production webpack",
     "test:unit": "mocha --require babel-core/register --require babel-polyfill",
