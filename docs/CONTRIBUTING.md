@@ -1,5 +1,14 @@
 # Contributing
 
+* [Technologies](#technologies)
+* [General agreements](#general-agreements)
+  * [Versioning](#versioning)
+  * [Naming conventions](#naming-conventions)
+  * [Git workflow](#git-workflow)
+* [Getting started](#getting-started)
+* [Commands](#commands)
+* [Other contributions](#other-contributions)
+
 ## Foreword
 First of all, thank you for deciding to contribute to React Advanced Form! It is only by the power of the community we can achieve great results.
 
@@ -13,6 +22,7 @@ A good place to start is to ensure you are familiar with the technologies used i
   * [Chai](http://chaijs.com/) as the assertion library
   * [Mocha](https://mochajs.org/) for plain unit tests
   * [Enzyme](http://airbnb.io/enzyme/) for React unit tests
+  * [Cypress](https://www.cypress.io/) for integration tests.
 
 ## General agreements
 Please read and respect the internal agreements listed below. The latter are to ensure the quality and seamless coding approach during the development of the library.
@@ -49,40 +59,47 @@ cd react-advanced-form
 npm install
 ```
 
-### Run the library
-You can run the development build by:
+### Run the Storybook
+Start the development process by executing the following command in the terminal:
 
 ```
 npm start
 ```
 
-Or, alternatively, run Storybook by:
-```
-npm run storybook
-```
+This will launch the Storybook server at [http://localhost:6009](http://localhost:6009).
 
-### Contribute!
-Now your local repository is ready for an amazing contribution! Make sure to follow the [General agreements](#general-agreements) for your contribution to be seamless.
+### Contribute
+Development process generally consist of the following steps:
 
-### Build
-Build the changes you have implemented by running:
+1. Create a test scenario (story) to test your changes.
+1. Import a source fields of the library into the created story.
+1. Develop with live updates.
 
-```
-npm run build
-```
+### Write tests
+**IT IS MANDATORY TO COVER YOUR CHANGES WITH THE CORRESPONDING TESTS.**
 
-This will build the production bundle of the library.
+Depending on the character of your changes, it may be a unit test(s), integration test(s), or both. Please read more on the [Testing guidelines](./TESTING.md), as well as some test examples in the respective section of the documentation.
 
-### Test
-Providing unit or/and integration tests is a **must** regardless of whether your change was a bugfix, or a brand new feature.
+### Commit the changes
+Follow the [Git workflow](#git-workflow) described above.
 
-Please read more about [Testing](./TESTING.md) in the dedicated section. Thank you.
+Each your commit is followed by an automated build and tests run toward your changes. It is only when the build succeeded and all tests passed your commit is being created. Make sure to fix all the issues which may happen during this process.
 
 ### Create a Pull request
-Create a new pull request featuring your changes in the RAF repository. Pass the code review and your changes will be ready for the next release.
+Create [a new pull request](https://github.com/kettanaito/react-advanced-form/pulls) featuring your changes in the RAF repository. Assign the pull request to one of the library owners or contributors and await for the comment or approval. Pull request are merged into `master` branch by its reviewer.
+
+## Commands
+| Command | Description |
+| ------- | ----------- |
+| `npm start` | Runs Storybook. |
+| `npm test` | Runs all the tests (unit and integration). |
+| `npm run cypress` | Opens Cypress GUI. |
+| `npm run test:unit` | Runs unit tests. |
+| `npm run test:integration` | Runs integration tests. |
+| `npm run build` | Performs a production build. |
 
 ## Other contributions
-Above there are the guidelines for the development contribution, yet that is not the only way you can make RAF better:
+Above there are the guidelines for the development contribution, but that isn't the only way you can make RAF better:
 
 * Share your wisdom and help others in the opened [Issues](https://github.com/kettanaito/react-advanced-form/issues).
 * Contribute to the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form), which is a part of the RAF repository.
