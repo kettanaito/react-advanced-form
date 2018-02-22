@@ -6,7 +6,7 @@ import { fromJS, Iterable, List, Map } from 'immutable';
 /* Internal modules */
 import { TValidationRules, TValidationMessages } from './FormProvider';
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
-import { isset, debounce, dispatch, fieldUtils, IterableInstance } from '../utils';
+import { isset, debounce, dispatch, getFormRules, fieldUtils, IterableInstance } from '../utils';
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
@@ -79,26 +79,11 @@ export default class Form extends React.Component {
     };
   }
 
-  /**
-   * Returns form rules based on the priority of the provided rulesa and the necessity to extend them.
-   */
-  defineRules() {
-    const { rules: contextRules } = this.context;
-    const { rules: mutableFormRules } = this.props;
-
-    if (!mutableFormRules) return (contextRules || Map());
-
-    const formRules = fromJS(mutableFormRules);
-    const highestRules = formRules || contextRules || Map();
-
-    return formRules.get('extend') ? contextRules.mergeDeep(formRules) : highestRules;
-  }
-
   constructor(props, context) {
     super(props, context);
 
     /* Define validation rules */
-    this.formRules = this.defineRules();
+    this.formRules = getFormRules(this.props.rules, this.context.rules);
 
     /**
      * Define validation messages once, since those should be converted to immutable, which is
