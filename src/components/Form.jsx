@@ -1,6 +1,6 @@
-import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
+import invariant from 'invariant';
 import { fromJS, Iterable, List, Map } from 'immutable';
 
 /* Internal modules */
@@ -8,15 +8,26 @@ import { TValidationRules, TValidationMessages } from './FormProvider';
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
 import { isset, debounce, dispatch, fieldUtils, IterableInstance } from '../utils';
 
+/**
+ * Shorthand: Binds the component's reference to the function's context and calls an optional callback
+ * function to access that reference.
+ * @param {HTMLElement} ref
+ * @param {Function} callback
+ */
+function getInnerRef(element, callback) {
+  this.innerRef = element;
+  if (callback) callback(element);
+}
+
 export default class Form extends React.Component {
   static propTypes = {
     /* General */
-    innerRef: PropTypes.func,
-    action: PropTypes.func.isRequired, // handle form's action invoked as a submit handling function
+    innerRef: PropTypes.func, // reference to the <form> element
+    action: PropTypes.func.isRequired, // form submit action
 
     /* Validation */
-    rules: TValidationRules, // validation rules
-    messages: TValidationMessages, // validation messages
+    rules: TValidationRules,
+    messages: TValidationMessages,
 
     /* Events */
     onFirstChange: PropTypes.func,
@@ -617,6 +628,7 @@ export default class Form extends React.Component {
 
   /**
    * Serializes the fields' values into a plain Object.
+   * @returns {Map|Object}
    */
   serialize = () => {
     const serialized = fieldUtils.serializeFields(this.state.fields);
@@ -632,8 +644,9 @@ export default class Form extends React.Component {
 
     /* Throw on submit attempt without the "action" prop */
     const { action } = this.props;
+
     invariant(action, 'Cannot submit the form without `action` prop specified explicitly. Expected a function ' +
-    'which returns Promise, but received: %s.', action);
+      'which returns Promise, but received: %s.', action);
 
     /* Ensure form should submit (has no unexpected field values) */
     const shouldSubmit = await this.validate();
@@ -659,26 +672,20 @@ export default class Form extends React.Component {
      */
     if (onSubmitStart) dispatch(onSubmitStart, callbackArgs, this.context);
 
-    /**
-     * Perform the action.
-     * Form's action is a function which returns a Promise. You must pass a req, or async action
-     * as a prop to the form in order for it to work.
-     */
     const dispatchedAction = dispatch(action, callbackArgs, this.context);
 
     invariant(dispatchedAction && (typeof dispatchedAction.then === 'function'),
-      'Cannot submit the form. Expecting `action` prop of the Form to return an instance ' +
-      'of Promise, but got: %s. Make sure you return a Promise from your action.',
-      dispatchedAction);
+      'Cannot submit the form. Expecting `action` prop of the Form to return an instance of Promise, but got: %s. ' +
+      'Make sure you return a Promise from your action.', dispatchedAction);
 
     return dispatchedAction.then((res) => {
       if (onSubmitted) dispatch(onSubmitted, { ...callbackArgs, res }, this.context);
-
       return res;
+
     }).catch((res) => {
       if (onSubmitFailed) dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context);
-
       return res;
+
     }).then((res) => {
       if (onSubmitEnd) dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context);
     });
@@ -689,7 +696,7 @@ export default class Form extends React.Component {
 
     return (
       <form
-        ref={ innerRef }
+        ref={ ref => getInnerRef.call(this, ref, innerRef) }
         { ...{ id } }
         { ...{ className } }
         onSubmit={ this.submit }
