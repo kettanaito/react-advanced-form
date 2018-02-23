@@ -187,7 +187,7 @@ export default function connectField(options) {
           this.context.handleFieldChange({
             event: {
               nativeEvent: {
-                isManualUpdate: true
+                isForcedUpdate: true
               }
             },
             nextValue,

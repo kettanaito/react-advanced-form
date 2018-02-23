@@ -151,6 +151,13 @@ export default class Form extends React.Component {
       });
     }
 
+    /**
+     * Each field should have its own debounced validation function to prevent debounce overlap
+     * of the simultaneously validating fields. If bind on a form level, sibling validations will
+     * override each other, and only the last validation will be executed.
+     */
+    fieldProps = fieldProps.set('debounceValidate', debounce(this.validateField, 250));
+
     const nextFields = fields.mergeIn([fieldPath], fieldProps);
     return this.setState({ fields: nextFields });
   }
@@ -286,7 +293,7 @@ export default class Form extends React.Component {
     /* Bypass events called from an unregistered Field */
     if (!this.isRegistered(fieldProps)) return;
 
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ Form @ handleFieldChange');
+    console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.log('nextValue', nextValue);
     console.groupEnd();
@@ -299,11 +306,11 @@ export default class Form extends React.Component {
      * "createField.Field.componentReceiveProps()", when comparing previous and next values of
      * controlled fields.
      */
-    const isChangeEvent = event && !((event.nativeEvent || event).isManualUpdate);
+    const isForcedUpdate = event && !((event.nativeEvent || event).isForcedUpdate);
     const isControlled = fieldProps.get('controlled');
     const onChangeHandler = fieldProps.get('onChange');
 
-    if (isChangeEvent && isControlled) {
+    if (isForcedUpdate && isControlled) {
       invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
       'but received: %s.', fieldProps.get('name'), onChangeHandler);
 
@@ -319,17 +326,12 @@ export default class Form extends React.Component {
 
     const valuePropName = fieldProps.get('valuePropName');
 
-    /**
-     * Update the value of the changed field.
-     * Also, reset all validation states since those are useless after the value has changed.
-     * This is important for the validation chain, as proper validation statuses trigger proper validations.
-     */
     const { nextFieldProps: updatedFieldProps } = await this.updateField({
       fieldProps,
       propsPatch: {
         [valuePropName]: nextValue,
 
-        /* Reset previous validation states */
+        /* Reset the validation states as they are irrelevant to the updated value */
         validating: false,
         validSync: false,
         validAsync: false,
@@ -338,7 +340,7 @@ export default class Form extends React.Component {
       }
     });
 
-    /* Cancel any pending async validation due to the validation states reset */
+    /* Cancel any pending async validation due to the field value change */
     if (updatedFieldProps.has('pendingAsyncValidation')) {
       updatedFieldProps.getIn(['pendingAsyncValidation', 'cancel'])();
     }
@@ -354,18 +356,26 @@ export default class Form extends React.Component {
      * most likely means the value update of the controlled field, which must be validated
      * instantly.
      */
-    const appropriateValidation = (nextValue)
-      ? this.debounceValidateField
-      : this.validateField;
+    const shouldDebounce = (!!nextValue);
+    const appropriateValidation = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
+
+    console.log({ event });
+    console.log({ shouldDebounce });
+    console.log({ appropriateValidation });
+    console.log({ updatedFieldProps: updatedFieldProps.toJS() });
+    console.log('Should validate `%s`', fieldProps.get('fieldPath'));
 
     const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({
       type: SyncValidationType,
-      fieldProps: updatedFieldProps
+      fieldProps: updatedFieldProps,
+      forceProps: true
     });
 
     /**
      * Call custom "onChange" handler for uncontrolled fields only.
-     * Controlled fields dispatch "onChange" handler at the beginning of "Form.handleFieldChange".
+     * "onChange" callback method acts as an updated function for controlled fields, and as a callback
+     * function for uncontrolled fields. The value update of uncontrolled fields is handled by the Form.
+     * Controlled fields dispatch "onChange" handler at the beginning of this method.
      * There is no need to dispatch the handler method once more.
      */
     if (!isControlled && onChangeHandler) {
@@ -479,6 +489,7 @@ export default class Form extends React.Component {
       formRules
     });
 
+    console.warn('Validating `%s`...', fieldProps.get('fieldPath'));
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     console.log('validation type', type);
     console.log('value', fieldProps.get('value'));
@@ -486,7 +497,7 @@ export default class Form extends React.Component {
     console.log('shouldValidate', shouldValidate);
     console.groupEnd();
 
-    /* Bypass unnecessary validation */
+    /* Bypass validation when none is needed */
     if (!shouldValidate) {
       return {
         nextFieldProps: fieldProps,
@@ -540,13 +551,6 @@ export default class Form extends React.Component {
       propsPatch: propsPatch.merge(nextValidityState)
     });
   }
-
-  /**
-   * Debounce wrapper for the field validation method.
-   * That applies that in case multiple calls of this method will be executed, each one executed
-   * within the given timeout duration period postpones the following one's execution.
-   */
-  debounceValidateField = debounce(this.validateField, 250)
 
   /**
    * Validates the form.
