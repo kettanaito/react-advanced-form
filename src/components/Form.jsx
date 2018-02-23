@@ -185,8 +185,6 @@ export default class Form extends React.Component {
       props: ['type', 'disabled'],
       eventEmitter
     }).subscribe(async (changedProps) => {
-      console.warn('Props has changed:', changedProps);
-
       const { nextFieldProps } = await this.updateField({
         fieldPath,
         propsPatch: changedProps
@@ -215,6 +213,8 @@ export default class Form extends React.Component {
    * @returns {Object}
    */
   subscribe = (target, props, resolver) => {
+    const { eventEmitter } = this;
+
     const createObserver = ({ subscriber, rxPropName }) => rxUtils.addPropsObserver({
       target,
       props,
@@ -224,17 +224,16 @@ export default class Form extends React.Component {
       getNextValue({ propName, nextContextProps }) {
         return nextContextProps.get(propName);
       },
-      eventEmitter: this.eventEmitter
+      eventEmitter
     }).subscribe((changedProps) => {
       const nextValue = resolver(changedProps);
+      const nextFieldProps = subscriber.set(rxPropName, nextValue);
 
-      console.log('Should update prop `%s` of the field `%s` to `%s`', rxPropName, subscriber, nextValue);
+      console.log('Should update prop `%s` of the field `%s` to `%s`', rxPropName, subscriber.get('fieldPath'), nextValue);
 
-      this.eventEmitter.emit('updateField', {
-        fieldPath: subscriber,
-        propsPatch: {
-          [rxPropName]: nextValue
-        }
+      eventEmitter.emit('updateField', {
+        fieldPath: subscriber.get('fieldPath'),
+        fieldProps: nextFieldProps
       });
     });
 
