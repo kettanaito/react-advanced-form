@@ -359,12 +359,6 @@ export default class Form extends React.Component {
     const shouldDebounce = (!!prevValue && !!nextValue);
     const appropriateValidation = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
 
-    console.log({ event });
-    console.log({ shouldDebounce });
-    console.log({ appropriateValidation });
-    console.log({ updatedFieldProps: updatedFieldProps.toJS() });
-    console.log('Should validate `%s`', fieldProps.get('fieldPath'));
-
     const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({
       type: SyncValidationType,
       fieldProps: updatedFieldProps,
