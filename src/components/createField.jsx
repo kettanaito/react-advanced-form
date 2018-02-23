@@ -6,7 +6,7 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import { isset, IterableInstance, getComponentName, getPropsPatch, fieldUtils } from '../utils';
+import { isset, IterableInstance, getComponentName, fieldUtils } from '../utils';
 
 /** Default options of "connectField()" HOC. */
 const defaultOptions = {
@@ -103,7 +103,6 @@ export default function connectField(options) {
           /* States */
           controlled: this.props.hasOwnProperty('value'),
           focused: false,
-          disabled: this.props.disabled,
 
           /* Validation */
           errors: null,
@@ -194,27 +193,6 @@ export default function connectField(options) {
             nextValue,
             prevValue,
             fieldProps: contextProps
-          });
-        }
-
-        //
-        //
-        // TODO This is worth re-doing!
-        //
-        //
-        /**
-         * Handle direct props updates.
-         * When direct props receive new values, those should be updated in the Form's state as well.
-         */
-        const propsPatch = getPropsPatch({
-          contextProps,
-          nextProps
-        });
-
-        if (Object.keys(propsPatch).length > 0) {
-          this.context.updateField({
-            fieldPath: this.fieldPath,
-            propsPatch
           });
         }
       }
@@ -314,7 +292,7 @@ export default function connectField(options) {
           type: fieldState.type,
           value: fieldState.controlled ? (props.value || '') : fieldState.value,
           required: fieldState.required,
-          disabled: fieldState.disabled,
+          disabled: this.props.disabled,
 
           /* Assign/override the props provided via {options.enforceProps()} */
           ...enforcedProps,
