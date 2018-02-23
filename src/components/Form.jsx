@@ -289,7 +289,7 @@ export default class Form extends React.Component {
    * @param {mixed} prevValue
    * @param {mixed} nextValue
    */
-  handleFieldChange = async ({ event, fieldProps, nextValue, prevValue }) => {
+  handleFieldChange = async ({ event, fieldProps, prevValue, nextValue }) => {
     /* Bypass events called from an unregistered Field */
     if (!this.isRegistered(fieldProps)) return;
 
@@ -356,7 +356,7 @@ export default class Form extends React.Component {
      * most likely means the value update of the controlled field, which must be validated
      * instantly.
      */
-    const shouldDebounce = (!!nextValue);
+    const shouldDebounce = (!!prevValue && !!nextValue);
     const appropriateValidation = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
 
     console.log({ event });
@@ -368,7 +368,7 @@ export default class Form extends React.Component {
     const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({
       type: SyncValidationType,
       fieldProps: updatedFieldProps,
-      forceProps: true
+      forceProps: !shouldDebounce
     });
 
     /**
