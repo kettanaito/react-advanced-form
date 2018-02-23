@@ -24,7 +24,7 @@ export default function handleRxProps({ fieldProps, fields, form }) {
       const { target, createObserver } = resolvedValue;
 
       const subscription = createObserver({
-        subscriber: fieldProps.get('fieldPath'),
+        subscriber: fieldProps,
         rxPropName
       });
 
