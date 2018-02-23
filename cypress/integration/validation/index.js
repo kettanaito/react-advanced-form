@@ -1,7 +1,8 @@
 /**
  * Validation
  */
-describe('validation', function () {
+describe('Validation', function () {
   require('./SyncValidation');
   require('./AsyncValidation');
+  require('./Misc');
 });
