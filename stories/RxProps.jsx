@@ -52,14 +52,21 @@ export default class Messages extends React.Component {
 
         <MyInput
           name="fieldOne"
-          required={({ fields, form }) => {
-            return form.subscribe('fieldTwo', 'type', ({ type }) => (type === 'password'));
+          initialValue="foo" />
+
+        <MyInput
+          name="rxField"
+          required={({ fields }) => {
+            const conditionA = fields.fieldOne && !!fields.fieldOne.value;
+            const conditionB = fields.fieldThree && (fields.fieldThree.type === 'password');
+
+            return conditionA && conditionB;
           }} />
 
         <MyInput
-          name="fieldTwo"
+          name="fieldThree"
           type={ type }
-          initialValue="foo" />
+          initialValue="something" />
 
         {/* <MyInput
           name="fieldThree"

@@ -181,10 +181,10 @@ export default class Form extends React.Component {
      * should be observed and synchronized in the field's record.
      */
     rxUtils.addPropsObserver({
-      target: fieldPath,
+      fieldPath,
       props: ['type', 'disabled'],
       eventEmitter
-    }).subscribe(async (changedProps) => {
+    }).subscribe(async ({ changedProps }) => {
       const { nextFieldProps } = await this.updateField({
         fieldPath,
         propsPatch: changedProps
@@ -203,44 +203,6 @@ export default class Form extends React.Component {
         form: this
       });
     });
-  }
-
-  /**
-   * Generates the props subscription interface.
-   * @param {string} target Field path of the target field to subscribe to.
-   * @param {Array<string>|string} props
-   * @param {function} resolver
-   * @returns {Object}
-   */
-  subscribe = (target, props, resolver) => {
-    const { eventEmitter } = this;
-
-    const createObserver = ({ subscriber, rxPropName }) => rxUtils.addPropsObserver({
-      target,
-      props,
-      predicate({ propName, prevContextProps, nextContextProps }) {
-        return (prevContextProps.get(propName) !== nextContextProps.get(propName));
-      },
-      getNextValue({ propName, nextContextProps }) {
-        return nextContextProps.get(propName);
-      },
-      eventEmitter
-    }).subscribe((changedProps) => {
-      const nextValue = resolver(changedProps);
-      const nextFieldProps = subscriber.set(rxPropName, nextValue);
-
-      console.log('Should update prop `%s` of the field `%s` to `%s`', rxPropName, subscriber.get('fieldPath'), nextValue);
-
-      eventEmitter.emit('updateField', {
-        fieldPath: subscriber.get('fieldPath'),
-        fieldProps: nextFieldProps
-      });
-    });
-
-    return {
-      target,
-      createObserver
-    };
   }
 
   /**
@@ -567,7 +529,6 @@ export default class Form extends React.Component {
       formRules
     });
 
-    console.warn('Validating `%s`...', fieldProps.get('fieldPath'));
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     console.log('validation type', type);
     console.log('value', fieldProps.get('value'));
