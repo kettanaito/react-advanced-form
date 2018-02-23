@@ -205,13 +205,14 @@ export default function connectField(options) {
         if (!nextContextProps) return;
 
         /* Update the internal reference to contextProps */
-        const { contextProps: prevContextProps } = this;
+        const { props: prevProps, contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
         const fieldPropsChange = camelize(this.contextProps.get('fieldPath'), 'props', 'change');
+
         this.context.eventEmitter.emit(fieldPropsChange, {
           nextProps,
-          prevProps: this.props,
+          prevProps,
           prevContextProps,
           nextContextProps
         });
