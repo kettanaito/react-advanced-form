@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { mount } from 'cypress-react-unit-test';
 import Scenario from '@scenarios/Basics/InteractionsControlled';
 
-describe('Interactions: Controlled form', function () {
+describe('Controlled fields interactions', function () {
   before(() => {
     mount(<Scenario getRef={ form => this.form = form } />);
   });

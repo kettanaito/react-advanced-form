@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { mount } from 'cypress-react-unit-test';
 import Scenario from '@scenarios/Basics/InteractionsUncontrolled';
 
-describe('Interactions: Uncontrolled form', function () {
+describe('Uncontrolled fields interactions', function () {
   before(() => {
     mount(<Scenario getRef={ form => this.form = form } />);
   });
