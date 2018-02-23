@@ -25,7 +25,7 @@ export default function addPropsObserver({ fieldPath, props, predicate, getNextV
     .map((args) => {
       const { prevProps, nextProps, prevContextProps, nextContextProps } = args;
 
-      const changedProps = props ? propsList.reduce((acc, propName) => {
+      const changedProps = propsList.reduce((acc, propName) => {
         const hasPropsChanged = appropriatePredicate({ ...args, propName });
 
         if (hasPropsChanged) {
@@ -33,7 +33,7 @@ export default function addPropsObserver({ fieldPath, props, predicate, getNextV
         }
 
         return acc;
-      }, {}) : nextProps;
+      }, {});
 
       return {
         ...args,
