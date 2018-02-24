@@ -68,23 +68,24 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
       return nextContextProps.get(propName);
     },
     eventEmitter: form.eventEmitter
-  }).subscribe(({ nextContextProps }) => {
+  }).subscribe(async ({ nextContextProps }) => {
     const nextFields = form.state.fields.set(targetPath, nextContextProps);
     const nextPropValue = dispatch(resolver, { fieldProps, fields: nextFields, form }, form.context);
 
     console.warn('Should update `%s` to `%s`', rxPropName, nextPropValue);
 
-    form.updateField({
+    const { nextFieldProps: updatedFieldProps } = await form.updateField({
       fieldPath,
       propsPatch: { [rxPropName]: nextPropValue }
     });
 
-    // TODO Review when the validation is needed
-    // form.validateField({
-    //   fieldPath,
-    //   fieldProps: updatedFieldProps,
-    //   forceProps: true
-    // });
+    form.validateField({
+      fieldPath,
+      fieldProps: updatedFieldProps,
+      fields: nextFields,
+      forceProps: true,
+      force: true
+    });
   });
 }
 
