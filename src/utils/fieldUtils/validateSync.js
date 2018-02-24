@@ -43,7 +43,9 @@ function applyRulesSchema(rules, resolverArgs) {
       resolverArgs
     });
 
-    if (rejectedRules.length > 0) return rejectedRules;
+    if (rejectedRules.length > 0) {
+      return rejectedRules;
+    }
   }
 
   if (typeRules) {

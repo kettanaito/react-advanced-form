@@ -504,6 +504,7 @@ export default class Form extends React.Component {
    * @param {ValidationType} type
    * @param {boolean} forceProps Use direct props explicitly, without trying to grab field record
    * from the state.
+   * @param {Map} fields (Optional) Explicit fields state to prevent validation concurrency.
    * @param {boolean} force Force validation. Bypass "shouldValidate" logic.
    */
   validateField = async (args) => {
@@ -517,17 +518,18 @@ export default class Form extends React.Component {
 
     const { formRules } = this;
     const fields = customFields || this.state.fields;
-    // const { fields } = this.state;
     const fieldProps = forceProps
       ? customFieldProps
       : fields.getIn([customFieldProps.get('fieldPath')]) || customFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
-    const shouldValidate = force || type.shouldValidate({
+    const needsValidation = type.shouldValidate({
       validationType: type,
       fieldProps,
       formRules
     });
+
+    const shouldValidate = force || needsValidation;
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     console.log('validation type', type);
@@ -582,7 +584,10 @@ export default class Form extends React.Component {
      * which means its "valid" and "invalid" props values are updated.
      */
     const nextFieldProps = fieldProps.merge(propsPatch);
-    const nextValidityState = fieldUtils.getValidityState(nextFieldProps);
+    const nextValidityState = fieldUtils.getValidityState({
+      fieldProps: nextFieldProps,
+      needsValidation
+    });
 
     /* Update the field in the state to reflect the changes */
     return this.updateField({
