@@ -10,8 +10,9 @@
 ## Architecture
 
 * [Argument properties](./architecture/argument-properties.md)
-* [Field lifecycle](./architecture/field-lifecycle.md)
 * [Referencing](./architecture/referencing.md)
+* [Field lifecycle](./architecture/field-lifecycle.md)
+* [Reactive props](./architecture/reactive-props.md)
 
 ## High-order Components
 
