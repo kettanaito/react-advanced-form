@@ -103,10 +103,6 @@ export default class Form extends React.Component {
     Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus);
     Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur);
     Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField);
-
-    Observable.fromEvent(eventEmitter, 'updateField')
-      .bufferTime(25)
-      .subscribe(pendingFields => pendingFields.forEach(this.updateField));
   }
 
   /**
@@ -256,10 +252,6 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    */
   unregisterField = (fieldProps) => {
-    console.groupCollapsed(`${fieldProps.get('fieldPath')} @ unregisterField`);
-    console.log({ fieldProps });
-    console.groupEnd();
-
     this.setState(prevState => ({
       fields: prevState.fields.deleteIn([fieldProps.get('fieldPath')])
     }));

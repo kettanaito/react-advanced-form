@@ -146,6 +146,7 @@ export default function connectField(options) {
         if (rxProps.size > 0) {
           fieldProps = fieldProps.set('reactiveProps', rxProps);
 
+          // TODO Use "deleteAll" once Immutable 4.0 lands
           rxProps.forEach((_, rxPropName) => {
             fieldProps = fieldProps.delete(rxPropName);
           });

@@ -29,19 +29,19 @@ export default function addPropsObserver({ fieldPath, props, predicate, getNextV
   const propsList = Array.isArray(props) ? props : [props];
 
   return Observable.fromEvent(eventEmitter, propsChangeEvent)
-    .map((args) => {
+    .map((eventData) => {
       const changedProps = propsList.reduce((acc, propName) => {
-        const hasPropsChanged = appropriatePredicate({ ...args, propName });
+        const hasPropsChanged = appropriatePredicate({ ...eventData, propName });
 
         if (hasPropsChanged) {
-          acc[propName] = getNextValue ? getNextValue({ ...args, propName }) : args.nextProps[propName];
+          acc[propName] = getNextValue ? getNextValue({ ...eventData, propName }) : eventData.nextProps[propName];
         }
 
         return acc;
       }, {});
 
       return {
-        ...args,
+        ...eventData,
         changedProps
       };
     })
