@@ -20,11 +20,6 @@ export default class ValidationType {
   }
 
   shouldValidate({ fieldProps, formRules }) {
-    /* Field with dynamic "required" props should always validate */
-    if (fieldProps.hasIn(['dynamicProps', 'required'])) {
-      return true;
-    }
-
     /* When the current validation type has already been validated, no validation needed */
     const isAlreadyValidated = this.types.every(type => fieldProps.get(`validated${type.name}`));
     if (isAlreadyValidated) {
