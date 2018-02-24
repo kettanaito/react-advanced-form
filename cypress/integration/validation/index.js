@@ -2,7 +2,7 @@
  * Validation
  */
 describe('Validation', function () {
-  require('./syncValidation');
-  require('./asyncValidation');
+  require('./syncValidation/index.spec');
+  require('./asyncValidation/index.spec');
   require('./misc');
 });

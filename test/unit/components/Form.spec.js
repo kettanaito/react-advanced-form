@@ -160,7 +160,7 @@ describe('Form', function () {
         expect(form.state.fields.getIn(['number', 'value'])).to.equal('two');
         expect(form.state.fields.getIn(['myTextarea', 'value'])).to.equal('Hello, world!');
         expect(resetCallbackCalled).to.be.true;
-      });
+      }, 100);
     });
   });
 });
