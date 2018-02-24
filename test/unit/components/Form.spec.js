@@ -5,14 +5,14 @@ import { Input, Select, Checkbox, Radio, Textarea } from '../../components';
 import { defer, validationRules, validationMessages } from '../../utils';
 import { Form, Field } from '../../../lib';
 
-describe('Form', () => {
+describe('Form', function () {
   it('"Form.props.ref" references the Form component', () => {
     const handleInnerRef = (formComponent) => {
       expect(formComponent).not.to.be.undefined;
       expect(formComponent).to.be.instanceOf(React.Component);
     }
 
-    const wrapper = mount(<Form ref={ handleInnerRef } />);
+    mount(<Form ref={ handleInnerRef } />);
   });
 
   it('"Form.props.innerRef" references the <form> element', () => {
@@ -47,7 +47,7 @@ describe('Form', () => {
       const select = wrapper.find(Select);
       select.simulate('change', { currentTarget: { value: 'foo' } });
       setTimeout(() => expect(sum).to.equal(1), 10);
-    });
+    }, 100);
   });
 
   it('Supports manual serialization', () => {
@@ -70,7 +70,7 @@ describe('Form', () => {
           username: 'foo'
         }
       });
-    });
+    }, 100);
   });
 
   it('Supports manual validation', () => {
@@ -87,9 +87,6 @@ describe('Form', () => {
 
       /* Should return a promise stating whether the Form is valid */
       const isFormValid = await validate();
-
-      console.log({ isFormValid });
-
       expect(isFormValid).to.be.false;
 
       /* Should have context props corresponding to the validation status */
@@ -101,7 +98,7 @@ describe('Form', () => {
       expect(input.contextProps.get('validAsync')).to.be.false;
       expect(input.contextProps.get('valid')).to.be.false;
       expect(input.contextProps.get('invalid')).to.be.true;
-    });
+    }, 100);
   });
 
   it('Supports manual reset', () => {
@@ -155,13 +152,15 @@ describe('Form', () => {
 
       form.reset();
 
-      /* Should reset the values of the fields the their initial values */
-      expect(form.state.fields.getIn(['username', 'value'])).to.equal('admin');
-      expect(form.state.fields.getIn(['gender', 'value'])).to.equal('female');
-      expect(form.state.fields.getIn(['choice', 'checked'])).to.be.true;
-      expect(form.state.fields.getIn(['number', 'value'])).to.equal('two');
-      expect(form.state.fields.getIn(['myTextarea', 'value'])).to.equal('Hello, world!');
-      expect(resetCallbackCalled).to.be.true;
+      return defer(() => {
+        /* Should reset the values of the fields the their initial values */
+        expect(form.state.fields.getIn(['username', 'value'])).to.equal('admin');
+        expect(form.state.fields.getIn(['gender', 'value'])).to.equal('female');
+        expect(form.state.fields.getIn(['choice', 'checked'])).to.be.true;
+        expect(form.state.fields.getIn(['number', 'value'])).to.equal('two');
+        expect(form.state.fields.getIn(['myTextarea', 'value'])).to.equal('Hello, world!');
+        expect(resetCallbackCalled).to.be.true;
+      });
     });
   });
 });

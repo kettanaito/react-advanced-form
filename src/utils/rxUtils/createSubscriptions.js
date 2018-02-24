@@ -93,7 +93,7 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
  * @param {Map} fields
  * @param {ReactElement} form
  */
-export default function handleRxProps({ fieldProps, fields, form }) {
+export default function createSubscriptions({ fieldProps, fields, form }) {
   const rxProps = fieldProps.get('reactiveProps');
   if (!rxProps) return;
 

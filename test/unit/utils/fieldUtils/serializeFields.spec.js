@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { fromJS } from 'immutable';
-import { fieldUtils } from '../../../src/utils';
+import { fieldUtils } from '../../../../src/utils';
 
 describe('serializeFields', function () {
   it('Serializes different field types properly', () => {

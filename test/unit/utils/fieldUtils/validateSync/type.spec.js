@@ -1,32 +1,36 @@
 /**
- * Name-specific validation.
+ * Type-specific validation.
  */
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
-import { form } from '../../../utils';
-import { fieldUtils } from '../../../../src/utils';
+import { form } from '../../../../utils';
+import { fieldUtils } from '../../../../../src/utils';
 
-describe('Name-specific validation', () => {
-  const fields = Map({});
+describe('Type-specific validation', () => {
+  const fields = fromJS({
+    anotherField: Map({
+      value: 'foo',
+      required: true
+    })
+  });
 
   it('Functional rule', () => {
-    const formRules = fromJS({
-      name: {
-        fieldName: ({ value }) => /^\d+$/.test(value)
-      }
-    });
-
     const fieldProps = Map({
       name: 'fieldName',
       type: 'text',
       valuePropName: 'value'
     });
 
+    /* Unexpected field */
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'letters'),
       fields,
       form,
-      formRules
+      formRules: fromJS({
+        type: {
+          text: ({ value }) => /^\d+$/.test(value)
+        }
+      })
     }).toJS();
 
     expect(resultOne).to.include.keys(['rejectedRules', 'propsPatch']);
@@ -34,17 +38,22 @@ describe('Name-specific validation', () => {
     expect(resultOne).to.have.property('rejectedRules').with.length(1);
     expect(resultOne).to.have.property('rejectedRules').to.deep.equal([
       {
+        selector: 'type',
         name: 'invalid',
-        selector: 'name',
         isCustom: false
       }
     ]);
 
+    /* Expected field */
     const resultTwo = fieldUtils.validateSync({
-      fieldProps: fieldProps.set('value', '123'),
+      fieldProps: fieldProps.set('value', 'example@domain.com'),
       fields,
       form,
-      formRules
+      formRules: fromJS({
+        type: {
+          email: ({ value }) => value.includes('@')
+        }
+      })
     }).toJS();
 
     expect(resultTwo.propsPatch).to.have.property('expected', true);
@@ -53,8 +62,8 @@ describe('Name-specific validation', () => {
 
   it('Multiple named rules', () => {
     const formRules = fromJS({
-      name: {
-        fieldName: {
+      type: {
+        password: {
           capitalLetter: ({ value }) => /[A-Z]/.test(value),
           oneNumber: ({ value }) => /[0-9]/.test(value)
         }
@@ -63,7 +72,7 @@ describe('Name-specific validation', () => {
 
     const fieldProps = Map({
       name: 'fieldName',
-      type: 'text',
+      type: 'password',
       valuePropName: 'value'
     });
 
@@ -82,12 +91,12 @@ describe('Name-specific validation', () => {
     expect(resultOne.rejectedRules).to.deep.equal([
       {
         name: 'capitalLetter',
-        selector: 'name',
+        selector: 'type',
         isCustom: true
       },
       {
         name: 'oneNumber',
-        selector: 'name',
+        selector: 'type',
         isCustom: true
       }
     ]);
@@ -107,7 +116,7 @@ describe('Name-specific validation', () => {
     expect(resultTwo.rejectedRules).to.deep.equal([
       {
         name: 'oneNumber',
-        selector: 'name',
+        selector: 'type',
         isCustom: true
       }
     ]);
