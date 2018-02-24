@@ -3,13 +3,20 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/filter';
 import camelize from '../camelize';
 
+/**
+ * @param {string} propName
+ * @param {Object} prevProps
+ * @param {Object} nextProps
+ * @param {Map} prevContextProps
+ * @param {Map} nextContextProps
+ */
 const defaultPredicate = ({ propName, prevProps, nextProps }) => {
   return (prevProps[propName] !== nextProps[propName]);
 };
 
 /**
- * Creates an observer listening to the changes of the provided props of the specified field.
- * Only the changes which satisfy the predicate function will be emitted.
+ * Creates an observer listening to the props changes of the provided field.
+ * Then emits on each prop change which satisfies the given predicate function.
  * @param {string} fieldPath Field path of the subscribed target field.
  * @param {Array<string>|string} props
  * @param {Function: boolean} predicate
@@ -23,7 +30,7 @@ export default function addPropsObserver({ fieldPath, props, predicate, getNextV
 
   return Observable.fromEvent(eventEmitter, propsChangeEvent)
     .map((args) => {
-      const { prevProps, nextProps, prevContextProps, nextContextProps } = args;
+      const { nextProps } = args;
 
       const changedProps = propsList.reduce((acc, propName) => {
         const hasPropsChanged = appropriatePredicate({ ...args, propName });

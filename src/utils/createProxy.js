@@ -13,11 +13,11 @@ export default function createProxy(origin, { getValue, onGetProp }) {
     get(target, propName) {
       let propValue = isIterable ? target.get(propName) : target[propName];
 
-      /* Ignore immutable private properties */
+      /* Ignore ImmutableJS private properties */
       const isReservedProp = /^@@__/.test(propName);
 
       if (propValue && getValue) {
-        propValue = getValue({ target, ropName, propValue, isIterable });
+        propValue = getValue({ target, propName, propValue, isIterable });
       }
 
       if (!isReservedProp && onGetProp) {
