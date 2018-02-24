@@ -42,9 +42,25 @@ describe('fieldUtils', function () {
       validatedAsync: false
     });
 
-    expect(fieldUtils.getValidityState(fieldOne).toJS()).to.deep.eq({ valid: false, invalid: true });
-    expect(fieldUtils.getValidityState(fieldTwo).toJS()).to.deep.eq({ valid: true, invalid: false });
-    expect(fieldUtils.getValidityState(fieldThree).toJS()).to.deep.eq({ valid: false, invalid: false });
+    expect(fieldUtils.getValidityState({
+      fieldProps: fieldOne,
+      needsValidation: true
+    }).toJS()).to.deep.equal({ valid: false, invalid: true });
+
+    expect(fieldUtils.getValidityState({
+      fieldProps: fieldOne,
+      needsValidation: false
+    }).toJS()).to.deep.equal({ valid: false, invalid: false });
+
+    expect(fieldUtils.getValidityState({
+      fieldProps: fieldTwo,
+      needsValidation: true
+    }).toJS()).to.deep.equal({ valid: true, invalid: false });
+
+    expect(fieldUtils.getValidityState({
+      fieldProps: fieldThree,
+      needsValidation: true
+    }).toJS()).to.deep.equal({ valid: false, invalid: false });
   });
 
   /**
