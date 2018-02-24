@@ -182,15 +182,13 @@ export default class Form extends React.Component {
      */
     rxUtils.addPropsObserver({
       fieldPath,
-      props: ['type', 'disabled'],
+      props: 'type',
       eventEmitter
-    }).subscribe(async ({ changedProps }) => {
-      const { nextFieldProps } = await this.updateField({
+    }).subscribe(({ changedProps }) => {
+      this.updateField({
         fieldPath,
         propsPatch: changedProps
       });
-
-      this.validateField({ fieldProps: nextFieldProps });
     });
 
     this.setState({ fields: nextFields }, () => {
@@ -215,11 +213,11 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Updates the props of the field stored in the state.
-   * @param {string} fieldPath The name of the field.
+   * Updates the field record of the given field with the provided update patch.
+   * @param {string} fieldPath The name of the updating field.
    * @param {Map} fieldProps A directly specified nextProps of the field.
-   * @param {object} propsPath A partial Object of the props to merge with the existing field record.
-   * @return {Promise<any>}
+   * @param {object} propsPatch A partial Object of the props to merge with the existing field record.
+   * @return {Promise<Object>}
    */
   updateField = ({ fieldPath, fieldProps: customFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
@@ -254,7 +252,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Removes the field's record from the state.
+   * Deletes the field record from the state.
    * @param {Map} fieldProps
    */
   unregisterField = (fieldProps) => {
@@ -262,7 +260,7 @@ export default class Form extends React.Component {
     console.log({ fieldProps });
     console.groupEnd();
 
-    return this.setState(prevState => ({
+    this.setState(prevState => ({
       fields: prevState.fields.deleteIn([fieldProps.get('fieldPath')])
     }));
   }

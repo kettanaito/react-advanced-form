@@ -71,7 +71,7 @@ export default function connectField(options) {
       /** Registers the current field within the parent form's state with the given props. */
       registerWith() {
         const { fieldPath } = this;
-        const { fields, fieldGroup } = this.context;
+        const { eventEmitter, fields, fieldGroup } = this.context;
         const { value, initialValue } = this.props;
 
         const contextValue = fields.getIn([this.fieldPath, valuePropName]);
@@ -123,7 +123,7 @@ export default function connectField(options) {
 
         console.log('defaultFieldRecord:', Object.assign({}, defaultFieldRecord));
 
-        /* Get the registration props from the respective lifecycle method */
+        /* (Optional) Alter the field record using HOC options */
         const fieldRecord = hocOptions.mapPropsToField({
           fieldRecord: defaultFieldRecord,
           props: this.props,
@@ -133,29 +133,31 @@ export default function connectField(options) {
 
         console.log('fieldRecord:', fieldRecord);
 
-        /* Prevent { fieldGroup: undefined } for fields without a group */
+        /* Prevent { fieldGroup: undefined } for the fields without a group */
         if (fieldGroup) {
           fieldRecord.fieldGroup = fieldGroup;
         }
 
-        /* Get the reactive props and store them in the field's record */
-        const reactiveProps = fieldUtils.getRxProps(fieldRecord);
-        if (reactiveProps.size > 0) {
-          fieldRecord.reactiveProps = reactiveProps;
+        /* Create immutable field props from the mutable field record */
+        let fieldProps = Map(fieldRecord);
 
-          /* Delete reactive props declarations from the field record */
-          reactiveProps.forEach((_, rxPropName) => delete fieldRecord[rxPropName]);
+        /* Get the list of reactive props of the current field */
+        const rxProps = fieldUtils.getRxProps(fieldProps);
+        if (rxProps.size > 0) {
+          fieldProps = fieldProps.set('reactiveProps', rxProps);
+
+          rxProps.forEach((_, rxPropName) => {
+            fieldProps = fieldProps.delete(rxPropName);
+          });
         }
 
-        console.log('reactiveProps', reactiveProps);
+        console.log('rxProps:', rxProps && rxProps.toJS());
         console.log('register with:', Object.assign({}, fieldRecord));
+        console.log('fieldProps:', fieldProps && fieldProps.toJS());
         console.groupEnd();
 
-        /* Create immutable field props from the mutable field record */
-        const fieldProps = Map(fieldRecord);
-
         /* Notify the parent Form that a new field prompts to register */
-        this.context.eventEmitter.emit('fieldRegister', fieldProps);
+        eventEmitter.emit('fieldRegister', fieldProps);
 
         return fieldProps;
       }
