@@ -37,7 +37,7 @@ function analyzeResolver({ resolver, fieldProps, fields, form }) {
       }
       // getValue({ propValue }) {
       //   return withImmutable ? propValue : propValue.toJS();
-      // },
+      // }
     }),
     form
   });
@@ -71,8 +71,6 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
   }).subscribe(async ({ nextContextProps }) => {
     const nextFields = form.state.fields.set(targetPath, nextContextProps);
     const nextPropValue = dispatch(resolver, { fieldProps, fields: nextFields, form }, form.context);
-
-    console.warn('Should update `%s` to `%s`', rxPropName, nextPropValue);
 
     const { nextFieldProps: updatedFieldProps } = await form.updateField({
       fieldPath,
@@ -109,8 +107,6 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
       fieldPath,
       propsPatch: { [rxPropName]: initialValue }
     });
-
-    console.log({ targetsMap });
 
     const targetsPaths = Object.keys(targetsMap);
     if (targetsPaths.length === 0) return;

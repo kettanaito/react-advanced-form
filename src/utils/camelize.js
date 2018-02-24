@@ -4,5 +4,5 @@
  * @return {string}
  */
 export default function camelize(...args) {
-  return args.join('-').replace(/-(.)/g, (substr, char) => char.toUpperCase());
+  return args.join('-').replace(/-(.)/g, (_, char) => char.toUpperCase());
 }
