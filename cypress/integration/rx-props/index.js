@@ -71,12 +71,22 @@ describe('Reactive props', function () {
       .should('have.class', 'invalid')
       .should('have.attr', 'required');
 
+    cy.get('[name="fieldOne"]').type('foo')
+      .should('have.value', 'foo')
+      .should('have.class', 'valid');
+
+    cy.get('[name="fieldThree"]').type('doe')
+      .should('have.value', 'doe')
+      .should('have.class', 'valid');
+
     cy.get('[name="fieldTwo"]').clear().should('not.have.value');
     cy.get('[name="fieldOne"]')
       .should('not.have.class', 'invalid')
+      .should('not.have.class', 'valid')
       .should('not.have.attr', 'required');
     cy.get('[name="fieldThree"]')
       .should('not.have.class', 'invalid')
+      .should('not.have.class', 'valid')
       .should('not.have.attr', 'required');
   });
 });
