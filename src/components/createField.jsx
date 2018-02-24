@@ -8,7 +8,7 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import { isset, camelize, IterableInstance, getComponentName, fieldUtils } from '../utils';
+import { isset, camelize, IterableInstance, getComponentName, fieldUtils, rxUtils } from '../utils';
 
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
@@ -142,7 +142,7 @@ export default function connectField(options) {
         let fieldProps = Map(fieldRecord);
 
         /* Get the list of reactive props of the current field */
-        const rxProps = fieldUtils.getRxProps(fieldProps);
+        const rxProps = rxUtils.getRxProps(fieldProps);
         if (rxProps.size > 0) {
           fieldProps = fieldProps.set('reactiveProps', rxProps);
 

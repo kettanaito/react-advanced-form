@@ -6,13 +6,12 @@ import { Input } from '../../components';
 import { validationRules, validationMessages } from '../../utils';
 import { Form, Field } from '../../../lib';
 
-describe('Field.Group', () => {
+describe('Field.Group', function () {
   const wrapper = mount(
     <Form rules={ validationRules } messages={ validationMessages }>
       <Field.Group name="primaryInfo">
         <Input name="username" value="foo" />
       </Field.Group>
-
       <Input name="username" value="doe" />
     </Form>
   );

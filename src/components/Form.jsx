@@ -182,7 +182,7 @@ export default class Form extends React.Component {
      */
     rxUtils.addPropsObserver({
       fieldPath,
-      props: 'type',
+      props: ['type'],
       eventEmitter
     }).subscribe(({ changedProps }) => {
       this.updateField({
@@ -195,7 +195,7 @@ export default class Form extends React.Component {
       /* Emit the field registered event */
       eventEmitter.emit(camelize(fieldPath, 'registered'), fieldProps);
 
-      rxUtils.handleRxProps({
+      rxUtils.createSubscriptions({
         fieldProps,
         fields: nextFields,
         form: this

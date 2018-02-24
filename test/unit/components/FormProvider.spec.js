@@ -26,7 +26,7 @@ describe('FormProvider', function () {
     });
   });
 
-  it('Returns Immutable props when specified via "withImmutable" prop', () => {
+  it('Returns immutable props when specified using "withImmutable" prop', () => {
     const handleOnChange = ({ fieldProps }) => {
       expect(fieldProps).to.be.instanceOf(Map);
     };

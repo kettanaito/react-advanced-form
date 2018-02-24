@@ -1,10 +1,8 @@
-describe('Unit tests', function () {
-  /* Classes */
-  require('./classes/index.spec');
+/* Classes */
+require('./classes');
 
-  /* Components */
-  require('./components/index.spec');
+/* Components */
+require('./components');
 
-  /* Utilities */
-  require('./utils/index.spec');
-});
+/* Utilities */
+require('./utils');

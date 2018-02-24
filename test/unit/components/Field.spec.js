@@ -74,7 +74,7 @@ describe('Field', function () {
 
       expect(input).to.not.be.undefined;
       expect(input.get('initialValue')).to.equal(undefined);
-    });
+    }, 100);
   });
 
   it('Validity state update is omitted for validation-free fields', () => {
@@ -103,6 +103,6 @@ describe('Field', function () {
       expect(nextFieldProps.get('validatedSync')).to.be.false;
       expect(nextFieldProps.get('validatedAsync')).to.be.false;
       expect(nextValidityState.equals(prevValidityState));
-    });
+    }, 100);
   });
 });

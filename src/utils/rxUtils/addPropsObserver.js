@@ -30,13 +30,11 @@ export default function addPropsObserver({ fieldPath, props, predicate, getNextV
 
   return Observable.fromEvent(eventEmitter, propsChangeEvent)
     .map((args) => {
-      const { nextProps } = args;
-
       const changedProps = propsList.reduce((acc, propName) => {
         const hasPropsChanged = appropriatePredicate({ ...args, propName });
 
         if (hasPropsChanged) {
-          acc[propName] = getNextValue ? getNextValue({ ...args, propName }) : nextProps[propName];
+          acc[propName] = getNextValue ? getNextValue({ ...args, propName }) : args.nextProps[propName];
         }
 
         return acc;
@@ -48,5 +46,5 @@ export default function addPropsObserver({ fieldPath, props, predicate, getNextV
       };
     })
     /* Emit the caught events with changed props only */
-    .filter(({ changedProps }) => Object.keys(changedProps).length > 0);
+    .filter(({ changedProps }) => (Object.keys(changedProps).length > 0));
 }

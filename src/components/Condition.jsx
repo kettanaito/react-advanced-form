@@ -7,9 +7,9 @@ export default function Condition(props, context) {
 
   /* Resolve the condition in order to render the children */
   const extendedFields = fieldUtils.serializeFields(fields, fieldProps => fieldProps);
-  const resolved = when({ fields: extendedFields.toJS() });
+  const satisfied = when({ fields: extendedFields.toJS() });
 
-  return resolved ? children : null;
+  return satisfied ? children : null;
 }
 
 Condition.propTypes = {

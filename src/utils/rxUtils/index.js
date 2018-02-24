@@ -1,2 +1,3 @@
+export getRxProps from './getRxProps';
 export addPropsObserver from './addPropsObserver';
-export handleRxProps from './handleRxProps';
+export createSubscriptions from './createSubscriptions';
