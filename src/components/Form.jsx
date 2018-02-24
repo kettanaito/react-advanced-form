@@ -510,12 +510,14 @@ export default class Form extends React.Component {
     const {
       type = BothValidationType,
       fieldProps: customFieldProps,
+      fields: customFields,
       forceProps = false,
       force = false
     } = args;
 
     const { formRules } = this;
-    const { fields } = this.state;
+    const fields = customFields || this.state.fields;
+    // const { fields } = this.state;
     const fieldProps = forceProps
       ? customFieldProps
       : fields.getIn([customFieldProps.get('fieldPath')]) || customFieldProps;

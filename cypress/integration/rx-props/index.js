@@ -3,6 +3,7 @@ import { mount } from 'cypress-react-unit-test';
 import BasicScenario from '@scenarios/RxProps/Basic';
 import DelegatedScenario from '@scenarios/RxProps/Delegated';
 import InterdependentScenario from '@scenarios/RxProps/Interdependent';
+import OneTargetScenario from '@scenarios/RxProps/OneTarget';
 
 describe('Reactive props', function () {
   it('Direct field subscription', () => {
@@ -54,5 +55,28 @@ describe('Reactive props', function () {
     cy.get('[name="fieldTwo"]').clear();
     cy.get('[name="fieldOne"]').should('not.have.attr', 'required');
     cy.get('[name="fieldTwo"]').should('not.have.attr', 'required');
+  });
+
+  it('Multiple fields depending on one target', () => {
+    mount(<OneTargetScenario />);
+
+    cy.get('[name="fieldOne"]').should('not.have.attr', 'required');
+    cy.get('[name="fieldThree"]').should('not.have.attr', 'required');
+
+    cy.get('[name="fieldTwo"]').type('foo').should('have.value', 'foo');
+    cy.get('[name="fieldOne"]')
+      .should('have.class', 'invalid')
+      .should('have.attr', 'required');
+    cy.get('[name="fieldThree"]')
+      .should('have.class', 'invalid')
+      .should('have.attr', 'required');
+
+    cy.get('[name="fieldTwo"]').clear().should('not.have.value');
+    cy.get('[name="fieldOne"]')
+      .should('not.have.class', 'invalid')
+      .should('not.have.attr', 'required');
+    cy.get('[name="fieldThree"]')
+      .should('not.have.class', 'invalid')
+      .should('not.have.attr', 'required');
   });
 });
