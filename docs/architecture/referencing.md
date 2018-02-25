@@ -1,13 +1,63 @@
 # Referencing
 
-## Field
-Passing `ref` prop to your custom field will return the reference to the `Field` class, *not* to the DOM node directly.
+* [General](#general)
+* [Form reference](#form)
+* [Field reference](#field)
+* [Nested element node](#nested-element-node)
+
+## General
+There are two kinds of referencing - *component* and *element* references.
+
+Component reference returns you the `React.Component` instance (i.e. `<Form>` or `<CustomField>`). Element reference returns you an `HTMLElement` instance rendered by the component (i.e. `<form>`, `<input>` or `<select>`). Both are useful for different scenarios and can be accessed as described below.
+
+## Form
+### Component reference
+```jsx
+class MyForm extends React.Component {
+  componentDidMount() {
+    console.log(this.formRef); // Form component
+    console.log(this.formRef.innerRef); // <form> element
+
+    this.formRef.validate(); // access internal methods
+  }
+
+  render() {
+    return (
+      <Form
+        ref={ form => this.formRef = form } />
+    );
+  }
+}
+```
+
+### Inner reference
+Reference the actual `<form>` element by providing the `innerRef` prop to the `Form` component:
 
 ```jsx
 class MyForm extends React.Component {
   componentDidMount() {
-    console.log(this.fieldRef);
-    console.log(this.fieldRef.wrappedRef);
+    console.log(this.formElement); // <form> element
+  }
+
+  render() {
+    return (
+      <Form innerRef={ element => this.formElement = element } />
+    );
+  }
+}
+```
+
+> You can also access the inner reference by referencing the `Form` component and taking its `innerRef` property: `this.formRef.innerRef`. This is the same as providing `Form.props.innerRef` directly.
+
+## Field
+### Component reference
+Reference the field component by providing the `ref` prop.
+
+```jsx
+class MyForm extends React.Component {
+  componentDidMount() {
+    console.log(this.fieldRef); // Field component
+    console.log(this.fieldRef.innerRef); // field element (i.e. "input")
   }
 
   render() {
@@ -20,36 +70,34 @@ class MyForm extends React.Component {
 }
 ```
 
-`this.fieldRef.wrappedRef` references to the component on which gets the destructed `...fieldProps` Object. This may be plain form element, or custom React component propagating those props to the plain form element.
-
-## DOM node
-In order to reference a DOM node behind the field (which is `input`, `select`, etc.), please provide an `innerRef` prop to your custom field:
+### Inner reference
+To reference the actual form element behind the field use `innerRef` prop.
 
 ```jsx
 class MyForm extends React.Component {
-  handleButtonClick = () => {
-    this.inputRef.focus();
+  componentDidMount() {
+    console.log(this.fieldElement); // field element (i.e. "input")
+    this.fieldElement.focus();
   }
 
   render() {
     return (
       <Form>
-        <MyField innerRef={ input => this.inputRef = input } name="foo" />
-        <button onClick={ this.handleButtonClick }>Autofocus</button>
+        <MyField innerRef={ element => this.fieldElement = element } name="foo" />
       </Form>
     )
   }
 }
 ```
 
-> **Note:** You can have both `ref` and `innerRef` props on the same custom field component at once.
+> **Beware** that `innerRef` will always reference the component where `Field.props.fieldProps` get destructed. You must always propagate the essential field props to the actual form element for both proper functioning and referencing.
 
-> **Note:** `innerRef` will **not** work if the form element is returned by another React Component (for example, when using `styled-components`). See the [Nested DOM nodes](#nested-dom-node) reference example to handle those scenarios.
+> `innerRef` **will not** work if the form element is returned by another React Component (for example, when using `styled-components`). See the [Nested element node](#nested-element-node) reference example to handle those scenarios.
 
-## Nested DOM node
-When using third-party libraries which wrap the plain form components in their own components you need to map `innerRef` explicitly to return the reference to the DOMElement.
+## Nested element node
+When using third-party libraries which wrap the plain form components in their own components you need to map `innerRef` explicitly to return the reference to the `HTMLElement`.
 
-Do that by accessing an `innerRef` prop inside your custom field declaration:
+Do so by accessing an `innerRef` prop inside your custom field component declaration:
 
 ```jsx
 import { createField } from 'react-advanced-form';
@@ -75,4 +123,4 @@ class Input extends React.Component {
 export default createField()(Input);
 ```
 
-> Do not be confused, as `StyledInput.props.innerRef` is the prop expected by `styled-components,` while `Input.props.innerRef` is the prop (a function) passed to the custom field component from the `createField()` wrapper.
+> Do not be confused, as `StyledInput.props.innerRef` is the prop expected by `styled-components,` while `Input.props.innerRef` is the prop (a function) passed to the custom field component from the `createField()` wrapper. Different third-party solutions may expose different interface to accept the inner reference function.
