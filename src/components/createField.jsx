@@ -216,13 +216,13 @@ export default function connectField(options) {
       /**
        * Handle field and inner field component refenreces.
        */
-      getWrappedRef = (Component) => {
+      getInnerRef = (Component) => {
         /**
          * Store inner component reference internally.
          * This way inner reference is accessible by custom field reference like
          * "CustomField.ref(Field).innerRef(Component)".
          */
-        this.wrappedRef = Component;
+        this.innerRef = Component;
 
         /**
          * Allow direct reference to inner component.
@@ -231,7 +231,7 @@ export default function connectField(options) {
          * First, check if the component where "fieldProps" are destructued is another
          * React Component. This means, that the end developer wrapped the "input" with
          * another React Component. In that case "innerRef" will not return the actual
-         * "input", but custom React Component, which would be the same what "wrappedRef"
+         * "input", but custom React Component, which would be the same what "innerRef"
          * references. In that case, omit explicit call of "innerRef".
          */
         if (Component instanceof React.Component) return;
@@ -298,7 +298,7 @@ export default function connectField(options) {
           ...enforcedProps,
 
           /* Reference */
-          ref: this.getWrappedRef,
+          ref: this.getInnerRef,
 
           /* Explicitly assign event handlers to prevent unwanted override */
           onFocus: this.handleFocus,
