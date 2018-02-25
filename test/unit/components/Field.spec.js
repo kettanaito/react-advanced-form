@@ -8,6 +8,48 @@ import { Form } from '../../../lib';
 import { fieldUtils } from '../../../src/utils';
 
 describe('Field', function () {
+  it('"Field.props.ref" references the Field component', () => {
+    let ref;
+
+    const wrapper = mount(
+      <Form>
+        <Input ref={ input => ref = input } name="foo" />
+      </Form>
+    );
+
+    return defer(() => {
+      expect(ref).to.be.an.instanceof(React.Component);
+    });
+  });
+
+  it('"Field.props.innerRef" references the field element', () => {
+    let ref;
+
+    const wrapper = mount(
+      <Form>
+        <Input innerRef={ element => ref = element } name="foo" />
+      </Form>
+    );
+
+    return defer(() => {
+      expect(ref).to.be.an.instanceof(HTMLElement);
+    });
+  });
+
+  it('Allows to access "innerRef" through "ref"', () => {
+    let ref;
+
+    const wrapper = mount(
+      <Form>
+        <Input ref={ input => ref = input } name="foo" />
+      </Form>
+    );
+
+    return defer(() => {
+      expect(ref.innerRef).to.be.an.instanceof(HTMLElement);
+    });
+  });
+
   it('Allows undefined "initialValue"', () => {
     const initialValue = undefined;
 
