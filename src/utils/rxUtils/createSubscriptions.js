@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs/Observable';
 import addPropsObserver from './addPropsObserver';
-import dispatch from '../dispatch';
 import camelize from '../camelize';
 import createProxy from '../createProxy';
 
@@ -70,7 +69,11 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
     eventEmitter: form.eventEmitter
   }).subscribe(async ({ nextContextProps }) => {
     const nextFields = form.state.fields.set(targetPath, nextContextProps);
-    const nextPropValue = dispatch(resolver, { fieldProps, fields: nextFields, form }, form.context);
+    const nextPropValue = resolver({
+      fieldProps: fieldProps.toJS(),
+      fields: nextFields.toJS(),
+      form
+    }, form.context);
 
     const { nextFieldProps: updatedFieldProps } = await form.updateField({
       fieldPath,
@@ -78,11 +81,11 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
     });
 
     form.validateField({
+      force: true,
       fieldPath,
       fieldProps: updatedFieldProps,
-      fields: nextFields,
       forceProps: true,
-      force: true
+      fields: nextFields
     });
   });
 }
