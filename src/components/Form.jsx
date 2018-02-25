@@ -53,7 +53,8 @@ export default class Form extends React.Component {
   static contextTypes = {
     rules: IterableInstance,
     messages: IterableInstance,
-    withImmutable: PropTypes.bool
+    withImmutable: PropTypes.bool,
+    debounceTime: PropTypes.number.isRequired
   }
 
   /* Context which Form passes to Fields */
@@ -156,7 +157,7 @@ export default class Form extends React.Component {
      * of the simultaneously validating fields. If bind on a form level, sibling validations will
      * override each other, and only the last validation will be executed.
      */
-    fieldProps = fieldProps.set('debounceValidate', debounce(this.validateField, 250));
+    fieldProps = fieldProps.set('debounceValidate', debounce(this.validateField, this.context.debounceTime));
 
     const nextFields = fields.mergeIn([fieldPath], fieldProps);
     return this.setState({ fields: nextFields });

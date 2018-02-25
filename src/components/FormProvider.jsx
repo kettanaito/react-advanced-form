@@ -22,25 +22,31 @@ export default class FormProvider extends React.Component {
   static propTypes = {
     rules: TValidationRules,
     messages: TValidationMessages,
-    withImmutable: PropTypes.bool
+    withImmutable: PropTypes.bool,
+    debounceTime: PropTypes.number.isRequired
   }
 
   static defaultProps = {
     messages: {},
-    withImmutable: false
+    withImmutable: false,
+    debounceTime: 250
   }
 
   static childContextTypes = {
     rules: TValidationRules,
     messages: TValidationMessages,
-    withImmutable: PropTypes.bool
+    withImmutable: PropTypes.bool,
+    debounceTime: PropTypes.number.isRequired
   }
 
   getChildContext() {
+    const { rules, messages, withImmutable, debounceTime } = this.props;
+
     return {
-      rules: fromJS(this.props.rules),
-      messages: fromJS(this.props.messages),
-      withImmutable: this.props.withImmutable
+      rules: fromJS(rules),
+      messages: fromJS(messages),
+      withImmutable,
+      debounceTime
     };
   }
 
