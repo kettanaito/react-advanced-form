@@ -46,7 +46,7 @@
   </tr>
 </table>
 
-There are also [field grouping](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html), dynamic props, API to create fields with your own custom logic, and much more. Make sure to take your time in the official documentation.
+There are also [field grouping](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html), [reactive props](https://kettanaito.gitbooks.io/react-advanced-form/architecture/reactive-props.html), creating your [custom fields](https://kettanaito.gitbooks.io/react-advanced-form/hoc/createField/basics.html), and much more. Make sure to take your time in the official documentation.
 
 <br>
 
