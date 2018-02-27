@@ -63,15 +63,13 @@ export default class Form extends React.Component {
   /* Context which Form passes to Fields */
   static childContextTypes = {
     fields: IterableInstance,
-    eventEmitter: PropTypes.instanceOf(EventEmitter),
-    updateField: PropTypes.func.isRequired
+    eventEmitter: PropTypes.instanceOf(EventEmitter)
   }
 
   getChildContext() {
     return {
       fields: this.state.fields,
-      eventEmitter: this.eventEmitter,
-      updateField: this.updateField
+      eventEmitter: this.eventEmitter
     };
   }
 
@@ -79,7 +77,7 @@ export default class Form extends React.Component {
     super(props, context);
 
     /* Define validation rules */
-    this.formRules = getFormRules(this.props.rules, this.context.rules);
+    this.formRules = getFormRules(props.rules, context.rules);
 
     /**
      * Define validation messages once, since those should be converted to immutable, which is
@@ -87,8 +85,8 @@ export default class Form extends React.Component {
      * lifecycle. It should be safe to store them.
      * Note: Messages passed from FormProvider (context messages) are already immutable.
      */
-    const { messages } = this.props;
-    this.messages = messages ? fromJS(messages) : this.context.messages;
+    const { messages } = props;
+    this.messages = messages ? fromJS(messages) : context.messages;
 
     /* Create a private event emitter to communicate between form and its fields */
     this.eventEmitter = new EventEmitter();
@@ -99,8 +97,8 @@ export default class Form extends React.Component {
     Observable.fromEvent(eventEmitter, 'fieldRegister')
       .bufferTime(100)
       .subscribe(pendingFields => pendingFields.forEach(this.registerField));
-    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange);
     Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus);
+    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange);
     Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur);
     Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField);
   }
@@ -215,9 +213,9 @@ export default class Form extends React.Component {
    * @param {object} propsPatch A partial Object of the props to merge with the existing field record.
    * @return {Promise<Object>}
    */
-  updateField = ({ fieldPath, fieldProps: customFieldProps, propsPatch = null }) => {
+  updateField = ({ fieldPath, fieldProps: exactFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
-    const fieldProps = customFieldProps || fields.getIn([fieldPath]);
+    const fieldProps = exactFieldProps || fields.getIn([fieldPath]);
 
     /* Certain updates are being provided an iterable instances already, bypass conversion */
     const iterablePropsPatch = Iterable.isIterable(propsPatch) ? propsPatch : fromJS(propsPatch);
@@ -502,17 +500,17 @@ export default class Form extends React.Component {
   validateField = async (args) => {
     const {
       type = BothValidationType,
-      fieldProps: customFieldProps,
-      fields: customFields,
+      fieldProps: exactFieldProps,
+      fields: exactFields,
       forceProps = false,
       force = false
     } = args;
 
     const { formRules } = this;
-    const fields = customFields || this.state.fields;
+    const fields = exactFields || this.state.fields;
     const fieldProps = forceProps
-      ? customFieldProps
-      : fields.getIn([customFieldProps.get('fieldPath')]) || customFieldProps;
+      ? exactFieldProps
+      : fields.getIn([exactFieldProps.get('fieldPath')]) || exactFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
     const needsValidation = type.shouldValidate({
