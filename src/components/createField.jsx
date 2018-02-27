@@ -47,8 +47,7 @@ export default function connectField(options) {
       static contextTypes = {
         fields: IterableInstance,
         fieldGroup: PropTypes.string,
-        eventEmitter: PropTypes.instanceOf(EventEmitter),
-        updateField: PropTypes.func.isRequired
+        eventEmitter: PropTypes.instanceOf(EventEmitter)
       }
 
       constructor(props, context) {
