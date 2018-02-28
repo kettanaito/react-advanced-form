@@ -24,7 +24,7 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
  * @return {Observable}
  */
 export default function addPropsObserver({ fieldPath, props, predicate, getNextValue, eventEmitter }) {
-  const propsChangeEvent = camelize(fieldPath, 'props', 'change');
+  const propsChangeEvent = camelize(...fieldPath, 'props', 'change');
   const appropriatePredicate = predicate || defaultPredicate;
   const propsList = Array.isArray(props) ? props : [props];
 

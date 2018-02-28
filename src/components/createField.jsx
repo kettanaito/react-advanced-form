@@ -76,7 +76,7 @@ export default function connectField(options) {
         const { eventEmitter, fields, fieldGroup } = this.context;
         const { value, initialValue } = this.props;
 
-        const contextValue = fields.getIn([this.fieldPath, valuePropName]);
+        const contextValue = fields.getIn([...this.fieldPath, valuePropName]);
 
         console.groupCollapsed(fieldPath, '@ register');
         console.log('this.props:', Object.assign({}, this.props));
@@ -213,14 +213,14 @@ export default function connectField(options) {
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
         /* Bypass scenarios when field is being updated, but not yet registred within the Form */
-        const nextContextProps = nextContext.fields.getIn([this.fieldPath]);
+        const nextContextProps = nextContext.fields.getIn(this.fieldPath);
         if (!nextContextProps) return;
 
         /* Update the internal reference to contextProps */
         const { props: prevProps, contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
-        const fieldPropsChange = camelize(this.contextProps.get('fieldPath'), 'props', 'change');
+        const fieldPropsChange = camelize(...this.contextProps.get('fieldPath'), 'props', 'change');
 
         this.context.eventEmitter.emit(fieldPropsChange, {
           nextProps,

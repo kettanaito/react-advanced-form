@@ -115,7 +115,7 @@ export default class Form extends React.Component {
   registerField = (fieldProps) => {
     const { fields } = this.state;
     const fieldPath = fieldProps.get('fieldPath');
-    const isAlreadyExist = fields.hasIn([fieldPath]);
+    const isAlreadyExist = fields.hasIn(fieldPath);
     const isRadioButton = (fieldProps.get('type') === 'radio');
 
     console.groupCollapsed(fieldPath, '@ registerField');
@@ -138,7 +138,7 @@ export default class Form extends React.Component {
        * some value in the record. Radio fields with "checked" prop are propagating their value
        * to the field's record. Other Radio fields are registered, but their value is ignored.
        */
-      const existingValue = fields.getIn([fieldPath, valuePropName]);
+      const existingValue = fields.getIn([...fieldPath, valuePropName]);
       if (existingValue) return;
 
       if (fieldValue) {
@@ -171,7 +171,7 @@ export default class Form extends React.Component {
        */
       .set('debounceValidate', debounce(this.validateField, this.debounceTime));
 
-    const nextFields = fields.mergeIn([fieldPath], fieldProps);
+    const nextFields = fields.setIn(fieldPath, fieldProps);
     const { eventEmitter } = this;
 
     /**
@@ -193,7 +193,7 @@ export default class Form extends React.Component {
 
     this.setState({ fields: nextFields }, () => {
       /* Emit the field registered event */
-      eventEmitter.emit(camelize(fieldPath, 'registered'), fieldProps);
+      eventEmitter.emit(camelize(...fieldPath, 'registered'), fieldProps);
 
       rxUtils.createSubscriptions({
         fieldProps,
@@ -209,7 +209,7 @@ export default class Form extends React.Component {
    * @return {boolean}
    */
   isRegistered = (fieldProps) => {
-    return this.state.fields.hasIn([fieldProps.get('fieldPath')]);
+    return this.state.fields.hasIn(fieldProps.get('fieldPath'));
   }
 
   /**
@@ -221,14 +221,14 @@ export default class Form extends React.Component {
    */
   updateField = ({ fieldPath, fieldProps: exactFieldProps, propsPatch = null }) => {
     const { fields } = this.state;
-    const fieldProps = exactFieldProps || fields.getIn([fieldPath]);
+    const fieldProps = exactFieldProps || fields.getIn(fieldPath);
 
     /* Certain updates are being provided an iterable instances already, bypass conversion */
     const iterablePropsPatch = Iterable.isIterable(propsPatch) ? propsPatch : fromJS(propsPatch);
     const nextFieldProps = propsPatch ? fieldProps.merge(iterablePropsPatch) : fieldProps;
 
     /* Update the field's record in the state to produce the next fields */
-    const nextFields = fields.mergeIn([fieldProps.get('fieldPath')], nextFieldProps);
+    const nextFields = fields.setIn(fieldProps.get('fieldPath'), nextFieldProps);
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
     console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
@@ -257,7 +257,7 @@ export default class Form extends React.Component {
    */
   unregisterField = (fieldProps) => {
     this.setState(prevState => ({
-      fields: prevState.fields.deleteIn([fieldProps.get('fieldPath')])
+      fields: prevState.fields.deleteIn(fieldProps.get('fieldPath'))
     }));
   }
 
@@ -517,7 +517,7 @@ export default class Form extends React.Component {
     const fields = exactFields || this.state.fields;
     const fieldProps = forceProps
       ? exactFieldProps
-      : fields.getIn([exactFieldProps.get('fieldPath')]) || exactFieldProps;
+      : fields.getIn(exactFieldProps.get('fieldPath')) || exactFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
     const needsValidation = type.shouldValidate({

@@ -22,6 +22,7 @@ export default function serializeFields(fields, valueResolver = null) {
 
     const value = valueResolver ? valueResolver(fieldProps) : defaultValue;
 
+    // TODO
     return serialized.setIn(fieldProps.get('fieldPath').split('.'), value);
   }, Map());
 }
