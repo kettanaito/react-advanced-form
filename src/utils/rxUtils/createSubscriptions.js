@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import addPropsObserver from './addPropsObserver';
 import camelize from '../camelize';
-import createProxy from '../createProxy';
 
 function generateSubscribe(fields, callback) {
   return function subscribe(...fieldPath) {
@@ -14,7 +13,7 @@ function generateSubscribe(fields, callback) {
         return fieldProps && fieldProps.get(propName);
       }
     });
-  }
+  };
 }
 
 /**
