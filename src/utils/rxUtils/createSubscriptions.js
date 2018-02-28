@@ -3,6 +3,20 @@ import addPropsObserver from './addPropsObserver';
 import camelize from '../camelize';
 import createProxy from '../createProxy';
 
+function generateSubscribe(fields, callback) {
+  return function subscribe(...fieldPath) {
+    const fieldProps = fields.getIn(fieldPath);
+
+    return new Proxy({}, {
+      get(target, propName) {
+        if (callback) callback({ propName, fieldPath });
+
+        return fieldProps && fieldProps.get(propName);
+      }
+    });
+  }
+}
+
 /**
  * Analyzes the provided resolver function and returns the targets (dependencies) map and its initial value.
  * @param {Function} resolver
@@ -13,33 +27,16 @@ import createProxy from '../createProxy';
 function analyzeResolver({ resolver, fieldProps, fields, form }) {
   const targetsMap = {};
 
-  /* First, proxy each field record to know which props are accessed in the resolver function */
-  const fieldsPropsProxy = fields.map(fieldProps => createProxy(fieldProps, {
-    onGetProp({ target, propName }) {
-      const targetPath = target.get('fieldPath');
-      const targetProps = targetsMap[targetPath] || [];
+  const subscribe = generateSubscribe(fields, ({ fieldPath, propName }) => {
+    const gluedPath = fieldPath.join('.');
+    const prevProps = targetsMap[gluedPath] || [];
+    if (prevProps.includes(propName)) return;
 
-      if (targetProps.includes(propName)) return;
-
-      targetProps.push(propName);
-      targetsMap[targetPath] = targetProps;
-    }
-  }));
-
-  const initialValue = resolver({
-    fieldProps,
-    /* Then, proxy all fields Object to know which field is being accessed in the resolver function */
-    fields: createProxy(fieldsPropsProxy, {
-      onGetProp({ propName: targetPath }) {
-        if (Object.keys(targetsMap).includes(targetPath)) return;
-        targetsMap[targetPath] = null;
-      }
-      // getValue({ propValue }) {
-      //   return withImmutable ? propValue : propValue.toJS();
-      // }
-    }),
-    form
+    const nextProps = prevProps.concat(propName);
+    targetsMap[gluedPath] = nextProps;
   });
+
+  const initialValue = resolver({ subscribe, fieldProps, form });
 
   return { targetsMap, initialValue };
 }
@@ -68,12 +65,13 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
     },
     eventEmitter: form.eventEmitter
   }).subscribe(async ({ nextContextProps }) => {
-    const nextFields = form.state.fields.set(targetPath, nextContextProps);
+    const nextFields = form.state.fields.setIn(targetPath, nextContextProps);
+
     const nextPropValue = resolver({
+      subscribe: generateSubscribe(nextFields),
       fieldProps: fieldProps.toJS(),
-      fields: nextFields.toJS(),
       form
-    }, form.context);
+    });
 
     const { nextFieldProps: updatedFieldProps } = await form.updateField({
       fieldPath,
@@ -114,8 +112,9 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
     const targetsPaths = Object.keys(targetsMap);
     if (targetsPaths.length === 0) return;
 
-    targetsPaths.forEach((targetPath) => {
-      const targetProps = targetsMap[targetPath];
+    targetsPaths.forEach((gluedPath) => {
+      const targetPath = gluedPath.split('.');
+      const targetProps = targetsMap[gluedPath];
 
       if (targetProps) {
         return createObserver({ targetPath, targetProps, rxPropName, resolver, fieldProps, form });

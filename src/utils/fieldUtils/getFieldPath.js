@@ -6,5 +6,5 @@
  * @return {string}
  */
 export default function getFieldPath({ name, fieldGroup }) {
-  return fieldGroup ? `${fieldGroup}.${name}` : name;
+  return fieldGroup ? [fieldGroup, name] : [name];
 }
