@@ -15,7 +15,7 @@ describe('createField', function () {
 
         expect(fieldProps).to.be.an.instanceOf(Map);
         expect(fieldProps.get('name')).to.equal('fieldOne');
-        expect(fieldProps.get('fieldPath')).to.equal('fieldOne');
+        expect(fieldProps.get('fieldPath')).to.deep.equal(['fieldOne']);
       }, 100);
     });
   });
