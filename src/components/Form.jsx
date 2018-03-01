@@ -8,7 +8,7 @@ import 'rxjs/add/operator/bufferTime';
 import 'rxjs/add/observable/fromEvent';
 
 /* Internal modules */
-import { TValidationRules, TValidationMessages } from './FormProvider';
+import { defaultDebounceTime, TValidationRules, TValidationMessages } from './FormProvider';
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
 import { isset, camelize, debounce, dispatch, getFormRules, fieldUtils, IterableInstance, rxUtils } from '../utils';
 
@@ -57,7 +57,7 @@ export default class Form extends React.Component {
     rules: IterableInstance,
     messages: IterableInstance,
     withImmutable: PropTypes.bool,
-    debounceTime: PropTypes.number.isRequired
+    debounceTime: PropTypes.number
   }
 
   /* Context which Form passes to Fields */
@@ -75,6 +75,9 @@ export default class Form extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+
+    /* Provide a fallback value for validation debounce duration */
+    this.debounceTime = context.debounceTime || defaultDebounceTime;
 
     /* Define validation rules */
     this.formRules = getFormRules(props.rules, context.rules);
@@ -163,7 +166,7 @@ export default class Form extends React.Component {
      * of the simultaneously validating fields. If bind on a form level, sibling validations will
      * override each other, and only the last validation will be executed.
      */
-    fieldProps = fieldProps.set('debounceValidate', debounce(this.validateField, this.context.debounceTime));
+    fieldProps = fieldProps.set('debounceValidate', debounce(this.validateField, this.debounceTime));
 
     const nextFields = fields.mergeIn([fieldPath], fieldProps);
     const { eventEmitter } = this;

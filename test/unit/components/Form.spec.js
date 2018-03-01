@@ -4,6 +4,7 @@ import { mount } from 'enzyme';
 import { Input, Select, Checkbox, Radio, Textarea } from '../../components';
 import { defer, validationRules, validationMessages } from '../../utils';
 import { Form, Field } from '../../../lib';
+import { defaultDebounceTime } from '../../../src/components/FormProvider';
 
 describe('Form', function () {
   it('"Form.props.ref" references the Form component', () => {
@@ -22,6 +23,11 @@ describe('Form', function () {
     }
 
     const wrapper = mount(<Form innerRef={ handleInnerRef } />);
+  });
+
+  it('Uses a fallback value for "this.context.debounceTime" when not provided', () => {
+    const wrapper = mount(<Form />);
+    expect(wrapper.find(Form).instance().debounceTime).to.equal(defaultDebounceTime);
   });
 
   it('Uses default "action" prop when none provided', () => {
