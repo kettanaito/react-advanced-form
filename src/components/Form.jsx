@@ -77,7 +77,7 @@ export default class Form extends React.Component {
     super(props, context);
 
     /* Provide a fallback value for validation debounce duration */
-    this.debounceTime = context.debounceTime || defaultDebounceTime;
+    this.debounceTime = isset(context.debounceTime) ? context.debounceTime : defaultDebounceTime;
 
     /* Define validation rules */
     this.formRules = getFormRules(props.rules, context.rules);
