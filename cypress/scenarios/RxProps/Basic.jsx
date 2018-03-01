@@ -9,8 +9,8 @@ export default class RxPropsBasic extends React.Component {
         <Input name="fieldOne" initialValue="foo" />
         <Input
           name="fieldTwo"
-          required={({ fields }) => {
-            return (fields.fieldOne && !!fields.fieldOne.value);
+          required={({ subscribe }) => {
+            return !!subscribe('fieldOne').value;
           }} />
       </Form>
     );
