@@ -15,7 +15,13 @@ describe('FormProvider', function () {
     const wrapper = mount(
       <FormProvider>
         <Form>
-          <Input name="foo" onChange={ handleOnChange }/>
+          <Input
+            name="foo"
+            onChange={ handleOnChange }
+            required={({ fieldProps }) => {
+              expect(fieldProps).to.be.instanceOf(Object);
+              return true;
+            }} />
         </Form>
       </FormProvider>
     );
@@ -34,7 +40,13 @@ describe('FormProvider', function () {
     const wrapper = mount(
       <FormProvider withImmutable={ true } >
         <Form>
-          <Input name="foo" onChange={ handleOnChange }/>
+          <Input
+            name="foo"
+            onChange={ handleOnChange }
+            required={({ fieldProps }) => {
+              expect(fieldProps).to.be.instanceOf(Map);
+              return true;
+            }} />
         </Form>
       </FormProvider>
     );
