@@ -10,4 +10,5 @@ export getValidityState from './getValidityState';
 export getErrorMessages from './getErrorMessages';
 
 /* Other */
+export flattenDeep from './flattenDeep';
 export serializeFields from './serializeFields';
