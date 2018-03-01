@@ -1,14 +1,17 @@
 # Reactive props
+
+> This is a highly experimental technology and it may be changed, or even removed in the future releases.
+
 * [Specification](#specification)
 * [Declaration](#declaration)
-* [Delegated subscriptions](#delegated-subscriptions)
+* [Delegated subscription](#delegated-subscription)
 
 ## Specification
-*Reactive prop* - is a field's prop, which value can be resolved automatically using live subscriptions to the changes of the target fields.
+*Reactive prop* - is a field's prop, which value is resolved automatically using the live subscriptions system. The latter allows to subscribe to the specific props changes of the fields referenced within the reactive prop resolver function.
 
-As may be clear from the name, reactive props use the principles of [Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming), allowing the form to listen and react to certain events.
+Reactive props use the principles of [Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming), allowing the form to listen and react to certain events in a pre-defined way.
 
-> Right now only `required` is supported as the reactive prop.
+> **Note:** Right now only `required` prop can be used as a reactive prop.
 
 ## Declaration
 ```jsx
@@ -17,8 +20,8 @@ As may be clear from the name, reactive props use the principles of [Reactive pr
   initialValue="foo" />
 <Input
   name="fieldTwo"
-  required={({ fields }) => {
-    return fields.fieldOne && !!fields.fieldOne.value;
+  required={({ subscribe }) => {
+    return !!subscribe('fieldOne').value;
   }}>
 ```
 
@@ -26,7 +29,7 @@ In the example above, `fieldTwo` has a reactive prop `required`, which value dep
 
 > Note that since fields can be mounted conditionally, it's recommended to handle that when referencing their props. By writing `fields.fieldOne && fields.fieldOne.value` we ensure that `fields.fieldOne` exists before trying to access its `value` prop.
 
-## Delegated subscriptions
+## Delegated subscription
 Reactive props can also reference the fields which are not yet mounted at the moment when the resolver is declared. In this scenario there is no way to know which target field's props changes must be watched, therefore, creating a subscription to them is impossible.
 
 However, React Advanced Form still knows which field has been referenced, regardless of the mounting status of the latter. In case the referenced field is not mounted, a *delegated subscription* is created.
@@ -46,9 +49,11 @@ To illustrate this, consider the next scenario:
   initialValue="foo" />
 <Input
   name="fieldTwo"
-  required={({ fields }) => {
-    const fieldOneFilled = fields.fieldOne && !!fields.fieldOne.value;
-    const fieldThreeFilled = fields.fieldThree && !!fields.fieldThree.value;
+  required={({ subscribe }) => {
+    const fieldOneFilled = !!subscribe('fieldOne').value;
+    const fieldThreeFilled = !!subscribe('fieldThree').value;
+
+    return fieldOneFilled && fieldThreeFilled;
   }}>
 <Input
   name="fieldThree"
