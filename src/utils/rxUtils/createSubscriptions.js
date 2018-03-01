@@ -3,7 +3,12 @@ import addPropsObserver from './addPropsObserver';
 import camelize from '../camelize';
 import dispatch from '../dispatch';
 
-function generateSubscribe(fields, callback) {
+/**
+ * Generates a subscribe function ensuring the proxied interface.
+ * @param {Map} fields
+ * @param {Function} callback
+ */
+function generateSubscribe(fields, callback = null) {
   return function subscribe(...fieldPath) {
     const fieldProps = fields.getIn(fieldPath);
 
@@ -99,15 +104,13 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
   const rxProps = fieldProps.get('reactiveProps');
   if (!rxProps) return;
 
-  const fieldPath = fieldProps.get('fieldPath');
-
   rxProps.forEach((resolver, rxPropName) => {
     /* Get the targets map and initial prop value from the resolver */
     const { targetsMap, initialValue } = analyzeResolver({ resolver, fieldProps, fields, form });
 
     /* Resolve the value of the reactive prop initially */
     form.updateField({
-      fieldPath,
+      fieldPath: fieldProps.get('fieldPath'),
       propsPatch: { [rxPropName]: initialValue }
     });
 
