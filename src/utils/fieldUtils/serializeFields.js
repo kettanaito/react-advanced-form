@@ -1,28 +1,30 @@
+import flattenDeep from './flattenDeep';
+
+function defaultTransformValue(fieldProps) {
+  return fieldProps.get(fieldProps.get('valuePropName'));
+}
+
 /**
  * Serializes the provided fields into immutable map.
  * @param {Map} fields
- * @param {Function} valueResolver
- * @return {object}
+ * @param {Function} transformValue
+ * @returns {Map}
  */
-import { Map } from 'immutable';
-
-export default function serializeFields(fields, valueResolver = null) {
-  return fields.reduceRight((serialized, fieldProps) => {
-    /* Bypass the fields with "skip" prop */
-    if (fieldProps.get('skip')) return serialized;
+export default function serializeFields(fields, transformValue = defaultTransformValue) {
+  const flattenedFields = flattenDeep(fields, (fieldProps) => {
+    /* Bypass the fields which should be skipped */
+    if (fieldProps.get('skip')) return false;
 
     /* Grab the field's value */
-    const valuePropName = fieldProps.get('valuePropName');
-    const defaultValue = fieldProps.get(valuePropName);
+    const defaultValue = fieldProps.get(fieldProps.get('valuePropName'));
 
     /* Bypass checkboxes with no value */
     const isCheckbox = (fieldProps.get('type') === 'checkbox');
     const hasEmptyValue = (defaultValue === '');
-    if (!isCheckbox && hasEmptyValue) return serialized;
+    if (!isCheckbox && hasEmptyValue) return false;
 
-    const value = valueResolver ? valueResolver(fieldProps) : defaultValue;
+    return true;
+  }, false, transformValue);
 
-    // TODO
-    return serialized.setIn(fieldProps.get('fieldPath').split('.'), value);
-  }, Map());
+  return flattenedFields;
 }

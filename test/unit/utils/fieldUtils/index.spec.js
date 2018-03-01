@@ -10,8 +10,8 @@ describe('fieldUtils', function () {
     const fieldOne = { name: 'fieldOne' };
     const fieldTwo = { fieldGroup: 'groupOne', name: 'fieldTwo' };
 
-    expect(fieldUtils.getFieldPath(fieldOne)).to.eq('fieldOne');
-    expect(fieldUtils.getFieldPath(fieldTwo)).to.eq('groupOne.fieldTwo');
+    expect(fieldUtils.getFieldPath(fieldOne)).to.deep.eq(['fieldOne']);
+    expect(fieldUtils.getFieldPath(fieldTwo)).to.deep.eq(['groupOne', 'fieldTwo']);
   });
 
   /**

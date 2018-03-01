@@ -15,7 +15,7 @@ import { CustomPropTypes, isset, camelize, debounce, dispatch, getFormRules, fie
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
  * function to access that reference.
- * @param {HTMLElement} ref
+ * @param {HTMLElement} element
  * @param {Function} callback
  */
 function getInnerRef(element, callback) {
@@ -134,9 +134,9 @@ export default class Form extends React.Component {
 
     if (isRadioButton && isAlreadyExist) {
       /**
-       * When the Radio field with the same name is already registered, check if it had
-       * some value in the record. Radio fields with "checked" prop are propagating their value
-       * to the field's record. Other Radio fields are registered, but their value is ignored.
+       * When the radio field with the same name is already registered, check if it has
+       * some value in the record. Only radio fields with "checked" prop propagate their value
+       * to the field's record, other radio fields are registered, but their value is ignored.
        */
       const existingValue = fields.getIn([...fieldPath, valuePropName]);
       if (existingValue) return;
@@ -497,12 +497,12 @@ export default class Form extends React.Component {
 
   /**
    * Validates the provided field.
-   * @param {Map} fieldProps
+   * @param {Map} fieldProps (Optional)
    * @param {ValidationType} type
-   * @param {boolean} forceProps Use direct props explicitly, without trying to grab field record
+   * @param {boolean} forceProps (Optional) Use direct props explicitly, without trying to grab field record
    * from the state.
    * @param {Map} fields (Optional) Explicit fields state to prevent validation concurrency.
-   * @param {boolean} force Force validation. Bypass "shouldValidate" logic.
+   * @param {boolean} force (Optional) Force validation. Bypass "shouldValidate" logic.
    */
   validateField = async (args) => {
     const {
@@ -515,6 +515,7 @@ export default class Form extends React.Component {
 
     const { formRules } = this;
     const fields = exactFields || this.state.fields;
+
     const fieldProps = forceProps
       ? exactFieldProps
       : fields.getIn(exactFieldProps.get('fieldPath')) || exactFieldProps;
@@ -535,7 +536,7 @@ export default class Form extends React.Component {
     console.log('shouldValidate', shouldValidate);
     console.groupEnd();
 
-    /* Bypass validation when none is needed */
+    /* Bypass the validation when none is needed */
     if (!shouldValidate) {
       return {
         nextFieldProps: fieldProps,
@@ -594,18 +595,17 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Validates the form.
-   * Calls the validation on each field in parallel, awaiting for all calls
-   * to be resolved before returning the result.
+   * Performs the validation of each field in parallel, awaiting for all the pending
+   * validations to be completed.
+   * @param {Function} predicate (Optional) Predicate function to filter the fields.
    */
-  validate = async (fieldSelector) => {
+  validate = async (predicate) => {
     const { fields } = this.state;
 
-    /* Allow to apply field selector to the fields Map */
-    const validatingFields = fieldSelector ? fields.filter(fieldSelector) : fields;
+    const flattenedFields = fieldUtils.flattenDeep(fields, predicate, true);
 
     /* Validate only the fields matching the optional selection */
-    const validationSequence = validatingFields.reduce((validations, fieldProps) => {
+    const validationSequence = flattenedFields.reduce((validations, fieldProps) => {
       return validations.concat(this.validateField({ fieldProps }));
     }, []);
 
@@ -622,7 +622,7 @@ export default class Form extends React.Component {
       const { fields: nextFields } = this.state;
 
       /* Reduce the invalid fields to the ordered Array */
-      const invalidFields = List(nextFields.filter(fieldProps => !fieldProps.get('expected')));
+      const invalidFields = List(nextFields.filterNot(fieldProps => fieldProps.get('expected')));
 
       /* Call custom callback */
       dispatch(onInvalid, {
@@ -636,7 +636,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Resets all the fields to their value/state upon initial render.
+   * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
     const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
