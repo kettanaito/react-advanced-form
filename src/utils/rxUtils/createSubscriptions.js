@@ -51,7 +51,7 @@ function analyzeResolver({ resolver, fieldProps, fields, form }) {
  * @returns {Subscription}
  */
 function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldProps, form }) {
-  const fieldPath = fieldProps.get('fieldPath');
+  const subscriberPath = fieldProps.get('fieldPath');
 
   return addPropsObserver({
     fieldPath: targetPath,
@@ -63,7 +63,7 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
       return nextContextProps.get(propName);
     },
     eventEmitter: form.eventEmitter
-  }).subscribe(async ({ nextContextProps }) => {
+  }).subscribe(async ({ nextContextProps, shouldValidate = true }) => {
     const nextFields = form.state.fields.setIn(targetPath, nextContextProps);
 
     const nextPropValue = resolver({
@@ -73,17 +73,19 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
     });
 
     const { nextFieldProps: updatedFieldProps } = await form.updateField({
-      fieldPath,
+      fieldPath: subscriberPath,
       propsPatch: { [rxPropName]: nextPropValue }
     });
 
-    form.validateField({
-      force: true,
-      fieldPath,
-      fieldProps: updatedFieldProps,
-      forceProps: true,
-      fields: nextFields
-    });
+    if (shouldValidate) {
+      form.validateField({
+        force: true,
+        fieldPath: subscriberPath,
+        fieldProps: updatedFieldProps,
+        forceProps: true,
+        fields: nextFields
+      });
+    }
   });
 }
 
@@ -113,9 +115,10 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
 
     targetsPaths.forEach((gluedPath) => {
       const targetPath = gluedPath.split('.');
-      const targetProps = targetsMap[gluedPath];
+      const isTargetMounted = fields.hasIn(targetPath);
 
-      if (targetProps) {
+      if (isTargetMounted) {
+        const targetProps = targetsMap[gluedPath];
         return createObserver({ targetPath, targetProps, rxPropName, resolver, fieldProps, form });
       }
 
@@ -126,17 +129,25 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
        * relevant to the delegated target field. Then, remove the delegated subscription and create a full-scale
        * target field props change observable.
        */
-      const fieldRegisteredEvent = camelize(targetPath, 'registered');
+      const fieldRegisteredEvent = camelize(...targetPath, 'registered');
+
       const delegatedSubscription = Observable.fromEvent(form.eventEmitter, fieldRegisteredEvent)
         .subscribe((delegatedField) => {
           delegatedSubscription.unsubscribe();
 
-          const { fields: currentFields } = form.state;
-          const { targetsMap } = analyzeResolver({ resolver, fieldProps, fields: currentFields, form });
-          const targetProps = targetsMap[targetPath];
+          const { fields: nextFields } = form.state;
+          const { targetsMap } = analyzeResolver({ resolver, fieldProps, fields: nextFields, form });
+          const targetProps = targetsMap[gluedPath];
+
+          /**
+           * When the delegated reactive prop resolver executes, we need to determine whether the subscriber field
+           * validation is needed. Validate the subscriber when it has any value, otherwise do not validate to
+           * prevent invalid fields at initial form render.
+           */
+          const shouldValidate = !!fieldProps.get(fieldProps.get('valuePropName'));
 
           const subscription = createObserver({ targetPath, targetProps, rxPropName, resolver, fieldProps, form });
-          return subscription.next({ nextContextProps: delegatedField });
+          return subscription.next({ nextContextProps: delegatedField, shouldValidate });
         });
     });
   });
