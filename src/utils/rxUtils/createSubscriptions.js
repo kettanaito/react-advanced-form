@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import addPropsObserver from './addPropsObserver';
 import camelize from '../camelize';
+import dispatch from '../dispatch';
 
 function generateSubscribe(fields, callback) {
   return function subscribe(...fieldPath) {
@@ -35,7 +36,7 @@ function analyzeResolver({ resolver, fieldProps, fields, form }) {
     targetsMap[gluedPath] = nextProps;
   });
 
-  const initialValue = resolver({ subscribe, fieldProps, form });
+  const initialValue = dispatch(resolver, { subscribe, fieldProps, form }, form.context);
 
   return { targetsMap, initialValue };
 }
@@ -66,11 +67,11 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
   }).subscribe(async ({ nextContextProps, shouldValidate = true }) => {
     const nextFields = form.state.fields.setIn(targetPath, nextContextProps);
 
-    const nextPropValue = resolver({
+    const nextPropValue = dispatch(resolver, {
       subscribe: generateSubscribe(nextFields),
       fieldProps: fieldProps.toJS(),
       form
-    });
+    }, form.context);
 
     const { nextFieldProps: updatedFieldProps } = await form.updateField({
       fieldPath: subscriberPath,
