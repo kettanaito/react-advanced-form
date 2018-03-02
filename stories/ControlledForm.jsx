@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Condition } from '../src';
-import { MyInput } from './custom-fields';
+import { Input } from '@fields';
 
 const validationMessages = {
   general: {
@@ -32,21 +32,21 @@ export default class ControlledForm extends React.Component {
         <div>
           <label>
             Username:
-            <MyInput
+            <Input
               name="username"
               value={ userinfo.username }
               required />
           </label>
         </div>
 
-        {/* <MyInput
+        {/* <Input
           name="sdfsdf"
           required /> */}
 
         <div>
           <label>
             Password:
-            <MyInput
+            <Input
               name="password"
               value={ userinfo.password }
               onChange={ ({ nextValue }) => {

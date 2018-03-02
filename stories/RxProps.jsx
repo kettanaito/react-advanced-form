@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormProvider, Form, Field } from '../src';
-import { MyInput } from './custom-fields';
+import { Input } from '@fields';
 
 const providerRules = {
   type: {
@@ -51,11 +51,11 @@ export default class Messages extends React.Component {
           onSubmitStart={ this.handleSubmitStart }>
           <h2>Reactive props</h2>
 
-          <MyInput
+          <Input
             name="fieldOne"
             initialValue="foo" />
 
-          <MyInput
+          <Input
             name="rxField"
             required={({ fields }) => {
               const conditionA = fields.fieldOne && !!fields.fieldOne.value;
@@ -64,12 +64,12 @@ export default class Messages extends React.Component {
               return conditionA && conditionB;
             }} />
 
-          <MyInput
+          <Input
             name="fieldThree"
             type={ type }
             initialValue="something" />
 
-          {/* <MyInput
+          {/* <Input
             name="fieldThree"
             required={({ fields, form }) => {
               return form.subscribe('fieldTwo', 'value', ({ value }) => !!value);

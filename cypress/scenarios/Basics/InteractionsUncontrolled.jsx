@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form } from '@lib';
-import { Input, Radio, Checkbox, Select, Textarea } from '@components';
+import { Input, Radio, Checkbox, Select, Textarea } from '@fields';
 
 export default class InteractionsUncontrolled extends React.Component {
   render() {

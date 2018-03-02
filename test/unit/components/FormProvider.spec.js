@@ -2,7 +2,7 @@ import React from 'react';
 import { Map } from 'immutable';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
-import { Input } from '../../components';
+import { Input } from '../../../examples/fields';
 import { defer, validationRules, validationMessages } from '../../utils';
 import { FormProvider, Form } from '../../../lib';
 

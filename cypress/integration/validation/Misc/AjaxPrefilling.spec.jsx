@@ -11,12 +11,12 @@ describe('AJAX Pre-filling', function () {
   it('Pre-fills value properly', () => {
     cy.get('[name="street"]')
       .should('have.value', 'Baker')
-      .should('have.class', 'valid');
+      .should('have.class', 'form-control-success');
   });
 
   it('Validates pre-filled value properly', () => {
     cy.get('[name="streetRule"]')
       .should('have.value', 'Baker')
-      .should('have.class', 'invalid');
+      .should('have.class', 'form-control-danger');
   });
 });

@@ -12,7 +12,7 @@ describe('Reactive props', function () {
     cy.get('[name="fieldTwo"]').should('have.attr', 'required');
     cy.get('[name="fieldTwo"]')
       .focus().blur()
-      .should('have.class', 'invalid');
+      .should('have.class', 'form-control-danger');
 
     cy.get('[name="fieldOne"]').clear();
     cy.get('[name="fieldTwo"]').should('not.have.attr', 'required');
@@ -24,7 +24,7 @@ describe('Reactive props', function () {
     cy.get('[name="fieldOne"]').should('have.attr', 'required');
     cy.get('[name="fieldOne"]')
       .focus().blur()
-      .should('have.class', 'invalid');
+      .should('have.class', 'form-control-danger');
 
     cy.get('[name="fieldTwo"]').clear();
     cy.get('[name="fieldOne"]').should('not.have.attr', 'required');
@@ -65,28 +65,28 @@ describe('Reactive props', function () {
 
     cy.get('[name="fieldTwo"]').type('foo').should('have.value', 'foo');
     cy.get('[name="fieldOne"]')
-      .should('have.class', 'invalid')
+      .should('have.class', 'form-control-danger')
       .should('have.attr', 'required');
     cy.get('[name="fieldThree"]')
-      .should('have.class', 'invalid')
+      .should('have.class', 'form-control-danger')
       .should('have.attr', 'required');
 
     cy.get('[name="fieldOne"]').type('foo')
       .should('have.value', 'foo')
-      .should('have.class', 'valid');
+      .should('have.class', 'form-control-success');
 
     cy.get('[name="fieldThree"]').type('doe')
       .should('have.value', 'doe')
-      .should('have.class', 'valid');
+      .should('have.class', 'form-control-success');
 
     cy.get('[name="fieldTwo"]').clear().should('not.have.value');
     cy.get('[name="fieldOne"]')
-      .should('not.have.class', 'invalid')
-      .should('not.have.class', 'valid')
+      .should('not.have.class', 'form-control-danger')
+      .should('not.have.class', 'form-control-success')
       .should('not.have.attr', 'required');
     cy.get('[name="fieldThree"]')
-      .should('not.have.class', 'invalid')
-      .should('not.have.class', 'valid')
+      .should('not.have.class', 'form-control-danger')
+      .should('not.have.class', 'form-control-success')
       .should('not.have.attr', 'required');
   });
 });

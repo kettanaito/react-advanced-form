@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form } from '@lib';
-import { Input } from '@components';
+import { Input } from '@fields';
 
 export const fieldSelector = '[name="fieldOne"]';
 
