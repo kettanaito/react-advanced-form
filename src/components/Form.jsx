@@ -361,6 +361,7 @@ export default class Form extends React.Component {
         [valuePropName]: nextValue,
 
         /* Reset the validation states as they are irrelevant to the updated value */
+        errors: null,
         validating: false,
         validSync: false,
         validAsync: false,
