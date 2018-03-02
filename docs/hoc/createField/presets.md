@@ -7,11 +7,11 @@ Certain field types always have the same behavior, therefore providing the same 
 Presets cannot and must not cover the behavior of the custom fields, as predicting the latter is never a responsibility of React Advanced Form. Presets are here for seamless integration (i.e. styling) of the common field types.
 
 ## Presets list
+* `fieldPresets.input`
+* `fieldPresets.textarea`
 * `fieldPresets.checkbox`
 * `fieldPresets.select`
 * `fieldPresets.radio`
-
-> You do not need any presets/options for the field types not listed in the presets list. For example, you do not need any presets for `[type="text"]` or `[type="textarea"]` field types.
 
 ## Presets usage
 Include the presets:
@@ -20,10 +20,8 @@ Include the presets:
 import { fieldPresets } from 'react-advanced-form';
 ```
 
-Provide the needed preset instead of the `options` parameter:
+Provide the needed preset instead as the argument to `createField`:
+
 ```js
 export default createField(fieldPresets.select)(CustomField);
 ```
-
-## Custom presets
-It is recommended to create custom presets which cover the behavior of your custom fields. Just follow the options API and reuse field logic throughout your code base without repetition.
