@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, FormProvider, Field } from '../src';
-import { MyInput } from './custom-fields';
+import { Input } from '@fields';
 
 const providerRules = {
   type: {
@@ -36,15 +36,15 @@ export default class Messages extends React.Component {
     return (
       <FormProvider rules={ providerRules } messages={ providerMessages }>
         <Form rules={ rules } messages={ messages }>
-          <MyInput name="foo" />
+          <Input name="foo" />
 
-          <MyInput
+          <Input
             name="fieldThree"
             asyncRule={ this.handleAsyncValidation } />
 
-          <MyInput name="fieldOne" initialValue="foo" />
+          <Input name="fieldOne" initialValue="foo" />
 
-          <MyInput
+          <Input
             name="fieldTwo"
             required={({ fields }) => {
               return fields.fieldOne && fields.fieldOne.subscribe('value', ({ value }) => !!value);

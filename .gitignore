@@ -7,7 +7,10 @@ jspm_packages
 # Build
 .happypack
 lib
+
+# Reserved
 internal
+deprecated
 
 # Logs
 *.log

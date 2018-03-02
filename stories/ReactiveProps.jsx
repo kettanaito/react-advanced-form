@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FormProvider, Form } from '../src';
-import { MyInput } from './custom-fields';
+import { Input } from '@fields';
 
 /* Form validation rules */
 const formRules = {
@@ -32,7 +32,7 @@ export default class ControlledFields extends Component {
           <div style={{ display: 'flex' }}>
             <label>
               Product Id:
-              <MyInput
+              <Input
                 name="productId"
                 required={({ fields }) => fields.producerNr && !fields.producerNr.value}
                 asyncRule={({ value: productId }) => {
@@ -45,14 +45,14 @@ export default class ControlledFields extends Component {
 
             <label>
               Producer Nr:
-              <MyInput
+              <Input
                 name="producerNr"
                 required={({ fields }) => fields.brand && !!fields.brand.value} />
             </label>
 
             <label>
               Brand:
-              <MyInput
+              <Input
                 name="brand"
                 required={({ fields }) => fields.producerNr && !!fields.producerNr.value} />
             </label>
@@ -76,21 +76,21 @@ export default class ControlledFields extends Component {
 
             <label>
               Product Id:
-              <MyInput
+              <Input
                 name="productId"
                 required={({ fields }) => fields.producerNr && !fields.producerNr.value} />
             </label>
 
             <label>
               Producer Nr:
-              <MyInput
+              <Input
                 name="producerNr"
                 required={({ fields }) => fields.brand && !!fields.brand.value} />
             </label>
 
             <label>
               Brand:
-              <MyInput
+              <Input
                 name="brand"
                 required={({ fields }) => fields.producerNr && !!fields.producerNr.value} />
             </label>

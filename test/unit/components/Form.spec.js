@@ -1,7 +1,7 @@
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
-import { Input, Select, Checkbox, Radio, Textarea } from '../../components';
+import { Input, Select, Checkbox, Radio, Textarea } from '../../../examples/fields';
 import { defer, validationRules, validationMessages } from '../../utils';
 import { Form, Field } from '../../../lib';
 import { defaultDebounceTime } from '../../../src/components/FormProvider';
@@ -47,8 +47,9 @@ describe('Form', function () {
 
     return defer(async () => {
       const input = wrapper.find(Input);
-      input.simulate('change', { currentTarget: { value: 'foo' } });
-      setTimeout(() => expect(sum).to.equal(1), 10);
+      input.instance().handleChange({ event: { currentTarget: { value: 'foo' } } });
+
+      setTimeout(() => expect(sum).to.equal(1), 100);
 
       const select = wrapper.find(Select);
       select.simulate('change', { currentTarget: { value: 'foo' } });

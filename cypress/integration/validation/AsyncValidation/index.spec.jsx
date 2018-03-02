@@ -14,28 +14,22 @@ describe('Asynchronous validation', function () {
       cy.get('#fieldOne')
         .focus()
         .blur()
-        .should('not.have.class', 'valid')
-        .should('not.have.class', 'invalid');
+        .should('not.have.class', 'form-control-success')
+        .should('not.have.class', 'form-control-danger');
     });
 
     it('empty required field with async rule rejects', () => {
       cy.get('#fieldTwo')
         .focus()
         .blur()
-        .should('have.attr', 'data-validated-async', 'false')
-        .should('have.attr', 'data-valid-async', 'false')
-        .should('not.have.class', 'valid')
-        .should('have.class', 'invalid');
+        .should('not.have.class', 'form-control-success')
+        .should('have.class', 'form-control-danger');
     });
 
     it('field with rejected sync rule does not call async rule', () => {
       cy.get('#fieldThree')
         .type('foo').should('have.value', 'foo')
-        .should('have.attr', 'data-validated-sync', 'true')
-        .should('have.attr', 'data-valid-sync', 'false')
-        .should('have.attr', 'data-validated-async', 'false')
-        .should('have.attr', 'data-valid-async', 'false')
-        .should('have.class', 'invalid');
+        .should('have.class', 'form-control-danger');
     });
 
     it('field with expected value resolves', () => {
@@ -44,7 +38,7 @@ describe('Asynchronous validation', function () {
         .blur().should('have.class', 'validating')
         .wait(500)
         .should('not.have.class', 'validating')
-        .should('have.class', 'valid');
+        .should('have.class', 'form-control-success');
     });
 
     it('field with unexpected value rejects', () => {
@@ -53,7 +47,7 @@ describe('Asynchronous validation', function () {
         .blur().should('have.class', 'validating')
         .wait(500)
         .should('not.have.class', 'validating')
-        .should('have.class', 'invalid');
+        .should('have.class', 'form-control-danger');
     });
 
     it('cancels pending async validation on state reset', () => {
@@ -63,12 +57,12 @@ describe('Asynchronous validation', function () {
         .wait(250)
         .clear()
         .should('not.have.class', 'validating')
-        .should('not.have.class', 'invalid')
+        .should('not.have.class', 'form-control-danger')
         .type('expected value')
         .blur({ force: true }).should('have.class', 'validating')
         .wait(500)
         .should('not.have.class', 'validating')
-        .should('have.class', 'valid');
+        .should('have.class', 'form-control-success');
     });
   });
 
@@ -78,8 +72,7 @@ describe('Asynchronous validation', function () {
         .type('foo').should('have.value', 'foo')
         .blur().should('have.class', 'validating')
         .wait(500)
-        .should('not.have.class', 'validating')
-        .should('have.attr', 'data-errors', 'extra string');
+        .should('not.have.class', 'validating');
     });
   });
 });

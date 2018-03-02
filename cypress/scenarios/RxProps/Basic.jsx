@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form } from '@lib';
-import { Input } from '@components';
+import { Input } from '@fields';
 
 export default class RxPropsBasic extends React.Component {
   render() {

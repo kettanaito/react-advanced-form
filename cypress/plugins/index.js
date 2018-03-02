@@ -24,13 +24,17 @@ const webpackOptions = {
           presets: ['env', 'react'],
           plugins: ['transform-class-properties']
         }
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'raw-loader']
       }
     ]
   },
   resolve: {
     alias: {
       '@scenarios': path.resolve(__dirname, '../scenarios'),
-      '@components': path.resolve(__dirname, '../components'),
+      '@fields': path.resolve(__dirname, '../../examples/fields'),
       '@lib': path.resolve(__dirname, '../../lib')
     },
     extensions: ['.spec.jsx', '.spec.js', '.jsx', '.js']

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { FormProvider, Form, Condition, Field } from '../src';
-import { MyInput, MySelect, MyCheckbox, MyTextarea } from './custom-fields';
+import { Input } from '@fields';
 
 /* Form validation rules */
 const formRules = {
@@ -89,7 +89,7 @@ export default class ValidationExample extends Component {
           onInvalid={ console.log }
           onSubmitStart={ this.handleSubmitStart }>
 
-          <MyInput
+          <Input
             name="quantity"
             placeholder="Quantity"
             rule={({ value }) => (value !== 'foo')}
@@ -105,7 +105,7 @@ export default class ValidationExample extends Component {
             required />
 
           First name:
-          <MyInput
+          <Input
             name="firstName"
             onChange={({ fieldProps }) => {
               console.log('valid:', fieldProps.valid);
@@ -113,25 +113,25 @@ export default class ValidationExample extends Component {
             required />
 
           NUMBERS:
-          <MyInput name="lastName" rule={/^\d+$/} />
+          <Input name="lastName" rule={/^\d+$/} />
 
           <button onClick={ this.serialize }>Serialize</button>
 
           <hr />
 
-          {/* <MyInput
+          {/* <Input
             name="userEmail"
             type="email"
             label="E-mail"
             required />
 
-          <MyInput
+          <Input
             name="userPassword"
             type="password"
             label="Password"
             required />
 
-          <MyInput
+          <Input
             name="confirmPassword"
             type="password"
             label="Confirm password"
