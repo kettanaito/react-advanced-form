@@ -10,7 +10,7 @@ Integration of React Advanced Form in your application starts with creating a se
 ## Implementation
 To declare a field you need to create a React component and wrap it in the `createField` high-order component. By doing so, the field can automatically access such information as its validation status, error messages, and much more (see the full list of [Exposed props](../hoc/createField/props.md)).
 
-Some field types (i.e. "radio" or "checkbox") will require to pass additional [Field presets](../hoc/createField/presets.md) as the argument to the high-order component.
+Fields will often require to use additional [Field presets](../hoc/createField/presets.md) as the argument to the high-order component. Those presets automatically remap essential form elements' props relevant to the field type, and ensure the proper functionality of the fields.
 
 Read the documentation on how to use [`createField`](../hoc/createField/basics.md), and see the [Examples](#examples) below for a more practical overview.
 
