@@ -22,53 +22,8 @@
 
 No boilerplate. No redundant state management. Embrace intuitive custom styling, field grouping, advanced multi-level validation, automatic validation messages, dynamic props and much more.
 
-## Basic usage
-### Introduce `FormProvider`
-```jsx
-// src/app/index.js
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { FormProvider } from 'react-advanced-form';
-import validationRules from './validation-rules';
-import validationMessages from './validation-messages';
-
-const App = ({ children }) => (
-  <FormProvider rules={ validationRules } messages={ validationMessages }>
-    { children }
-  </FormProvider>
-);
-
-ReactDOM.render(<App />, document.getElementById('root'));
-```
-
-### Create a custom form
-```jsx
-// src/app/components/MyForm.jsx
-import React from 'react';
-import { Form, Field } from 'react-adnvaced-form';
-import { Input, Radio } from 'react-adnvaced-form-addons';
-
-export default class RegistrationForm extends React.Component {
-  registerUser = ({ serialized, fields, form }) => {
-    return fetch('https://backend.dev/user', {
-      method: 'POST',
-      body: JSON.stringify(serialized)
-    });
-  }
-
-  render() {
-    return (
-      <Form action={ this.registerUser }>
-        <Input name="username" required />
-        <Input name="password" type="password" required />
-        <Radio name="gender" value="male" />
-        <Radio name="gender" value="female" />
-        <button type="submit">Submit</button>
-      </Form>
-    );
-  }
-}
-```
+## Getting started
+Go through the detailed guidelines on how to [Get started with React Advanced Form](./getting-started/installation.md). See the steps under the "Getting started" section of this documentation.
 
 Read more about how to use React Advanced Form to get the most out of its features in the respective sections of this documentation.
 

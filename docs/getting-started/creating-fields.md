@@ -17,8 +17,8 @@ Read the documentation on how to use [`createField`](../hoc/createField/basics.m
 ## Examples
 Look into the set of common fields used internally for unit and integrational tests of React Advanced Form. For demonstrational purposes, a [Bootstrap 4](https://v4-alpha.getbootstrap.com/components/forms) form layout is being used. However, the layout and appearance of the fields is completely in your hands.
 
-* Input
-* Radio
-* Checkbox
-* Select
-* Textarea
+* [Input](https://github.com/kettanaito/react-advanced-form/tree/master/examples/fields/Input.jsx)
+* [Radio](https://github.com/kettanaito/react-advanced-form/tree/master/examples/fields/Radio.jsx)
+* [Checkbox](https://github.com/kettanaito/react-advanced-form/tree/master/examples/fields/Checkbox.jsx)
+* [Select](https://github.com/kettanaito/react-advanced-form/tree/master/examples/fields/Select.jsx)
+* [Textarea](https://github.com/kettanaito/react-advanced-form/tree/master/examples/fields/Textarea.jsx)

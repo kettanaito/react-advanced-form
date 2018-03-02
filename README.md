@@ -51,56 +51,7 @@ There are also [field grouping](https://kettanaito.gitbooks.io/react-advanced-fo
 <br>
 
 ## Getting started
-### Prerequisites
-* [NodeJS](https://nodejs.org) (6.0+)
-
-#### Peer dependencies
-This package requires the [peer dependencies](https://nodejs.org/en/blog/npm/peer-dependencies/) listed below to function properly. It is your responsibility to install/have those in your project, alongside the installation of the package itself.
-* [React](https://github.com/facebook/react) (15.0+)
-* [ImmutableJS](https://github.com/facebook/immutable-js) (3.8+)
-
-### Install
-#### NPM:
-```bash
-npm install react-advanced-form --save
-```
-
-#### Yarn:
-```bash
-yarn add react-advanced-form
-```
-
-### Basic usage
-```jsx
-import React from 'react';
-import { Form, Field } from 'react-advanced-form';
-import { Input, Radio } from 'react-advanced-form-addons';
-
-export default class RegistrationForm extends React.Component {
-  registerUser = ({ serialized, fields, form }) => {
-    return fetch('https://backend.dev/user', {
-      method: 'POST',
-      body: JSON.stringify(serialized)
-    });
-  }
-
-  render() {
-    return (
-      <Form action={ this.registerUser }>
-        <Input name="username" required />
-        <Input name="password" type="password" required />
-
-        <Radio name="gender" value="male" />
-        <Radio name="gender" value="female" />
-
-        <button type="submit">Submit</button>
-      </Form>
-    );
-  }
-}
-```
-
-> **Note:** We are using [`react-advanced-form-addons`](https://github.com/kettanaito/react-advanced-form-addons) prototyping library in this example. You *don't need* to use it in your projects, as you are about to implement your custom fields easily with the tools exposed by React Advanced Form.
+Go through the detailed guidelines on how to [Get started with React Advanced Form](./getting-started/installation.md). See the steps under the "Getting started" section of the documentation.
 
 See the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more information on components, methods and usage examples.
 

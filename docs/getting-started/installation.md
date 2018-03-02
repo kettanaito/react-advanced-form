@@ -25,3 +25,4 @@ npm install immutable --save
 ## Command
 ```bash
 npm install react-advanced-form --save
+```

@@ -5,7 +5,7 @@
 | Option name | Type | Description |
 | ------ | ---- | ----------- |
 | [`valuePropName`](#valuepropname) | `string` | A custom prop name to be treated as an updatable value during the field event handlers. |
-| [`mapPropsToField`](#mappropstofield) | `({ props, context, fieldRecord, valuePropName }) => Object` | A custom maping function which should return a props Object used as the initial props during the field registration. |s
+| [`mapPropsToField`](#mappropstofield) | `({ props, context, fieldRecord, valuePropName }) => Object` | A custom maping function which should return a props Object used as the initial props during the field registration. |
 | [`enforceProps`](#enforceprops) | `({ props, contextProps }) => Object` | A function which should return a props Object to be enforced on the custom field. |
 
 ## `valuePropName: string`
