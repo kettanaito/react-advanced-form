@@ -3,9 +3,18 @@
 ## General
 
 * [Introduction](./README.md)
-* [Getting started](./general/getting-started.md)
 * [Concept](./general/concept.md)
 * [FAQ](./general/faq.md)
+
+## Getting started
+
+* [Installation](./getting-started/installation.md)
+* [Creating fields](./getting-started/creating-fields.md)
+* [Creating form](./getting-started/creating-form.md)
+* [Validation rules](./getting-started/validation-rules.md)
+* [Validation messages](./getting-started/validation-messages.md)
+* [Applying validation](./getting-started/applying-validation.md)
+* [Handle submit](./getting-started/handle-submit.md)
 
 ## Architecture
 
@@ -14,7 +23,7 @@
 * [Field lifecycle](./architecture/field-lifecycle.md)
 * [Reactive props](./architecture/reactive-props.md)
 
-## High-order Components
+## High-order components
 
 * createField
   * [Basics](./hoc/createField/basics.md)
