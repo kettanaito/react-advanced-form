@@ -51,7 +51,7 @@ There are also [field grouping](https://kettanaito.gitbooks.io/react-advanced-fo
 <br>
 
 ## Getting started
-Go through the detailed guidelines on how to [Get started with React Advanced Form](./getting-started/installation.md). See the steps under the "Getting started" section of the documentation.
+Go through the detailed guidelines on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/installation.html). See the steps under the "Getting started" section of the documentation.
 
 See the [Official documentation](https://kettanaito.gitbooks.io/react-advanced-form) for more information on components, methods and usage examples.
 
