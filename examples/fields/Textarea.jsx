@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createField } from '../../lib';
+import { createField, fieldPresets } from '../../lib';
 
 class Textarea extends React.Component {
   static propTypes = {
@@ -47,4 +47,4 @@ class Textarea extends React.Component {
   }
 }
 
-export default createField()(Textarea);
+export default createField(fieldPresets.textarea)(Textarea);

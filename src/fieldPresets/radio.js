@@ -1,6 +1,6 @@
 export default {
   /**
-   * Handling of contextProps of  Radio inputs' is unique.
+   * Handling of contextProps of Radio inputs is unique.
    * 1. Never pass "props.value" to context. <Field.Radio> is always expected to receive a "value" prop,
    * however it should never set it to context on registration. The value in the context will be changed
    * according to the onChange handlers in the future.
@@ -27,8 +27,8 @@ export default {
    * "Field.componentWillReceiveProps" for controlled fields.
    *
    * This is needed for the Radio field since on "Field.componentWillReceiveProps" the "prevValue" and "nextValue"
-   * will always be the same - Radio field controlled updates do NOT update the value, but a "checked" prop. Regardless,
-   * what should be compared is the next value and the current value in the field's record.
+   * will always be the same - Radio field controlled updates do NOT update the value, but a "checked" prop.
+   * Regardless, what should be compared is the next value and the current value in the field's record.
    */
   shouldUpdateRecord: ({ nextValue, nextProps, contextProps }) => {
     return nextProps.checked && (nextValue !== contextProps.get('value'));
