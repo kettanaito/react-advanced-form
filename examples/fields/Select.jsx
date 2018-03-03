@@ -19,14 +19,14 @@ class Select extends React.Component {
     const { fieldProps, fieldState, id, className, name, multiple, label } = this.props;
 
     const selectClassNames = [
-      'custom-select',
+      'form-control',
       className
     ].filter(Boolean).join(' ');
 
     return (
       <div className="form-group">
         { label && (
-          <label className="custom-control-label" htmlFor={ id || name }>{ label }</label>
+          <label className="form-control-label" htmlFor={ id || name }>{ label }</label>
         ) }
 
         <select id={ id || name } multiple={ multiple } className={ selectClassNames } { ...fieldProps }>
