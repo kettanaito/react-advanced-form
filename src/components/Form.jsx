@@ -147,8 +147,7 @@ export default class Form extends React.Component {
     }
 
     /* Validate the field when it has initial value */
-    const shouldValidate = isset(fieldValue) && (fieldValue !== '');
-    if (shouldValidate) {
+    if (fieldProps.get('shouldValidateOnMount')) {
       this.validateField({
         fieldProps,
 
@@ -161,12 +160,16 @@ export default class Form extends React.Component {
       });
     }
 
-    /**
-     * Each field should have its own debounced validation function to prevent debounce overlap
-     * of the simultaneously validating fields. If bind on a form level, sibling validations will
-     * override each other, and only the last validation will be executed.
-     */
-    fieldProps = fieldProps.set('debounceValidate', debounce(this.validateField, this.debounceTime));
+    fieldProps = fieldProps
+      /* Delete on mount validation flag since it is irrelevant from now on */
+      .delete('shouldValidateOnMount')
+
+      /**
+       * Each field should have its own debounced validation function to prevent debounce overlap
+       * of the simultaneously validating fields. If bind on a form level, sibling validations will
+       * override each other, and only the last validation will be executed.
+       */
+      .set('debounceValidate', debounce(this.validateField, this.debounceTime));
 
     const nextFields = fields.mergeIn([fieldPath], fieldProps);
     const { eventEmitter } = this;

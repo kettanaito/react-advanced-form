@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormProvider, Form, Field } from '../src';
-import { Input } from '@fields';
+import { Input, Checkbox } from '@fields';
 
 const providerRules = {
   type: {
@@ -50,6 +50,11 @@ export default class Messages extends React.Component {
           messages={ messages }
           onSubmitStart={ this.handleSubmitStart }>
           <h2>Reactive props</h2>
+
+          <Checkbox
+            name="checkbox"
+            label="Foo"
+            required />
 
           <Input
             name="fieldOne"
