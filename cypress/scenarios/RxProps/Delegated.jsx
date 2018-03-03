@@ -9,9 +9,11 @@ export default class RxPropsDelegated extends React.Component {
         <Input
           name="fieldOne"
           required={({ subscribe }) => {
-            return !!subscribe('fieldTwo').value;
+            return !!subscribe('fieldTwo', 'value');
           }} />
-        <Input name="fieldTwo" initialValue="foo" />
+        <Input
+          name="fieldTwo"
+          initialValue="foo" />
       </Form>
     );
   }
