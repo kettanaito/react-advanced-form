@@ -18,23 +18,19 @@ class Radio extends React.Component {
     const { fieldProps, fieldState, id, className, label } = this.props;
     const { valid, invalid } = fieldState;
 
-    const checkClassNames = [
-      'form-check',
-      valid && 'has-success',
-      invalid && 'has-danger'
-    ].filter(Boolean).join(' ');
-
     const inputClassNames = [
-      'form-check-input',
+      'custom-control-input',
+      valid && 'is-valid',
+      invalid && 'is-invalid',
       className
     ].filter(Boolean).join(' ');
 
     return (
-      <div className={ checkClassNames }>
-        <label className="form-check-label">
+      <div className="form-group">
+        <div className="custom-control custom-radio">
           <input id={ id } className={ inputClassNames } { ...fieldProps } />
-          { label }
-        </label>
+          <label className="custom-control-label" htmlFor={ id }>{ label }</label>
+        </div>
       </div>
     );
   }

@@ -18,30 +18,25 @@ class Input extends React.Component {
     const { fieldProps, fieldState, id, name, label } = this.props;
     const { validating, valid, invalid, errors } = fieldState;
 
-    const groupClassNames = [
-      'form-group',
-      valid && 'has-success',
-      invalid && 'has-danger'
-    ].filter(Boolean).join(' ');
-
     const inputClassNames = [
       'form-control',
-      validating && 'validating',
-      valid && 'form-control-success',
-      invalid && 'form-control-danger'
+      validating && 'is-validating',
+      valid && 'is-valid',
+      invalid && 'is-invalid'
     ].filter(Boolean).join(' ');
 
     return (
-      <div className={ groupClassNames }>
+      <div className="form-group">
         { label && (
-          <label className="form-control-label" htmlFor={ id || name }>{ label }</label>
+            <label htmlFor={ id || name }>{ label }</label>
         ) }
+        <div className="input-group">
+          <input id={ id || name } className={ inputClassNames } { ...fieldProps } />
 
-        <input id={ id || name } className={ inputClassNames } { ...fieldProps } />
-
-        { errors && errors.map((error, index) => (
-          <div key={ index } className="form-control-feedback">{ error }</div>
-        )) }
+          { errors && errors.map((error, index) => (
+            <div key={ index } className="invalid-feedback">{ error }</div>
+          )) }
+        </div>
       </div>
     );
   }

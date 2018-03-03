@@ -1,6 +1,14 @@
 import React from 'react';
 import { Form, Field } from '../src';
-import { MyInput } from './custom-fields';
+import { Input, Checkbox, Select, Radio, Textarea } from '@fields';
+
+const messages = {
+  type: {
+    checkbox: {
+      missing: 'Please agree to Terms and Conditions'
+    }
+  }
+}
 
 export default class GroupedFields extends React.Component {
   handleSubmitStart = ({ serialized }) => {
@@ -9,29 +17,55 @@ export default class GroupedFields extends React.Component {
 
   render() {
     return (
-      <Form onSubmitStart={ this.handleSubmitStart }>
-        <MyInput
+      <Form messages={ messages } onSubmitStart={ this.handleSubmitStart }>
+        <Input
           name="fieldOne"
           initialValue="foo" />
 
         <Field.Group name="groupName">
-          <MyInput
+          <Input
             name="firstName"
+            label="First name"
             required={({ subscribe }) => {
-              return !!subscribe('groupName', 'lastName').value;
+              return !!subscribe(['groupName', 'lastName'], 'value');
             }} />
-          <MyInput
+          <Input
             name="lastName"
+            label="Last name"
             required={({ subscribe }) => {
-              return !!subscribe('groupName', 'firstName').value;
+              return !!subscribe(['groupName', 'firstName'], 'value');
             }} />
         </Field.Group>
 
-        {/* <MyInput
-          name="fieldThree"
-          initialValue="something" /> */}
+        <Select
+          name="select"
+          label="Select"
+          initialValue="B">
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+        </Select>
 
-        <button>Submit</button>
+        <Checkbox
+          name="checkbox"
+          label="I agree to Terms and Conditions"
+          required />
+
+        <Radio
+          name="radio"
+          label="Choice A"
+          value="A" />
+        <Radio
+          name="radio"
+          label="Choice B"
+          value="B"
+          checked />
+
+        <Textarea
+          name="textarea"
+          label="Description" />
+
+        <button className="btn btn-primary">Submit</button>
       </Form>
     );
   }
