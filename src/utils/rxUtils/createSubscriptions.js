@@ -2,23 +2,20 @@ import { Observable } from 'rxjs/Observable';
 import addPropsObserver from './addPropsObserver';
 import camelize from '../camelize';
 import dispatch from '../dispatch';
+import warn from '../warn';
 
 /**
  * Generates a subscribe function ensuring the proxied interface.
+ * @example subscribe('groupName', 'fieldName', 'propName');
  * @param {Map} fields
  * @param {Function} callback
  */
 function generateSubscribe(fields, callback = null) {
   return function subscribe(...fieldPath) {
-    const fieldProps = fields.getIn(fieldPath);
+    const propName = fieldPath.pop();
+    if (callback) callback({ fieldPath, propName });
 
-    return new Proxy({}, {
-      get(target, propName) {
-        if (callback) callback({ propName, fieldPath });
-
-        return fieldProps && fieldProps.get(propName);
-      }
-    });
+    return fields.getIn([...fieldPath, propName]);
   };
 }
 
@@ -29,10 +26,14 @@ function generateSubscribe(fields, callback = null) {
  * @param {Map} fields
  * @param {ReactElement} form
  */
-function analyzeResolver({ resolver, fieldProps, fields, form }) {
+function analyzeResolver({ rxPropName, resolver, fieldProps, fields, form }) {
   const targetsMap = {};
 
   const subscribe = generateSubscribe(fields, ({ fieldPath, propName }) => {
+    const isValidPropName = fields.hasIn(fieldPath) ? fields.hasIn([...fieldPath, propName]) : true;
+    warn(isValidPropName, 'Failed to resolve a reactive prop `%s` for the field `%s`. Expected the last parameter ' +
+      'to be a valid prop name, but got: `%s`.', rxPropName, fieldProps.get('fieldPath').join('.'), propName);
+
     const gluedPath = fieldPath.join('.');
     const prevProps = targetsMap[gluedPath] || [];
     if (prevProps.includes(propName)) return;
@@ -78,6 +79,8 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
       form
     }, form.context);
 
+    // console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberPath.join('.'), nextPropValue);
+
     const { nextFieldProps: updatedFieldProps } = await form.updateField({
       fieldPath: subscriberPath,
       propsPatch: { [rxPropName]: nextPropValue }
@@ -106,7 +109,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
 
   rxProps.forEach((resolver, rxPropName) => {
     /* Get the targets map and initial prop value from the resolver */
-    const { targetsMap, initialValue } = analyzeResolver({ resolver, fieldProps, fields, form });
+    const { targetsMap, initialValue } = analyzeResolver({ rxPropName, resolver, fieldProps, fields, form });
 
     /* Resolve the value of the reactive prop initially */
     form.updateField({
@@ -140,7 +143,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
           delegatedSubscription.unsubscribe();
 
           const { fields: nextFields } = form.state;
-          const { targetsMap } = analyzeResolver({ resolver, fieldProps, fields: nextFields, form });
+          const { targetsMap } = analyzeResolver({ rxPropName, resolver, fieldProps, fields: nextFields, form });
           const targetProps = targetsMap[gluedPath];
 
           /**
