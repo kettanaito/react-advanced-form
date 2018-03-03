@@ -32,13 +32,13 @@ export default class GroupedFields extends React.Component {
             name="firstName"
             label="First name"
             required={({ subscribe }) => {
-              return !!subscribe(['groupName', 'lastName'], 'value');
+              return !!subscribe('groupName', 'lastName', 'value');
             }} />
           <Input
             name="lastName"
             label="Last name"
             required={({ subscribe }) => {
-              return !!subscribe(['groupName', 'firstName'], 'value');
+              return !!subscribe('groupName', 'firstName', 'value');
             }} />
         </Field.Group>
 
