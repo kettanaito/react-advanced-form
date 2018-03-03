@@ -18,21 +18,15 @@ class Textarea extends React.Component {
     const { fieldProps, fieldState, id, name, className, label } = this.props;
     const { valid, invalid, errors } = fieldState;
 
-    const groupClassNames = [
-      'form-group',
-      valid && 'has-success',
-      invalid && 'has-danger'
-    ].filter(Boolean).join(' ');
-
     const textareaClassNames = [
       'form-control',
-      valid && 'form-control-success',
-      invalid && 'form-control-danger',
+      valid && 'is-valid',
+      invalid && 'is-invalid',
       className
     ].filter(Boolean).join(' ');
 
     return (
-      <div className={ groupClassNames }>
+      <div className="form-group">
         { label && (
           <label className="form-control-label" htmlFor={ id || name }>{ label }</label>
         ) }

@@ -15,26 +15,26 @@ class Checkbox extends React.Component {
   }
 
   render() {
-    const { fieldProps, fieldState, id, className, label } = this.props;
-    const { valid, invalid } = fieldState;
-
-    const checkClassNames = [
-      'form-check',
-      valid && 'has-success',
-      invalid && 'has-danger'
-    ].filter(Boolean).join(' ');
+    const { fieldProps, fieldState, id, name, className, label } = this.props;
+    const { valid, invalid, errors } = fieldState;
 
     const inputClassNames = [
-      'form-check-input',
+      'custom-control-input',
+      valid && 'is-valid',
+      invalid && 'is-invalid',
       className
     ].filter(Boolean).join(' ');
 
     return (
-      <div className={ checkClassNames }>
-        <label className="form-check-label">
-          <input id={ id } className={ inputClassNames } { ...fieldProps } />
-          { label }
-        </label>
+      <div className="form-group">
+        <div className="custom-control custom-checkbox">
+          <input id={ id || name } className={ inputClassNames } { ...fieldProps } />
+          <label className="custom-control-label" htmlFor={ id || name }>{ label }</label>
+
+          { errors && errors.map((error, index) => (
+            <div key={ index } className="invalid-feedback">{ error }</div>
+          )) }
+        </div>
       </div>
     );
   }
