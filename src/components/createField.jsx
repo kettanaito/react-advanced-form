@@ -14,6 +14,10 @@ import { isset, camelize, IterableInstance, getComponentName, fieldUtils, rxUtil
 const defaultOptions = {
   valuePropName: 'value',
   mapPropsToField: ({ fieldRecord }) => fieldRecord,
+  shouldValidateOnMount: ({ fieldRecord, valuePropName }) => {
+    const fieldValue = fieldRecord[valuePropName];
+    return isset(fieldValue) && (fieldValue !== '');
+  },
   shouldUpdateRecord: ({ prevValue, nextValue }) => (prevValue !== nextValue),
   enforceProps: () => ({})
 };
@@ -125,6 +129,13 @@ export default function connectField(options) {
         /* (Optional) Alter the field record using HOC options */
         const fieldRecord = hocOptions.mapPropsToField({
           fieldRecord: defaultFieldRecord,
+          props: this.props,
+          context: this.context,
+          valuePropName
+        });
+
+        fieldRecord.shouldValidateOnMount = hocOptions.shouldValidateOnMount({
+          fieldRecord,
           props: this.props,
           context: this.context,
           valuePropName

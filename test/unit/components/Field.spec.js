@@ -2,7 +2,7 @@ import { fromJS } from 'immutable';
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
-import { Input } from '../../../examples/fields';
+import { Input, Checkbox } from '../../../examples/fields';
 import { defer } from '../../utils';
 import { Form } from '../../../lib';
 import { fieldUtils } from '../../../src/utils';
@@ -104,5 +104,21 @@ describe('Field', function () {
       expect(nextFieldProps.get('validatedAsync')).to.be.false;
       expect(nextValidityState.equals(prevValidityState));
     }, 100);
+  });
+
+  it('Required Checkbox is not validated on mount', () => {
+    const wrapper = mount(
+      <Form>
+        <Checkbox name="checkbox" required />
+      </Form>
+    );
+
+    return defer(() => {
+      const checkbox = wrapper.find(Checkbox);
+      const { contextProps } = checkbox.instance();
+
+      expect(contextProps.get('valid')).to.be.false;
+      expect(contextProps.get('invalid')).to.be.false;
+    });
   });
 });

@@ -8,5 +8,6 @@ export default {
   }),
   enforceProps: ({ contextProps }) => ({
     checked: contextProps.get('checked')
-  })
+  }),
+  shouldValidateOnMount: () => false
 };
