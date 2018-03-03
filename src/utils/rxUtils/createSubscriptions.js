@@ -11,11 +11,11 @@ import warn from '../warn';
  * @param {Function} callback
  */
 function generateSubscribe(fields, callback = null) {
-  return function subscribe(...fieldPath) {
-    const propName = fieldPath.pop();
-    if (callback) callback({ fieldPath, propName });
+  return function subscribe(...keyPath) {
+    const shouldResolve = callback ? callback(keyPath) : true;
+    if (!shouldResolve) return;
 
-    return fields.getIn([...fieldPath, propName]);
+    return fields.getIn(keyPath);
   };
 }
 
@@ -28,11 +28,24 @@ function generateSubscribe(fields, callback = null) {
  */
 function analyzeResolver({ rxPropName, resolver, fieldProps, fields, form }) {
   const targetsMap = {};
+  const subscriberPath = fieldProps.get('fieldPath').join('.');
 
-  const subscribe = generateSubscribe(fields, ({ fieldPath, propName }) => {
-    const isValidPropName = fields.hasIn(fieldPath) ? fields.hasIn([...fieldPath, propName]) : true;
+  const subscribe = generateSubscribe(fields, (keyPath) => {
+    const keyPathLength = keyPath.length;
+    const isValidKeyPath = (keyPathLength > 1);
+
+    warn(isValidKeyPath, 'Failed to resolve a reactive prop `%s` for the field `%s`. Expected to have a ' +
+    'valid key path reference to the subscribed prop, but got: `%s`.',
+    rxPropName, subscriberPath, keyPath.join('.'));
+    if (!isValidKeyPath) return;
+
+    const fieldPath = keyPath.slice(0, keyPathLength - 1);
+    const propName = keyPath[keyPathLength - 1];
+    const isValidPropName = fields.hasIn(fieldPath) ? fields.getIn(fieldPath).has(propName) : true;
+
     warn(isValidPropName, 'Failed to resolve a reactive prop `%s` for the field `%s`. Expected the last parameter ' +
-      'to be a valid prop name, but got: `%s`.', rxPropName, fieldProps.get('fieldPath').join('.'), propName);
+      'to be a valid prop name, but got: `%s`.', rxPropName, subscriberPath, propName);
+    if (!isValidPropName) return;
 
     const gluedPath = fieldPath.join('.');
     const prevProps = targetsMap[gluedPath] || [];
@@ -40,6 +53,8 @@ function analyzeResolver({ rxPropName, resolver, fieldProps, fields, form }) {
 
     const nextProps = prevProps.concat(propName);
     targetsMap[gluedPath] = nextProps;
+
+    return true;
   });
 
   const initialValue = dispatch(resolver, { subscribe, fieldProps, form }, form.context);
@@ -111,6 +126,8 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
     /* Get the targets map and initial prop value from the resolver */
     const { targetsMap, initialValue } = analyzeResolver({ rxPropName, resolver, fieldProps, fields, form });
 
+    console.log({ initialValue });
+
     /* Resolve the value of the reactive prop initially */
     form.updateField({
       fieldPath: fieldProps.get('fieldPath'),
@@ -141,6 +158,8 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
       const delegatedSubscription = Observable.fromEvent(form.eventEmitter, fieldRegisteredEvent)
         .subscribe((delegatedField) => {
           delegatedSubscription.unsubscribe();
+
+          console.log('Delegated analyzis');
 
           const { fields: nextFields } = form.state;
           const { targetsMap } = analyzeResolver({ rxPropName, resolver, fieldProps, fields: nextFields, form });
