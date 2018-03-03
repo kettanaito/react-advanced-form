@@ -4,9 +4,10 @@
 
 | Option name | Type | Description |
 | ------ | ---- | ----------- |
-| [`valuePropName`](#valuepropname) | `string` | A custom prop name to be treated as an updatable value during the field event handlers. |
-| [`mapPropsToField`](#mappropstofield) | `({ props, context, fieldRecord, valuePropName }) => Object` | A custom maping function which should return a props Object used as the initial props during the field registration. |
-| [`enforceProps`](#enforceprops) | `({ props, contextProps }) => Object` | A function which should return a props Object to be enforced on the custom field. |
+| `valuePropName` | `string` | A custom prop name to be treated as an updatable value during the field event handlers. |
+| `mapPropsToField` | `({ props, context, fieldRecord, valuePropName }) => Object` | A custom maping function which should return a props Object used as the initial props during the field registration. |
+| `enforceProps` | `({ props, contextProps }) => Object` | A function which should return a props Object to be enforced on the custom field. |
+| `shouldValidateOnMount` | `({ props, fieldRecord, valuePropName, context }) => boolean` | Controls when to validate the field upon mount. |
 
 ## `valuePropName: string`
 **Default:** `value`
@@ -80,3 +81,17 @@ export default createField({
   })
 })(Checkbox);
 ```
+
+## `shouldValidateOnMount: ({ props, fieldRecord, valuePropName, context }) => boolean`
+**Default value:**
+
+```js
+{
+  shouldValidateOnMount: ({ fieldRecord, valuePropName }) => {
+    const fieldValue = fieldRecord[valuePropName];
+    return isset(fieldValue) && (fieldValue !== '');
+  }
+}
+```
+
+Determines when to validate the field upon mount based on the provided field information.
