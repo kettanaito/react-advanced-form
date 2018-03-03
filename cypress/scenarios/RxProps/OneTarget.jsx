@@ -9,13 +9,14 @@ export default class RxPropsOneTarget extends React.Component {
         <Input
           name="fieldOne"
           required={({ subscribe }) => {
-            return !!subscribe('fieldTwo').value;
+            return !!subscribe('fieldTwo', 'value');
           }} />
-        <Input name="fieldTwo" />
+        <Input
+          name="fieldTwo" />
         <Input
           name="fieldThree"
           required={({ subscribe }) => {
-            return !!subscribe('fieldTwo').value;
+            return !!subscribe('fieldTwo', 'value');
           }} />
       </Form>
     );
