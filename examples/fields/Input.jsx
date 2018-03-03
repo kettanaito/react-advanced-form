@@ -8,6 +8,7 @@ class Input extends React.Component {
     id: PropTypes.string,
     name: PropTypes.string.isRequired,
     label: PropTypes.string,
+    hint: PropTypes.string,
 
     /* Inherites */
     fieldProps: PropTypes.object.isRequired,
@@ -15,7 +16,7 @@ class Input extends React.Component {
   }
 
   render() {
-    const { fieldProps, fieldState, id, name, label } = this.props;
+    const { fieldProps, fieldState, id, name, label, hint } = this.props;
     const { validating, valid, invalid, errors } = fieldState;
 
     const inputClassNames = [
@@ -30,13 +31,16 @@ class Input extends React.Component {
         { label && (
             <label htmlFor={ id || name }>{ label }</label>
         ) }
-        <div className="input-group">
-          <input id={ id || name } className={ inputClassNames } { ...fieldProps } />
 
-          { errors && errors.map((error, index) => (
-            <div key={ index } className="invalid-feedback">{ error }</div>
-          )) }
-        </div>
+        <input id={ id || name } className={ inputClassNames } { ...fieldProps } />
+
+        { hint && (
+          <small className="form-text text-muted">{ hint }</small>
+        ) }
+
+        { errors && errors.map((error, index) => (
+          <div key={ index } className="invalid-feedback">{ error }</div>
+        )) }
       </div>
     );
   }
