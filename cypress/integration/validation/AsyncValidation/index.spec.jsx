@@ -14,55 +14,55 @@ describe('Asynchronous validation', function () {
       cy.get('#fieldOne')
         .focus()
         .blur()
-        .should('not.have.class', 'form-control-success')
-        .should('not.have.class', 'form-control-danger');
+        .should('not.have.class', 'is-valid')
+        .should('not.have.class', 'is-invalid');
     });
 
     it('empty required field with async rule rejects', () => {
       cy.get('#fieldTwo')
         .focus()
         .blur()
-        .should('not.have.class', 'form-control-success')
-        .should('have.class', 'form-control-danger');
+        .should('not.have.class', 'is-valid')
+        .should('have.class', 'is-invalid');
     });
 
     it('field with rejected sync rule does not call async rule', () => {
       cy.get('#fieldThree')
         .type('foo').should('have.value', 'foo')
-        .should('have.class', 'form-control-danger');
+        .should('have.class', 'is-invalid');
     });
 
     it('field with expected value resolves', () => {
       cy.get('#fieldOne')
         .type('expected value').should('have.value', 'expected value')
-        .blur().should('have.class', 'validating')
+        .blur().should('have.class', 'is-validating')
         .wait(500)
-        .should('not.have.class', 'validating')
-        .should('have.class', 'form-control-success');
+        .should('not.have.class', 'is-validating')
+        .should('have.class', 'is-valid');
     });
 
     it('field with unexpected value rejects', () => {
       cy.get('#fieldOne')
         .type('foo').should('have.value', 'foo')
-        .blur().should('have.class', 'validating')
+        .blur().should('have.class', 'is-validating')
         .wait(500)
-        .should('not.have.class', 'validating')
-        .should('have.class', 'form-control-danger');
+        .should('not.have.class', 'is-validating')
+        .should('have.class', 'is-invalid');
     });
 
     it('cancels pending async validation on state reset', () => {
       cy.get('#fieldOne')
         .type('foo').should('have.value', 'foo')
-        .blur({ force: true }).should('have.class', 'validating')
+        .blur({ force: true }).should('have.class', 'is-validating')
         .wait(250)
         .clear()
-        .should('not.have.class', 'validating')
-        .should('not.have.class', 'form-control-danger')
+        .should('not.have.class', 'is-validating')
+        .should('not.have.class', 'is-invalid')
         .type('expected value')
-        .blur({ force: true }).should('have.class', 'validating')
+        .blur({ force: true }).should('have.class', 'is-validating')
         .wait(500)
-        .should('not.have.class', 'validating')
-        .should('have.class', 'form-control-success');
+        .should('not.have.class', 'is-validating')
+        .should('have.class', 'is-valid');
     });
   });
 
@@ -70,9 +70,9 @@ describe('Asynchronous validation', function () {
     it('error message can access "extra" received from response', () => {
       cy.get('#fieldFour')
         .type('foo').should('have.value', 'foo')
-        .blur().should('have.class', 'validating')
+        .blur().should('have.class', 'is-validating')
         .wait(500)
-        .should('not.have.class', 'validating');
+        .should('not.have.class', 'is-validating');
     });
   });
 });

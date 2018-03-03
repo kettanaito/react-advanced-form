@@ -13,47 +13,47 @@ describe('Field.props.rule', function () {
     cy.get('#fieldOne')
       .focus()
       .blur()
-      .should('not.have.class', 'form-control-success')
-      .should('not.have.class', 'form-control-danger');
+      .should('not.have.class', 'is-valid')
+      .should('not.have.class', 'is-invalid');
   });
 
   it('empty required field with sync rule rejects', () => {
     cy.get('#fieldTwo')
       .focus()
       .blur()
-      .should('not.have.class', 'form-control-success')
-      .should('have.class', 'form-control-danger')
+      .should('not.have.class', 'is-valid')
+      .should('have.class', 'is-invalid')
   });
 
   it('filled optional field with matching value resolves', () => {
     cy.get('#fieldOne')
       .type('123').should('have.value', '123')
       .blur()
-      .should('have.class', 'form-control-success')
-      .should('not.have.class', 'form-control-danger')
+      .should('have.class', 'is-valid')
+      .should('not.have.class', 'is-invalid')
   });
 
   it('filled optional field with unmatching value rejects', () => {
     cy.get('#fieldOne')
       .type('foo').should('have.value', 'foo')
       .blur()
-      .should('have.class', 'form-control-danger')
-      .should('not.have.class', 'form-control-success')
+      .should('have.class', 'is-invalid')
+      .should('not.have.class', 'is-valid')
   });
 
   it('filled required field with matching value resolves', () => {
     cy.get('#fieldTwo')
       .type('123').should('have.value', '123')
       .blur()
-      .should('have.class', 'form-control-success')
-      .should('not.have.class', 'form-control-danger');
+      .should('have.class', 'is-valid')
+      .should('not.have.class', 'is-invalid');
   });
 
   it('filled required field with unmatching value rejects', () => {
     cy.get('#fieldTwo')
       .type('foo').should('have.value', 'foo')
       .blur()
-      .should('have.class', 'form-control-danger')
-      .should('not.have.class', 'form-control-success');
+      .should('have.class', 'is-invalid')
+      .should('not.have.class', 'is-valid');
   });
 });

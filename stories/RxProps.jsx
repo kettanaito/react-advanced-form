@@ -57,9 +57,12 @@ export default class Messages extends React.Component {
 
           <Input
             name="rxField"
-            required={({ fields }) => {
-              const conditionA = fields.fieldOne && !!fields.fieldOne.value;
-              const conditionB = fields.fieldThree && (fields.fieldThree.type === 'password');
+            required={({ subscribe }) => {
+              const conditionA = !!subscribe(['fieldOne'], 'value');
+              const conditionB = subscribe(['fieldThree'], 'type') === 'password';
+
+              // const conditionA = fields.fieldOne && !!fields.fieldOne.value;
+              // const conditionB = fields.fieldThree && (fields.fieldThree.type === 'password');
 
               return conditionA && conditionB;
             }} />
@@ -69,20 +72,14 @@ export default class Messages extends React.Component {
             type={ type }
             initialValue="something" />
 
-          {/* <Input
-            name="fieldThree"
-            required={({ fields, form }) => {
-              return form.subscribe('fieldTwo', 'value', ({ value }) => !!value);
-            }} /> */}
-
-          <button onClick={(event) => {
+          <button className="btn btn-secondary" onClick={(event) => {
             event.preventDefault();
             this.setState(({ type }) => ({
               type: (type === 'text') ? 'password' : 'text'
             }));
           }}>Toggle type</button>
 
-          <button>Submit</button>
+          <button className="btn btn-primary">Submit</button>
         </Form>
       </FormProvider>
     );
