@@ -76,7 +76,7 @@ export default function connectField(options) {
         const { eventEmitter, fields, fieldGroup } = this.context;
         const { value, initialValue } = this.props;
 
-        const contextValue = fields.getIn([...this.fieldPath, valuePropName]);
+        const contextValue = fields.getIn([...fieldPath, valuePropName]);
 
         console.groupCollapsed(fieldPath, '@ register');
         console.log('this.props:', Object.assign({}, this.props));
