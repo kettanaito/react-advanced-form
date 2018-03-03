@@ -3,6 +3,10 @@ import { Form, Field } from '../src';
 import { Input, Checkbox, Select, Radio, Textarea } from '@fields';
 
 const messages = {
+  general: {
+    missing: 'Please provide the required field',
+    invalid: 'The value provided is invalid'
+  },
   type: {
     checkbox: {
       missing: 'Please agree to Terms and Conditions'
@@ -20,7 +24,8 @@ export default class GroupedFields extends React.Component {
       <Form messages={ messages } onSubmitStart={ this.handleSubmitStart }>
         <Input
           name="fieldOne"
-          initialValue="foo" />
+          initialValue="foo"
+          hint="Helpful hint message" />
 
         <Field.Group name="groupName">
           <Input
