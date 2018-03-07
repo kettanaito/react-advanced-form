@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { IterableInstance, fieldUtils } from '../utils';
+import { CustomPropTypes, fieldUtils } from '../utils';
 
 export default function Condition(props, context) {
   const { fields } = context;
@@ -17,5 +17,5 @@ Condition.propTypes = {
 };
 
 Condition.contextTypes = {
-  fields: IterableInstance
+  fields: CustomPropTypes.Map.isRequired
 };

@@ -8,7 +8,7 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import { isset, camelize, IterableInstance, getComponentName, fieldUtils, rxUtils } from '../utils';
+import { isset, camelize, CustomPropTypes, getComponentName, fieldUtils, rxUtils } from '../utils';
 
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
@@ -23,9 +23,8 @@ const defaultOptions = {
 };
 
 /**
- * Map of common event rs.
- * When any of those are passed to the end instance of the custom field, they are mapped to the
- * field's internal record and called during the field's lifecycle methods in the Form.
+ * When any of those props are passed to the end instance of the custom field, they are mapped to the
+ * field record and called during the field's lifecycle methods in the Form.
  */
 const inheritedProps = ['rule', 'asyncRule', 'onFocus', 'onChange', 'onBlur'];
 
@@ -49,7 +48,7 @@ export default function connectField(options) {
       }
 
       static contextTypes = {
-        fields: IterableInstance,
+        fields: CustomPropTypes.Map.isRequired,
         fieldGroup: PropTypes.string,
         eventEmitter: PropTypes.instanceOf(EventEmitter)
       }
@@ -57,7 +56,7 @@ export default function connectField(options) {
       constructor(props, context) {
         super(props, context);
 
-        /* Compose proper field path */
+        /* Compose the proper field path */
         this.fieldPath = fieldUtils.getFieldPath({
           name: props.name,
           fieldGroup: context.fieldGroup
@@ -68,18 +67,18 @@ export default function connectField(options) {
          * Also, assume the field's contextProps, since they are composed at this moment. There is no need
          * to wait for the next re-rendering to access them.
          */
-        this.contextProps = this.registerWith();
+        this.contextProps = this.register();
       }
 
-      /** Registers the current field within the parent form's state with the given props. */
-      registerWith() {
+      /* Registers the current field within the parent form's state */
+      register() {
         const { fieldPath } = this;
         const { eventEmitter, fields, fieldGroup } = this.context;
         const { value, initialValue } = this.props;
 
         const contextValue = fields.getIn([this.fieldPath, valuePropName]);
 
-        console.groupCollapsed(fieldPath, '@ registerWith');
+        console.groupCollapsed(fieldPath, '@ register');
         console.log('this.props:', Object.assign({}, this.props));
         console.log('value:', value);
         console.log('initial value:', initialValue);
@@ -240,6 +239,7 @@ export default function connectField(options) {
 
       /**
        * Handle field and inner field component refenreces.
+       * @param {ReactComponent} Component
        */
       getInnerRef = (Component) => {
         /**
@@ -265,6 +265,10 @@ export default function connectField(options) {
         if (innerRef) innerRef(Component);
       }
 
+      /**
+       * Handles field focus.
+       * @param {Event} event
+       */
       handleFocus = (event) => {
         this.context.eventEmitter.emit('fieldFocus', {
           event,
@@ -272,6 +276,12 @@ export default function connectField(options) {
         });
       }
 
+      /**
+       * Handles field change.
+       * @param {Event} event
+       * @param {any} nextValue
+       * @param {any} prevValue
+       */
       handleChange = ({ event, nextValue: customNextValue, prevValue: customPrevValue }) => {
         const { contextProps } = this;
 
@@ -294,6 +304,10 @@ export default function connectField(options) {
         });
       }
 
+      /**
+       * Handles field blur.
+       * @param {Event} event
+       */
       handleBlur = (event) => {
         this.context.eventEmitter.emit('fieldBlur', {
           event,

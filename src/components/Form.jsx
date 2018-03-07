@@ -10,7 +10,7 @@ import 'rxjs/add/observable/fromEvent';
 /* Internal modules */
 import { defaultDebounceTime, TValidationRules, TValidationMessages } from './FormProvider';
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
-import { isset, camelize, debounce, dispatch, getFormRules, fieldUtils, IterableInstance, rxUtils } from '../utils';
+import { CustomPropTypes, isset, camelize, debounce, dispatch, getFormRules, fieldUtils, rxUtils } from '../utils';
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
@@ -54,15 +54,15 @@ export default class Form extends React.Component {
 
   /* Context which is accepted by Form */
   static contextTypes = {
-    rules: IterableInstance,
-    messages: IterableInstance,
+    rules: CustomPropTypes.Map,
+    messages: CustomPropTypes.Map,
     withImmutable: PropTypes.bool,
     debounceTime: PropTypes.number
   }
 
   /* Context which Form passes to Fields */
   static childContextTypes = {
-    fields: IterableInstance,
+    fields: CustomPropTypes.Map.isRequired,
     eventEmitter: PropTypes.instanceOf(EventEmitter)
   }
 
