@@ -4,6 +4,8 @@ export warning from './warning';
 export camelize from './camelize';
 export debounce from './debounce';
 export dispatch from './dispatch';
+export ensafeMap from './ensafeMap';
+export flushFieldRefs from './flushFieldRefs';
 export makeCancelable from './makeCancelable';
 
 /* React utils */

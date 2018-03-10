@@ -58,6 +58,15 @@ export default class Messages extends React.Component {
 
           <Input
             name="fieldOne"
+            required={({ fields }) => {
+              return !!fields.fieldTwo.value;
+            }} />
+          <Input
+            name="fieldTwo"
+            initialValue="foo" />
+
+          {/* <Input
+            name="fieldOne"
             initialValue="foo" />
 
           <Input
@@ -69,7 +78,7 @@ export default class Messages extends React.Component {
           <Input
             name="fieldThree"
             type={ type }
-            initialValue="something" />
+            initialValue="something" /> */}
 
           <button onClick={(event) => {
             event.preventDefault();
