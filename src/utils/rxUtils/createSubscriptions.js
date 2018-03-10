@@ -2,10 +2,8 @@ import { Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
 import addPropsObserver from './addPropsObserver';
 import camelize from '../camelize';
-import createProxy from '../createProxy';
 import flushFieldRefs from '../flushFieldRefs';
 import ensafeMap from '../ensafeMap';
-import warning from '../warning';
 
 /**
  * Shorthand: Creates a props change observer with the provided arguments.
@@ -30,7 +28,7 @@ function createObserver({ fieldPath, props, refs, rxPropName, resolver, fieldPro
       return nextContextProps.get(propName);
     },
     eventEmitter: form.eventEmitter
-  }).subscribe(async ({ nextContextProps }) => {
+  }).subscribe(async ({ nextContextProps, shouldValidate = true }) => {
     const nextFields = form.state.fields.set(fieldPath, nextContextProps);
     const safeFields = ensafeMap(nextFields, refs);
 
@@ -40,20 +38,22 @@ function createObserver({ fieldPath, props, refs, rxPropName, resolver, fieldPro
       form
     }, form.context);
 
-    // console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberPath.join('.'), nextPropValue);
+    // console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberFieldPath.join('.'), nextPropValue);
 
     const { nextFieldProps: updatedFieldProps } = await form.updateField({
       fieldPath: subscriberFieldPath,
       propsPatch: { [rxPropName]: nextPropValue }
     });
 
-    form.validateField({
-      force: true,
-      fieldPath: subscriberFieldPath,
-      fieldProps: updatedFieldProps,
-      forceProps: true,
-      fields: nextFields
-    });
+    if (shouldValidate) {
+      form.validateField({
+        force: true,
+        fieldPath: subscriberFieldPath,
+        fieldProps: updatedFieldProps,
+        forceProps: true,
+        fields: nextFields
+      });
+    }
   });
 }
 
@@ -87,7 +87,6 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
   const rxProps = fieldProps.get('reactiveProps');
   if (!rxProps) return;
 
-  const fieldPath = fieldProps.get('fieldPath');
   const resolverArgs = {
     fieldProps,
     fields,
@@ -132,10 +131,16 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
           /* Get rid of delegated subscription since it's no longer relevant */
           delegatedSubscription.unsubscribe();
 
-          const { fields: currentFields } = form.state;
           const { refs } = flushFieldRefs(resolver, resolverArgs);
           const formattedRefs = formatRefs(refs);
-          const props = formattedRefs.get(refFieldPath);
+          const props = formattedRefs.get(gluedFieldPath);
+
+          /**
+           * When the delegated reactive prop resolver executes, we need to determine whether the subscriber field
+           * validation is needed. Validate the subscriber when it has any value, otherwise do not validate to
+           * prevent invalid fields at initial form render.
+           */
+          const shouldValidate = !!fieldProps.get(fieldProps.get('valuePropName'));
 
           const subscription = createObserver({
             fieldPath: refFieldPath,
@@ -147,10 +152,8 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
             form
           });
 
-          return subscription.next({ nextContextProps: delegatedFieldProps });
+          return subscription.next({ nextContextProps: delegatedFieldProps, shouldValidate });
         });
     });
-
-    return;
   });
 }

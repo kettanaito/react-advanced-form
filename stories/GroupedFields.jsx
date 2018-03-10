@@ -30,16 +30,10 @@ export default class GroupedFields extends React.Component {
         <Field.Group name="groupName">
           <Input
             name="firstName"
-            label="First name"
-            required={({ subscribe }) => {
-              return !!subscribe('groupName', 'lastName', 'value');
-            }} />
+            label="First name" />
           <Input
             name="lastName"
-            label="Last name"
-            required={({ subscribe }) => {
-              return !!subscribe('groupName', 'firstName', 'value');
-            }} />
+            label="Last name" />
         </Field.Group>
 
         <Select
