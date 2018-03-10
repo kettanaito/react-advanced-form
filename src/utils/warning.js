@@ -4,6 +4,8 @@
  * @param {string} message
  * @param {any[]} optionalParams
  */
-export default function warn(testValue, message, ...optionalParams) {
-  if (!testValue) console.warn(message, ...optionalParams);
+import util from 'util';
+
+export default function warning(testValue, message, ...params) {
+  if (!testValue) console.warn(util.format(message, ...params));
 }

@@ -1,66 +1,11 @@
+import { Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
 import addPropsObserver from './addPropsObserver';
 import camelize from '../camelize';
-import dispatch from '../dispatch';
-import warn from '../warn';
-
-/**
- * Generates a subscribe function ensuring the proxied interface.
- * @example subscribe('groupName', 'fieldName', 'propName');
- * @param {Map} fields
- * @param {Function} callback
- */
-function generateSubscribe(fields, callback = null) {
-  return function subscribe(...keyPath) {
-    const shouldResolve = callback ? callback(keyPath) : true;
-    if (!shouldResolve) return;
-
-    return fields.getIn(keyPath);
-  };
-}
-
-/**
- * Analyzes the provided resolver function and returns the targets (dependencies) map and its initial value.
- * @param {Function} resolver
- * @param {Map} fieldProps
- * @param {Map} fields
- * @param {ReactElement} form
- */
-function analyzeResolver({ rxPropName, resolver, fieldProps, fields, form }) {
-  const targetsMap = {};
-  const subscriberPath = fieldProps.get('fieldPath').join('.');
-
-  const subscribe = generateSubscribe(fields, (keyPath) => {
-    const keyPathLength = keyPath.length;
-    const isValidKeyPath = (keyPathLength > 1);
-
-    warn(isValidKeyPath, 'Failed to resolve a reactive prop `%s` for the field `%s`. Expected to have a ' +
-    'valid key path reference to the subscribed prop, but got: `%s`.',
-    rxPropName, subscriberPath, keyPath.join('.'));
-    if (!isValidKeyPath) return;
-
-    const fieldPath = keyPath.slice(0, keyPathLength - 1);
-    const propName = keyPath[keyPathLength - 1];
-    const isValidPropName = fields.hasIn(fieldPath) ? fields.getIn(fieldPath).has(propName) : true;
-
-    warn(isValidPropName, 'Failed to resolve a reactive prop `%s` for the field `%s`. Expected the last parameter ' +
-      'to be a valid prop name, but got: `%s`.', rxPropName, subscriberPath, propName);
-    if (!isValidPropName) return;
-
-    const gluedPath = fieldPath.join('.');
-    const prevProps = targetsMap[gluedPath] || [];
-    if (prevProps.includes(propName)) return;
-
-    const nextProps = prevProps.concat(propName);
-    targetsMap[gluedPath] = nextProps;
-
-    return true;
-  });
-
-  const initialValue = dispatch(resolver, { subscribe, fieldProps, form }, form.context);
-
-  return { targetsMap, initialValue };
-}
+import createProxy from '../createProxy';
+import flushFieldRefs from '../flushFieldRefs';
+import ensafeMap from '../ensafeMap';
+import warning from '../warning';
 
 /**
  * Shorthand: Creates a props change observer with the provided arguments.
@@ -72,12 +17,12 @@ function analyzeResolver({ rxPropName, resolver, fieldProps, fields, form }) {
  * @param {ReactElement} form
  * @returns {Subscription}
  */
-function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldProps, form }) {
-  const subscriberPath = fieldProps.get('fieldPath');
+function createObserver({ fieldPath, props, refs, rxPropName, resolver, fieldProps, form }) {
+  const subscriberFieldPath = fieldProps.get('fieldPath');
 
   return addPropsObserver({
-    fieldPath: targetPath,
-    props: targetProps,
+    fieldPath,
+    props,
     predicate({ propName, prevContextProps, nextContextProps }) {
       return (prevContextProps.get(propName) !== nextContextProps.get(propName));
     },
@@ -85,32 +30,52 @@ function createObserver({ targetPath, targetProps, rxPropName, resolver, fieldPr
       return nextContextProps.get(propName);
     },
     eventEmitter: form.eventEmitter
-  }).subscribe(async ({ nextContextProps, shouldValidate = true }) => {
-    const nextFields = form.state.fields.setIn(targetPath, nextContextProps);
+  }).subscribe(async ({ nextContextProps }) => {
+    const nextFields = form.state.fields.set(fieldPath, nextContextProps);
+    const safeFields = ensafeMap(nextFields, refs);
 
-    const nextPropValue = dispatch(resolver, {
-      subscribe: generateSubscribe(nextFields),
+    const nextPropValue = resolver({
       fieldProps: fieldProps.toJS(),
+      fields: safeFields.toJS(),
       form
     }, form.context);
 
     // console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberPath.join('.'), nextPropValue);
 
     const { nextFieldProps: updatedFieldProps } = await form.updateField({
-      fieldPath: subscriberPath,
+      fieldPath: subscriberFieldPath,
       propsPatch: { [rxPropName]: nextPropValue }
     });
 
-    if (shouldValidate) {
-      form.validateField({
-        force: true,
-        fieldPath: subscriberPath,
-        fieldProps: updatedFieldProps,
-        forceProps: true,
-        fields: nextFields
-      });
-    }
+    form.validateField({
+      force: true,
+      fieldPath: subscriberFieldPath,
+      fieldProps: updatedFieldProps,
+      forceProps: true,
+      fields: nextFields
+    });
   });
+}
+
+/**
+ * Returns the formatted references in a { [fieldPath]: props } format.
+ * @param {string[]} refs
+ * @returns {Map<string, string[]>}
+ */
+function formatRefs(refs) {
+  return refs.reduce((formatted, ref) => {
+    if (ref.length < 2) return formatted;
+
+    /* Assume the last referenced key is always a prop name */
+    const fieldPath = ref.slice(0, ref.length - 1);
+    const propName = ref.slice(ref.length - 1);
+
+    if (formatted.hasIn(ref)) {
+      return formatted.update(fieldPath.join('.'), propsList => propsList.concat(propName));
+    }
+
+    return formatted.set(fieldPath.join('.'), propName);
+  }, Map());
 }
 
 /**
@@ -122,28 +87,36 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
   const rxProps = fieldProps.get('reactiveProps');
   if (!rxProps) return;
 
+  const fieldPath = fieldProps.get('fieldPath');
+  const resolverArgs = {
+    fieldProps,
+    fields,
+    form
+  };
+
   rxProps.forEach((resolver, rxPropName) => {
-    /* Get the targets map and initial prop value from the resolver */
-    const { targetsMap, initialValue } = analyzeResolver({ rxPropName, resolver, fieldProps, fields, form });
+    const { refs, initialValue } = flushFieldRefs(resolver, resolverArgs);
 
-    console.log({ initialValue });
-
-    /* Resolve the value of the reactive prop initially */
+    /* Resolve the initial value of the reactive prop */
     form.updateField({
       fieldPath: fieldProps.get('fieldPath'),
       propsPatch: { [rxPropName]: initialValue }
     });
 
-    const targetsPaths = Object.keys(targetsMap);
-    if (targetsPaths.length === 0) return;
+    const formattedRefs = formatRefs(refs);
+    formattedRefs.forEach((props, gluedFieldPath) => {
+      const refFieldPath = gluedFieldPath.split('.');
 
-    targetsPaths.forEach((gluedPath) => {
-      const targetPath = gluedPath.split('.');
-      const isTargetMounted = fields.hasIn(targetPath);
-
-      if (isTargetMounted) {
-        const targetProps = targetsMap[gluedPath];
-        return createObserver({ targetPath, targetProps, rxPropName, resolver, fieldProps, form });
+      if (fields.hasIn(refFieldPath)) {
+        return createObserver({
+          fieldPath: refFieldPath,
+          props,
+          refs,
+          rxPropName,
+          resolver,
+          fieldProps,
+          form
+        });
       }
 
       /**
@@ -153,28 +126,31 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
        * relevant to the delegated target field. Then, remove the delegated subscription and create a full-scale
        * target field props change observable.
        */
-      const fieldRegisteredEvent = camelize(...targetPath, 'registered');
-
+      const fieldRegisteredEvent = camelize(refFieldPath, 'registered');
       const delegatedSubscription = Observable.fromEvent(form.eventEmitter, fieldRegisteredEvent)
-        .subscribe((delegatedField) => {
+        .subscribe((delegatedFieldProps) => {
+          /* Get rid of delegated subscription since it's no longer relevant */
           delegatedSubscription.unsubscribe();
 
-          console.log('Delegated analyzis');
+          const { fields: currentFields } = form.state;
+          const { refs } = flushFieldRefs(resolver, resolverArgs);
+          const formattedRefs = formatRefs(refs);
+          const props = formattedRefs.get(refFieldPath);
 
-          const { fields: nextFields } = form.state;
-          const { targetsMap } = analyzeResolver({ rxPropName, resolver, fieldProps, fields: nextFields, form });
-          const targetProps = targetsMap[gluedPath];
+          const subscription = createObserver({
+            fieldPath: refFieldPath,
+            props,
+            refs,
+            rxPropName,
+            resolver,
+            fieldProps,
+            form
+          });
 
-          /**
-           * When the delegated reactive prop resolver executes, we need to determine whether the subscriber field
-           * validation is needed. Validate the subscriber when it has any value, otherwise do not validate to
-           * prevent invalid fields at initial form render.
-           */
-          const shouldValidate = !!fieldProps.get(fieldProps.get('valuePropName'));
-
-          const subscription = createObserver({ targetPath, targetProps, rxPropName, resolver, fieldProps, form });
-          return subscription.next({ nextContextProps: delegatedField, shouldValidate });
+          return subscription.next({ nextContextProps: delegatedFieldProps });
         });
     });
+
+    return;
   });
 }
