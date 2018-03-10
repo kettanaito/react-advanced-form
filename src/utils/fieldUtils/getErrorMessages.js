@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import { customRulesKey } from './validate';
-import warn from '../warn';
+import warning from '../warning';
 import dispatch from '../dispatch';
 
 function resolveMessage({ messages, rejectedRule, fieldProps }) {
@@ -66,7 +66,7 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
   const overridesExtras = extraKeys && extraKeys.some(extraKey => defaultResolverKeys.includes(extraKey));
 
   /* Warn about keys override */
-  warn(!overridesExtras, 'Extra keys received from the async response %s overlap with the ' +
+  warning(!overridesExtras, 'Extra keys received from the async response %s overlap with the ' +
   'default resolver arguments %s. Note that the overlapping keys will be overriden in the `%s` field ' +
   'message resolver.', JSON.stringify(extraKeys), JSON.stringify(defaultResolverKeys),
   fieldProps.get('name'));

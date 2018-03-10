@@ -62,14 +62,8 @@ export default class Messages extends React.Component {
 
           <Input
             name="rxField"
-            required={({ subscribe }) => {
-              const conditionA = !!subscribe(['fieldOne'], 'value');
-              const conditionB = subscribe(['fieldThree'], 'type') === 'password';
-
-              // const conditionA = fields.fieldOne && !!fields.fieldOne.value;
-              // const conditionB = fields.fieldThree && (fields.fieldThree.type === 'password');
-
-              return conditionA && conditionB;
+            required={({ fields }) => {
+              return fields.fieldOne.value;
             }} />
 
           <Input
@@ -77,7 +71,7 @@ export default class Messages extends React.Component {
             type={ type }
             initialValue="something" />
 
-          <button className="btn btn-secondary" onClick={(event) => {
+          <button onClick={(event) => {
             event.preventDefault();
             this.setState(({ type }) => ({
               type: (type === 'text') ? 'password' : 'text'

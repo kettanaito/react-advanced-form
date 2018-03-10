@@ -44,6 +44,7 @@ module.exports = {
     'prefer-promise-reject-errors': 0,
     'no-confusing-arrow': 0,
     'padded-blocks': 0,
+    'no-underscore-dangle': 0,
 
     /* React */
     'react/jsx-uses-react': 2,
