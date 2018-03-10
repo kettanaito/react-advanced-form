@@ -34,7 +34,6 @@ export default class ControlledFields extends Component {
               Product Id:
               <Input
                 name="productId"
-                required={({ fields }) => fields.producerNr && !fields.producerNr.value}
                 asyncRule={({ value: productId }) => {
                   return new Promise(resolve => resolve())
                     .then(() => ({
