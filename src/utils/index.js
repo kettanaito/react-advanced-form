@@ -7,6 +7,7 @@ export dispatch from './dispatch';
 export ensafeMap from './ensafeMap';
 export flushFieldRefs from './flushFieldRefs';
 export makeCancelable from './makeCancelable';
+export makeReactive from './makeReactive';
 
 /* React utils */
 export getComponentName from './getComponentName';
