@@ -1,22 +1,6 @@
 import ensafeMap from './ensafeMap';
 
 /**
- * Recursively proxies the given origin. Calls optional "callback" function whenever any property
- * if the origin is being referenced.
- * @param {Object} origin
- * @param {Function} callback
- * @returns {Proxy}
- */
-function proxyWithCallback(origin, callback) {
-  return new Proxy(origin, {
-    get(target, propName) {
-      if (callback) callback({ target, propName });
-      return proxyWithCallback({}, callback);
-    }
-  });
-}
-
-/**
  * Returns the collection of field paths of the fields referenced within the provided method.
  * @param {Function} method
  * @param {Object} fields
@@ -45,4 +29,20 @@ export default function flushFieldRefs(method, { fields, ...restParams }) {
   const initialValue = method({ ...restParams, fields: safeFields.toJS() });
 
   return { refs, initialValue };
+}
+
+/**
+ * Recursively proxies the given origin. Calls optional "callback" function whenever any property
+ * if the origin is being referenced.
+ * @param {Object} origin
+ * @param {Function} callback
+ * @returns {Proxy}
+ */
+function proxyWithCallback(origin, callback) {
+  return new Proxy(origin, {
+    get(target, propName) {
+      if (callback) callback({ target, propName });
+      return proxyWithCallback({}, callback);
+    }
+  });
 }
