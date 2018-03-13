@@ -44,7 +44,7 @@ export default class Messages extends React.Component {
     const { type } = this.state;
 
     return (
-      <FormProvider withImmutable>
+      <FormProvider>
         <Form
           rules={ rules }
           messages={ messages }

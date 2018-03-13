@@ -5,17 +5,16 @@ export camelize from './camelize';
 export debounce from './debounce';
 export dispatch from './dispatch';
 export ensafeMap from './ensafeMap';
+export flattenDeep from './flattenDeep';
 export flushFieldRefs from './flushFieldRefs';
 export makeCancelable from './makeCancelable';
-export makeReactive from './makeReactive';
-
-/* React utils */
-export getComponentName from './getComponentName';
-
-/* Form utils */
-export getFormRules from './getFormRules';
+export makeObservable from './makeObservable';
 
 /* Composite utils */
 export * as CustomPropTypes from './propTypes';
+export * as formUtils from './formUtils';
 export * as fieldUtils from './fieldUtils';
 export * as rxUtils from './rxUtils';
+
+/* Mist */
+export getComponentName from './getComponentName';

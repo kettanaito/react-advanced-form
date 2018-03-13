@@ -1,0 +1,1 @@
+export getRules from './getRules';

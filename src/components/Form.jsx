@@ -10,7 +10,18 @@ import 'rxjs/add/observable/fromEvent';
 /* Internal modules */
 import { defaultDebounceTime, TValidationRules, TValidationMessages } from './FormProvider';
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
-import { CustomPropTypes, isset, camelize, debounce, dispatch, getFormRules, fieldUtils, rxUtils } from '../utils';
+import {
+  CustomPropTypes,
+  isset,
+  camelize,
+  debounce,
+  dispatch,
+  flattenDeep,
+  formUtils,
+  fieldUtils,
+  rxUtils
+} from '../utils';
+import _abc from '../utils/formUtils/_abc';
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
@@ -49,6 +60,7 @@ export default class Form extends React.Component {
 
   state = {
     fields: Map(),
+    rxRules: Map(),
     dirty: false
   }
 
@@ -80,7 +92,7 @@ export default class Form extends React.Component {
     this.debounceTime = isset(context.debounceTime) ? context.debounceTime : defaultDebounceTime;
 
     /* Define validation rules */
-    this.formRules = getFormRules(props.rules, context.rules);
+    this.formRules = formUtils.getRules(props.rules, context.rules);
 
     /**
      * Define validation messages once, since those should be converted to immutable, which is
@@ -104,6 +116,7 @@ export default class Form extends React.Component {
     Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange);
     Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur);
     Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField);
+    Observable.fromEvent(eventEmitter, 'validateField').subscribe(this.validateField);
   }
 
   /**
@@ -146,19 +159,14 @@ export default class Form extends React.Component {
       }
     }
 
-    /* Validate the field when it has initial value */
-    if (fieldProps.get('shouldValidateOnMount')) {
-      this.validateField({
-        fieldProps,
+    //
+    //
+    const nextRxRules = _abc({ fieldProps, fields, form: this });
+    console.log('transformed rules:', nextRxRules && nextRxRules.toJS());
+    //
+    //
 
-        /**
-         * Enforce the validation function to use the "fieldProps" provided directly.
-         * By default, it will try to grab the field record from the state, which is
-         * missing at this point of execution.
-         */
-        forceProps: true
-      });
-    }
+    const shouldValidateOnMount = fieldProps.get('shouldValidateOnMount');
 
     fieldProps = fieldProps
       /* Delete on mount validation flag since it is irrelevant from now on */
@@ -178,7 +186,7 @@ export default class Form extends React.Component {
      * Synchronize the field record with the field props.
      * Create a props change observer to keep field's record in sync with the props changes
      * of the respective field component. Only the changes in the props relative to the record
-     * should be observed and synchronized in the field's record.
+     * should be observed and synchronized.
      */
     rxUtils.addPropsObserver({
       fieldPath,
@@ -191,10 +199,26 @@ export default class Form extends React.Component {
       });
     });
 
-    this.setState({ fields: nextFields }, () => {
+    this.setState({ fields: nextFields, rxRules: nextRxRules }, () => {
       /* Emit the field registered event */
-      eventEmitter.emit(camelize(...fieldPath, 'registered'), fieldProps);
+      const fieldRegisteredEvent = camelize(...fieldPath, 'registered');
+      eventEmitter.emit(fieldRegisteredEvent, fieldProps);
 
+      /* Validate the field when it has initial value */
+      if (shouldValidateOnMount) {
+        this.validateField({
+          fieldProps,
+
+          /**
+           * Enforce the validation function to use the "fieldProps" provided directly.
+           * By default, it will try to grab the field record from the state, which is
+           * missing at this point of execution.
+           */
+          forceProps: true
+        });
+      }
+
+      /* Create subscriptions for reactive props */
       rxUtils.createSubscriptions({
         fieldProps,
         fields: nextFields,
@@ -364,7 +388,7 @@ export default class Form extends React.Component {
         [valuePropName]: nextValue,
 
         /* Reset the validation states as they are irrelevant to the updated value */
-        errors: null,
+        // errors: null,
         validating: false,
         validSync: false,
         validAsync: false,
@@ -602,7 +626,7 @@ export default class Form extends React.Component {
   validate = async (predicate) => {
     const { fields } = this.state;
 
-    const flattenedFields = fieldUtils.flattenDeep(fields, predicate, true);
+    const flattenedFields = flattenDeep(fields, predicate, true);
 
     /* Validate only the fields matching the optional selection */
     const validationSequence = flattenedFields.reduce((validations, fieldProps) => {
