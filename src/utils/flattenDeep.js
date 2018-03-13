@@ -20,6 +20,10 @@ export default function flattenDeep(
   nextAcc = Map()
 ) {
   return iter.reduce((acc, value, key) => {
+    if (!Map.isMap(value)) {
+      return acc;
+    }
+
     const deepKeyPath = nextKeyPath.concat(key);
     const satisfiesPredicate = predicate ? predicate(value, deepKeyPath) : true;
 
