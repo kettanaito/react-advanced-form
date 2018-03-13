@@ -40,20 +40,23 @@ function applyRules({ selector, rules, resolverArgs, refs }) {
  */
 function applyRulesSchema(schema, resolverArgs) {
   const { fieldProps, form } = resolverArgs;
+  const { rxRules } = form.state;
 
   const nameKeyPath = ['name', fieldProps.get('name')];
-  const nameRules = schema.getIn(nameKeyPath);
   const typeKeyPath = ['type', fieldProps.get('type')];
+  const nameRules = schema.getIn(nameKeyPath);
   const typeRules = schema.getIn(typeKeyPath);
 
-  if (!nameRules && !typeRules) return [];
+  if (!nameRules && !typeRules) {
+    return [];
+  }
 
   if (nameRules) {
     const rejectedRules = applyRules({
       selector: 'name',
       rules: nameRules,
       resolverArgs,
-      refs: form.state.rxRules.getIn(nameKeyPath)
+      refs: rxRules.getIn(nameKeyPath)
     });
 
     if (rejectedRules.length > 0) {
@@ -66,7 +69,7 @@ function applyRulesSchema(schema, resolverArgs) {
       selector: 'type',
       rules: typeRules,
       resolverArgs,
-      refs: form.state.rxRules.getIn(typeKeyPath)
+      refs: rxRules.getIn(typeKeyPath)
     });
 
     return rejectedRules;
@@ -77,6 +80,9 @@ function applyRulesSchema(schema, resolverArgs) {
 
 export default function validateSync({ fieldProps, fields, form, formRules }) {
   /* Bypass validation for already valid field */
+  // THIS SHOULD BE DETERMINED BY VALIDATION_TYPE.SHOULD_VALIDATE METHOD
+  // NO NEED TO EXPLICITLY BYPASS SOME VALIDATION SCENARIOS HERE. IF VALIDATION BUBBLED UP TO THIS POINT
+  // THAT MEANS THAT THE VALIDATION IS INDEED NEEDED.
   // if (fieldProps.get('validSync')) {
   //   console.log('already valid, bypassing...');
   //   return composeResult(true);

@@ -15,6 +15,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
 
   rxProps.forEach((resolver, rxPropName) => {
     const { refs } = makeObservable(resolver, resolverArgs, {
+      initialCall: true,
       async subscribe({ nextContextProps, shouldValidate = true }) {
         const refFieldPath = nextContextProps.get('fieldPath');
         const nextFields = form.state.fields.set(refFieldPath, nextContextProps);
