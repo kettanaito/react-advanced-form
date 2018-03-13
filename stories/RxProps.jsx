@@ -44,52 +44,16 @@ export default class Messages extends React.Component {
     const { type } = this.state;
 
     return (
-      <FormProvider>
-        <Form
-          rules={ rules }
-          messages={ messages }
-          onSubmitStart={ this.handleSubmitStart }>
-          <h2>Reactive props</h2>
-
-          <Checkbox
-            name="checkbox"
-            label="Foo"
-            required />
-
-          <Input
-            name="fieldOne"
-            required={({ fields }) => {
-              return !!fields.fieldTwo.value;
-            }} />
-          <Input
-            name="fieldTwo"
-            initialValue="foo" />
-
-          {/* <Input
-            name="fieldOne"
-            initialValue="foo" />
-
-          <Input
-            name="rxField"
-            required={({ fields }) => {
-              return fields.fieldOne.value;
-            }} />
-
-          <Input
-            name="fieldThree"
-            type={ type }
-            initialValue="something" /> */}
-
-          <button onClick={(event) => {
-            event.preventDefault();
-            this.setState(({ type }) => ({
-              type: (type === 'text') ? 'password' : 'text'
-            }));
-          }}>Toggle type</button>
-
-          <button className="btn btn-primary">Submit</button>
-        </Form>
-      </FormProvider>
+      <Form>
+        <Input
+          name="fieldOne"
+          initialValue="foo" />
+        <Input
+          name="fieldTwo"
+          required={({ fields }) => {
+            return !!fields.fieldOne.value;
+          }} />
+      </Form>
     );
   }
 }
