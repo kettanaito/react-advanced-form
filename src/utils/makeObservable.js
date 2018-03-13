@@ -56,7 +56,7 @@ function createObserver({
   }).subscribe(subscribe);
 }
 
-export default function makeObservable(method, methodArgs, { observerOptions, subscribe }) {
+export default function makeObservable(method, methodArgs, { observerOptions, subscribe, initialCall = false }) {
   const { fieldProps, fields, form } = methodArgs;
   const { refs, initialValue } = flushFieldRefs(method, methodArgs);
 
@@ -64,14 +64,25 @@ export default function makeObservable(method, methodArgs, { observerOptions, su
   formattedRefs.forEach((props, gluedFieldPath) => {
     const refFieldPath = gluedFieldPath.split('.');
 
+    /**
+     * When the delegated reactive prop resolver executes, we need to determine whether the subscriber field
+     * validation is needed. Validate the subscriber when it has any value, otherwise do not validate to
+     * prevent invalid fields at initial form render.
+     */
+    const shouldValidate = !!fieldProps.get(fieldProps.get('valuePropName'));
+
     if (fields.hasIn(refFieldPath)) {
-      createObserver({
+      const subscription = createObserver({
         fieldPath: refFieldPath,
         props,
         form,
         subscribe,
         observerOptions
       });
+
+      if (initialCall) {
+        subscription.next({ nextContextProps: fieldProps, shouldValidate });
+      }
 
       return { refs, initialValue };
     }
@@ -87,13 +98,6 @@ export default function makeObservable(method, methodArgs, { observerOptions, su
       .subscribe((delegatedFieldProps) => {
         /* Get rid of delegated subscription since it's no longer relevant */
         delegatedSubscription.unsubscribe();
-
-        /**
-         * When the delegated reactive prop resolver executes, we need to determine whether the subscriber field
-         * validation is needed. Validate the subscriber when it has any value, otherwise do not validate to
-         * prevent invalid fields at initial form render.
-         */
-        const shouldValidate = !!fieldProps.get(fieldProps.get('valuePropName'));
 
         const subscription = createObserver({
           fieldPath: refFieldPath,
