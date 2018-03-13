@@ -1,7 +1,7 @@
 /**
- * Resets the given field.
+ * Resets the provided field.
  * @param {Map} fieldProps
- * @return {Map}
+ * @returns {Map}
  */
 export default function resetField(fieldProps) {
   /* Get the dynamic property name which represents the field's value (i.e. "checked" for Checkbox) */

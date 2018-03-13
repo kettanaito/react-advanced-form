@@ -1,4 +1,4 @@
-import flattenDeep from './flattenDeep';
+import flattenDeep from '../flattenDeep';
 
 function defaultTransformValue(fieldProps) {
   return fieldProps.get(fieldProps.get('valuePropName'));
@@ -12,6 +12,8 @@ function defaultTransformValue(fieldProps) {
  */
 export default function serializeFields(fields, transformValue = defaultTransformValue) {
   const flattenedFields = flattenDeep(fields, (fieldProps) => {
+    if (!fieldProps.has('fieldPath')) return;
+
     /* Bypass the fields which should be skipped */
     if (fieldProps.get('skip')) return false;
 
