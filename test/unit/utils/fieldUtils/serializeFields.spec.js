@@ -27,10 +27,14 @@ describe('serializeFields', function () {
   it('Serializes groupped fields properly', () => {
     const fields = fromJS({
       fieldOne: { fieldPath: ['fieldOne'], value: 'one', valuePropName: 'value' },
-      fieldTwo: { fieldPath: ['groupOne', 'fieldTwo'], value: 'two', valuePropName: 'value' },
       fieldThree: { fieldPath: ['fieldThree'], value: 'three', valuePropName: 'value' },
-      fieldFour: { fieldPath: ['groupOne', 'fieldFour'], value: 'four', valuePropName: 'value' },
-      fieldFive: { fieldPath: ['groupTwo', 'fieldFive'], value: 'five', valuePropName: 'value' },
+      groupOne: {
+        fieldTwo: { fieldPath: ['groupOne', 'fieldTwo'], value: 'two', valuePropName: 'value' },
+        fieldFour: { fieldPath: ['groupOne', 'fieldFour'], value: 'four', valuePropName: 'value' }
+      },
+      groupTwo: {
+        fieldFive: { fieldPath: ['groupTwo', 'fieldFive'], value: 'five', valuePropName: 'value' }
+      }
     });
 
     const serialized = fieldUtils.serializeFields(fields).toJS();

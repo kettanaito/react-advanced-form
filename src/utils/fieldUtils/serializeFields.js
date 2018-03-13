@@ -11,7 +11,7 @@ function defaultTransformValue(fieldProps) {
  * @returns {Map}
  */
 export default function serializeFields(fields, transformValue = defaultTransformValue) {
-  const flattenedFields = flattenDeep(fields, (fieldProps) => {
+  return flattenDeep(fields, (fieldProps) => {
     if (!fieldProps.has('fieldPath')) return;
 
     /* Bypass the fields which should be skipped */
@@ -27,6 +27,4 @@ export default function serializeFields(fields, transformValue = defaultTransfor
 
     return true;
   }, false, transformValue);
-
-  return flattenedFields;
 }
