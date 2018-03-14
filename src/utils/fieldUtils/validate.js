@@ -73,7 +73,7 @@ const sequenceIterator = ({ acc, variables, resolved, isLast, breakIteration }) 
  * @param {Map} formRules
  * @return {boolean}
  */
-export default async function validate({ type, fieldProps, fields, form, formRules = Map() }) {
+export default async function validate({ type, fieldProps, fields, form }) {
   // console.groupCollapsed(`fieldUtils @ validate "${fieldProps.get('fieldPath')}"`);
   // console.log('type', type);
   // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
@@ -94,7 +94,7 @@ export default async function validate({ type, fieldProps, fields, form, formRul
       variables: {
         validationType: validationTypes.sync
       },
-      resolver: () => validateSync({ fieldProps, fields, form, formRules })
+      resolver: () => validateSync({ fieldProps, fields, form })
     });
   }
 
@@ -104,7 +104,7 @@ export default async function validate({ type, fieldProps, fields, form, formRul
       variables: {
         validationType: validationTypes.async
       },
-      resolver: () => validateAsync({ fieldProps, fields, form, formRules })
+      resolver: () => validateAsync({ fieldProps, fields, form })
     });
   }
 

@@ -4,17 +4,6 @@ import { fieldUtils } from '../../../../src/utils';
 
 describe('fieldUtils', function () {
   /**
-   * getFieldPath
-   */
-  it('getFieldPath', () => {
-    const fieldOne = { name: 'fieldOne' };
-    const fieldTwo = { fieldGroup: 'groupOne', name: 'fieldTwo' };
-
-    expect(fieldUtils.getFieldPath(fieldOne)).to.deep.eq(['fieldOne']);
-    expect(fieldUtils.getFieldPath(fieldTwo)).to.deep.eq(['groupOne', 'fieldTwo']);
-  });
-
-  /**
    * getValidityState
    */
   it('getValidityState', () => {

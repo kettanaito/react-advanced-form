@@ -661,7 +661,7 @@ export default class Form extends React.Component {
 
     this.setState({ fields: nextFields }, () => {
       /* Validate only non-empty fields, since empty required fields should not be unexpected on reset */
-      this.validate(fieldProps => (fieldProps.get('value') !== ''));
+      this.validate(fieldProps => Map.isMap(fieldProps) && (fieldProps.get('value') !== ''));
 
       /* Call custom callback methods to be able to reset controlled fields */
       const { onReset } = this.props;
