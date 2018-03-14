@@ -4,13 +4,13 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { form } from '../../../../utils';
-import { fieldUtils } from '../../../../../src/utils';
+import { formUtils, fieldUtils } from '../../../../../src/utils';
 
 describe('Name-specific validation', () => {
   const fields = Map({});
 
   it('Functional rule', () => {
-    const formRules = fromJS({
+    const schema = fromJS({
       name: {
         fieldName: ({ value }) => /^\d+$/.test(value)
       }
@@ -22,11 +22,17 @@ describe('Name-specific validation', () => {
       valuePropName: 'value'
     });
 
+    const form = {
+      ...form,
+      state: {
+        rxRules: formUtils.getFieldRules({ fieldProps, schema })
+      }
+    };
+
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'letters'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultOne).to.include.keys(['rejectedRules', 'propsPatch']);
@@ -43,8 +49,7 @@ describe('Name-specific validation', () => {
     const resultTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', '123'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultTwo.propsPatch).to.have.property('expected', true);
@@ -52,7 +57,7 @@ describe('Name-specific validation', () => {
   });
 
   it('Multiple named rules', () => {
-    const formRules = fromJS({
+    const schema = fromJS({
       name: {
         fieldName: {
           capitalLetter: ({ value }) => /[A-Z]/.test(value),
@@ -67,14 +72,20 @@ describe('Name-specific validation', () => {
       valuePropName: 'value'
     });
 
+    const form = {
+      ...form,
+      state: {
+        rxRules: formUtils.getFieldRules({ fieldProps, schema })
+      }
+    };
+
     /**
      * Unexpected field (0/2).
      */
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'foo'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultOne.propsPatch).to.have.property('expected', false);
@@ -98,8 +109,7 @@ describe('Name-specific validation', () => {
     const resultTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'Capital'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultTwo.propsPatch).to.have.property('expected', false);
@@ -118,8 +128,7 @@ describe('Name-specific validation', () => {
     const resultThree = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'Capi5tal'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultThree.propsPatch).to.have.property('expected', true);
