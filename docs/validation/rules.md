@@ -20,17 +20,17 @@ type ValidationRules = {
   }
 }
 
-type ValidatorFunction = ({
+type RuleResolver = ({
   value: mixed, // (shorthand) the value of the current field
   fieldProps: Object, // props of the current field
   fields: Object, // map of all fields present in the same Form
   form: ReactComponent // reference to the Form itself
 }) => boolean
 
-type RuleDeclaraion = ValidationFunction | { [ruleName: string]: ValidatorFunction;
+type RuleDeclaraion = RuleResolver | { [ruleName: string]: RuleResolver;
 ```
 
-A `ValidatorFunction` must always return a `boolean`, stating that the rule has been resolved.
+A `RuleResolver` must always return a `boolean`, stating that the rule has been resolved.
 
 ## Priority
 Validation rules are executed by a certain priority.
@@ -81,6 +81,23 @@ export default {
 Multiple type-specific rules are declared in the very same way.
 
 Sibling rule declarations are always executed regardless of the status of the previous rule. Considering the example above, `oneNumber` rule will always be executed even if `capitalLetter` rejects.
+
+## Referencing fields
+As mentioned in [Definition](#definition), `RuleResolver` function is exposed a `fields` Object. This allows the rule to reference another fields present in the same form and base the validation logic around their props.
+
+When the resolver function references any field using `fields` Object, this resolver gets executed each time the referenced prop of the referenced field is updated. Consider the following example:
+
+```js
+{
+  name: {
+    confirmPassword: ({ value, fields }) => {
+      return (value === fields.password.value);
+    }
+  }
+}
+```
+
+The `[name="password"]` field is being referenced in the rule resolver above. Therefore, whenever the `value` prop of the `[name="password"]` field is changed, the `[name="confirmPassword"]` field is re-validated to reflect that changes. That is a built-in logic and is executed automatically.
 
 ## Extending rules
 While having application-wide rules is the recommended approach, each `Form` instance can have its own validation rules, which may, or may not extend the application-wide rules.
