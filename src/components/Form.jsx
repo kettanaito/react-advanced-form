@@ -21,7 +21,6 @@ import {
   fieldUtils,
   rxUtils
 } from '../utils';
-import _abc from '../utils/formUtils/_abc';
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
@@ -159,12 +158,7 @@ export default class Form extends React.Component {
       }
     }
 
-    //
-    //
-    const nextRxRules = _abc({ fieldProps, fields, form: this });
-    console.log('transformed rules:', nextRxRules && nextRxRules.toJS());
-    //
-    //
+    const nextRxRules = rxUtils.createRulesSubscriptions({ fieldProps, fields, form: this });
 
     const shouldValidateOnMount = fieldProps.get('shouldValidateOnMount');
 

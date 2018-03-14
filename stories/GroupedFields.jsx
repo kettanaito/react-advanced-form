@@ -3,8 +3,15 @@ import { Form, Field } from '../src';
 import { Input, Checkbox, Select, Radio, Textarea } from '@fields';
 
 const rules = {
+  type: {
+    text: ({ value }) => value !== 'foo'
+  },
   name: {
-    fieldOne: ({ fields }) => (fields.checkbox.checked),
+    // fieldOne: ({ fields }) => fields.checkbox.checked,
+    fieldOne: {
+      ruleA: ({ fields }) => fields.checkbox.checked,
+      ruleB: ({ value }) => (value !== '123')
+    },
     fieldTwo: {
       ruleOne: () => true,
       ruleTwo: ({ fields }) => fields.fieldOne.valid
@@ -21,6 +28,13 @@ const messages = {
     checkbox: {
       missing: 'Please agree to Terms and Conditions'
     }
+  },
+  name: {
+    fieldOne: {
+      rules: {
+        ruleA: 'Agree to checkbox first'
+      }
+    }
   }
 };
 
@@ -36,6 +50,9 @@ export default class GroupedFields extends React.Component {
           name="fieldOne"
           initialValue="foo"
           hint="I am valid only when agreed to Terms and Conditions" />
+
+        <Input
+          name="fieldTwo" />
 
         <Checkbox
           name="checkbox"
