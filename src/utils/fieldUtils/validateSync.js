@@ -17,6 +17,7 @@ function getRejectedRules(resolverArgs) {
 
     const ruleKeyPath = ruleSelector(fieldProps);
     const rules = form.state.rxRules.get(ruleKeyPath.join('.'));
+    if (!rules) return;
 
     rules.forEach((rule) => {
       const { refs, name, selector, resolver } = rule;
@@ -27,10 +28,12 @@ function getRejectedRules(resolverArgs) {
         return;
       }
 
+      const errorName = name || commonErrorTypes.invalid;
+
       const rejectedRule = createRejectedRule({
-        name: name || commonErrorTypes.invalid,
+        name: errorName,
         selector,
-        isCustom: !Object.keys(commonErrorTypes).includes(name)
+        isCustom: !Object.keys(commonErrorTypes).includes(errorName)
       });
 
       rejectedRules.push(rejectedRule);
@@ -40,7 +43,7 @@ function getRejectedRules(resolverArgs) {
   return rejectedRules;
 }
 
-export default function validateSync({ fieldProps, fields, form, formRules }) {
+export default function validateSync({ fieldProps, fields, form }) {
   /* Get properties shorthand references */
   const name = fieldProps.get('name');
   const type = fieldProps.get('type');
@@ -49,6 +52,7 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   const required = fieldProps.get('required');
   const rule = fieldProps.get('rule');
   const asyncRule = fieldProps.get('asyncRule');
+  const { rxRules } = form.state;
 
   /* Empty optional fields are expected */
   if (!value && !required) {
@@ -63,8 +67,8 @@ export default function validateSync({ fieldProps, fields, form, formRules }) {
   }
 
   /* Assume Field doesn't have any relevant validation rules */
-  const hasFormNameRules = formRules.hasIn(['name', name]);
-  const hasFormTypeRules = formRules.hasIn(['type', type]);
+  const hasFormNameRules = rxRules.has(`name.${name}`);
+  const hasFormTypeRules = rxRules.has(`type.${type}`);
   const hasFormRules = hasFormNameRules || hasFormTypeRules;
 
   if (!rule && !asyncRule && !hasFormRules) {

@@ -4,13 +4,13 @@
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
 import { form } from '../../../../utils';
-import { fieldUtils } from '../../../../../src/utils';
+import { formUtils, fieldUtils } from '../../../../../src/utils';
 
 describe('Mixed validation', function () {
   const fields = Map({});
 
   it('Name-specific rules are prior to type-specific rule', () => {
-    const formRules = fromJS({
+    const schema = fromJS({
       type: {
         text: ({ value }) => (value.length < 5)
       },
@@ -27,11 +27,17 @@ describe('Mixed validation', function () {
       valuePropName: 'value'
     });
 
+    const form = {
+      ...form,
+      state: {
+        rxRules: formUtils.getFieldRules({ fieldProps, schema })
+      }
+    };
+
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'foo'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultOne.propsPatch).to.have.property('expected', false);
@@ -47,8 +53,7 @@ describe('Mixed validation', function () {
     const resulTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', '1234567890'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resulTwo.propsPatch).to.have.property('expected', false);
@@ -64,8 +69,7 @@ describe('Mixed validation', function () {
     const resultThree = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', '4'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultThree.propsPatch).to.have.property('expected', true);

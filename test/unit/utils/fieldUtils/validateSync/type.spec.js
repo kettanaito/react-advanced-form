@@ -3,8 +3,8 @@
  */
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
-import { form } from '../../../../utils';
-import { fieldUtils } from '../../../../../src/utils';
+import { form as defaultForm } from '../../../../utils';
+import { formUtils, fieldUtils } from '../../../../../src/utils';
 
 describe('Type-specific validation', () => {
   const fields = fromJS({
@@ -15,22 +15,30 @@ describe('Type-specific validation', () => {
   });
 
   it('Functional rule', () => {
+    const schema = fromJS({
+      type: {
+        text: ({ value }) => /^\d+$/.test(value)
+      }
+    });
+
     const fieldProps = Map({
       name: 'fieldName',
       type: 'text',
       valuePropName: 'value'
     });
 
+    const form = {
+      ...defaultForm,
+      state: {
+        rxRules: formUtils.getFieldRules({ fieldProps, schema })
+      }
+    };
+
     /* Unexpected field */
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'letters'),
       fields,
-      form,
-      formRules: fromJS({
-        type: {
-          text: ({ value }) => /^\d+$/.test(value)
-        }
-      })
+      form
     }).toJS();
 
     expect(resultOne).to.include.keys(['rejectedRules', 'propsPatch']);
@@ -48,12 +56,13 @@ describe('Type-specific validation', () => {
     const resultTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'example@domain.com'),
       fields,
-      form,
-      formRules: fromJS({
-        type: {
-          email: ({ value }) => value.includes('@')
-        }
-      })
+      form: {
+        ...defaultForm,
+        rxRules: formUtils.getFieldRules({
+          fieldProps,
+          schema: schema.setIn(['type', 'text'], ({ value }) => value.includes('@'))
+        })
+      }
     }).toJS();
 
     expect(resultTwo.propsPatch).to.have.property('expected', true);
@@ -61,7 +70,7 @@ describe('Type-specific validation', () => {
   });
 
   it('Multiple named rules', () => {
-    const formRules = fromJS({
+    const schema = fromJS({
       type: {
         password: {
           capitalLetter: ({ value }) => /[A-Z]/.test(value),
@@ -76,14 +85,20 @@ describe('Type-specific validation', () => {
       valuePropName: 'value'
     });
 
+    const form = {
+      ...form,
+      state: {
+        rxRules: formUtils.getFieldRules({ fieldProps, schema })
+      }
+    };
+
     /**
      * Unexpected field (0/2).
      */
     const resultOne = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'foo'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultOne.propsPatch).to.have.property('expected', false);
@@ -107,8 +122,7 @@ describe('Type-specific validation', () => {
     const resultTwo = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'Capital'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultTwo.propsPatch).to.have.property('expected', false);
@@ -127,8 +141,7 @@ describe('Type-specific validation', () => {
     const resultThree = fieldUtils.validateSync({
       fieldProps: fieldProps.set('value', 'Capi5tal'),
       fields,
-      form,
-      formRules
+      form
     }).toJS();
 
     expect(resultThree.propsPatch).to.have.property('expected', true);

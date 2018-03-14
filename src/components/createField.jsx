@@ -55,7 +55,8 @@ export default function connectField(options) {
 
       constructor(props, context) {
         super(props, context);
-        const { name, fieldGroup } = props;
+        const { fieldGroup } = context;
+        const { name } = props;
 
         /* Compose the proper field path */
         this.fieldPath = fieldGroup ? [fieldGroup, name] : [name];
