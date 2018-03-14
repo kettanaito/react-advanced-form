@@ -18,8 +18,8 @@
   initialValue="foo" />
 <Input
   name="fieldTwo"
-  required={({ subscribe }) => {
-    return !!subscribe('fieldOne', 'value');
+  required={({ fields }) => {
+    return !!fields.fieldOne.value;
   }}>
 ```
 
@@ -47,9 +47,9 @@ To illustrate this, consider the next scenario:
   initialValue="foo" />
 <Input
   name="fieldTwo"
-  required={({ subscribe }) => {
-    const fieldOneFilled = !!subscribe('fieldOne', 'value');
-    const fieldThreeFilled = !!subscribe('fieldThree', 'value');
+  required={({ fields }) => {
+    const fieldOneFilled = !!fields.fieldOne.value;
+    const fieldThreeFilled = !!fields.fieldThree.value;
 
     return fieldOneFilled && fieldThreeFilled;
   }}>

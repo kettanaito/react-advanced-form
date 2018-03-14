@@ -6,12 +6,12 @@ One of the purposes of the form is to ensure the expected format of the entered 
 
 This part is going to focus on how to declare a validation schema and write the rules. We are going apply the validation rules and messages to the forms in the next part.
 
-It is highly recommended to read the [Validation rules](../validation/rules.md) section of the documentation, which has more profound explanation on how the validation works.
+It is highly recommended to read the [Validation rules](../validation/rules.md) documentation, which has more profound explanation on how the validation works.
 
 ## Implementation
 
 ### Schema
-All validation rules reside in the respective schema. The latter is a plain JavaScript Object of a defined structure, which is used by React Advanced Form to apply the appropriate validation to the fields.
+All validation rules reside in the respective schema. The latter is a plain JavaScript Object of a defined structure, which is used by React Advanced Form to apply the appropriate validation to the targeted fields.
 
 Let's create an empty validation schema with no rules for now:
 
@@ -22,9 +22,11 @@ export default {};
 
 ### Field selectors
 
-To create a validation rule for a certain field we need to select that field first. We can select a field by its `type` or by its `name`.
+To validate a field we need to select it first within our validation rules schema. We can select a field by its `type` or `name`, or both.
 
-> **Note:** If a field has both `type` and `name` validation rules they are going to be executed sequentially: name-specific rule first, then type-specific rules *only* in case the previous ones resolved.
+> **Note:** If a field has both `type` and `name` validation rules they are going to be executed sequentially: name-specific rules first, then type-specific rules *only* in case the previous ones resolved.
+
+After a field is selected, we are going to provide a *resolver* function, which is going to determine whether the field is valid.
 
 Let's target the `[type="email"]` fields and provide an e-mail validation.
 
@@ -39,9 +41,9 @@ export default {
 };
 ```
 
-The above reads that all the fields with the type `email` are going to be validated using the provided resolver function.
+This rule automatically validates all fields with the type `email` using the provided resolver function. Notice the arguments exposed to the resolver function to craft any validation logic possible.
 
-As the next step, let's create a more specific validation rule that will cover the `[name="confirmPassword"]` fields, for example:
+Following up, let's create a more specific validation rule that will cover the `[name="confirmPassword"]` fields, for example:
 
 ```js
 // app/validation-rules.js
@@ -56,9 +58,9 @@ export default {
 };
 ```
 
-The rule above implies that `[name="confirmPassword"]` field is valid only when its value equals to the value of `[name="userPassword"]` sibling field.
+The rule above implies that `[name="confirmPassword"]` field is valid only when its value equals to the value of `[name="userPassword"]` field of the same form.
 
-> Notice how we can reference the other fields within the same form by the provided `fields` argument property.
+**Any rule resolver which references another fields using the `fields` Object gets automatically re-resolved once the referenced fields update.** For example, our `[name="confirmPassword"]` field will be re-validated any time the `value` prop of `fields.userPassword` changes, out of the box. This ensures real time responsiveness of validation in our form. Read more in [Referencing fields](../validation/rules.md#referencing-fields)
 
 ### Multiple rules
 One field selector can have multiple rules. Each rule must have its unique name.
