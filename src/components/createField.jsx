@@ -8,7 +8,7 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import { isset, camelize, CustomPropTypes, getComponentName, fieldUtils, rxUtils } from '../utils';
+import { isset, camelize, CustomPropTypes, getComponentName, rxUtils } from '../utils';
 
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
@@ -55,12 +55,10 @@ export default function connectField(options) {
 
       constructor(props, context) {
         super(props, context);
+        const { name, fieldGroup } = props;
 
         /* Compose the proper field path */
-        this.fieldPath = fieldUtils.getFieldPath({
-          name: props.name,
-          fieldGroup: context.fieldGroup
-        });
+        this.fieldPath = fieldGroup ? [fieldGroup, name] : [name];
 
         /**
          * Register the field in the parent Form's state and store its internal record reference (contextProps).

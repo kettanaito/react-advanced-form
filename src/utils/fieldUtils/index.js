@@ -1,5 +1,4 @@
 /* Props management */
-export getFieldPath from './getFieldPath';
 export resetField from './resetField';
 
 /* Validation */
