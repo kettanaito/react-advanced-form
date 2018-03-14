@@ -16,23 +16,25 @@ export default function flattenDeep(
   predicate = null,
   flattenKeys = false,
   transformValue = null,
+  transformKey = null,
   nextKeyPath = [],
   nextAcc = Map()
 ) {
   return iter.reduce((acc, value, key) => {
-    if (!Map.isMap(value)) {
-      return acc;
-    }
-
     const deepKeyPath = nextKeyPath.concat(key);
     const satisfiesPredicate = predicate ? predicate(value, deepKeyPath) : true;
 
     if (satisfiesPredicate) {
-      const resolvedKey = flattenKeys ? [deepKeyPath.join('.')] : deepKeyPath;
-      const resolvedValue = transformValue ? transformValue(value) : value;
-      return acc.setIn(resolvedKey, resolvedValue);
+      const transformedKeyPath = transformKey ? [transformKey(deepKeyPath)] : deepKeyPath;
+      const resolvedKeyPath = flattenKeys ? [transformedKeyPath.join('.')] : transformedKeyPath;
+      const resolvedValue = transformValue ? transformValue(value, deepKeyPath) : value;
+      return acc.setIn(resolvedKeyPath, resolvedValue);
     }
 
-    return flattenDeep(value, predicate, flattenKeys, transformValue, deepKeyPath, acc);
+    if (!Map.isMap(value)) {
+      return acc;
+    }
+
+    return flattenDeep(value, predicate, flattenKeys, transformValue, transformKey, deepKeyPath, acc);
   }, nextAcc);
 }
