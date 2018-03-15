@@ -4,7 +4,7 @@
 In the end, it's all about sending the gathered data somewhere. We will take the most common scenario – sending the serialized form data to the remote end-point.
 
 ## Implementation
-We can handle form submit by providing the [`action`](../components/Form/props/action.md) prop to our form:
+Form submit is handled by the [`action`](../components/Form/props/action.md) prop provided directly to the `Form` component:
 
 ```jsx
 import React from 'react';

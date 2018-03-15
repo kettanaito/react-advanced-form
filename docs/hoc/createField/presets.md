@@ -1,6 +1,6 @@
 # Presets
 
-> This topic is related to [`createField`](./basics.md) high-order component. Make sure to understand the context it is being described.
+> This topic is related to [`createField`](./basics.md) high-order component. Make sure to understand the context it is being described in.
 
 Presets contain pre-defined `createField` [options](./options.md) relevant to the respective field type. Those options ensure proper field behavior as well as automatically map essential form element's props (i.e. `placeholder`, `multiselect`, etc.) from the wrapped component to the actual form element.
 

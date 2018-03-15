@@ -24,11 +24,11 @@ export default {};
 
 To validate a field we need to select it first within our validation rules schema. We can select a field by its `type` or `name`, or both.
 
-> **Note:** If a field has both `type` and `name` validation rules they are going to be executed sequentially: name-specific rules first, then type-specific rules *only* in case the previous ones resolved.
+> **Note:** If a field has both `type` and `name` validation rules they are going to be executed sequentially: name-specific rules first, then type-specific rules *only* in case the previous ones have resolved.
 
 After a field is selected, we are going to provide a *resolver* function, which is going to determine whether the field is valid.
 
-Let's target the `[type="email"]` fields and provide an e-mail validation.
+Let's select the fields with the type `email` and provide a respective validation to them:
 
 ```jsx
 // app/validation-rules.js
@@ -41,7 +41,7 @@ export default {
 };
 ```
 
-This rule automatically validates all fields with the type `email` using the provided resolver function. Notice the arguments exposed to the resolver function to craft any validation logic possible.
+This rule automatically validates all fields with the type `email` using the provided resolver function. Notice the variety of the arguments exposed to the resolver function to craft any validation logic possible.
 
 Following up, let's create a more specific validation rule that will cover the `[name="confirmPassword"]` fields, for example:
 
@@ -82,10 +82,28 @@ export default {
 
 > Multiple validation rules of the same selector have the same priority and are applied simultaneously. Therefore, it is possible to have miltiple failing rules at the same time, reflected by multiple error messages.
 
-We can also use the rule names to provide a rule-specific error messages later, when we are going to declare validation messages.
+We can also use the rule names to provide a rule-specific error messages later, when we are going to declare the [Validation messages](./validation-messages.md).
+
+### Explicit `rule`
+The rules above feature the global validation schema, which is being applied to all fields matching the selectors. However, it is also possible to provide a synchronous validation rule to specific fields, without having to put the resolvers into the validation schema.
+
+We can use a `rule` prop of any field to achieve that:
+
+```jsx
+<Input
+  name="userName"
+  rule={({ value, fieldProps, fields, form }) => {
+    return value.test(/[a-z]/);
+  }}
+  required />
+```
+
+The value of the `rule` prop is exactly the same resolver function you would provide within the validation schema.
+
+> Note that the `rule` prop resolver on the field component has the *highest* priotity in the validation sequence.
 
 ### Asynchronous validation
-Unlike the rules above, asynchronous rules do not reside in the validation schema.
+Similar to the [Explicit `rule` prop](#explicit-rule), asynchronous rules do not reside in the global validation schema.
 
 To create an asynchronous rule we need to use the [`asyncRule`](../components/Field/props/asyncRule.md) prop on the exact field we want to validate. As an example, let's validate the user e-mail address using asynchronous validation:
 
@@ -123,7 +141,7 @@ export default class ExampleForm extends React.Component {
 }
 ```
 
-Asynchronous validation resolver must always return a Promise, which resolves into the Object of the following structure:
+Asynchronous validation resolver must always return a Promise, which resolves into the Object with the following structure:
 
 ```ts
 {
@@ -132,4 +150,4 @@ Asynchronous validation resolver must always return a Promise, which resolves in
 }
 ```
 
-All the `extraProp` properties returned within the Object are avilable in the validation message resolver.
+The `valid` property indicates whether the field value is valid. Any extra properties passed with the resolved Object are going to be available in the async message resolver. This way you can share the async response data with the validation message to craft extremely dynamic message logic.

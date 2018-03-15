@@ -24,7 +24,7 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
   <tr>
     <td align="center">Stop wasting time on tossing around huge configurations, and start <i>creating</i> forms in the end!</td>
     <td align="center">Place a <code>Form</code> component, declare the fields and the form is working straight away.</td>
-    <td align="center">Dozens of use cases have been refined to provide the flexible validation algorithms to suit <strong>them all</strong>.</td>
+    <td align="center">Dozens of use cases have been refined to provide the flexible validation logic to suit <strong>them all</strong>.</td>
   </tr>
   <tr>
     <td></td>
@@ -42,7 +42,7 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
     <th>Built-in Form callbacks</th>
   </tr>
   <tr>
-    <td align="center">Styles the fields to suit your requirements. A form that doesn't care how the fields look like.</td>
+    <td align="center">Style the fields to suit your requirements. A form that doesn't care how the fields look like.</td>
     <td align="center">Love some external field library? Connect it with RAF and enjoy the benefits of both!</td>
     <td align="center">Know precisely what happens with the Form and react to that using the exposed callback methods.</td>
   </tr>
@@ -55,6 +55,8 @@ Read more about how to use React Advanced Form to get the most out of its featur
 
 ## Contributing
 Any of your contributions are highly appreciated. See the [Contribution guidelines](https://kettanaito.gitbooks.io/react-advanced-form/CONTRIBUTING.html) to get to know the process better. Moreover, development isn't the only way to contribute, there are [many more](https://kettanaito.gitbooks.io/react-advanced-form/CONTRIBUTING.html#other-contributions).
+
+Found a bug? Eager to suggest a useful feature? The [Issues](https://github.com/kettanaito/react-advanced-form/issues) tab is always open for your ideas. Just make sure you're not duplicating the existing ones. If you feel lucky, you can even submit a [Pull request](https://github.com/kettanaito/react-advanced-form/pulls) with the changes.
 
 ## License
 This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE.md). See the license file for more details.
