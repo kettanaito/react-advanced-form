@@ -41,7 +41,7 @@ export default createField({
 `fieldRecord` Object passed as the [argument property](./argument-properties.md) is mutable, and changing the latter directly affects the Object of props at the registration point. Read more about this and other options in the `createField()` section of the documentation.
 
 ## Handling events
-Core part of the field lifecycle is its events handling. By default, the next events are handled by the form automatically:
+Core part of the field lifecycle is the events handling. By default, the next events are handled by the form automatically:
 
 * [`Field.props.onFocus`](../components/Field/callbacks/onFocus.md)
 * [`Field.props.onChange`](../components/Field/callbacks/onChange.md)
@@ -82,6 +82,8 @@ export default class Example extends React.Component {
 Custom `handleFieldFocus`, `handleEmailChange` and `handleFieldBlur` handlers **do not** control the actual events, but *react* to them.
 
 > **Note:** React Advanced Form is actively using the [Object-as-argument](./argument-properties.md) approach when providing the arguments to the callback methods.
+
+> The function above can behave as callback functions in case of uncontrolled fields, or as handler functions responsible for the update of controlled fields, depending on the presence of the `value` prop on the field component.
 
 ### Custom event handlers
 It is still completely possible to declare custom event handlers for the fields. That is particularly useful when any additional logic should be performed during such essential events like `onChange`.
