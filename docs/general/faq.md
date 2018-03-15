@@ -34,7 +34,7 @@ Read more about the [motivation and thoughts](./concept.md) behind React Advance
 
 ## Architecture
 ### How does React Advanced Form work?
-<p>It efficiently manages the state of the fields using Immutable instances, providing you various callback methods. A proper relationship between the form and the field components is achieved by using the <a href="https://reactjs.org/docs/context.html">context</a>.</p>
+<p>It efficiently manages the immutable internal state using principles of reactive programming. A proper relationship between the form and the field components is achieved by using the <a href="https://reactjs.org/docs/context.html">context</a> feature of React.</p>
 
 ### Shouldn't usage of `context` be avoided?
 Yes and no.
