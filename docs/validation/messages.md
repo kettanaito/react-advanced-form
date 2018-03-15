@@ -33,7 +33,7 @@ Resolver is an Object which maps the rule name to its actual message, or another
 ```ts
 type MessageResolver = {
   [genericState: string]: Message,
-  rules?: {
+  rule?: {
     [ruleName: string]: Message
   }
 }
@@ -51,7 +51,7 @@ There are multiple generic states provided within each resolver by default.
 | `async` | Resolves for the [asynchronous validation](../components/Field/props/asyncRule.md) of the field. |
 
 ### Named resolvers
-It is possible to define named resolvers corresponding to the [named validation rules](./rules.md#named-rules). These resolvers are defined under the `rules` key of the main resolver.
+It is possible to define named resolvers corresponding to the [named validation rules](./rules.md#named-rules). These resolvers are defined under the `rule` key of the main resolver.
 
 ```js
 export default {
@@ -59,7 +59,7 @@ export default {
     password: {
       missing: 'Please provide the password',
       invalid: 'The passwords is invalid',
-      rules: {
+      rule: {
         minLength: 'Password must be at least 6 characters long'
       }
     }
@@ -94,7 +94,7 @@ export default {
   name: {
     userEmail: {
       invalid: 'User e-mail is invalid',
-      rules: {
+      rule: {
         includesAt: 'E-mail must include "@" character'
       }
     }
@@ -117,7 +117,7 @@ With the given scenario the `includesAt` validation rule would reject, marking t
 
 This is the priority sequence in which resolvers will attempt to resolve the validation message:
 
-1. `name.userEmail.rules.includesAt`
+1. `name.userEmail.rule.includesAt`
 1. `name.userEmail.invalid`
 1. `type.email.invalid`
 1. `general.invalid`

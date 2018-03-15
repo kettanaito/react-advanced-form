@@ -31,7 +31,7 @@ const messages = {
   },
   name: {
     fieldOne: {
-      rules: {
+      rule: {
         ruleA: 'Agree to checkbox first'
       }
     }

@@ -14,7 +14,7 @@ export const commonErrorTypes = {
  * A key which groups the messages of the named validation rules.
  * Example: "messages.name.fieldName.rules.someCutomRule".
  */
-export const customRulesKey = 'rules';
+export const customRulesKey = 'rule';
 
 /**
  * Returns a unified validation result interface based on the received arguments.

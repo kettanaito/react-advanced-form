@@ -29,7 +29,7 @@ const formMessages = {
   },
   type: {
     password: {
-      rules: {
+      rule: {
         capitalLetter: 'Password must include at least one capital letter',
         oneNumber: 'Please include at least one number'
       }
@@ -37,7 +37,7 @@ const formMessages = {
   },
   name: {
     confirmPassword: {
-      rules: {
+      rule: {
         match: 'Provided passwords do not match'
       }
     },
