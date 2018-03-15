@@ -1,5 +1,5 @@
 /**
- * Asynchronous validation of field.
+ * Asynchronous validation of a field.
  * @param {Map} fieldProps
  * @param {Map} fields
  * @param {Object} form
