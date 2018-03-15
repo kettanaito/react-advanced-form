@@ -2,8 +2,6 @@
 
 [![Package version](https://img.shields.io/npm/v/react-advanced-form.svg)](https://www.npmjs.com/package/react-advanced-form) [![Build status](https://img.shields.io/circleci/project/github/kettanaito/react-advanced-form/master.svg)](https://circleci.com/gh/kettanaito/react-advanced-form) [![Vulnerabilities](https://snyk.io/test/github/kettanaito/react-advanced-form/badge.svg)](https://snyk.io/test/github/kettanaito/react-advanced-form) [![Dependencies status](https://img.shields.io/david/kettanaito/react-advanced-form.svg)](https://david-dm.org/kettanaito/react-advanced-form) [![DevDepenencies status](https://img.shields.io/david/dev/kettanaito/react-advanced-form.svg)](https://david-dm.org/kettanaito/react-advanced-form?type=dev)
 
-> Thank you for trying React Advanced Form! Please note that prior to `1.0` release the package is under heavy development. Things may change, and things may break. We are doing our best and releasing breaking changes in the proper versions. Help us reach `1.0` faster by [Contributing](#contributing) to the library. Thank you.
-
 [React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library for tailoring real-world forms with pleasure and ease.
 
 No boilerplate. No obscure high-order component configurations. No redundant state management. Embrace powerful custom styling, field grouping, advanced multi-level validation, validation messages with smart fallback system, reactive props resolvers and much more.
