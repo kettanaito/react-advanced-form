@@ -1,15 +1,26 @@
 /**
- * Synchronous validation of the provided field.
+ * Synchronous validation of a field.
  */
 import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
 import { ruleSelectors } from '../formUtils/getFieldRules';
 import ensafeMap from '../ensafeMap';
 import dispatch from '../dispatch';
 
+/**
+ * Returns the list of rejected rules based on the provided arguments.
+ * The function accesses the "rxRules" of the form automatically, therefore doesn't expect any
+ * validation rules passed explicitly.
+ * @param {any} value
+ * @param {Map} fieldProps
+ * @param {Map} fields
+ * @param {ReactComponent} form
+ * @returns {Array<RejectedRule>}
+ */
 function getRejectedRules(resolverArgs) {
   const rejectedRules = [];
   const { fieldProps, fields: fieldsOrigin, form } = resolverArgs;
 
+  /* Iterating through each rule selector ("name" and "type") */
   ruleSelectors.forEach((ruleSelector) => {
     if (rejectedRules.length > 0) {
       return;
@@ -17,11 +28,15 @@ function getRejectedRules(resolverArgs) {
 
     const ruleKeyPath = ruleSelector(fieldProps);
     const rules = form.state.rxRules.get(ruleKeyPath.join('.'));
-    if (!rules) return;
+    if (!rules) {
+      return;
+    }
 
     rules.forEach((rule) => {
       const { refs, name, selector, resolver } = rule;
       const fields = ensafeMap(fieldsOrigin, refs);
+
+      // Cannot use Immutable instances in the resolver since it's unclear how to proxy them
       const isExpected = dispatch(resolver, { ...resolverArgs, fields }, { withImmutable: false });
 
       if (isExpected) {
@@ -81,12 +96,7 @@ export default function validateSync({ fieldProps, fields, form }) {
     //
     const isExpected = (typeof rule === 'function')
       /* Enfore mutability of args for fields proxying */
-      ? dispatch(rule, {
-        value,
-        fieldProps,
-        fields,
-        form
-      }, { withImmutable: false })
+      ? dispatch(rule, { value, fieldProps, fields, form }, { withImmutable: false })
       : rule.test(value);
 
     if (!isExpected) {
