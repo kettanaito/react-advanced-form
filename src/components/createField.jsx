@@ -13,13 +13,19 @@ import { isset, camelize, CustomPropTypes, getComponentName, rxUtils } from '../
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
   valuePropName: 'value',
-  mapPropsToField: ({ fieldRecord }) => fieldRecord,
-  shouldValidateOnMount: ({ fieldRecord, valuePropName }) => {
+  mapPropsToField({ fieldRecord }) {
+    return fieldRecord;
+  },
+  shouldValidateOnMount({ fieldRecord, valuePropName }) {
     const fieldValue = fieldRecord[valuePropName];
     return isset(fieldValue) && (fieldValue !== '');
   },
-  shouldUpdateRecord: ({ prevValue, nextValue }) => (prevValue !== nextValue),
-  enforceProps: () => ({})
+  shouldUpdateRecord({ prevValue, nextValue }) {
+    return (prevValue !== nextValue);
+  },
+  enforceProps() {
+    return {};
+  }
 };
 
 /**
@@ -317,13 +323,13 @@ export default function connectField(options) {
       render() {
         const { props, contextProps } = this;
 
-        /** Reference to the enforced props from the HOC options */
+        /* Reference to the enforced props from the HOC options */
         const enforcedProps = hocOptions.enforceProps({ props, contextProps });
 
-        /** A mirror reference to "contextProps", an internal field record stored in Form's state */
+        /* A mirror reference to "contextProps", an internal field record stored in Form's state */
         const fieldState = contextProps.toJS();
 
-        /** Props to assign to the field component directly (input, select, etc.) */
+        /* Props to assign to the field component directly (input, select, etc.) */
         const fieldProps = {
           name: fieldState.name,
           type: fieldState.type,

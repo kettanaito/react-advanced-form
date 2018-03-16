@@ -2,9 +2,9 @@
 
 ## Specification
 
-A provider component which propagates the application-wide form settings to all nested children forms.
+A provider component which propagates the application-wide form settings to all children forms.
 
-Imagine it as a `Provider` from Redux, only for the forms. This way the forms in your application, regardless of the depth they are rendered in, inherit the options passed to the `<FormProvider>` component.
+Think of it as of a `Provider` from Redux, only for the forms. This way the forms in your application, regardless of the depth they are rendered in, inherit the options passed to the `<FormProvider>` component.
 
 ## Props
 

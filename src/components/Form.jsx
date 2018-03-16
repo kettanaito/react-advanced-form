@@ -294,7 +294,9 @@ export default class Form extends React.Component {
       event,
       nextValue,
       prevValue,
-      fieldProps
+      fieldProps,
+      fields: this.state.fields,
+      form: this
     }, this.context);
 
     this.setState({ dirty: true });
