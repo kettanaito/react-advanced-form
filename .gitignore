@@ -22,3 +22,4 @@ npm-*
 cypress/fixtures
 cypress/screenshots
 cypress/videos
+cypress/support
