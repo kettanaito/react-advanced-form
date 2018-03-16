@@ -1,16 +1,23 @@
 # Options
 
-> This topic is related to [`createField`](./basics.md) high-order component. Make sure to understand the context it is being described.
+> This topic is related to [`createField`](./basics.md) high-order component. Make sure to understand the context it is being described in.
+
+## Introduction
+Passing options to the `createField()` high-order component allows to control the behavior of the created field. That is extremely useful when implementing the fields with custom logic, or integrating third-party solutions to work with React Advanced Form.
+
+You don't have to configure any of those options by default. The essential options set are configured and exposed under [Field presets](./presets.md), which you provide to the `createField()`.
+
+## Options list
 
 | Option name | Type | Description |
 | ------ | ---- | ----------- |
-| `valuePropName` | `string` | A custom prop name to be treated as an updatable value during the field event handlers. |
+| `valuePropName` | `string` | A custom prop name to be treated as an updatable value during the field value change. |
 | `mapPropsToField` | `({ props, context, fieldRecord, valuePropName }) => Object` | A custom maping function which should return a props Object used as the initial props during the field registration. |
 | `enforceProps` | `({ props, contextProps }) => Object` | A function which should return a props Object to be enforced on the custom field. |
-| `shouldValidateOnMount` | `({ props, fieldRecord, valuePropName, context }) => boolean` | Controls when to validate the field upon mount. |
+| `shouldValidateOnMount` | `({ props, fieldRecord, valuePropName, context }) => boolean` | Controls the necessity of validation upon field mount. |
 
 ## `valuePropName: string`
-**Default:** `value`
+**Default value:** `value`
 
 Some fields update a prop different from the `value` upon the interaction with them. For example, a checkbox updates its `checked` prop. Provide the prop name to update on field's `onChange` using this option, in case it differs from `value`.
 
@@ -32,6 +39,7 @@ export default createField({
 ```
 
 ## `mapPropsToField: ({ props, context, fieldRecord, valuePropName }) => Object`
+**Default value:** `({ fieldRecord }) => fieldRecord`
 
 Each field has its record stored in the internal state of the `Form` component. That record is composed based on the field's props, but may (and sometimes must) be altered to provide proper field functionality.
 
@@ -60,6 +68,8 @@ export default createField({
 ```
 
 ## `enforceProps: ({ props, contextProps }) => Object`
+**Default value:** `() => ({})`
+
 This option allows to provide an Object of props which will override the Field's registration record within the form.
 
 ```jsx
@@ -87,11 +97,11 @@ export default createField({
 
 ```js
 {
-  shouldValidateOnMount: ({ fieldRecord, valuePropName }) => {
+  shouldValidateOnMount({ fieldRecord, valuePropName }) {
     const fieldValue = fieldRecord[valuePropName];
     return isset(fieldValue) && (fieldValue !== '');
   }
 }
 ```
 
-Determines when to validate the field upon mount based on the provided field information.
+Determines whether to validate the field upon mount.
