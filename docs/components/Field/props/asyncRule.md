@@ -10,7 +10,12 @@ Asynchronous rule of the field applied as the top priority validation *after* it
 
 ## Definition
 ```ts
-type asyncRule = ({ value, fieldProps, fields, form }) => AsyncRulePayload
+type AsyncRule = ({
+  value: any, // The current value of the field
+  fieldProps: Object|Map, // The props of the current field
+  fields: Object|Map, // The state of the fields
+  form: ReactComponent // Reference to the Form component
+}) => AsyncRulePayload
 
 type AsyncRulePaylod = {
   valid: Boolean,

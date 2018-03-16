@@ -7,7 +7,7 @@
 
 ## Definition
 ```ts
-type skip = boolean
+type Skip = boolean
 ```
 
 **Default value:** `false`

@@ -3,14 +3,15 @@
 ## Specification
 Event handler called after the field has been focused.
 
-### Arguments
-
-| Property name | Type | Description |
-| ------------- | ---- | ----------- |
-| `event` | `Event` | Native event instance reference. |
-| `fieldProps` | `Object` | Props of the current field. |
-| `fields` | `Object` | Map of all fields. |
-| `form` | `Object` | A reference to the current `Form` |
+## Definition
+```ts
+type OnFocus = ({
+  event: Event, // Native event reference
+  fieldProps: Object|Map, // The props of the current field
+  fields: Object|Map, // The state of the fields
+  form: ReactComponent // Reference to the Form component
+}) => void
+```
 
 ## Usage
 ```jsx

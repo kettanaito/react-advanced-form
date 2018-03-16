@@ -5,14 +5,12 @@ Action performed on the successful submit of the form.
 
 ## Definition
 ```ts
-type action = ({ serialized, fields, form }) => Promise
+type action = ({
+  serialized: Object|Map, // Serialized fields of the form
+  fields: Object|Map, // The state of all fields
+  form: ReactComponent // Reference to the Form component
+}) => Promise
 ```
-
-| Argument | Type | Description |
-| ------------- | ---- | ----------- |
-| `serialized` | `Object` | Serialized fields of the form. |
-| `fields` | `Object` | Map of all fields. |
-| `form` | `Object` | A reference to the current `Form` |
 
 ## Example
 ```jsx

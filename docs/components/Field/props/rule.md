@@ -5,15 +5,13 @@ A synchronous rule applied to the field as the top priority validation. When the
 
 ## Definition
 ```ts
-type rule = RegExp | ({ value, fieldProps, fields, form }) => Boolean
+type rule = RegExp | ({
+  value: any, // The value of the current field
+  fieldProps: Object|Map, // The props of the current field
+  fields: Object|Map, // The state of the fields
+  form: ReactComponent // Reference to the Form component
+}) => Boolean
 ```
-
-| Argument | Type | Description |
-| ------------- | ---- | ----------- |
-| `value` | `mixed` | The current value of the field. |
-| `fieldProps` | `Object` | Props of the current field. |
-| `fields` | `Object` | Map of all fields. |
-| `form` | `Object` | A reference to the current `Form` |
 
 ## Example
 ```jsx

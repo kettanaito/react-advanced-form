@@ -3,14 +3,15 @@
 ## Specification
 Called immediately after the submit ended, regardless of the submit status (on both successful and unsuccessful submit). Useful for interface changes, such as hiding a loader, to acknowledge the user that the submit action has ended.
 
-### Arguments
-
-| Property name | Type | Description |
-| ------------- | ---- | ----------- |
-| `res` | `Object` | An accumulated response Object of the async submit action. |
-| `serialized` | `Object` | Map of the serialized fields. |
-| `fields` | `Object` | Map of all fields after submit. |
-| `form` | `Object` | A reference to the submitted `Form` |
+## Definition
+```ts
+type OnSubmitEnd = ({
+  res: Response, // Accumulated response of the async submit action
+  serialized: Object|Map, // Serialized fields
+  fields: Object|Map, // The state of the fields
+  form: ReactComponent // Reference to the Form component
+}) => void
+```
 
 ## Usage
 ```jsx

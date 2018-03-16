@@ -3,12 +3,13 @@
 ## Specification
 A callback method called once `Form.reset()` is finished. Useful for reseting the values of the controlled fields, as `Form.reset()` affects only uncontrolled fields.
 
-### Arguments
-
-| Property name | Type | Description |
-| ------------- | ---- | ----------- |
-| `fields` | `Object` | Map of all fields after reset. |
-| `form` | `Object` | A reference to the reset `Form` |
+## Definition
+```ts
+type OnReset = ({
+  fields: Object|Map, // The state of the fields
+  form: ReactComponent // Reference to the Form component
+}) => void
+```
 
 ## Usage
 ```jsx

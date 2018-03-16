@@ -3,13 +3,14 @@
 ## Specification
 Called immediately on the submit attempt of the valid form. Useful for displaying a loader in the interface, acknowledging the user that the submit action is in progress.
 
-### Arguments
-
-| Property name | Type | Description |
-| ------------- | ---- | ----------- |
-| `serialized` | `Object` | Map of the serialized fields. |
-| `fields` | `Object` | Map of all fields. |
-| `form` | `Object` | A reference to the current `Form` |
+## Definition
+```ts
+type OnSubmitStart = ({
+  serialized: Object|Map, // Serialized fields
+  fields: Object|Map, // The state of the fields
+  form: ReactComponent // Reference to the Form component
+}) => void
+```
 
 ## Usage
 ```jsx

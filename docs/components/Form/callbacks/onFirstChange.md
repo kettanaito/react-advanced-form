@@ -3,9 +3,9 @@
 ## Specification
 A callback function called when the form becomes dirty.
 
-## Declaration
+## Definition
 ```ts
-type onFirstChange = ({
+type OnFirstChange = ({
   event: Event, // Reference to the event triggered the change
   prevValue: any, // The previous value of the field
   nextValue: any, // The next value of the field

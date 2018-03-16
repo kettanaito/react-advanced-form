@@ -3,13 +3,14 @@
 ## Specification
 Called once the submit is prevented due to invalid validation state of the form. Useful for any kind of custom logic based on the invalid fields.
 
-### Arguments
-
-| Property name | Type | Description |
-| ------------- | ---- | ----------- |
-| `invalidFields` | `Array<Object>` | Unordered list of invalid fields. |
-| `fields` | `Object` | Map of all fields. |
-| `form` | `Object` | A reference to the current `Form` |
+## Definition
+```ts
+type OnInvalid = ({
+  invalidFields: Object[]|Map[], // Unordered list of invalid fields
+  fields: Object|Map, // The state of the fields
+  form: ReactComponent // Reference to the Form component
+}) => void
+```
 
 ## Usage
 ```jsx

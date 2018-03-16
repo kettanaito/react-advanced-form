@@ -3,16 +3,17 @@
 ## Specification
 Event handler called after the field has been blurred out.
 
-### Arguments
-
-| Property name | Type | Description |
-| ------------- | ---- | ----------- |
-| `event` | `Event` | Native event instance reference. |
-| `nextValue` | `mixed` | The next value of the field. |
-| `prevValue` | `mixed` | The previous value of the field. |
-| `fieldProps` | `Object` | Props of the current field. |
-| `fields` | `Object` | Map of all fields. |
-| `form` | `Object` | A reference to the current `Form` |
+## Definition
+```ts
+type OnChange = ({
+  event: Event, // Native event reference
+  prevValue: any, // The previous value of the field
+  nextValue: any, // The next value of the field
+  fieldProps: Object|Map, // The props of the current field
+  fields: Object|Map, // The state of the fields
+  form: ReactComponent // Reference to the Form component
+}) => void
+```
 
 ## Usage
 ```jsx
