@@ -86,12 +86,14 @@ export default class Form extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+    const { rules: customRules, messages: customMessages } = props;
+    const { debounceTime, rules } = context;
 
     /* Provide a fallback value for validation debounce duration */
-    this.debounceTime = isset(context.debounceTime) ? context.debounceTime : defaultDebounceTime;
+    this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime;
 
     /* Define validation rules */
-    this.formRules = formUtils.getRules(props.rules, context.rules);
+    this.formRules = formUtils.getRules(customRules, rules);
 
     /**
      * Define validation messages once, since those should be converted to immutable, which is
@@ -99,15 +101,13 @@ export default class Form extends React.Component {
      * lifecycle. It should be safe to store them.
      * Note: Messages passed from FormProvider (context messages) are already immutable.
      */
-    const { messages } = props;
-    this.messages = messages ? fromJS(messages) : context.messages;
+    this.messages = customMessages ? fromJS(customMessages) : messages;
 
     /* Create a private event emitter to communicate between form and its fields */
     this.eventEmitter = new EventEmitter();
-
-    /* Field lifecycle observerables */
     const { eventEmitter } = this;
 
+    /* Field lifecycle observerables */
     Observable.fromEvent(eventEmitter, 'fieldRegister')
       .bufferTime(100)
       .subscribe(pendingFields => pendingFields.forEach(this.registerField));
@@ -158,8 +158,6 @@ export default class Form extends React.Component {
       }
     }
 
-    const nextRxRules = rxUtils.createRulesSubscriptions({ fieldProps, fields, form: this });
-
     const shouldValidateOnMount = fieldProps.get('shouldValidateOnMount');
 
     fieldProps = fieldProps
@@ -172,6 +170,10 @@ export default class Form extends React.Component {
        * override each other, and only the last validation will be executed.
        */
       .set('debounceValidate', debounce(this.validateField, this.debounceTime));
+
+    console.log('this.validateField', this.validateField);
+    console.log('this.debounceTime', this.debounceTime);
+    console.log('fieldProps', fieldProps && fieldProps.toJS());
 
     const nextFields = fields.setIn(fieldPath, fieldProps);
     const { eventEmitter } = this;
@@ -192,6 +194,13 @@ export default class Form extends React.Component {
         propsPatch: changedProps
       });
     });
+
+    /**
+     * Analyze the rules relevant to the registered field and create reactive subscriptions to
+     * resolve them once their dependencies update. Returns the Map of the recorded formatted rules.
+     * That Map is later used during the sync validation as the rules source.
+     */
+    const nextRxRules = rxUtils.createRulesSubscriptions({ fieldProps, fields, form: this });
 
     this.setState({ fields: nextFields, rxRules: nextRxRules }, () => {
       /* Emit the field registered event */
