@@ -54,6 +54,8 @@
     * [onSubmitFailed](./components/Form/callbacks/onSubmitFailed.md)
     * [onSubmitEnd](./components/Form/callbacks/onSubmitEnd.md)
 
+* [Field.Group](./components/Field.Group.md)
+
 * Field
   * Props
     * Generic props
@@ -64,8 +66,6 @@
     * [onFocus](./components/Field/callbacks/onFocus.md)
     * [onChange](./components/Field/callbacks/onChange.md)
     * [onBlur](./components/Field/callbacks/onBlur.md)
-
-* [Field.Group](./components/Field.Group.md)
 
 ## Validation
 

@@ -48,6 +48,7 @@ It is perfectly fine to reference multiple fields within the reactive prop's res
   required={({ fields }) => {
     const hasFirstName = fields.firstName.valid;
     const hasLastName = fields.lastName.valid;
+
     return hasFirstName && hasLastName;
   }} />
 ```
