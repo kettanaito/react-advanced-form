@@ -11,7 +11,6 @@ addDecorator(centered);
 
 function loadStories() {
   require('../examples');
-  require('../stories');
 }
 
 configure(loadStories, module);
