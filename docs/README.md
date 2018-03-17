@@ -20,7 +20,7 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
     <th>Smart multi-layer validation</th>
   </tr>
   <tr>
-    <td align="center">Stop wasting time on tossing around huge configurations, and start <i>creating</i> forms in the end!</td>
+    <td align="center">Stop wasting time on tossing around huge configurations, and start <i>creating</i> forms in the end.</td>
     <td align="center">Place a <code>Form</code> component, declare the fields and the form is working straight away.</td>
     <td align="center">Dozens of use cases have been refined to provide the flexible validation logic to suit <strong>them all</strong>.</td>
   </tr>
@@ -47,9 +47,10 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
 </table>
 
 ## Getting started
-Please read the detailed step-by-step instruction on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/installation.html). The latter contains a minumum setup to integrate React Advanced Form into your project.
+Please read the detailed step-by-step instruction on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/installation.html). The latter contains a thorough explanation of how the workflow with the form looks like, and how to easily integrate it into your project.
 
-Read more about how to use React Advanced Form to get the most out of its features in the respective sections of this documentation.
+## Documenation
+See the [Documentation](https://kettanaito.gitbooks.io/react-advanced-form) for the list of all available features, their descriptions and examples of usage.
 
 ## Contributing
 Any of your contributions are highly appreciated. See the [Contribution guidelines](https://kettanaito.gitbooks.io/react-advanced-form/CONTRIBUTING.html) to get to know the process better. Moreover, development isn't the only way to contribute, there are [many more](https://kettanaito.gitbooks.io/react-advanced-form/CONTRIBUTING.html#other-contributions).
