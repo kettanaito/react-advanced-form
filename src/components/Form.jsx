@@ -87,7 +87,7 @@ export default class Form extends React.Component {
   constructor(props, context) {
     super(props, context);
     const { rules: customRules, messages: customMessages } = props;
-    const { debounceTime, rules } = context;
+    const { debounceTime, rules, messages } = context;
 
     /* Provide a fallback value for validation debounce duration */
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime;
