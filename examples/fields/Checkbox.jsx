@@ -15,7 +15,7 @@ class Checkbox extends React.Component {
   }
 
   render() {
-    const { fieldProps, fieldState, id, name, className, label } = this.props;
+    const { fieldProps, fieldState, id, name, className, label, hint } = this.props;
     const { valid, invalid, errors } = fieldState;
 
     const inputClassNames = [
@@ -30,6 +30,10 @@ class Checkbox extends React.Component {
         <div className="custom-control custom-checkbox">
           <input id={ id || name } className={ inputClassNames } { ...fieldProps } />
           <label className="custom-control-label" htmlFor={ id || name }>{ label }</label>
+
+          { hint && (
+            <small className="form-text text-muted">{ hint }</small>
+          ) }
 
           { errors && errors.map((error, index) => (
             <div key={ index } className="invalid-feedback">{ error }</div>

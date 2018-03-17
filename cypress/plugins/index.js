@@ -20,6 +20,7 @@ const webpackOptions = {
   },
   resolve: {
     alias: {
+      '@examples': path.resolve(__dirname, '../../examples'),
       '@scenarios': path.resolve(__dirname, '../scenarios'),
       '@fields': path.resolve(__dirname, '../../examples/fields'),
       '@lib': path.resolve(__dirname, '../../lib')

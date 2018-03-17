@@ -1,11 +1,9 @@
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import Scenario, { fieldSelector } from '@scenarios/SyncValidation/Form.props.rules';
+import Scenario, { fieldSelector } from '@examples/validation/SyncValidation/Form.props.rules';
 
 describe('Form.props.rules', function () {
-  before(() => {
-    mount(<Scenario />);
-  });
+  before(() => mount(<Scenario />));
 
   it('empty optional field with Form.props.rules resolves', () => {
     cy.get(fieldSelector)

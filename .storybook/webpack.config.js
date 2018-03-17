@@ -18,6 +18,7 @@ module.exports = {
   },
   resolve: {
     alias: {
+      '@lib': path.resolve(__dirname, '../lib'),
       '@fields': path.resolve(__dirname, '../examples/fields')
     }
   }

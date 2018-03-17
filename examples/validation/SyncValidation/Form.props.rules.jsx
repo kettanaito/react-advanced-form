@@ -17,7 +17,11 @@ export default class FormPropsRules extends React.Component {
   render() {
     return (
       <Form rules={ rules }>
-        <Input { ...this.props } name="fieldOne" />
+        <Input
+          { ...this.props }
+          name="fieldOne"
+          label="Field one"
+          hint="Must be more than 3 characters and not equal to `foo`" />
       </Form>
     );
   }

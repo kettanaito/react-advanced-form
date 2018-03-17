@@ -1,12 +1,9 @@
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import Scenario from '@scenarios/SyncValidation/Field.props.rule';
+import Scenario from '@examples/validation/SyncValidation/Field.props.rule';
 
 describe('Field.props.rule', function () {
-  before(() => {
-    mount(<Scenario getRef={ form => this.form = form } />);
-  });
-
+  before(() => mount(<Scenario getRef={ form => this.form = form } />));
   afterEach(() => this.form.reset());
 
   it('empty optional field with sync rule resolves', () => {
@@ -43,7 +40,7 @@ describe('Field.props.rule', function () {
 
   it('filled required field with matching value resolves', () => {
     cy.get('#fieldTwo')
-      .type('123').should('have.value', '123')
+      .type('foo').should('have.value', 'foo')
       .blur()
       .should('have.class', 'is-valid')
       .should('not.have.class', 'is-invalid');
@@ -51,7 +48,7 @@ describe('Field.props.rule', function () {
 
   it('filled required field with unmatching value rejects', () => {
     cy.get('#fieldTwo')
-      .type('foo').should('have.value', 'foo')
+      .type('123').should('have.value', '123')
       .blur()
       .should('have.class', 'is-invalid')
       .should('not.have.class', 'is-valid');

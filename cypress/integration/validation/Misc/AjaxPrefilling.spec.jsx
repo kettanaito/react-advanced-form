@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import Scenario, { timeoutDuration } from '@scenarios/AjaxPrefilling';
+import Scenario, { timeoutDuration } from '@examples/validation/AjaxPrefilling';
 
 describe('AJAX Pre-filling', function () {
   before(() => {

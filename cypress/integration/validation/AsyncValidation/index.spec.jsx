@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import Scenario, { fieldSelector } from '@scenarios/AsyncValidation/Field.props.asyncRule';
+import Scenario, { fieldSelector } from '@examples/validation/AsyncValidation/Field.props.asyncRule';
 
 describe('Asynchronous validation', function () {
   before(() => {
@@ -29,6 +29,17 @@ describe('Asynchronous validation', function () {
     it('field with rejected sync rule does not call async rule', () => {
       cy.get('#fieldThree')
         .type('foo').should('have.value', 'foo')
+        .should('have.class', 'is-invalid')
+        .blur({ force: true })
+        .should('not.have.class', 'is-validating')
+        .clear().type('111').should('have.value', '111')
+        .should('have.class', 'is-valid')
+        .blur({ force: true })
+        .wait(500)
+        .should('have.class', 'is-valid')
+        .clear().type('123')
+        .blur({ force: true })
+        .wait(500)
         .should('have.class', 'is-invalid');
     });
 
@@ -54,11 +65,11 @@ describe('Asynchronous validation', function () {
       cy.get('#fieldOne')
         .type('foo').should('have.value', 'foo')
         .blur({ force: true }).should('have.class', 'is-validating')
-        .wait(250)
+        .wait(200)
         .clear()
         .should('not.have.class', 'is-validating')
         .should('not.have.class', 'is-invalid')
-        .type('expected value')
+        .type('expected value').should('have.value', 'expected value')
         .blur({ force: true }).should('have.class', 'is-validating')
         .wait(500)
         .should('not.have.class', 'is-validating')
@@ -73,6 +84,8 @@ describe('Asynchronous validation', function () {
         .blur().should('have.class', 'is-validating')
         .wait(500)
         .should('not.have.class', 'is-validating');
+      cy.get('#fieldFour ~ .invalid-feedback')
+        .should('have.text', 'Data from async response');
     });
   });
 });

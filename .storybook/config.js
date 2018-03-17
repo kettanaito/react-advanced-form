@@ -10,6 +10,7 @@ setOptions({
 addDecorator(centered);
 
 function loadStories() {
+  require('../examples');
   require('../stories');
 }
 

@@ -17,7 +17,7 @@ class Input extends React.Component {
 
   render() {
     const { fieldProps, fieldState, id, name, label, hint } = this.props;
-    const { validating, valid, invalid, errors } = fieldState;
+    const { required, validating, valid, invalid, errors } = fieldState;
 
     const inputClassNames = [
       'form-control',
@@ -29,10 +29,13 @@ class Input extends React.Component {
     return (
       <div className="form-group">
         { label && (
-            <label htmlFor={ id || name }>{ label }</label>
+            <label htmlFor={ id || name }>{ label }{ required && ' *' }</label>
         ) }
 
-        <input id={ id || name } className={ inputClassNames } { ...fieldProps } />
+        <input
+          id={ id || name }
+          className={ inputClassNames }
+          { ...fieldProps } />
 
         { hint && (
           <small className="form-text text-muted">{ hint }</small>

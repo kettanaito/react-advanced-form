@@ -7,12 +7,15 @@ export default class RxPropsBasic extends React.Component {
     return (
       <Form>
         <Input
-          name="fieldOne"
-          initialValue="foo" />
+          name="firstName"
+          label="First name"
+          initialValue="John" />
         <Input
-          name="fieldTwo"
+          name="lastName"
+          label="Last name"
+          hint="Required when `firstName` has value"
           required={({ fields }) => {
-            return !!fields.fieldOne.value;
+            return !!fields.firstName.value;
           }} />
       </Form>
     );

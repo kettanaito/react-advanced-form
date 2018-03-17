@@ -7,12 +7,15 @@ export default class RxPropsDelegated extends React.Component {
     return (
       <Form>
         <Input
-          name="fieldOne"
+          name="firstName"
+          label="Fisrt name"
+          hint="Required when `lastName` has value"
           required={({ fields }) => {
-            return !!fields.fieldTwo.value;
+            return !!fields.lastName.value;
           }} />
         <Input
-          name="fieldTwo"
+          name="lastName"
+          label="Last name"
           initialValue="foo" />
       </Form>
     );

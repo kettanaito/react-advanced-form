@@ -15,15 +15,15 @@ const messages = {
       async: ({ extra }) => extra
     }
   }
-}
+};
 
 export default class FieldPropsAsyncRule extends React.Component {
   validateAsync = ({ value, fieldProps }) => {
     return new Promise((resolve, reject) => {
       setTimeout(resolve, 500);
     }).then(() => ({
-      valid: (value !== 'foo'),
-      extra: (fieldProps.name === 'fieldFour') && 'extra string'
+      valid: (fieldProps.name === 'fieldThree') ? (value !== '123') : (value !== 'foo'),
+      extra: (fieldProps.name === 'fieldFour') && 'Data from async response'
     }));
   }
 
@@ -33,13 +33,15 @@ export default class FieldPropsAsyncRule extends React.Component {
         <Input
           id="fieldOne"
           name="fieldOne"
-          label="Optional field with async rule"
+          label="Field one"
+          hint="Must not equal to `foo`"
           asyncRule={ this.validateAsync } />
 
         <Input
           id="fieldTwo"
           name="fieldTwo"
-          label="Required field with async rule"
+          label="Field two"
+          hint="Must be provided and not equal to `foo`"
           asyncRule={ this.validateAsync }
           required />
 
@@ -47,7 +49,8 @@ export default class FieldPropsAsyncRule extends React.Component {
           id="fieldThree"
           name="fieldThree"
           rule={/^\d+$/}
-          label="Required field with both sync and async rules"
+          label="Field three"
+          hint="Must be provided, contain numbers only and not equal to `123`"
           asyncRule={ this.validateAsync }
           required />
 
@@ -55,9 +58,10 @@ export default class FieldPropsAsyncRule extends React.Component {
           id="fieldFour"
           name="fieldFour"
           label="Required field with async rule and extra response props"
+          hint="Propagates response data to the validation message on fail"
           asyncRule={ this.validateAsync }
           required />
       </Form>
-    )
+    );
   }
 }
