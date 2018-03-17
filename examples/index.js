@@ -2,6 +2,9 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import UncontrolledFields from './basics/UncontrolledFields';
+import ControlledFields from './basics/ControlledFields';
+
 import FieldPropsRule from './validation/SyncValidation/Field.props.rule';
 import FormPropsRules from './validation/SyncValidation/Form.props.rules';
 import FieldPropsAsyncRule from './validation/AsyncValidation/Field.props.asyncRule';
@@ -11,9 +14,13 @@ import RxPropsSingleTarget from './reactive-props/SingleTarget';
 import RxPropsInterdependent from './reactive-props/Interdependent';
 import RxPropsDelegated from './reactive-props/Delegated';
 
+storiesOf('Basics', module)
+  .add('Uncontrolled fields', () => <UncontrolledFields />)
+  .add('Controlled fields', () => <ControlledFields />)
+
 storiesOf('Synchronous validation', module)
-  .add('Field.props.rule', () => (<FieldPropsRule />))
-  .add('Form.props.rules', () => (<FormPropsRules />));
+  .add('Field.props.rule', () => <FieldPropsRule />)
+  .add('Form.props.rules', () => <FormPropsRules />);
 
 storiesOf('Asynchronous validation', module)
   .add('Field.props.asyncRule', () => <FieldPropsAsyncRule />);

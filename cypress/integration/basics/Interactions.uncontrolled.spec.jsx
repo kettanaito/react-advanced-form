@@ -1,7 +1,7 @@
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'cypress-react-unit-test';
-import Scenario from '@scenarios/Basics/InteractionsUncontrolled';
+import Scenario from '@examples/Basics/UncontrolledFields';
 
 describe('Uncontrolled fields interactions', function () {
   before(() => {

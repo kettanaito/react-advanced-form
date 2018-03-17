@@ -2,7 +2,7 @@ import React from 'react';
 import { Form } from '@lib';
 import { Input, Radio, Checkbox, Select, Textarea } from '@fields';
 
-export default class InteractionsControlled extends React.Component {
+export default class ControlledFields extends React.Component {
   state = {
     inputOne: '',
     inputTwo: 'foo',
@@ -32,16 +32,17 @@ export default class InteractionsControlled extends React.Component {
 
     return (
       <div>
-        <h3>Controlled form</h3>
         <Form id="form" ref={ this.props.getRef }>
           { /* Inputs */ }
           <Input
             id="inputOne"
             name="inputOne"
+            label="Field one"
             value={ inputOne }
             onChange={ this.handleFieldChange } />
           <Input
             id="inputTwo"
+            label="Field two"
             name="inputTwo"
             value={ inputTwo }
             onChange={ this.handleFieldChange } />
@@ -50,18 +51,21 @@ export default class InteractionsControlled extends React.Component {
           <Radio
             id="radio1"
             name="radio"
+            label="Radio one"
             value="cheese"
             checked={ radio === 'cheese' }
             onChange={ this.handleFieldChange } />
           <Radio
             id="radio2"
             name="radio"
+            label="Radio two"
             value="potato"
             checked={ radio === 'potato' }
             onChange={ this.handleFieldChange } />
           <Radio
             id="radio3"
             name="radio"
+            label="Radio three"
             value="cucumber"
             checked={ radio === 'cucumber' }
             onChange={ this.handleFieldChange } />
@@ -70,11 +74,13 @@ export default class InteractionsControlled extends React.Component {
           <Checkbox
             id="checkbox1"
             name="checkbox1"
+            label="Checkbox one"
             checked={ checkbox1 }
             onChange={ this.handleFieldChange } />
           <Checkbox
             id="checkbox2"
             name="checkbox2"
+            label="Checkbox two"
             checked={ checkbox2 }
             onChange={ this.handleFieldChange } />
 
@@ -82,6 +88,7 @@ export default class InteractionsControlled extends React.Component {
           <Select
             id="select"
             name="select"
+            label="Select"
             value={ select }
             onChange={ this.handleFieldChange }>
             <option value="one">one</option>
@@ -93,12 +100,14 @@ export default class InteractionsControlled extends React.Component {
           <Textarea
             id="textareaOne"
             name="textareaOne"
+            label="Textarea one"
             onChange={ this.handleFieldChange }
             value={ textareaOne }
             onChange={ this.handleFieldChange } />
           <Textarea
             id="textareaTwo"
             name="textareaTwo"
+            label="Textarea two"
             onChange={ this.handleFieldChange }
             value={ textareaTwo }
             onChange={ this.handleFieldChange } />
