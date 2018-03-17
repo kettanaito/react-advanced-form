@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import Scenario from '@scenarios/Components/FormProvider/DebounceTime';
+import Scenario from '@examples/components/FormProvider/DebounceTime';
 
 describe('FormProvider', function () {
   before(() => mount(<Scenario />));

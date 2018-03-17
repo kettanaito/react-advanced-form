@@ -2,7 +2,7 @@ import React from 'react';
 import { Map } from 'immutable';
 import { expect } from 'chai';
 import { mount } from 'cypress-react-unit-test';
-import Scenario from '@scenarios/Components/createField';
+import Scenario from '@examples/components/createField';
 
 describe('createField', function () {
   before(() => mount(<Scenario getRef={ form => this.form = form } />));
