@@ -53,7 +53,7 @@ export default function connectField(options) {
       }
 
       static contextTypes = {
-        form: PropTypes.instanceOf(React.Component).isRequired,
+        form: PropTypes.instanceOf(PropTypes.element).isRequired,
         fields: CustomPropTypes.Map.isRequired,
         fieldGroup: PropTypes.string
       }
@@ -232,23 +232,16 @@ export default function connectField(options) {
        * Ensure "this.contextProps" reference is updated according to the context updates.
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
-        console.warn('FIELD WILL UPDATE', nextContext.fields && nextContext.fields.toJS());
-        console.log('previous this.contextProps', this.contextProps && this.contextProps.toJS());
-
         /* Bypass scenarios when field is being updated, but not yet registred within the Form */
         const nextContextProps = nextContext.fields.getIn(this.fieldPath);
 
-        console.log('nextContextProps', nextContextProps && nextContextProps.toJS());
         if (!nextContextProps) {
-          console.log('no next context props, bypassing..');
           return;
         }
 
         /* Update the internal reference to contextProps */
         const { props: prevProps, contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
-
-        console.log('next this.contextProps', this.contextProps && this.contextProps.toJS());
 
         const fieldPropsChange = camelize(...this.contextProps.get('fieldPath'), 'props', 'change');
 
