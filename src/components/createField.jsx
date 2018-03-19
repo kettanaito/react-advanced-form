@@ -64,7 +64,7 @@ export default function connectField(options) {
         const { fieldGroup } = context;
         const { name } = props;
 
-        /* Compose the proper field path */
+        /* Compose the field path */
         this.fieldPath = fieldGroup ? [fieldGroup, name] : [name];
 
         /**
@@ -138,7 +138,7 @@ export default function connectField(options) {
           valuePropName
         });
 
-        fieldRecord.shouldValidateOnMount = hocOptions.shouldValidateOnMount({
+        const shouldValidateOnMount = hocOptions.shouldValidateOnMount({
           fieldRecord,
           props: this.props,
           context: this.context,
@@ -160,19 +160,24 @@ export default function connectField(options) {
         if (rxProps.size > 0) {
           fieldProps = fieldProps.set('reactiveProps', rxProps);
 
-          // TODO Use "deleteAll" once Immutable 4.0 lands
+          //
+          // TODO Use "Iterable.deleteAll(keys)" once Immutable 4 lands
+          //
           rxProps.forEach((_, rxPropName) => {
             fieldProps = fieldProps.delete(rxPropName);
           });
         }
 
         console.log('rxProps:', rxProps && rxProps.toJS());
-        console.log('register with:', Object.assign({}, fieldRecord));
+        console.log('field record:', Object.assign({}, fieldRecord));
         console.log('fieldProps:', fieldProps && fieldProps.toJS());
         console.groupEnd();
 
         /* Notify the parent Form that a new field prompts to register */
-        eventEmitter.emit('fieldRegister', fieldProps);
+        eventEmitter.emit('fieldRegister', {
+          fieldProps,
+          shouldValidateOnMount
+        });
 
         return fieldProps;
       }
