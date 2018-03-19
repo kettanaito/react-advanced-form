@@ -12,6 +12,7 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
 * [**Composite fields**](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/creating-fields.html). Create gorgeous and flexible fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
 
 * [**Intuitive usage**](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/creating-form.html). Place a `Form` component, add some fields and the form is working without any extra effort:
+
 ```jsx
 // No, ths is not a diminished example, this is a completely working form!
 <Form action={ this.registerUser }>
@@ -45,6 +46,7 @@ export default {
 Access the field's `value`, `fieldProps`, `fields` and the `form` as the parameters of each resolver function. Apply the rules application-wide via `FormProvider`, or extend/override them for a specific form. Say goodbye to crowded `validate` functions, welcome clean multi-layer validation schemas!
 
 * [**Reactive props**](https://kettanaito.gitbooks.io/react-advanced-form/architecture/reactive-props.html). How much effort would it take you to make one field required based on another field(s)? Yes, the correct answer is—*one line of code*:
+
 ```jsx
 <Input
   name="firstName"
@@ -57,6 +59,7 @@ Access the field's `value`, `fieldProps`, `fields` and the `form` as the paramet
 Embrace the power of reactive programming which resolves the prop values automatically whenever the referenced fields update.
 
 * [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields.
+
 ```jsx
 <Field.Group name="primaryInfo">
   <Input name="username" value="john.maverick" />
