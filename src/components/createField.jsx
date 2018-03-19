@@ -3,7 +3,6 @@
  * component. May be used for custom field styling, implementing fields with custom logic or
  * third-party field components integration.
  */
-import { EventEmitter } from 'events';
 import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -56,8 +55,7 @@ export default function connectField(options) {
       static contextTypes = {
         form: PropTypes.instanceOf(React.Component).isRequired,
         fields: CustomPropTypes.Map.isRequired,
-        fieldGroup: PropTypes.string,
-        eventEmitter: PropTypes.instanceOf(EventEmitter).isRequired
+        fieldGroup: PropTypes.string
       }
 
       constructor(props, context) {
@@ -79,7 +77,7 @@ export default function connectField(options) {
       /* Registers the current field within the parent form's state */
       register() {
         const { fieldPath } = this;
-        const { fields, fieldGroup, form, eventEmitter } = this.context;
+        const { fields, fieldGroup, form } = this.context;
         const { value, initialValue } = this.props;
 
         const contextValue = fields.getIn([...fieldPath, valuePropName]);
@@ -186,7 +184,7 @@ export default function connectField(options) {
         console.groupEnd();
 
         /* Notify the parent Form that a new field prompts to register */
-        eventEmitter.emit('fieldRegister', {
+        form.eventEmitter.emit('fieldRegister', {
           fieldProps,
           shouldValidateOnMount
         });
@@ -217,7 +215,7 @@ export default function connectField(options) {
         });
 
         if (controlled && shouldUpdateRecord) {
-          this.context.eventEmitter.emit('fieldChange', {
+          this.context.form.eventEmitter.emit('fieldChange', {
             event: {
               nativeEvent: {
                 isForcedUpdate: true
@@ -254,7 +252,7 @@ export default function connectField(options) {
 
         const fieldPropsChange = camelize(...this.contextProps.get('fieldPath'), 'props', 'change');
 
-        this.context.eventEmitter.emit(fieldPropsChange, {
+        this.context.form.eventEmitter.emit(fieldPropsChange, {
           prevProps,
           nextProps,
           prevContextProps,
@@ -266,7 +264,7 @@ export default function connectField(options) {
        * Deletes the field's record upon unmounting.
        */
       componentWillUnmount() {
-        this.context.eventEmitter.emit('fieldUnregister', this.contextProps);
+        this.context.form.eventEmitter.emit('fieldUnregister', this.contextProps);
       }
 
       /**
@@ -302,7 +300,7 @@ export default function connectField(options) {
        * @param {Event} event
        */
       handleFocus = (event) => {
-        this.context.eventEmitter.emit('fieldFocus', {
+        this.context.form.eventEmitter.emit('fieldFocus', {
           event,
           fieldProps: this.contextProps
         });
@@ -328,7 +326,7 @@ export default function connectField(options) {
         console.log('nextValue', nextValue);
         console.groupEnd();
 
-        this.context.eventEmitter.emit('fieldChange', {
+        this.context.form.eventEmitter.emit('fieldChange', {
           event,
           nextValue,
           prevValue,
@@ -341,7 +339,7 @@ export default function connectField(options) {
        * @param {Event} event
        */
       handleBlur = (event) => {
-        this.context.eventEmitter.emit('fieldBlur', {
+        this.context.form.eventEmitter.emit('fieldBlur', {
           event,
           fieldProps: this.contextProps
         });

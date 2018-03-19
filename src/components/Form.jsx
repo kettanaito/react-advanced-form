@@ -77,15 +77,13 @@ export default class Form extends React.Component {
   /* Context which Form passes to Fields */
   static childContextTypes = {
     form: PropTypes.instanceOf(React.Component).isRequired,
-    fields: CustomPropTypes.Map.isRequired,
-    eventEmitter: PropTypes.instanceOf(EventEmitter).isRequired
+    fields: CustomPropTypes.Map.isRequired
   }
 
   getChildContext() {
     return {
       form: this,
-      fields: this.state.fields,
-      eventEmitter: this.eventEmitter
+      fields: this.state.fields
     };
   }
 
@@ -162,14 +160,6 @@ export default class Form extends React.Component {
         fieldProps = fieldProps.set(valuePropName, fieldValue);
       }
     }
-
-    // fieldProps = fieldProps
-    //   /**
-    //    * Each field should have its own debounced validation function to prevent debounce overlap
-    //    * of the simultaneously validating fields. If bind on a form level, sibling validations will
-    //    * override each other, and only the last validation will be executed.
-    //    */
-    //   .set('debounceValidate', debounce(this.validateField, this.debounceTime));
 
     const nextFields = fields.setIn(fieldPath, fieldProps);
     const { eventEmitter } = this;
