@@ -8,7 +8,7 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import { isset, camelize, CustomPropTypes, getComponentName, rxUtils } from '../utils';
+import { isset, camelize, debounce, CustomPropTypes, getComponentName, rxUtils } from '../utils';
 
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
@@ -54,9 +54,10 @@ export default function connectField(options) {
       }
 
       static contextTypes = {
+        form: PropTypes.instanceOf(React.Component).isRequired,
         fields: CustomPropTypes.Map.isRequired,
         fieldGroup: PropTypes.string,
-        eventEmitter: PropTypes.instanceOf(EventEmitter)
+        eventEmitter: PropTypes.instanceOf(EventEmitter).isRequired
       }
 
       constructor(props, context) {
@@ -78,7 +79,7 @@ export default function connectField(options) {
       /* Registers the current field within the parent form's state */
       register() {
         const { fieldPath } = this;
-        const { eventEmitter, fields, fieldGroup } = this.context;
+        const { fields, fieldGroup, form, eventEmitter } = this.context;
         const { value, initialValue } = this.props;
 
         const contextValue = fields.getIn([...fieldPath, valuePropName]);
@@ -125,7 +126,9 @@ export default function connectField(options) {
         /* Inherit expected props to the field record */
         inheritedProps.forEach((propName) => {
           const propValue = this.props[propName];
-          if (propValue) defaultFieldRecord[propName] = propValue;
+          if (propValue) {
+            defaultFieldRecord[propName] = propValue;
+          }
         });
 
         console.log('defaultFieldRecord:', Object.assign({}, defaultFieldRecord));
@@ -151,6 +154,15 @@ export default function connectField(options) {
         if (fieldGroup) {
           fieldRecord.fieldGroup = fieldGroup;
         }
+
+        /**
+         * When the validate method is debounced on the form level, different calls to it from different fields
+         * are going to overlap and conflict with each other.
+         *
+         * Wrapping the validate method for each field means that each re-occuring call to that method is
+         * going to be debounced relatively to the field, regardless of the other fields being validated.
+         */
+        fieldRecord.debounceValidate = debounce(form.validateField, form.debounceTime);
 
         /* Create immutable field props from the mutable field record */
         let fieldProps = Map(fieldRecord);
@@ -222,19 +234,29 @@ export default function connectField(options) {
        * Ensure "this.contextProps" reference is updated according to the context updates.
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
+        console.warn('FIELD WILL UPDATE', nextContext.fields && nextContext.fields.toJS());
+        console.log('previous this.contextProps', this.contextProps && this.contextProps.toJS());
+
         /* Bypass scenarios when field is being updated, but not yet registred within the Form */
         const nextContextProps = nextContext.fields.getIn(this.fieldPath);
-        if (!nextContextProps) return;
+
+        console.log('nextContextProps', nextContextProps && nextContextProps.toJS());
+        if (!nextContextProps) {
+          console.log('no next context props, bypassing..');
+          return;
+        }
 
         /* Update the internal reference to contextProps */
         const { props: prevProps, contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
+        console.log('next this.contextProps', this.contextProps && this.contextProps.toJS());
+
         const fieldPropsChange = camelize(...this.contextProps.get('fieldPath'), 'props', 'change');
 
         this.context.eventEmitter.emit(fieldPropsChange, {
-          nextProps,
           prevProps,
+          nextProps,
           prevContextProps,
           nextContextProps
         });
