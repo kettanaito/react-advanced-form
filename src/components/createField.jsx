@@ -330,12 +330,16 @@ export default function connectField(options) {
         console.log('nextValue', nextValue);
         console.groupEnd();
 
-        this.context.form.eventEmitter.emit('fieldChange', {
+        const eventPayload = {
           event,
           nextValue,
           prevValue,
           fieldProps: contextProps
-        });
+        };
+
+        this.__proto__.interceptors.fieldChange.forEach(interceptor => interceptor(eventPayload));
+
+        this.context.form.eventEmitter.emit('fieldChange', eventPayload);
       }
 
       /**

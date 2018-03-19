@@ -9,10 +9,10 @@ const DEVELOPMENT = (nodeEnv === 'development');
 const PRODUCTION = (nodeEnv === 'production');
 
 module.exports = {
-  entry: [
-    'regenerator-runtime/runtime',
-    path.resolve(__dirname, 'src/index.js')
-  ],
+  entry: {
+    index: ['regenerator-runtime/runtime', path.resolve(__dirname, 'src/index.js')],
+    'enhancers/mask': path.resolve(__dirname, 'src/enhancers/mask')
+  },
   externals: {
     react: 'umd react',
     immutable: 'umd immutable'

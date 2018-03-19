@@ -1,5 +1,6 @@
 /* High-order components */
 export createField from './components/createField';
+export applyEnhancers from './applyEnhancers';
 
 /* Components */
 export FormProvider from './components/FormProvider';

@@ -31,6 +31,9 @@ import RxPropsSingleTarget from './reactive-props/SingleTarget';
 import RxPropsInterdependent from './reactive-props/Interdependent';
 import RxPropsDelegatedSubscription from './reactive-props/DelegatedSubscription';
 
+//
+import MaskEnhancer from './enhancers/Mask';
+
 /* Full examples */
 import RegistrationForm from './full/RegistrationForm';
 
@@ -60,6 +63,9 @@ storiesOf('Advanced|Reactive props', module)
   .add('Single field target', addComponent(<RxPropsSingleTarget />))
   .add('Interdependent fields', addComponent(<RxPropsInterdependent />))
   .add('Delegated subscription', addComponent(<RxPropsDelegatedSubscription />))
+
+storiesOf('Advanced|Enhancers', module)
+  .add('Mask', () => <MaskEnhancer />)
 
 storiesOf('Other|Third-party fields', module)
   .add('react-select', addComponent(<ReactSelect />))
