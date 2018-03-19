@@ -128,7 +128,7 @@ export default class Form extends React.Component {
    * tree, deconstructing and constructing each appropriate child with the attached handler props.
    * @param {Map} fieldProps
    */
-  registerField = (fieldProps) => {
+  registerField = ({ fieldProps, shouldValidateOnMount }) => {
     const { fields } = this.state;
     const fieldPath = fieldProps.get('fieldPath');
     const isAlreadyExist = fields.hasIn(fieldPath);
@@ -162,22 +162,13 @@ export default class Form extends React.Component {
       }
     }
 
-    const shouldValidateOnMount = fieldProps.get('shouldValidateOnMount');
-
     fieldProps = fieldProps
-      /* Delete on mount validation flag since it is irrelevant from now on */
-      .delete('shouldValidateOnMount')
-
       /**
        * Each field should have its own debounced validation function to prevent debounce overlap
        * of the simultaneously validating fields. If bind on a form level, sibling validations will
        * override each other, and only the last validation will be executed.
        */
       .set('debounceValidate', debounce(this.validateField, this.debounceTime));
-
-    console.log('this.validateField', this.validateField);
-    console.log('this.debounceTime', this.debounceTime);
-    console.log('fieldProps', fieldProps && fieldProps.toJS());
 
     const nextFields = fields.setIn(fieldPath, fieldProps);
     const { eventEmitter } = this;
