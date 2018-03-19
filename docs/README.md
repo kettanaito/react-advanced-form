@@ -35,7 +35,7 @@ export default {
       /**
        * The "confirmPassword" field will be re-validated
        * whenever the "value" prop of "userPassword" field updates.
-       * */
+       */
       return (value === fields.userPassword.value);
     }
   }
@@ -56,13 +56,15 @@ Access the field's `value`, `fieldProps`, `fields` and the `form` as the paramet
 
 Embrace the power of reactive programming which resolves the prop values automatically whenever the referenced fields update.
 
-* [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields no matter how apart they are.
+* [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields.
 ```jsx
 <Field.Group name="primaryInfo">
   <Input name="username" value="john.maverick" />
   <Input name="password" type="password" value="123" />
 </Field.Group>
+
 <Checkbox name="termsAndConditions" checked />
+
 <Field.Group name="primaryInfo">
   <Input name="firstName" value="John" />
   <Input name="lastName" value="Maverick" />
