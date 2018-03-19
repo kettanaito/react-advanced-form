@@ -33,6 +33,10 @@ function getInnerRef(element, callback) {
   if (callback) callback(element);
 }
 
+function filterFields(entry) {
+  return entry.has('fieldPath');
+}
+
 export default class Form extends React.Component {
   static propTypes = {
     /* General */
@@ -545,9 +549,8 @@ export default class Form extends React.Component {
     const { formRules } = this;
     const fields = exactFields || this.state.fields;
 
-    const fieldProps = forceProps
-      ? exactFieldProps
-      : fields.getIn(exactFieldProps.get('fieldPath')) || exactFieldProps;
+    let fieldProps = forceProps ? exactFieldProps : fields.getIn(exactFieldProps.get('fieldPath'));
+    fieldProps = fieldProps || exactFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
     const needsValidation = type.shouldValidate({
@@ -628,9 +631,8 @@ export default class Form extends React.Component {
    * validations to be completed.
    * @param {Function} predicate (Optional) Predicate function to filter the fields.
    */
-  validate = async (predicate) => {
+  validate = async (predicate = filterFields) => {
     const { fields } = this.state;
-
     const flattenedFields = flattenDeep(fields, predicate, true);
 
     /* Validate only the fields matching the optional selection */
@@ -672,7 +674,7 @@ export default class Form extends React.Component {
 
     this.setState({ fields: nextFields }, () => {
       /* Validate only non-empty fields, since empty required fields should not be unexpected on reset */
-      this.validate(fieldProps => Map.isMap(fieldProps) && (fieldProps.get('value') !== ''));
+      this.validate(entry => Map.isMap(entry) && (entry.get('value') !== ''));
 
       /* Call custom callback methods to be able to reset controlled fields */
       const { onReset } = this.props;

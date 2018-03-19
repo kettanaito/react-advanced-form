@@ -28,6 +28,7 @@ export default function flattenDeep(
       const transformedKeyPath = transformKey ? [transformKey(deepKeyPath)] : deepKeyPath;
       const resolvedKeyPath = flattenKeys ? [transformedKeyPath.join('.')] : transformedKeyPath;
       const resolvedValue = transformValue ? transformValue(value, deepKeyPath) : value;
+
       return acc.setIn(resolvedKeyPath, resolvedValue);
     }
 

@@ -14,6 +14,8 @@ import RxPropsSingleTarget from './reactive-props/SingleTarget';
 import RxPropsInterdependent from './reactive-props/Interdependent';
 import RxPropsDelegated from './reactive-props/Delegated';
 
+import RegistrationForm from './full-examples/RegistrationForm';
+
 storiesOf('Basics', module)
   .add('Uncontrolled fields', () => <UncontrolledFields />)
   .add('Controlled fields', () => <ControlledFields />)
@@ -30,3 +32,6 @@ storiesOf('Reactive props', module)
   .add('Single field target', () => <RxPropsSingleTarget />)
   .add('Interdependent fields', () => <RxPropsInterdependent />)
   .add('Delegated subscription', () => <RxPropsDelegated />);
+
+storiesOf('Full examples', module)
+  .add('Registration Form', () => <RegistrationForm />);
