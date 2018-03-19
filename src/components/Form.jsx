@@ -221,7 +221,7 @@ export default class Form extends React.Component {
    * @param {Map} fieldProps
    * @return {boolean}
    */
-  isRegistered = (fieldProps) => {
+  hasField = (fieldProps) => {
     return this.state.fields.hasIn(fieldProps.get('fieldPath'));
   }
 
@@ -304,7 +304,7 @@ export default class Form extends React.Component {
    */
   handleFieldFocus = async ({ event, fieldProps }) => {
     /* Bypass events called from an unregistered Field */
-    if (!this.isRegistered(fieldProps)) return;
+    if (!this.hasField(fieldProps)) return;
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldFocus');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
@@ -338,7 +338,7 @@ export default class Form extends React.Component {
    */
   handleFieldChange = async ({ event, fieldProps, prevValue, nextValue }) => {
     /* Bypass events called from an unregistered Field */
-    if (!this.isRegistered(fieldProps)) return;
+    if (!this.hasField(fieldProps)) return;
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
@@ -444,7 +444,7 @@ export default class Form extends React.Component {
    */
   handleFieldBlur = async ({ event, fieldProps }) => {
     /* Bypass events called from an unregistered Field */
-    if (!this.isRegistered(fieldProps)) return;
+    if (!this.hasField(fieldProps)) return;
 
     const fieldPath = fieldProps.get('fieldPath');
     const asyncRule = fieldProps.get('asyncRule');
