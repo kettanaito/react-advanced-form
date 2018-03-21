@@ -55,7 +55,7 @@ export default function connectField(options) {
       static contextTypes = {
         form: PropTypes.object.isRequired,
         fields: CustomPropTypes.Map.isRequired,
-        fieldGroup: PropTypes.string
+        fieldGroup: PropTypes.arrayOf(PropTypes.string)
       }
 
       constructor(props, context) {
@@ -64,7 +64,7 @@ export default function connectField(options) {
         const { name } = props;
 
         /* Compose the field path */
-        this.fieldPath = fieldGroup ? [fieldGroup, name] : [name];
+        this.fieldPath = fieldGroup ? [...fieldGroup, name] : [name];
 
         /**
          * Register the field in the parent Form's state and store its internal record reference (contextProps).

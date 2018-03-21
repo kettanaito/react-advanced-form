@@ -8,7 +8,7 @@ class Input extends React.Component {
     id: PropTypes.string,
     name: PropTypes.string.isRequired,
     label: PropTypes.string,
-    hint: PropTypes.string,
+    hint: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
 
     /* Inherites */
     fieldProps: PropTypes.object.isRequired,

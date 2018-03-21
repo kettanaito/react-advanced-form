@@ -5,6 +5,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import UncontrolledFields from './basics/UncontrolledFields';
 import ControlledFields from './basics/ControlledFields';
 
+import SimpleGroup from './field-grouping/SimpleGroup';
+import NestedGroups from './field-grouping/NestedGroups';
+import SplitGroups from './field-grouping/SplitGroups';
+
 import FieldPropsRule from './validation/SyncValidation/Field.props.rule';
 import FormPropsRules from './validation/SyncValidation/Form.props.rules';
 import FieldPropsAsyncRule from './validation/AsyncValidation/Field.props.asyncRule';
@@ -20,18 +24,23 @@ storiesOf('Basics', module)
   .add('Uncontrolled fields', () => <UncontrolledFields />)
   .add('Controlled fields', () => <ControlledFields />)
 
+storiesOf('Field grouping', module)
+  .add('Simple group', () => <SimpleGroup />)
+  .add('Nested groups', () => <NestedGroups />)
+  .add('Split groups', () => <SplitGroups />)
+
 storiesOf('Synchronous validation', module)
   .add('Field.props.rule', () => <FieldPropsRule />)
-  .add('Form.props.rules', () => <FormPropsRules />);
+  .add('Form.props.rules', () => <FormPropsRules />)
 
 storiesOf('Asynchronous validation', module)
-  .add('Field.props.asyncRule', () => <FieldPropsAsyncRule />);
+  .add('Field.props.asyncRule', () => <FieldPropsAsyncRule />)
 
 storiesOf('Reactive props', module)
   .add('Basic', () => <RxPropsBasic />)
   .add('Single field target', () => <RxPropsSingleTarget />)
   .add('Interdependent fields', () => <RxPropsInterdependent />)
-  .add('Delegated subscription', () => <RxPropsDelegated />);
+  .add('Delegated subscription', () => <RxPropsDelegated />)
 
 storiesOf('Full examples', module)
-  .add('Registration Form', () => <RegistrationForm />);
+  .add('Registration Form', () => <RegistrationForm />)
