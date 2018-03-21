@@ -14,7 +14,7 @@ import RxPropsSingleTarget from './reactive-props/SingleTarget';
 import RxPropsInterdependent from './reactive-props/Interdependent';
 import RxPropsDelegated from './reactive-props/Delegated';
 
-import RegistrationForm from './full-examples/RegistrationForm';
+import RegistrationForm from './full/RegistrationForm';
 
 storiesOf('Basics', module)
   .add('Uncontrolled fields', () => <UncontrolledFields />)
