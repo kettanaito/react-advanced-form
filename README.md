@@ -58,7 +58,7 @@ Access the field's `value`, `fieldProps`, `fields` and the `form` as the paramet
 
 Embrace the power of reactive programming which resolves the prop values automatically whenever the referenced fields update.
 
-* [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields.
+* [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields. Nested and split groups are supported.
 
 ```jsx
 <Field.Group name="primaryInfo">
