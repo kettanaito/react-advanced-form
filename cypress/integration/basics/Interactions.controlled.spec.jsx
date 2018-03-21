@@ -4,13 +4,8 @@ import { mount } from 'cypress-react-unit-test';
 import Scenario from '@examples/basics/ControlledFields';
 
 describe('Controlled fields interactions', function () {
-  before(() => {
-    mount(<Scenario getRef={ form => this.form = form } />);
-  });
-
-  afterEach(() => {
-    this.form.reset();
-  });
+  before(() => mount(<Scenario getRef={ form => this.form = form } />));
+  afterEach(() => this.form.reset());
 
   it('form rendered with proper initial state.fields values', () => {
     cy.get('#form').should(() => {

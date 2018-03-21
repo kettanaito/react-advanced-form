@@ -14,13 +14,19 @@ export default class Group extends React.Component {
     name: PropTypes.string.isRequired
   }
 
+  static contextTypes = {
+    fieldGroup: PropTypes.arrayOf(PropTypes.string)
+  }
+
   static childContextTypes = {
-    fieldGroup: PropTypes.string.isRequired
+    fieldGroup: PropTypes.arrayOf(PropTypes.string).isRequired
   }
 
   getChildContext() {
+    const parentGroupName = this.context.fieldGroup || [];
+
     return {
-      fieldGroup: this.props.name
+      fieldGroup: parentGroupName.concat(this.props.name)
     };
   }
 
