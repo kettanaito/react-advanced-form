@@ -76,7 +76,7 @@ export default class Form extends React.Component {
 
   /* Context which Form passes to Fields */
   static childContextTypes = {
-    form: PropTypes.instanceOf(PropTypes.element).isRequired,
+    form: PropTypes.object.isRequired,
     fields: CustomPropTypes.Map.isRequired
   }
 

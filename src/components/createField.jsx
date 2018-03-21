@@ -53,7 +53,7 @@ export default function connectField(options) {
       }
 
       static contextTypes = {
-        form: PropTypes.instanceOf(PropTypes.element).isRequired,
+        form: PropTypes.object.isRequired,
         fields: CustomPropTypes.Map.isRequired,
         fieldGroup: PropTypes.string
       }
