@@ -18,6 +18,3 @@ webpack*
 .storybook
 internal
 examples
-
-# Exceptions
-!docs/README.md
