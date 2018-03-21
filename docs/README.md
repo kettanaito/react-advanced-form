@@ -63,7 +63,7 @@ Embrace the power of reactive programming which resolves the prop values automat
 ```jsx
 <Field.Group name="primaryInfo">
   <Input name="username" value="john.maverick" />
-  <Input name="password" type="password" value="123" />
+  <Input name="password" type="password" value="secret" />
 </Field.Group>
 
 <Checkbox name="termsAndConditions" checked />
@@ -74,13 +74,13 @@ Embrace the power of reactive programming which resolves the prop values automat
 </Field.Group>
 ```
 
-Is going to be serialized into the following Object:
+The layout above will be serialized into the following JSON:
 
-```js
+```json
 {
   "primaryInfo": {
     "username": "john.maverick",
-    "password": "123",
+    "password": "secret",
     "firstName": "John",
     "lastName": "Maverick"
   },
