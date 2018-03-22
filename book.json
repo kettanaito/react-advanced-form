@@ -1,5 +1,5 @@
 {
-    "root": "./docs",
+    "root": "./",
     "title": "React Advanced Form",
     "plugins": ["prism", "-highlight"]
 }
