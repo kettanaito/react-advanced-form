@@ -46,10 +46,6 @@
     "build-storybook": "build-storybook",
     "prepublishOnly": "npm run build && npm test"
   },
-  "pre-commit": [
-    "build",
-    "test"
-  ],
   "peerDependencies": {
     "react": "^15.0.0",
     "immutable": "^3.8.2"
