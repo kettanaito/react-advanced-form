@@ -35,6 +35,7 @@ export default class Sequence {
   async run() {
     const { entries } = this;
     if (entries.length === 0) return;
+
     let acc = this.initialValue;
 
     for (let index = 0; index < entries.length; index++) {

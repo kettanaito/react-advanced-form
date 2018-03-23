@@ -1,11 +1,12 @@
 /**
- * Calls `console.warn` with the provided message when the `testValue` rejects.
- * @param {boolean} testValue
+ * Calls `console.warn` with the provided message when the condition rejects.
+ * @param {boolean} condition
  * @param {string} message
  * @param {any[]} optionalParams
  */
-import util from 'util';
-
-export default function warning(testValue, message, ...params) {
-  if (!testValue) console.warn(util.format(message, ...params));
+export default function warning(condition, message, ...params) {
+  if (!condition) {
+    let paramIndex = 0;
+    console.warn(message.replace(/%s/g, () => params[paramIndex++]));
+  }
 }

@@ -2,18 +2,20 @@ const path = require('path');
 const webpack = require('webpack');
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
 const packageJson = require('./package.json');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 /* Environment */
 const DEVELOPMENT = (process.env.NODE_ENV === 'development');
 const PRODUCTION = (process.env.NODE_ENV === 'production');
 
 module.exports = {
-  entry: path.resolve(__dirname, packageJson.module),
+  entry: [
+    'regenerator-runtime/runtime',
+    path.resolve(__dirname, packageJson.module)
+  ],
   externals: {
     react: 'umd react',
-    immutable: 'umd immutable',
-    // events: 'umd events' // TODO Will this result into a properly working library?
+    immutable: 'umd immutable'
   },
   output: {
     path: __dirname,
@@ -40,7 +42,8 @@ module.exports = {
           'Condition': true
         }
       }
-    })
+    }),
+    new BundleAnalyzerPlugin()
   ].filter(Boolean),
   module: {
     rules: [
@@ -64,6 +67,6 @@ module.exports = {
   },
   devtool: DEVELOPMENT && 'source-map',
   resolve: {
-    extensions: ['.jsx', '.js']
+    extensions: ['.js', '.jsx']
   }
 };
