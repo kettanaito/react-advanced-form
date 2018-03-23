@@ -16,7 +16,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
   rxProps.forEach((resolver, rxPropName) => {
     const { refs } = makeObservable(resolver, resolverArgs, {
       initialCall: true,
-      async subscribe({ nextContextProps, shouldValidate = true }) {
+      subscribe({ nextContextProps, shouldValidate = true }) {
         const refFieldPath = nextContextProps.get('fieldPath');
         const nextFields = form.state.fields.set(refFieldPath, nextContextProps);
         const safeFields = ensafeMap(nextFields, refs);
@@ -29,18 +29,20 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
 
         console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberFieldPath.join('.'), nextPropValue);
 
-        const { nextFieldProps: updatedFieldProps } = await form.updateField({
+        const fieldUpdate = form.updateField({
           fieldPath: subscriberFieldPath,
           propsPatch: { [rxPropName]: nextPropValue }
         });
 
         if (shouldValidate) {
-          form.validateField({
-            force: true,
-            fieldPath: subscriberFieldPath,
-            fieldProps: updatedFieldProps,
-            forceProps: true,
-            fields: nextFields
+          fieldUpdate.then(({ nextFieldProps: updatedFieldProps }) => {
+            form.validateField({
+              force: true,
+              fieldPath: subscriberFieldPath,
+              fieldProps: updatedFieldProps,
+              forceProps: true,
+              fields: nextFields
+            });
           });
         }
       }

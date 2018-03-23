@@ -9,11 +9,13 @@ const DEVELOPMENT = (process.env.NODE_ENV === 'development');
 const PRODUCTION = (process.env.NODE_ENV === 'production');
 
 module.exports = {
-  entry: path.resolve(__dirname, packageJson.module),
+  entry: [
+    'regenerator-runtime/runtime',
+    path.resolve(__dirname, packageJson.module)
+  ],
   externals: {
     react: 'umd react',
-    immutable: 'umd immutable',
-    // events: 'umd events' // TODO Will this result into a properly working library?
+    immutable: 'umd immutable'
   },
   output: {
     path: __dirname,
@@ -64,6 +66,6 @@ module.exports = {
   },
   devtool: DEVELOPMENT && 'source-map',
   resolve: {
-    extensions: ['.jsx', '.js']
+    extensions: ['.js', '.jsx']
   }
 };
