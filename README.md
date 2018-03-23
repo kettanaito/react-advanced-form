@@ -9,9 +9,9 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
 ## Features
 * **Boilterplate-free**. Remember how you were tossing tons of configurations for high-order components around each form? No more. Create clean and powerful forms without repeating yourself, without building crazy abstractions.
 
-* [**Composite fields**](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/creating-fields.html). Create gorgeous and flexible fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
+* [**Composite fields**](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/creating-fields.html). Create gorgeous and flexible fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
 
-* [**Intuitive usage**](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/creating-form.html). Place a `Form` component, add some fields and the form is working without any extra effort.
+* [**Intuitive usage**](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/creating-form.html). Place a `Form` component, add some fields and the form is working without any extra effort.
 
 ```jsx
 // No, ths is not a diminished example, this is a completely working form!
@@ -21,7 +21,7 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
 </Form>
 ```
 
-* [**Smart multi-layer validation**](https://kettanaito.gitbooks.io/react-advanced-form/validation/logic.html). Declare even the most complex validation logic using single-line resolver functions.
+* [**Smart multi-layer validation**](https://kettanaito.gitbooks.io/react-advanced-form/docs/validation/logic.html). Declare even the most complex validation logic using single-line resolver functions.
 
 ```js
 export default {
@@ -45,7 +45,7 @@ export default {
 
 Access the field's `value`, `fieldProps`, `fields` and the `form` as the parameters of each resolver function. Apply the rules application-wide via `FormProvider`, or extend/override them for a specific form. Say goodbye to crowded `validate` functions, welcome clean multi-layer validation schemas!
 
-* [**Reactive props**](https://kettanaito.gitbooks.io/react-advanced-form/architecture/reactive-props.html). How much effort would it take you to make one field required based on another field(s)? Yes, the correct answer is—*one line of code*:
+* [**Reactive props**](https://kettanaito.gitbooks.io/react-advanced-form/docs/architecture/reactive-props.html). How much effort would it take you to make one field required based on another field(s)? Yes, the correct answer is—*one line of code*:
 
 ```jsx
 <Input
@@ -58,7 +58,7 @@ Access the field's `value`, `fieldProps`, `fields` and the `form` as the paramet
 
 Embrace the power of reactive programming which resolves the prop values automatically whenever the referenced fields update.
 
-* [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields. Nested and split groups are supported.
+* [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/docs/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields. Nested and split groups are supported.
 
 ```jsx
 <Field.Group name="primaryInfo">
@@ -100,13 +100,13 @@ npm install react-advanced-form --save
 
 ### Guidelines
 
-See the detailed step-by-step instructions on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/installation.html). Get familiar with the and learn how to easily integrate the library into your project.
+See the detailed step-by-step instructions on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/installation.html). Get familiar with the and learn how to easily integrate the library into your project.
 
 ## Documenation
 See the [Documentation](https://kettanaito.gitbooks.io/react-advanced-form) for the list of all available features, their descriptions and examples of usage.
 
 ## Contributing
-Any of your contributions are highly appreciated. See the [Contribution guidelines](https://kettanaito.gitbooks.io/react-advanced-form/CONTRIBUTING.html) to get to know the process better. Moreover, development isn't the only way to contribute, there are [many more](https://kettanaito.gitbooks.io/react-advanced-form/CONTRIBUTING.html#other-contributions).
+Any of your contributions are highly appreciated. See the [Contribution guidelines](https://kettanaito.gitbooks.io/react-advanced-form/docs/CONTRIBUTING.html) to get to know the process better. Moreover, development isn't the only way to contribute, there are [many more](https://kettanaito.gitbooks.io/react-advanced-form/docs/CONTRIBUTING.html#other-contributions).
 
 Found a bug? Eager to suggest a useful feature? The [Issues](https://github.com/kettanaito/react-advanced-form/issues) tab is always open for your ideas. Just make sure you're not duplicating the existing ones. If you feel lucky, you can even submit a [Pull request](https://github.com/kettanaito/react-advanced-form/pulls) with the changes.
 
