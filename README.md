@@ -90,6 +90,12 @@ The layout above will be serialized into the following JSON:
 
 * **Third-party fields integration**. Love some third-party field component? Connect it to React Advanced Form and enjoy the benefits of both! Use exposed `createField` high-order component to create a field out of any component.
 
+## Examples
+See and play around with some sandbox examples:
+
+* [Synchronous validation](https://codesandbox.io/s/53wlvmp42l?module=%2Fsrc%2FSyncValidation.js)
+* [Asynchronous validation](https://codesandbox.io/s/73236qlk06?module=%2Fsrc%2FAsyncValidation.js)
+
 ## Getting started
 
 ### Install
