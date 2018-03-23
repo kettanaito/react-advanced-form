@@ -3,7 +3,7 @@ module.exports = {
   plugins: ['react', 'import', 'mocha'],
   parser: 'babel-eslint',
   parserOptions: {
-    ecmaVersion: 7,
+    ecmaVersion: 8,
     ecmaFeatures: {
       classes: true,
       jsx: true,
@@ -12,7 +12,8 @@ module.exports = {
   },
   env: {
     browser: true,
-    mocha: true
+    mocha: true,
+    es6: true
   },
   settings: {
     'import/resolver': {
