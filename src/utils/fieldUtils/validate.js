@@ -73,7 +73,7 @@ const sequenceIterator = ({ acc, variables, resolved, isLast, breakIteration }) 
  * @param {Map} formRules
  * @return {boolean}
  */
-export default async function validate({ type, fieldProps, fields, form }) {
+export default function validate({ type, fieldProps, fields, form }) {
   // console.groupCollapsed(`fieldUtils @ validate "${fieldProps.get('fieldPath')}"`);
   // console.log('type', type);
   // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));

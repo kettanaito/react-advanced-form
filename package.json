@@ -40,7 +40,7 @@
     "cypress": "node_modules/.bin/cypress open",
     "build": "NODE_ENV=production BABEL_ENV=production webpack",
     "build:dev": "NODE_ENV=development webpack -w",
-    "test:unit": "mocha --require babel-core/register --require babel-polyfill --exit",
+    "test:unit": "mocha --require babel-core/register --exit",
     "test:integration": "node_modules/.bin/cypress run --spec cypress/integration/index.js",
     "test": "npm run test:unit && npm run test:integration",
     "build-storybook": "build-storybook",
@@ -61,6 +61,8 @@
     "babel-eslint": "^8.2.2",
     "babel-loader": "^7.1.3",
     "babel-minify-webpack-plugin": "^0.3.0",
+    "babel-plugin-async-to-promises": "^1.0.5",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -90,10 +92,12 @@
     "raw-loader": "^0.5.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "regenerator": "^0.12.3",
     "storybook": "^1.0.0",
     "style-loader": "^0.20.2",
     "validator": "^9.4.1",
-    "webpack": "^3.11.0"
+    "webpack": "^3.11.0",
+    "webpack-bundle-analyzer": "^2.11.1"
   },
   "dependencies": {
     "create-prop-types": "^1.0.0",
