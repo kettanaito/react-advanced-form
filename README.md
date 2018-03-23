@@ -4,14 +4,14 @@
 
 [React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library for tailoring real-world forms with pleasure and ease.
 
-No boilerplate. No obscure high-order component configurations. No redundant state management. Embrace powerful custom styling, field grouping, advanced multi-level validation, validation messages with smart fallback system, reactive props resolvers and much more.
+No boilerplate. No obscure high-order component configurations. No redundant state management. Embrace powerful custom styling, field grouping, advanced multi-layer validation, validation messages with smart fallback system, reactive props resolvers and much more.
 
 ## Features
 * **Boilterplate-free**. Remember how you were tossing tons of configurations for high-order components around each form? No more. Create clean and powerful forms without repeating yourself, without building crazy abstractions.
 
 * [**Composite fields**](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/creating-fields.html). Create gorgeous and flexible fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
 
-* [**Intuitive usage**](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/creating-form.html). Place a `Form` component, add some fields and the form is working without any extra effort:
+* [**Intuitive usage**](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/creating-form.html). Place a `Form` component, add some fields and the form is working without any extra effort.
 
 ```jsx
 // No, ths is not a diminished example, this is a completely working form!
@@ -91,7 +91,16 @@ The layout above will be serialized into the following JSON:
 * **Third-party fields integration**. Love some third-party field component? Connect it to React Advanced Form and enjoy the benefits of both! Use exposed `createField` high-order component to create a field out of any component.
 
 ## Getting started
-Please read the detailed step-by-step instruction on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/installation.html). The latter contains a thorough explanation of how the workflow with the form looks like, and how to easily integrate it into your project.
+
+### Install
+
+```bash
+npm install react-advanced-form --save
+```
+
+### Guidelines
+
+See the detailed step-by-step instructions on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/getting-started/installation.html). Get familiar with the and learn how to easily integrate the library into your project.
 
 ## Documenation
 See the [Documentation](https://kettanaito.gitbooks.io/react-advanced-form) for the list of all available features, their descriptions and examples of usage.
@@ -102,4 +111,4 @@ Any of your contributions are highly appreciated. See the [Contribution guidelin
 Found a bug? Eager to suggest a useful feature? The [Issues](https://github.com/kettanaito/react-advanced-form/issues) tab is always open for your ideas. Just make sure you're not duplicating the existing ones. If you feel lucky, you can even submit a [Pull request](https://github.com/kettanaito/react-advanced-form/pulls) with the changes.
 
 ## License
-This project is licensed under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE.md). See the license file for more details.
+This project is published under [MIT License](https://github.com/kettanaito/react-advanced-form/blob/master/LICENSE.md). See the license file for more details.
