@@ -390,7 +390,8 @@ export default class Form extends React.Component {
 
     /* Cancel any pending async validation due to the field value change */
     if (updatedFieldProps.has('pendingAsyncValidation')) {
-      updatedFieldProps.getIn(['pendingAsyncValidation', 'cancel'])();
+      const cancelPendingValidation = updatedFieldProps.getIn(['pendingAsyncValidation', 'cancel']);
+      cancelPendingValidation();
     }
 
     /**
@@ -512,22 +513,19 @@ export default class Form extends React.Component {
 
   /**
    * Validates the provided field.
-   * @param {Map} fieldProps (Optional)
+   * @param {Map} fieldProps
    * @param {ValidationType} type
-   * @param {boolean} forceProps (Optional) Use direct props explicitly, without trying to grab field record
-   * from the state.
+   * @param {boolean} forceProps (Optional) Use the field props from the arguments instead of form's state.
    * @param {Map} fields (Optional) Explicit fields state to prevent validation concurrency.
    * @param {boolean} force (Optional) Force validation. Bypass "shouldValidate" logic.
    */
-  validateField = async (args) => {
-    const {
-      type = BothValidationType,
-      fieldProps: exactFieldProps,
-      fields: exactFields,
-      forceProps = false,
-      force = false
-    } = args;
-
+  validateField = async ({
+    type = BothValidationType,
+    fieldProps: exactFieldProps,
+    fields: exactFields,
+    forceProps = false,
+    force = false
+  }) => {
     const { formRules } = this;
     const fields = exactFields || this.state.fields;
 
