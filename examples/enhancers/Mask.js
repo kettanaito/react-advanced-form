@@ -5,16 +5,21 @@ import mask from '@lib/enhancers/mask';
 
 const InputWithMask = applyEnhancers(mask)(Input);
 
-console.log({ InputWithMask })
+console.log({ Input });
+console.log({ InputWithMask });
 
 export default class MaskEnhancer extends React.Component {
   render() {
     return (
-      <Form>
+      <Form onSubmitStart={ console.log }>
         <InputWithMask
           name="enhancedField"
           label="With mask"
-          mask="## ## ##" />
+          mask="#### #### #### ####"
+          useStrictMask
+        />
+
+        <button>Submit</button>
       </Form>
     );
   }

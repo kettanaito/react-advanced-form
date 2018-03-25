@@ -87,6 +87,23 @@ export default class Form extends React.Component {
     };
   }
 
+  interceptors = {
+    fieldChange: []
+  }
+
+  interceptFieldEvent = (eventName, args) => {
+    const fullEventName = camelize('field', eventName);
+    const eventInterceptors = this.interceptors[fullEventName];
+
+    if (!eventInterceptors) {
+      return args;
+    }
+
+    return eventInterceptors.reduce((interceptedArgs, interceptor) => {
+      return (interceptedArgs = interceptor(interceptedArgs));
+    }, args);
+  }
+
   constructor(props, context) {
     super(props, context);
     const { rules: explicitRules, messages: explicitMessages } = props;
@@ -348,26 +365,29 @@ export default class Form extends React.Component {
     const isControlled = fieldProps.get('controlled');
     const onChangeHandler = fieldProps.get('onChange');
 
+    const eventPayload = {
+      event,
+      nextValue,
+      prevValue,
+      fieldProps,
+      fields: this.state.fields,
+      form: this
+    };
+
     if (isForcedUpdate && isControlled) {
       invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
       'but received: %s.', fieldProps.get('name'), onChangeHandler);
 
-      return dispatch(onChangeHandler, {
-        event,
-        nextValue,
-        prevValue,
-        fieldProps,
-        fields: this.state.fields,
-        form: this
-      }, this.context);
+      return dispatch(onChangeHandler, eventPayload, this.context);
     }
 
     const valuePropName = fieldProps.get('valuePropName');
+    const { nextValue: resolvedNextValue } = this.interceptFieldEvent('change', eventPayload);
 
     const { nextFieldProps: updatedFieldProps } = await this.updateField({
       fieldPath: fieldProps.get('fieldPath'),
       update: fieldProps => fieldProps
-        .set(valuePropName, nextValue)
+        .set(valuePropName, resolvedNextValue)
         .set('validated', false)
         .set('validating', false)
         .set('validatedSync', false)

@@ -3,17 +3,38 @@
  * @param {Enhancer[]} enhancers
  */
 import invariant from 'invariant';
+import React from 'react';
+import PropTypes from 'prop-types';
+import hoistNonReactStatics from 'hoist-non-react-statics';
 import { getComponentName } from './utils';
 
 export default function applyEnhancers(...enhancers) {
   return (Field) => {
+    const fieldComponentName = getComponentName(Field);
+
     invariant(enhancers && enhancers.length > 0, 'Cannot apply enhancers to the `%s` field. Expected the list ' +
-      'of enhancers separated by comma, but got none.', getComponentName(Field));
+      'of enhancers separated by comma, but got none.', fieldComponentName);
 
-    enhancers.forEach((AppliedEnhancer) => {
-      new AppliedEnhancer(Field);
-    });
+    class EnhancedField extends React.Component {
+      static displayName = `Enhanced(${fieldComponentName})`
 
-    return Field;
+      static contextTypes = {
+        form: PropTypes.object.isRequired
+      }
+
+      constructor(props, context) {
+        super(props, context);
+
+        enhancers.forEach(Enhancer => new Enhancer(props, context));
+      }
+
+      render() {
+        return (
+          <Field { ...this.props } />
+        );
+      }
+    }
+
+    return hoistNonReactStatics(EnhancedField, Field);
   };
 }

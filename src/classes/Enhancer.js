@@ -1,33 +1,22 @@
+/**
+ * Enhancer is an independent extension unit, which enhances the functionality
+ * of the wrapped field. It may introduce new props, intercept essential field events
+ * and change the payload of the transfered events data to mutate the behavior of the field.
+ */
+import invariant from 'invariant';
+
 export default class Enhancer {
-  constructor(Field) {
-    const EnhancedField = Field;
-    EnhancedField.prototype.interceptors = {};
+  constructor(props, context) {
+    this.props = props;
+    this.context = context;
 
-    EnhancedField.propTypes = {
-      ...Field.propTypes,
-      ...this.extendPropTypes(EnhancedField)
-    };
+    const { form } = this.context;
 
-    EnhancedField.defaultProps = {
-      ...EnhancedField.defaultProps,
-      ...this.extendDefaultProps(EnhancedField)
-    };
-    console.log('must apply enhancer to field', EnhancedField);
+    invariant(form, 'Cannot create an instance of Enhancer. Expected exposed "form" context property, ' +
+      'but got: %s. Make sure to enhance a valid field component which has a parent <Form>.', form);
 
-    this.EnhancedField = EnhancedField;
-    this.enhancerDidApply(EnhancedField);
+    form.interceptors.fieldChange.push(this.interceptChange.bind(this));
 
-    return EnhancedField;
-  }
-
-  enhancerDidApply() {}
-  extendPropTypes() {}
-  extendDefaultProps() {}
-
-  addInterceptor(eventName, callback) {
-    const existingInterceptors = this.EnhancedField.prototype.interceptors[eventName] || [];
-    this.EnhancedField.prototype.interceptors[eventName] = existingInterceptors.concat(callback);
-
-    return this.EnhancedField;
+    return this;
   }
 }

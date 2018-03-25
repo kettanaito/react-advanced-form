@@ -29,7 +29,8 @@ const defaultOptions = {
   },
   enforceProps() {
     return {};
-  }
+  },
+  enhancers: null
 };
 
 /**
@@ -217,8 +218,8 @@ export default function connectField(options) {
         const prevValue = this.props[valuePropName];
 
         const shouldUpdateRecord = hocOptions.shouldUpdateRecord({
-          nextValue,
           prevValue,
+          nextValue,
           prevProps: this.props,
           nextProps,
           contextProps
@@ -336,8 +337,6 @@ export default function connectField(options) {
           prevValue,
           fieldProps: contextProps
         };
-
-        this.__proto__.interceptors.fieldChange.forEach(interceptor => interceptor(eventPayload));
 
         this.context.form.eventEmitter.emit('fieldChange', eventPayload);
       }
