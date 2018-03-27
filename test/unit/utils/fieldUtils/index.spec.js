@@ -11,6 +11,7 @@ describe('fieldUtils', function () {
     const fieldOne = Map({
       expected: false,
       value: 'foo',
+      valuePropName: 'value',
       validatedSync: true,
       validatedAsync: true
     });
@@ -19,6 +20,7 @@ describe('fieldUtils', function () {
     const fieldTwo = Map({
       expected: true,
       value: 'foo',
+      valuePropName: 'value',
       validatedSync: true,
       validatedAsync: false
     });
@@ -27,6 +29,7 @@ describe('fieldUtils', function () {
     const fieldThree = Map({
       expected: true,
       value: '',
+      valuePropName: 'value',
       validatedSync: true,
       validatedAsync: false
     });
