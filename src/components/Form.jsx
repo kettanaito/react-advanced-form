@@ -543,7 +543,7 @@ export default class Form extends React.Component {
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
     console.log('validation type', type);
-    console.log('value', fieldProps.get('value'));
+    console.log('value', fieldProps.get(fieldProps.get('valuePropName')));
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.log('shouldValidate', shouldValidate);
     console.groupEnd();
