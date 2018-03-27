@@ -9,7 +9,10 @@ const rules = {
     text: ({ value }) => (value.length > 3)
   },
   name: {
-    fieldOne: ({ value }) => (value !== 'foo')
+    fieldOne: ({ value, fieldProps }) => {
+      const { ref: { props } } = fieldProps;
+      return (value !== 'foo');
+    }
   }
 };
 

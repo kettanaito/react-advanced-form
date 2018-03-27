@@ -19,6 +19,8 @@ const messages = {
 
 export default class FieldPropsAsyncRule extends React.Component {
   validateAsync = ({ value, fieldProps }) => {
+    const { ref: { props } } = fieldProps;
+
     return new Promise((resolve, reject) => {
       setTimeout(resolve, 500);
     }).then(() => ({

@@ -1,4 +1,5 @@
 import ensafeMap from './ensafeMap';
+import dispatch from './dispatch';
 
 /**
  * Recursively proxies the given origin. Calls optional "callback" function whenever any property
@@ -22,6 +23,7 @@ function proxyWithCallback(origin, callback) {
  * @param {Object} fields
  */
 export default function flushFieldRefs(method, { fields, ...restParams }) {
+  const { form } = restParams;
   const refs = [];
   const mutableFields = fields.toJS();
 
@@ -38,11 +40,11 @@ export default function flushFieldRefs(method, { fields, ...restParams }) {
   });
 
   /* First, execute the method with proxied fields to gather the field path refs */
-  method({ ...restParams, fields: fieldsProxy });
+  dispatch(method, restParams, form.context, { fields: fieldsProxy });
 
   /* Second, execute the method with missing path refs set to "undefined" to prevent throwing */
   const safeFields = ensafeMap(fields, refs);
-  const initialValue = method({ ...restParams, fields: safeFields.toJS() });
+  const initialValue = dispatch(method, { ...restParams, fields: safeFields }, form.context);
 
   return { refs, initialValue };
 }
