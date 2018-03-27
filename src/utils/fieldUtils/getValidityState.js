@@ -13,7 +13,7 @@ export default function getValidityState({ fieldProps, needsValidation }) {
     return Map({ valid: false, invalid: false });
   }
 
-  const value = fieldProps.get('value');
+  const value = fieldProps.get(fieldProps.get('valuePropName'));
   const expected = fieldProps.get('expected');
   const validatedSync = fieldProps.get('validatedSync');
   const validatedAsync = fieldProps.get('validatedAsync');
