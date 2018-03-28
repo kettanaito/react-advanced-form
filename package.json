@@ -1,6 +1,6 @@
 {
   "name": "react-advanced-form",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Tailor advanced real-world forms in a matter of minutes. Multi-layer validation, field grouping, reactive props, and much more.",
   "author": {
     "name": "Artem Zakharchenko",
@@ -88,7 +88,6 @@
     "immutable": "^3.8.2",
     "jsdom": "^11.6.2",
     "mocha": "^5.0.1",
-    "pre-commit": "^1.2.2",
     "prop-types": "^15.6.1",
     "raw-loader": "^0.5.1",
     "react": "^16.2.0",
