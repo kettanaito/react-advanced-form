@@ -1,32 +1,33 @@
 const path = require('path');
 const webpack = require('webpack');
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
-const packageJson = require('./package.json');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 /* Environment */
-const DEVELOPMENT = (process.env.NODE_ENV === 'development');
-const PRODUCTION = (process.env.NODE_ENV === 'production');
+const nodeEnv = process.env.NODE_ENV || 'development';
+const DEVELOPMENT = (nodeEnv === 'development');
+const PRODUCTION = (nodeEnv === 'production');
 
 module.exports = {
   entry: [
     'regenerator-runtime/runtime',
-    path.resolve(__dirname, packageJson.module)
+    path.resolve(__dirname, 'src/index.js')
   ],
   externals: {
     react: 'umd react',
     immutable: 'umd immutable'
   },
   output: {
-    path: __dirname,
-    filename: packageJson.main,
+    path: path.resolve(__dirname, 'lib'),
+    filename: `index.${nodeEnv}.js`,
     library: 'reactAdvancedForm',
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+      'process.env.BABEL_ENV': JSON.stringify(nodeEnv)
     }),
     PRODUCTION && new BabelMinifyPlugin({
       removeDebugger: true,

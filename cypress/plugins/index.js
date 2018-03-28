@@ -22,7 +22,7 @@ const webpackOptions = {
     alias: {
       '@examples': path.resolve(__dirname, '../../examples'),
       '@fields': path.resolve(__dirname, '../../examples/fields'),
-      '@lib': path.resolve(__dirname, '../../lib')
+      '@lib': path.resolve(__dirname, '../../')
     },
     extensions: ['.spec.jsx', '.spec.js', '.jsx', '.js']
   }

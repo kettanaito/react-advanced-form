@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createField, fieldPresets } from '../../lib';
+import { createField, fieldPresets } from '../../';
 
 class Radio extends React.Component {
   static propTypes = {

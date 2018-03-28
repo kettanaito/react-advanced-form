@@ -4,7 +4,7 @@ import { Map } from 'immutable';
 import { mount } from 'enzyme';
 import { Input } from '../../../examples/fields';
 import { validationRules, validationMessages } from '../../utils';
-import { Form, Field } from '../../../lib';
+import { Form, Field } from '../../..';
 
 describe('Field.Group', function () {
   const wrapper = mount(
