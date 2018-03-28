@@ -45,7 +45,7 @@
     "test:unit": "NODE_ENV=production mocha --require babel-core/register --exit",
     "test:integration": "node_modules/.bin/cypress run --spec cypress/integration/index.js",
     "test": "npm run test:unit && npm run test:integration",
-    "prepublishOnly": "npm run build:prod && npm run build:dev && npm test"
+    "prepublishOnly": "npm run build && npm test"
   },
   "peerDependencies": {
     "react": "^15.0.0",
