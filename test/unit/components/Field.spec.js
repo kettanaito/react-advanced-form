@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { mount } from 'enzyme';
 import { Input, Checkbox } from '../../../examples/fields';
 import { defer } from '../../utils';
-import { Form } from '../../../lib';
+import { Form } from '../../..';
 import { fieldUtils } from '../../../src/utils';
 
 describe('Field', function () {

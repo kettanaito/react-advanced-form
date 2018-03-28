@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { mount } from 'enzyme';
 import { Input, Select, Checkbox, Radio, Textarea } from '../../../examples/fields';
 import { defer, validationRules, validationMessages } from '../../utils';
-import { Form, Field } from '../../../lib';
+import { Form, Field } from '../../..';
 import { defaultDebounceTime } from '../../../src/components/FormProvider';
 
 describe('Form', function () {

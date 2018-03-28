@@ -33,19 +33,19 @@
   "engines": {
     "node": ">=6"
   },
-  "module": "src/index.js",
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": {
     "start": "start-storybook -p 6009",
     "cypress": "node_modules/.bin/cypress open",
     "clean": "rm -rf ./lib && exit 0",
-    "build": "npm run clean && NODE_ENV=production BABEL_ENV=production webpack",
-    "build:dev": "NODE_ENV=development webpack -w",
-    "test:unit": "mocha --require babel-core/register --exit",
+    "build": "npm run clean && npm run build:dev && npm run build:prod",
+    "build:prod": "NODE_ENV=production webpack",
+    "build:dev": "NODE_ENV=development webpack",
+    "build:storybook": "build-storybook",
+    "test:unit": "NODE_ENV=production mocha --require babel-core/register --exit",
     "test:integration": "node_modules/.bin/cypress run --spec cypress/integration/index.js",
     "test": "npm run test:unit && npm run test:integration",
-    "build-storybook": "build-storybook",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build:prod && npm run build:dev && npm test"
   },
   "peerDependencies": {
     "react": "^15.0.0",

@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { mount } from 'enzyme';
 import { Input } from '../../../examples/fields';
 import { defer, validationRules, validationMessages } from '../../utils';
-import { FormProvider, Form } from '../../../lib';
+import { FormProvider, Form } from '../../..';
 
 describe('FormProvider', function () {
   it('Returns mutable props when not specified otherwise', () => {
