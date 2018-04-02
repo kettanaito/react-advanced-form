@@ -3,18 +3,12 @@ import { Form, Field } from '@lib';
 import { Input } from '@fields';
 
 export default class RegistrationForm extends React.Component {
-  state = {
-    type: 'text'
-  }
-
   registerUser = ({ serialized }) => {
     console.log(serialized);
     return new Promise(resolve => resolve());
   }
 
   render() {
-    const { type } = this.state;
-
     return (
       <Form action={ this.registerUser }>
         <Field.Group name="primaryInfo">
@@ -25,14 +19,9 @@ export default class RegistrationForm extends React.Component {
             required />
         </Field.Group>
 
-        <button onClick={(event) => {
-          event.preventDefault();
-          this.setState(({ type }) => ({ type: (type === 'text') ? 'password' : 'text' }));
-        }}>Toggle type</button>
-
         <Input
           name="userPassword"
-          type={ type }
+          type="password"
           label="Password"
           required />
         <Input
