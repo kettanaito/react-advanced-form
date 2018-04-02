@@ -1,5 +1,5 @@
+import makeObservable from './makeObservable';
 import ensafeMap from '../ensafeMap';
-import makeObservable from '../makeObservable';
 
 /**
  * @param {Map} fieldProps
@@ -29,13 +29,13 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
 
         console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberFieldPath.join('.'), nextPropValue);
 
-        const fieldUpdate = form.updateField({
+        const fieldUpdated = form.updateField({
           fieldPath: subscriberFieldPath,
-          propsPatch: { [rxPropName]: nextPropValue }
+          update: fieldProps => fieldProps.set(rxPropName, nextPropValue)
         });
 
         if (shouldValidate) {
-          fieldUpdate.then(({ nextFieldProps: updatedFieldProps }) => {
+          fieldUpdated.then(({ nextFieldProps: updatedFieldProps }) => {
             form.validateField({
               force: true,
               fieldPath: subscriberFieldPath,

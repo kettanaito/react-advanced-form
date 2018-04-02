@@ -243,7 +243,7 @@ export default function connectField(options) {
         const { props: prevProps, contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
-        const fieldPropsChange = camelize(...this.contextProps.get('fieldPath'), 'props', 'change');
+        const fieldPropsChange = camelize(...nextContextProps.get('fieldPath'), 'props', 'change');
 
         this.context.form.eventEmitter.emit(fieldPropsChange, {
           prevProps,

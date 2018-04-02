@@ -1,7 +1,7 @@
-import { EventEmitter } from 'events';
+import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
-import invariant from 'invariant';
+import { EventEmitter } from 'events';
 import { fromJS, Iterable, List, Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/bufferTime';
@@ -70,33 +70,33 @@ export default class Form extends React.Component {
   static contextTypes = {
     rules: CustomPropTypes.Map,
     messages: CustomPropTypes.Map,
-    withImmutable: PropTypes.bool,
-    debounceTime: PropTypes.number
+    debounceTime: PropTypes.number,
+    withImmutable: PropTypes.bool
   }
 
   /* Context which Form passes to Fields */
   static childContextTypes = {
-    form: PropTypes.object.isRequired,
-    fields: CustomPropTypes.Map.isRequired
+    fields: CustomPropTypes.Map.isRequired,
+    form: PropTypes.object.isRequired
   }
 
   getChildContext() {
     return {
-      form: this,
-      fields: this.state.fields
+      fields: this.state.fields,
+      form: this
     };
   }
 
   constructor(props, context) {
     super(props, context);
-    const { rules: customRules, messages: customMessages } = props;
+    const { rules: explicitRules, messages: explicitMessages } = props;
     const { debounceTime, rules, messages } = context;
 
     /* Provide a fallback value for validation debounce duration */
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime;
 
     /* Define validation rules */
-    this.formRules = formUtils.getRules(customRules, rules);
+    this.formRules = formUtils.getRules(explicitRules, rules);
 
     /**
      * Define validation messages once, since those should be converted to immutable, which is
@@ -104,11 +104,11 @@ export default class Form extends React.Component {
      * lifecycle. It should be safe to store them.
      * Note: Messages passed from FormProvider (context messages) are already immutable.
      */
-    this.messages = customMessages ? fromJS(customMessages) : messages;
+    this.messages = explicitMessages ? fromJS(explicitMessages) : messages;
 
     /* Create a private event emitter to communicate between form and its fields */
-    this.eventEmitter = new EventEmitter();
-    const { eventEmitter } = this;
+    const eventEmitter = new EventEmitter();
+    this.eventEmitter = eventEmitter;
 
     /* Field lifecycle observerables */
     Observable.fromEvent(eventEmitter, 'fieldRegister')
@@ -131,6 +131,11 @@ export default class Form extends React.Component {
     const { fields } = this.state;
     const fieldPath = fieldProps.get('fieldPath');
     const isAlreadyExist = fields.hasIn(fieldPath);
+
+    //
+    // TODO Introduce a new "createField" option (i.e. "beforeRegister") and move all this
+    // logic to "fieldPresets.radio".
+    //
     const isRadioButton = (fieldProps.get('type') === 'radio');
 
     console.groupCollapsed(fieldPath, '@ registerField');
@@ -154,7 +159,9 @@ export default class Form extends React.Component {
        * to the field's record, other radio fields are registered, but their value is ignored.
        */
       const existingValue = fields.getIn([...fieldPath, valuePropName]);
-      if (existingValue) return;
+      if (existingValue) {
+        return;
+      }
 
       if (fieldValue) {
         fieldProps = fieldProps.set(valuePropName, fieldValue);
@@ -177,7 +184,9 @@ export default class Form extends React.Component {
     }).subscribe(({ changedProps }) => {
       this.updateField({
         fieldPath,
-        propsPatch: changedProps
+        update: fieldProps => Object.keys(changedProps).reduce((acc, propName) => {
+          return acc.set(propName, changedProps[propName]);
+        }, fieldProps)
       });
     });
 
@@ -193,7 +202,6 @@ export default class Form extends React.Component {
       const fieldRegisteredEvent = camelize(...fieldPath, 'registered');
       eventEmitter.emit(fieldRegisteredEvent, fieldProps);
 
-      /* Validate the field when it has initial value */
       if (shouldValidateOnMount) {
         this.validateField({
           fieldProps,
@@ -226,40 +234,41 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Updates the field record of the given field with the provided update patch.
-   * @param {string} fieldPath The name of the updating field.
-   * @param {Map} fieldProps A directly specified nextProps of the field.
-   * @param {object} propsPatch A partial Object of the props to merge with the existing field record.
-   * @return {Promise<Object>}
+   * Updates the provided field using a pure "update" function.
+   * Fields can be updated by their field paths, or by providing their field props explicitly.
+   * The latter is useful for scenarios when the field props values are different than those
+   * stored in form's state at the moment of dispatching field update (i.e. field validation).
+   * @param {string[]} fieldPath
+   * @param {Map} fieldProps
+   * @param {Function} update
+   * @returns {Promise}
    */
-  updateField = ({ fieldPath, fieldProps: exactFieldProps, propsPatch = null }) => {
+  updateField = ({ fieldPath: explicitFieldPath, fieldProps: explicitFieldProps, update }) => {
+    invariant(update, 'Field update failed: expected an `update` function, but got:', update);
+    invariant(explicitFieldPath || explicitFieldProps, 'Field update failed: expected `fieldPath` or `fieldProps` ' +
+      'provided, but got: %s.', explicitFieldPath || explicitFieldProps);
+
     const { fields } = this.state;
-    const fieldProps = exactFieldProps || fields.getIn(fieldPath);
+    const fieldPath = explicitFieldProps ? explicitFieldProps.get('fieldPath') : explicitFieldPath;
+    const fieldProps = explicitFieldProps || fields.getIn(fieldPath);
+    const nextFieldProps = update(fieldProps);
+    const nextFields = fields.setIn(fieldPath, nextFieldProps);
 
-    /* Certain updates are being provided an iterable instances already, bypass conversion */
-    const iterablePropsPatch = Iterable.isIterable(propsPatch) ? propsPatch : fromJS(propsPatch);
-    const nextFieldProps = propsPatch ? fieldProps.merge(iterablePropsPatch) : fieldProps;
-
-    /* Update the field's record in the state to produce the next fields */
-    const nextFields = fields.setIn(fieldProps.get('fieldPath'), nextFieldProps);
-
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ updateField');
+    console.groupCollapsed(fieldPath, '@ updateField');
     console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
-    console.log('propsPatch:', propsPatch);
+    console.log('fields before update:', Object.assign({}, fields.toJS()));
     console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
-    console.log('next value:', nextFieldProps.get('value'));
+    console.log('next value:', nextFieldProps.get(nextFieldProps.get('valuePropName')));
     console.log('nextFields:', Object.assign({}, nextFields.toJS()));
     console.groupEnd();
 
-    /* Promisify the state update in order to "await" it */
     return new Promise((resolve, reject) => {
       try {
-        this.setState({ fields: nextFields }, () => resolve({
-          nextFieldProps,
-          nextFields
-        }));
+        this.setState({ fields: nextFields }, () => {
+          resolve({ nextFieldProps, nextFields });
+        });
       } catch (error) {
-        return reject(error);
+        reject(error);
       }
     });
   }
@@ -312,10 +321,15 @@ export default class Form extends React.Component {
 
     const { nextFieldProps, nextFields } = await this.updateField({
       fieldPath: fieldProps.get('fieldPath'),
-      propsPatch: {
-        focused: true
-      }
+      update: fieldProps => fieldProps.set('focused', true)
     });
+
+    // const { nextFieldProps, nextFields } = await this.updateField({
+    //   fieldPath: fieldProps.get('fieldPath'),
+    //   propsPatch: {
+    //     focused: true
+    //   }
+    // });
 
     /* Call custom onFocus handler */
     const onFocusHandler = fieldProps.get('onFocus');
@@ -374,19 +388,31 @@ export default class Form extends React.Component {
     const valuePropName = fieldProps.get('valuePropName');
 
     const { nextFieldProps: updatedFieldProps } = await this.updateField({
-      fieldProps,
-      propsPatch: {
-        [valuePropName]: nextValue,
-
-        /* Reset the validation states as they are irrelevant to the updated value */
-        // errors: null,
-        validating: false,
-        validSync: false,
-        validAsync: false,
-        validatedSync: false,
-        validatedAsync: false
-      }
+      fieldPath: fieldProps.get('fieldPath'),
+      update: fieldProps => fieldProps
+        .set(valuePropName, nextValue)
+        .set('validating', false)
+        .set('validatedSync', false)
+        .set('validSync', false)
+        .set('validatedAsync', false)
+        .set('validAsync', false)
+        // .set('errors', null)
     });
+
+    // const { nextFieldProps: updatedFieldProps } = await this.updateField({
+    //   fieldProps,
+    //   propsPatch: {
+    //     [valuePropName]: nextValue,
+
+    //     /* Reset the validation states as they are irrelevant to the updated value */
+    //     // errors: null,
+    //     validating: false,
+    //     validSync: false,
+    //     validAsync: false,
+    //     validatedSync: false,
+    //     validatedAsync: false
+    //   }
+    // });
 
     /* Cancel any pending async validation due to the field value change */
     if (updatedFieldProps.has('pendingAsyncValidation')) {
@@ -479,12 +505,20 @@ export default class Form extends React.Component {
       /* Indicate that the validation is running */
       const { nextFieldProps } = await this.updateField({
         fieldPath,
-        propsPatch: {
-          errors: null,
-          invalid: false,
-          validating: true
-        }
+        update: fieldProps => fieldProps
+          .set('errors', null)
+          .set('invalid', false)
+          .set('validating', true)
       });
+
+      // const { nextFieldProps } = await this.updateField({
+      //   fieldPath,
+      //   propsPatch: {
+      //     errors: null,
+      //     invalid: false,
+      //     validating: true
+      //   }
+      // });
 
       /* Validate the field */
       await this.validateField({ fieldProps: nextFieldProps });
@@ -493,11 +527,18 @@ export default class Form extends React.Component {
     /* Make field enabled, update its props */
     const { nextFields, nextFieldProps } = await this.updateField({
       fieldPath,
-      propsPatch: {
-        focused: false,
-        validating: false
-      }
+      update: fieldProps => fieldProps
+        .set('focused', false)
+        .set('validating', false)
     });
+
+    // const { nextFields, nextFieldProps } = await this.updateField({
+    //   fieldPath,
+    //   propsPatch: {
+    //     focused: false,
+    //     validating: false
+    //   }
+    // });
 
     /* Call custom onBlur handler */
     const onBlur = nextFieldProps.get('onBlur');
@@ -521,16 +562,16 @@ export default class Form extends React.Component {
    */
   validateField = async ({
     type = BothValidationType,
-    fieldProps: exactFieldProps,
-    fields: exactFields,
+    fieldProps: explicitFieldProps,
+    fields: explicitFields,
     forceProps = false,
     force = false
   }) => {
     const { formRules } = this;
-    const fields = exactFields || this.state.fields;
+    const fields = explicitFields || this.state.fields;
 
-    let fieldProps = forceProps ? exactFieldProps : fields.getIn(exactFieldProps.get('fieldPath'));
-    fieldProps = fieldProps || exactFieldProps;
+    let fieldProps = forceProps ? explicitFieldProps : fields.getIn(explicitFieldProps.get('fieldPath'));
+    fieldProps = fieldProps || explicitFieldProps;
 
     /* Bypass the validation if the provided validation type has been already validated */
     const needsValidation = type.shouldValidate({
@@ -601,9 +642,16 @@ export default class Form extends React.Component {
 
     /* Update the field in the state to reflect the changes */
     return this.updateField({
-      fieldProps,
-      propsPatch: propsPatch.merge(nextValidityState)
+      fieldProps: nextFieldProps,
+      update: fieldProps => fieldProps
+        .merge(propsPatch)
+        .merge(nextValidityState)
     });
+
+    // return this.updateField({
+    //   fieldProps,
+    //   propsPatch: propsPatch.merge(nextValidityState)
+    // });
   }
 
   /**

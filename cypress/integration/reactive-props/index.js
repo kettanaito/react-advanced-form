@@ -3,7 +3,7 @@ import { mount } from 'cypress-react-unit-test';
 import BasicScenario from '@examples/reactive-props/Basic';
 import DelegatedScenario from '@examples/reactive-props/Delegated';
 import InterdependentScenario from '@examples/reactive-props/Interdependent';
-import OneTargetScenario from '@examples/reactive-props/SingleTarget';
+import SingleTargetScenario from '@examples/reactive-props/SingleTarget';
 
 describe('Reactive props', function () {
   it('Direct field subscription', () => {
@@ -60,7 +60,7 @@ describe('Reactive props', function () {
   });
 
   it('Multiple fields depending on one target', () => {
-    mount(<OneTargetScenario />);
+    mount(<SingleTargetScenario />);
 
     cy.get('[name="firstName"]').should('not.have.attr', 'required');
     cy.get('[name="fieldThree"]').should('not.have.attr', 'required');

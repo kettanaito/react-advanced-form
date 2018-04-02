@@ -8,7 +8,6 @@ export ensafeMap from './ensafeMap';
 export flattenDeep from './flattenDeep';
 export flushFieldRefs from './flushFieldRefs';
 export makeCancelable from './makeCancelable';
-export makeObservable from './makeObservable';
 
 /* Composite utils */
 export * as CustomPropTypes from './propTypes';

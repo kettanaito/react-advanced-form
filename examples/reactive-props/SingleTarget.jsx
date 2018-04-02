@@ -2,7 +2,7 @@ import React from 'react';
 import { Form } from '@lib';
 import { Input } from '@fields';
 
-export default class RxPropsOneTarget extends React.Component {
+export default class RxPropsSingleTarget extends React.Component {
   render() {
     return (
       <Form>
