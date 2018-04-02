@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { EventEmitter } from 'events';
-import { fromJS, Iterable, List, Map } from 'immutable';
+import { fromJS, List, Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/bufferTime';
 import 'rxjs/add/observable/fromEvent';
@@ -324,13 +324,6 @@ export default class Form extends React.Component {
       update: fieldProps => fieldProps.set('focused', true)
     });
 
-    // const { nextFieldProps, nextFields } = await this.updateField({
-    //   fieldPath: fieldProps.get('fieldPath'),
-    //   propsPatch: {
-    //     focused: true
-    //   }
-    // });
-
     /* Call custom onFocus handler */
     const onFocusHandler = fieldProps.get('onFocus');
     if (!onFocusHandler) return;
@@ -398,21 +391,6 @@ export default class Form extends React.Component {
         .set('validAsync', false)
         // .set('errors', null)
     });
-
-    // const { nextFieldProps: updatedFieldProps } = await this.updateField({
-    //   fieldProps,
-    //   propsPatch: {
-    //     [valuePropName]: nextValue,
-
-    //     /* Reset the validation states as they are irrelevant to the updated value */
-    //     // errors: null,
-    //     validating: false,
-    //     validSync: false,
-    //     validAsync: false,
-    //     validatedSync: false,
-    //     validatedAsync: false
-    //   }
-    // });
 
     /* Cancel any pending async validation due to the field value change */
     if (updatedFieldProps.has('pendingAsyncValidation')) {
@@ -511,15 +489,6 @@ export default class Form extends React.Component {
           .set('validating', true)
       });
 
-      // const { nextFieldProps } = await this.updateField({
-      //   fieldPath,
-      //   propsPatch: {
-      //     errors: null,
-      //     invalid: false,
-      //     validating: true
-      //   }
-      // });
-
       /* Validate the field */
       await this.validateField({ fieldProps: nextFieldProps });
     }
@@ -531,14 +500,6 @@ export default class Form extends React.Component {
         .set('focused', false)
         .set('validating', false)
     });
-
-    // const { nextFields, nextFieldProps } = await this.updateField({
-    //   fieldPath,
-    //   propsPatch: {
-    //     focused: false,
-    //     validating: false
-    //   }
-    // });
 
     /* Call custom onBlur handler */
     const onBlur = nextFieldProps.get('onBlur');
@@ -647,11 +608,6 @@ export default class Form extends React.Component {
         .merge(propsPatch)
         .merge(nextValidityState)
     });
-
-    // return this.updateField({
-    //   fieldProps,
-    //   propsPatch: propsPatch.merge(nextValidityState)
-    // });
   }
 
   /**
