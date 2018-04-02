@@ -1,5 +1,11 @@
 export default {
   /**
+   * There can be multiple radio fields with the same name represented by
+   * a single field record entry in the form's state.
+   */
+  allowMultiple: true,
+
+  /**
    * Handling of contextProps of Radio inputs is unique.
    * 1. Never pass "props.value" to context. <Field.Radio> is always expected to receive a "value" prop,
    * however it should never set it to context on registration. The value in the context will be changed
