@@ -12,6 +12,7 @@ import { isset, camelize, debounce, CustomPropTypes, getComponentName, rxUtils }
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
   valuePropName: 'value',
+  allowMultiple: false,
   mapPropsToField({ fieldRecord }) {
     return fieldRecord;
   },
@@ -142,13 +143,6 @@ export default function connectField(options) {
           valuePropName
         });
 
-        const shouldValidateOnMount = hocOptions.shouldValidateOnMount({
-          fieldRecord,
-          props: this.props,
-          context: this.context,
-          valuePropName
-        });
-
         console.log('fieldRecord:', fieldRecord);
 
         /* Prevent { fieldGroup: undefined } for the fields without a group */
@@ -190,8 +184,14 @@ export default function connectField(options) {
         form.eventEmitter.emit('fieldRegister', {
           fieldProps,
           fieldOptions: {
+            allowMultiple: hocOptions.allowMultiple,
             beforeRegister: hocOptions.beforeRegister,
-            shouldValidateOnMount
+            shouldValidateOnMount: hocOptions.shouldValidateOnMount({
+              fieldRecord,
+              props: this.props,
+              context: this.context,
+              valuePropName
+            })
           }
         });
 
