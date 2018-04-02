@@ -15,6 +15,9 @@ const defaultOptions = {
   mapPropsToField({ fieldRecord }) {
     return fieldRecord;
   },
+  beforeRegister({ fieldProps }) {
+    return fieldProps;
+  },
   shouldValidateOnMount({ fieldRecord, valuePropName }) {
     const fieldValue = fieldRecord[valuePropName];
     return isset(fieldValue) && (fieldValue !== '');
@@ -186,7 +189,10 @@ export default function connectField(options) {
         /* Notify the parent Form that a new field prompts to register */
         form.eventEmitter.emit('fieldRegister', {
           fieldProps,
-          shouldValidateOnMount
+          fieldOptions: {
+            beforeRegister: hocOptions.beforeRegister,
+            shouldValidateOnMount
+          }
         });
 
         return fieldProps;
