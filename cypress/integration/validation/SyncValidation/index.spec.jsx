@@ -1,6 +1,6 @@
 import React from 'react';
 
 describe('Synchronous validation', function () {
-  require('./Form.props.rules.spec');
-  require('./Field.props.rule.spec');
+  require('./Form.props.rules');
+  require('./Field.props.rule');
 });

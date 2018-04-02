@@ -1,5 +1,6 @@
 const path = require('path');
-const webpack = require('@cypress/webpack-preprocessor');
+const webpack = require('webpack');
+const webpackPreprocessor = require('@cypress/webpack-preprocessor');
 
 const webpackOptions = {
   module: {
@@ -18,6 +19,11 @@ const webpackOptions = {
       }
     ]
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    })
+  ],
   resolve: {
     alias: {
       '@examples': path.resolve(__dirname, '../../examples'),
@@ -34,5 +40,5 @@ const options = {
 };
 
 module.exports = (on, config) => {
-  on('file:preprocessor', webpack(options))
+  on('file:preprocessor', webpackPreprocessor(options))
 };
