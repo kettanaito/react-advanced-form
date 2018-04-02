@@ -27,7 +27,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
           form
         }, form.context);
 
-        console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberFieldPath.join('.'), nextPropValue);
+        // console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberFieldPath.join('.'), nextPropValue);
 
         const fieldUpdated = form.updateField({
           fieldPath: subscriberFieldPath,
