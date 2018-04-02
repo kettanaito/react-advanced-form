@@ -23,7 +23,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # Install the library
-      - run: npm run build
+      - run: npm run build:prod
 
       # Run tests
       - run: npm test
