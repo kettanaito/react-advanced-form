@@ -127,45 +127,30 @@ export default class Form extends React.Component {
    * tree, deconstructing and constructing each appropriate child with the attached handler props.
    * @param {Map} fieldProps
    */
-  registerField = ({ fieldProps, shouldValidateOnMount }) => {
+  registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
     const { fields } = this.state;
-    const fieldPath = fieldProps.get('fieldPath');
+    const fieldPath = initialFieldProps.get('fieldPath');
     const isAlreadyExist = fields.hasIn(fieldPath);
-
-    //
-    // TODO Introduce a new "createField" option (i.e. "beforeRegister") and move all this
-    // logic to "fieldPresets.radio".
-    //
-    const isRadioButton = (fieldProps.get('type') === 'radio');
+    const isRadioButton = (initialFieldProps.get('type') === 'radio');
 
     console.groupCollapsed(fieldPath, '@ registerField');
-    console.log('fieldProps', fieldProps.toJS());
+    console.log('initialFieldProps', initialFieldProps.toJS());
     console.log('already exists:', isAlreadyExist);
     console.groupEnd();
 
-    /* Warn upon duplicate registrations */
+    /* Warn on field duplicates */
     invariant(!(isAlreadyExist && !isRadioButton), 'Cannot register field `%s`, the field with ' +
       'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
       'or `Field.Group` have unique names.', fieldPath);
 
-    /* Get the value-like property of the field */
-    const valuePropName = fieldProps.get('valuePropName');
-    const fieldValue = fieldProps.get(valuePropName);
+    /* Perform custom field props transformations upon registration */
+    const fieldProps = fieldOptions.beforeRegister({
+      fieldProps: initialFieldProps,
+      fields
+    });
 
-    if (isRadioButton && isAlreadyExist) {
-      /**
-       * When the radio field with the same name is already registered, check if it has
-       * some value in the record. Only radio fields with "checked" prop propagate their value
-       * to the field's record, other radio fields are registered, but their value is ignored.
-       */
-      const existingValue = fields.getIn([...fieldPath, valuePropName]);
-      if (existingValue) {
-        return;
-      }
-
-      if (fieldValue) {
-        fieldProps = fieldProps.set(valuePropName, fieldValue);
-      }
+    if (!fieldProps) {
+      return;
     }
 
     const nextFields = fields.setIn(fieldPath, fieldProps);
@@ -202,7 +187,7 @@ export default class Form extends React.Component {
       const fieldRegisteredEvent = camelize(...fieldPath, 'registered');
       eventEmitter.emit(fieldRegisteredEvent, fieldProps);
 
-      if (shouldValidateOnMount) {
+      if (fieldOptions.shouldValidateOnMount) {
         this.validateField({
           fieldProps,
 

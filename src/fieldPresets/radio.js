@@ -7,7 +7,7 @@ export default {
    * 2. Determine "initialValue" based on optional "checked" prop.
    * 3. Add new "checked" props unique to this field type.
    */
-  mapPropsToField: ({ fieldRecord, props: { checked, value, onChange } }) => {
+  mapPropsToField({ fieldRecord, props: { checked, value, onChange } }) {
     fieldRecord.type = 'radio';
     fieldRecord.controlled = !!onChange;
 
@@ -21,6 +21,30 @@ export default {
 
     return fieldRecord;
   },
+
+  /**
+   * When the radio field with the same name is already registered, check if it has
+   * some value in the record. Only radio fields with "checked" prop propagate their value
+   * to the field's record, other radio fields are registered, but their value is ignored.
+   */
+  beforeRegister({ fieldProps, fields }) {
+    const fieldPath = fieldProps.get('fieldPath');
+    const alreadyExist = fields.hasIn(fieldPath);
+
+    if (!alreadyExist) {
+      return fieldProps;
+    }
+
+    const valuePropName = fieldProps.get('valuePropName');
+    const existingValue = fields.getIn([...fieldPath, valuePropName]);
+    if (existingValue) {
+      return false;
+    }
+
+    const fieldValue = fieldProps.get(valuePropName);
+    return fieldValue ? fieldProps.set(valuePropName, fieldValue) : fieldProps;
+  },
+
   /**
    * Should update record.
    * Determines when it is needed to execute the native "Form.handleFieldChange" during the
@@ -30,13 +54,16 @@ export default {
    * will always be the same - Radio field controlled updates do NOT update the value, but a "checked" prop.
    * Regardless, what should be compared is the next value and the current value in the field's record.
    */
-  shouldUpdateRecord: ({ nextValue, nextProps, contextProps }) => {
+  shouldUpdateRecord({ nextValue, nextProps, contextProps }) {
     return nextProps.checked && (nextValue !== contextProps.get('value'));
   },
-  enforceProps: ({ props, contextProps }) => ({
-    value: props.value,
-    checked: contextProps.get('controlled')
-      ? props.checked
-      : (props.value === contextProps.get('value'))
-  })
+
+  enforceProps({ props, contextProps }) {
+    return {
+      value: props.value,
+      checked: contextProps.get('controlled')
+        ? props.checked
+        : (props.value === contextProps.get('value'))
+    };
+  }
 };
