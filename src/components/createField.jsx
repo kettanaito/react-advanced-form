@@ -314,11 +314,12 @@ export default function connectField(options) {
        * @param {any} nextValue
        * @param {any} prevValue
        */
-      handleChange = ({ event, nextValue: customNextValue, prevValue: customPrevValue }) => {
+      handleChange = (args) => {
+        const { event, nextValue: customNextValue, prevValue: customPrevValue } = args;
         const { contextProps } = this;
 
-        const nextValue = customNextValue || event.currentTarget[valuePropName];
-        const prevValue = customPrevValue || contextProps.get(valuePropName);
+        const nextValue = args.hasOwnProperty('nextValue') ? customNextValue : event.currentTarget[valuePropName];
+        const prevValue = args.hasOwnProperty('prevValue') ? customPrevValue : contextProps.get(valuePropName);
 
         console.groupCollapsed(this.fieldPath, '@ Field @ handleChange');
         console.log('event', event);
