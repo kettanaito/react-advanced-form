@@ -1,8 +1,8 @@
 import { Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
-import { addPropsObserver } from './rxUtils';
-import flushFieldRefs from './flushFieldRefs';
-import camelize from './camelize';
+import addPropsObserver from './addPropsObserver';
+import flushFieldRefs from '../flushFieldRefs';
+import camelize from '../camelize';
 
 /**
  * Returns the formatted references in a { [fieldPath]: props } format.
@@ -35,13 +35,7 @@ function formatRefs(refs) {
  * @param {Object} observerOptions
  * @returns {Subscription}
  */
-function createObserver({
-  fieldPath,
-  props,
-  form,
-  subscribe,
-  observerOptions
-}) {
+function createObserver({ fieldPath, props, form, subscribe, observerOptions }) {
   return addPropsObserver({
     fieldPath,
     props,
@@ -56,6 +50,12 @@ function createObserver({
   }).subscribe(subscribe);
 }
 
+/**
+ * Makes the provided method observable, subscribing to props changes of the referenced fields in the method.
+ * @param {Function} method
+ * @param {Object<argName: argValue>} methodArgs
+ * @param {Options} options
+ */
 export default function makeObservable(method, methodArgs, { observerOptions, subscribe, initialCall = false }) {
   const { fieldProps, fields, form } = methodArgs;
   const { refs, initialValue } = flushFieldRefs(method, methodArgs);
@@ -81,7 +81,10 @@ export default function makeObservable(method, methodArgs, { observerOptions, su
       });
 
       if (initialCall) {
-        subscription.next({ nextContextProps: fieldProps, shouldValidate });
+        subscription.next({
+          nextContextProps: fieldProps,
+          shouldValidate
+        });
       }
 
       return { refs, initialValue };
@@ -107,7 +110,10 @@ export default function makeObservable(method, methodArgs, { observerOptions, su
           observerOptions
         });
 
-        return subscription.next({ nextContextProps: delegatedFieldProps, shouldValidate });
+        return subscription.next({
+          nextContextProps: delegatedFieldProps,
+          shouldValidate
+        });
       });
   });
 

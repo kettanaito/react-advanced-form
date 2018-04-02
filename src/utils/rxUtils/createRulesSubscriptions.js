@@ -1,5 +1,5 @@
+import makeObservable from './makeObservable';
 import flushFieldRefs from '../flushFieldRefs';
-import makeObservable from '../makeObservable';
 import getFieldRules from '../formUtils/getFieldRules';
 
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {

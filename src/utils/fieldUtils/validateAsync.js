@@ -36,9 +36,7 @@ export default async function validateAsync({ fieldProps, fields, form }) {
    */
   form.updateField({
     fieldProps,
-    propsPatch: {
-      pendingAsyncValidation: wrappedPromise
-    }
+    update: fieldProps => fieldProps.set('pendingAsyncValidation', wrappedPromise)
   });
 
   const res = await wrappedPromise.itself;
