@@ -16,8 +16,8 @@ class Select extends React.Component {
   /* Handler for "react-select" onChange event */
   handleChange = (selectedOption) => {
     /* Compose next value based on "multi" prop */
-    const singleValue = selectedOption && selectedOption.value;
-    const nextValue = Array.isArray(selectedOption) ? selectedOption : singleValue;
+    const selectedOptions = Array.isArray(selectedOption) ? selectedOption : [selectedOption];
+    const nextValue = selectedOptions.map(option => option.value);
 
     /* Dispatching "react-advanced-form" field change handler to update the field record */
     this.props.handleFieldChange({ nextValue });
