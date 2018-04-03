@@ -1,5 +1,7 @@
 # Third-party fields integration
 
-React Advanced Form provides you an extensive set of tools to integrate any third-party field library to work together with RAF. In most of the cases simple `onChange` mapping is enough to get your favorite field library working with React Advanced Form.
+React Advanced Form is not only a form solution, it is a form ecosystem. That means that you can make *anything* to be treated as a field, while the form ensures its proper functionality. It is made possible by events-based architecture, so that the field behavior is standardized and predictable.
 
-This is a catalogue of some third-party field integration examples.
+Even a plain `div` can be treated as a field component, as long as you describe its interactions pattern using the tools exposed by React Advanced Form. Of course, that applies to any third-party field library as well.
+
+This directory contains the list of examples on third-party solutions integration with React Advanced Form.
