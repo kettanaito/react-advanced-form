@@ -356,12 +356,13 @@ export default function connectField(options) {
 
         /* A mirror reference to "contextProps", an internal field record stored in Form's state */
         const fieldState = contextProps.toJS();
+        const { valuePropName } = fieldState;
 
         /* Props to assign to the field component directly (input, select, etc.) */
         const fieldProps = {
           name: fieldState.name,
           type: fieldState.type,
-          value: fieldState.controlled ? (props.value || '') : fieldState.value,
+          [valuePropName]: fieldState.controlled ? (props[valuePropName] || '') : fieldState[valuePropName],
           required: fieldState.required,
           disabled: this.props.disabled,
 
