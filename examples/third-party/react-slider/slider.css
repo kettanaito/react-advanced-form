@@ -1,0 +1,42 @@
+.horizontal-slider {
+  margin: 2rem 0;
+  width: 100%;
+  min-width: 250px;
+  max-width: 500px;
+  height: 1.5rem;
+  background-color: #eee;
+  border-radius: 2rem;
+}
+
+.handle {
+  position: relative;
+  font-size: .8em;
+  font-weight: bold;
+  text-align: center;
+  background-color: rgb(39, 170, 231);
+  cursor: pointer;
+  border-radius: 50%;
+  user-select: none;
+}
+
+.handle:nth-child(2n) .label {
+  top: -90%;
+  margin-bottom: -.5rem;
+}
+
+.handle.active {
+  background-color: rgb(10, 113, 161);
+}
+
+.horizontal-slider .handle {
+  width: 1.5rem;
+  height: 1.5rem;
+  line-height: 1.5rem;
+}
+
+.label {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin: 0 auto;
+}
