@@ -14,6 +14,7 @@ export default async function validateAsync({ fieldProps, fields, form }) {
     return composeResult(true);
   }
 
+  const valuePropName = fieldProps.get('valuePropName');
   const value = fieldProps.get('value');
   const asyncRule = fieldProps.get('asyncRule');
 
@@ -24,7 +25,7 @@ export default async function validateAsync({ fieldProps, fields, form }) {
 
   /* Call the async rule resolver */
   const wrappedPromise = makeCancelable(dispatch(asyncRule, {
-    value,
+    [valuePropName]: value,
     fieldProps,
     fields,
     form
