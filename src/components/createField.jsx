@@ -1,6 +1,6 @@
 /**
- * A high-order component which provides the reference of the field's record to the wrapped custom
- * component. May be used for custom field styling, implementing fields with custom logic or
+ * A high-order component which provides the reference of the field's record to the wrapped
+ * component. Used for custom field styling, implementing fields with custom logic, and
  * third-party field components integration.
  */
 import { Map } from 'immutable';
@@ -12,6 +12,7 @@ import { isset, camelize, debounce, CustomPropTypes, getComponentName, rxUtils }
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
   valuePropName: 'value',
+  initialValue: '',
   allowMultiple: false,
   mapPropsToField({ fieldRecord }) {
     return fieldRecord;
@@ -19,7 +20,7 @@ const defaultOptions = {
   beforeRegister({ fieldProps }) {
     return fieldProps;
   },
-  shouldValidateOnMount({ fieldRecord, valuePropName }) {
+  shouldValidateOnMount({ valuePropName, fieldRecord }) {
     const fieldValue = fieldRecord[valuePropName];
     return isset(fieldValue) && (fieldValue !== '');
   },
@@ -93,7 +94,9 @@ export default function connectField(options) {
         console.log('context value:', contextValue);
 
         /* Get the proper field value to register with */
-        const registeredValue = isset(contextValue) ? contextValue : (value || initialValue || '');
+        const registeredValue = isset(contextValue)
+          ? contextValue
+          : (value || initialValue || hocOptions.initialValue);
 
         const defaultFieldRecord = {
           /* Internals */
