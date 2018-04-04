@@ -3,7 +3,7 @@
  */
 import { expect } from 'chai';
 import { fromJS, Map } from 'immutable';
-import { form } from '../../../../utils';
+import { form as defaultForm } from '../../../../utils';
 import { formUtils, fieldUtils } from '../../../../../src/utils';
 
 describe('Name-specific validation', () => {
@@ -23,7 +23,7 @@ describe('Name-specific validation', () => {
     });
 
     const form = {
-      ...form,
+      ...defaultForm,
       state: {
         rxRules: formUtils.getFieldRules({ fieldProps, schema })
       }
@@ -73,7 +73,7 @@ describe('Name-specific validation', () => {
     });
 
     const form = {
-      ...form,
+      ...defaultForm,
       state: {
         rxRules: formUtils.getFieldRules({ fieldProps, schema })
       }
@@ -133,5 +133,56 @@ describe('Name-specific validation', () => {
 
     expect(resultThree.propsPatch).to.have.property('expected', true);
     expect(resultThree).to.have.property('rejectedRules').with.length(0);
+  });
+
+  it('Propagates custom "valuePropName" shorthand to resolver', () => {
+    const schema = fromJS({
+      name: {
+        fieldOne: ({ customValueProp }) => {
+          expect(customValueProp).not.to.be.null;
+          expect(customValueProp).not.to.be.undefined;
+          return (customValueProp !== 'foo')
+        }
+      }
+    });
+
+    const fieldProps = Map({
+      name: 'fieldOne',
+      type: 'text',
+      valuePropName: 'customValueProp',
+      customValueProp: 'foo'
+    });
+
+    const form = {
+      ...defaultForm,
+      state: {
+        rxRules: formUtils.getFieldRules({ fieldProps, schema })
+      }
+    };
+
+    const rejected = fieldUtils.validateSync({
+      fieldProps,
+      fields,
+      form
+    }).toJS();
+
+    expect(rejected.propsPatch).to.have.property('expected', false);
+    expect(rejected).to.have.property('rejectedRules').with.length(1);
+    expect(rejected.rejectedRules).to.deep.equal([
+      {
+        name: 'invalid',
+        selector: 'name',
+        isCustom: false
+      }
+    ]);
+
+    const resolved = fieldUtils.validateSync({
+      fieldProps: fieldProps.set('customValueProp', 'abc'),
+      fields,
+      form
+    }).toJS();
+
+    expect(resolved.propsPatch).to.have.property('expected', true);
+    expect(resolved).to.have.property('rejectedRules').with.length(0);
   });
 });
