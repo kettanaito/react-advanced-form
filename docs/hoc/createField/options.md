@@ -11,17 +11,13 @@ You don't have to configure any of those options by default. The essential optio
 
 | Option name | Type | Description |
 | ------ | ---- | ----------- |
-| `allowMultiple` | `boolean` | Dictates whether multiple instances of the field with the same name is allowed. |
 | `valuePropName` | `string` | A custom prop name to be treated as an updatable value during the field value change. |
+| `initialValue` | `any` | Custom initial value applied to all field instances by default. |
+| `allowMultiple` | `boolean` | Dictates whether multiple instances of the field with the same name is allowed. |
 | `mapPropsToField` | `({ props, context, fieldRecord, valuePropName }) => Object` | A custom maping function which should return a props Object used as the initial props during the field registration. |
 | `enforceProps` | `({ props, contextProps }) => Object` | A function which should return a props Object to be enforced on the custom field. |
 | `beforeRegister` | `({ fieldProps, fields }) => fieldProps` | Applies additional transformations to the `fieldProps`, or prevents from fields registration when returns `false`. |
 | `shouldValidateOnMount` | `({ props, fieldRecord, valuePropName, context }) => boolean` | Controls the necessity of validation upon field mount. |
-
-## `allowMultiple: boolean`
-**Default value:** `false`
-
-By default, field's `name` serves as the unique identifier, preventing the registration of the fields with the same name. However, in some cases (i.e. radio buttons) multiple fields with the same name must be allowed.
 
 ## `valuePropName: string`
 **Default value:** `value`
@@ -44,6 +40,18 @@ export default createField({
   valuePropName: 'checked'
 })(Checkbox);
 ```
+
+## `initialValue: any`
+**Default value:** `''`
+
+Allows to specify the initial value for all the field instances.
+
+Useful for cases when the initial value of the field is different from an empty string. For example, when implementing a datepicker you may want to specify the today's date of the expected format.
+
+## `allowMultiple: boolean`
+**Default value:** `false`
+
+By default, field's `name` serves as the unique identifier, preventing the registration of the fields with the same name. However, in some cases (i.e. radio buttons) multiple fields with the same name must be allowed.
 
 ## `mapPropsToField: ({ props, context, fieldRecord, valuePropName }) => Object`
 **Default value:** `({ fieldRecord }) => fieldRecord`
