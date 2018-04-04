@@ -147,4 +147,55 @@ describe('Type-specific validation', () => {
     expect(resultThree.propsPatch).to.have.property('expected', true);
     expect(resultThree).to.have.property('rejectedRules').with.length(0);
   });
+
+  it('Propagates custom "valuePropName" shorthand to resolver', () => {
+    const schema = fromJS({
+      type: {
+        text: ({ customValueProp }) => {
+          expect(customValueProp).not.to.be.null;
+          expect(customValueProp).not.to.be.undefined;
+          return (customValueProp !== 'foo')
+        }
+      }
+    });
+
+    const fieldProps = Map({
+      name: 'fieldOne',
+      type: 'text',
+      valuePropName: 'customValueProp',
+      customValueProp: 'foo'
+    });
+
+    const form = {
+      ...defaultForm,
+      state: {
+        rxRules: formUtils.getFieldRules({ fieldProps, schema })
+      }
+    };
+
+    const rejected = fieldUtils.validateSync({
+      fieldProps,
+      fields,
+      form
+    }).toJS();
+
+    expect(rejected.propsPatch).to.have.property('expected', false);
+    expect(rejected).to.have.property('rejectedRules').with.length(1);
+    expect(rejected.rejectedRules).to.deep.equal([
+      {
+        name: 'invalid',
+        selector: 'type',
+        isCustom: false
+      }
+    ]);
+
+    const resolved = fieldUtils.validateSync({
+      fieldProps: fieldProps.set('customValueProp', 'abc'),
+      fields,
+      form
+    }).toJS();
+
+    expect(resolved.propsPatch).to.have.property('expected', true);
+    expect(resolved).to.have.property('rejectedRules').with.length(0);
+  });
 });
