@@ -28,6 +28,7 @@ import RegistrationForm from './full/RegistrationForm';
 /* Third-party fields integration */
 import ReactSelect from './third-party/react-select';
 import ReactSlider from './third-party/react-slider';
+import ReactDatepicker from './third-party/react-datepicker';
 
 storiesOf('Basics', module)
   .add('Uncontrolled fields', () => <UncontrolledFields />)
@@ -57,3 +58,4 @@ storiesOf('Full examples', module)
 storiesOf('Third-party integrations', module)
   .add('react-select', () => <ReactSelect />)
   .add('react-rangeslider', () => <ReactSlider />)
+  .add('react-datepicker', () => <ReactDatepicker />)
