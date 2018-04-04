@@ -96,7 +96,14 @@ export default function validateSync({ fieldProps, fields, form }) {
     //
     const isExpected = (typeof rule === 'function')
       /* Enfore mutability of args for fields proxying */
-      ? dispatch(rule, { value, fieldProps, fields, form }, { withImmutable: false })
+      ? dispatch(rule, {
+        [valuePropName]: value,
+        fieldProps,
+        fields,
+        form
+      }, {
+        withImmutable: false
+      })
       : rule.test(value);
 
     if (!isExpected) {
@@ -111,7 +118,12 @@ export default function validateSync({ fieldProps, fields, form }) {
    * A form-wide validation provided by "rules" property of the Form.
    * The latter property is also inherited from the context passed by FormProvider.
    */
-  const rejectedRules = getRejectedRules({ value, fieldProps, fields, form });
+  const rejectedRules = getRejectedRules({
+    [valuePropName]: value,
+    fieldProps,
+    fields,
+    form
+  });
 
   if (rejectedRules.length > 0) {
     return composeResult(false, rejectedRules);
