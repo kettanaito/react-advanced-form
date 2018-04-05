@@ -1,13 +1,20 @@
 export default {
   valuePropName: 'checked',
-  mapPropsToField: ({ props: { checked }, fieldRecord }) => ({
-    ...fieldRecord,
-    type: 'checkbox',
-    checked: !!checked,
-    initialValue: checked
-  }),
-  enforceProps: ({ contextProps }) => ({
-    checked: contextProps.get('checked')
-  }),
-  shouldValidateOnMount: () => false
+  initialValue: false,
+  mapPropsToField({ props: { checked }, fieldRecord }) {
+    return {
+      ...fieldRecord,
+      type: 'checkbox',
+      checked: !!checked,
+      initialValue: checked
+    };
+  },
+  enforceProps({ contextProps }) {
+    return {
+      checked: contextProps.get('checked')
+    };
+  },
+  shouldValidateOnMount() {
+    return false;
+  }
 };

@@ -81,14 +81,14 @@ export default function connectField(options) {
 
       /* Registers the current field within the parent form's state */
       register() {
-        const { fieldPath } = this;
+        const { props: directProps, fieldPath } = this;
         const { fields, fieldGroup, form } = this.context;
-        const { value, initialValue } = this.props;
-
+        const { initialValue } = directProps;
+        const value = directProps[valuePropName];
         const contextValue = fields.getIn([...fieldPath, valuePropName]);
 
         console.groupCollapsed(fieldPath, '@ register');
-        console.log('this.props:', Object.assign({}, this.props));
+        console.log('directProps:', Object.assign({}, directProps));
         console.log('value:', value);
         console.log('initial value:', initialValue);
         console.log('context value:', contextValue);
@@ -104,21 +104,21 @@ export default function connectField(options) {
           fieldPath,
 
           /* General */
-          name: this.props.name,
-          type: this.props.type,
+          name: directProps.name,
+          type: directProps.type,
           valuePropName,
           [valuePropName]: registeredValue,
-          initialValue: this.props.hasOwnProperty('initialValue') ? initialValue : registeredValue,
+          initialValue: directProps.hasOwnProperty('initialValue') ? initialValue : registeredValue,
 
           /* States */
-          controlled: this.props.hasOwnProperty('value'),
+          controlled: directProps.hasOwnProperty('value'), // FIXME checkboxes are never controlled
           focused: false,
 
           /* Validation */
           errors: null,
-          required: this.props.required,
+          required: directProps.required,
           expected: true,
-          skip: this.props.skip,
+          skip: directProps.skip,
           valid: false,
           invalid: false,
           validating: false,
@@ -130,7 +130,7 @@ export default function connectField(options) {
 
         /* Inherit expected props to the field record */
         inheritedProps.forEach((propName) => {
-          const propValue = this.props[propName];
+          const propValue = directProps[propName];
           if (propValue) {
             defaultFieldRecord[propName] = propValue;
           }
@@ -141,7 +141,7 @@ export default function connectField(options) {
         /* (Optional) Alter the field record using HOC options */
         const fieldRecord = hocOptions.mapPropsToField({
           fieldRecord: defaultFieldRecord,
-          props: this.props,
+          props: directProps,
           context: this.context,
           valuePropName
         });
@@ -191,7 +191,7 @@ export default function connectField(options) {
             beforeRegister: hocOptions.beforeRegister,
             shouldValidateOnMount: hocOptions.shouldValidateOnMount({
               fieldRecord,
-              props: this.props,
+              props: directProps,
               context: this.context,
               valuePropName
             })
