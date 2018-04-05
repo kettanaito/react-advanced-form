@@ -1,6 +1,12 @@
-<h1 align="center">React Advanced Form</h1>
-
 [![Package version](https://img.shields.io/npm/v/react-advanced-form.svg)](https://www.npmjs.com/package/react-advanced-form) [![Build status](https://img.shields.io/circleci/project/github/kettanaito/react-advanced-form/master.svg)](https://circleci.com/gh/kettanaito/react-advanced-form) [![Vulnerabilities](https://snyk.io/test/github/kettanaito/react-advanced-form/badge.svg)](https://snyk.io/test/github/kettanaito/react-advanced-form) [![Dependencies status](https://img.shields.io/david/kettanaito/react-advanced-form.svg)](https://david-dm.org/kettanaito/react-advanced-form) [![DevDepenencies status](https://img.shields.io/david/dev/kettanaito/react-advanced-form.svg)](https://david-dm.org/kettanaito/react-advanced-form?type=dev)
+
+<br />
+
+<p align="center">
+  <img src="symbol.png" />
+</p>
+
+<h1 align="center">React Advanced Form</h1>
 
 [React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library for tailoring real-world forms with pleasure and ease.
 
