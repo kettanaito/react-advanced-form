@@ -28,8 +28,15 @@ class Checkbox extends React.Component {
     return (
       <div className="form-group">
         <div className="custom-control custom-checkbox">
-          <input id={ id || name } className={ inputClassNames } { ...fieldProps } />
-          <label className="custom-control-label" htmlFor={ id || name }>{ label }</label>
+          <input
+            { ...fieldProps }
+            id={ id || name }
+            className={ inputClassNames } />
+          <label
+            className="custom-control-label"
+            htmlFor={ id || name }>
+            { label }
+          </label>
 
           { hint && (
             <small className="form-text text-muted">{ hint }</small>
