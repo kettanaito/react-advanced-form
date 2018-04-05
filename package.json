@@ -36,6 +36,7 @@
   "main": "index.js",
   "scripts": {
     "start": "start-storybook -p 6009",
+    "dev": "NODE_ENV=development webpack -w",
     "cypress": "node_modules/.bin/cypress open",
     "clean": "rm -rf ./lib && exit 0",
     "build": "npm run clean && npm run build:dev && npm run build:prod",

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createField } from '@lib';
+import moment from 'moment';
 import ReactDatepicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -22,5 +23,6 @@ class Datepicker extends React.Component {
 
 export default createField({
   /* "react-datepicker" uses "selected" prop instead of "value" */
-  valuePropName: 'selected'
+  valuePropName: 'selected',
+  initialValue: moment()
 })(Datepicker);
