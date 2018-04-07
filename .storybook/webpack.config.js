@@ -6,6 +6,7 @@
 // When you add this file, we won't add the default configurations which is similar
 // to "React Create App". This only has babel loader to load JavaScript.
 const path = require('path');
+const cwd = process.cwd();
 
 module.exports = {
   module: {
@@ -18,9 +19,10 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@lib': path.resolve(__dirname, '../'),
-      '@shared': path.resolve(__dirname, '../examples/shared'),
-      '@fields': path.resolve(__dirname, '../examples/fields')
+      '@lib': path.resolve(cwd, './'),
+      '@examples': path.resolve(cwd, './examples'),
+      '@shared': path.resolve(cwd, './examples/shared'),
+      '@fields': path.resolve(cwd, './examples/fields')
     }
   }
 };

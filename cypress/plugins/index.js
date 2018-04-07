@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const webpackPreprocessor = require('@cypress/webpack-preprocessor');
+const storybookWebpackConfig = require('../../.storybook/webpack.config');
 
 const webpackOptions = {
   module: {
@@ -25,11 +26,7 @@ const webpackOptions = {
     })
   ],
   resolve: {
-    alias: {
-      '@examples': path.resolve(__dirname, '../../examples'),
-      '@fields': path.resolve(__dirname, '../../examples/fields'),
-      '@lib': path.resolve(__dirname, '../../')
-    },
+    alias: storybookWebpackConfig.resolve.alias,
     extensions: ['.spec.jsx', '.spec.js', '.jsx', '.js']
   }
 }
