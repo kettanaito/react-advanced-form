@@ -3,6 +3,8 @@ import { expect } from 'chai';
 import { mount } from 'cypress-react-unit-test';
 import Scenario from '@examples/basics/ControlledFields';
 
+console.log({ Scenario })
+
 describe('Controlled fields interactions', function () {
   before(() => mount(<Scenario getRef={ form => this.form = form } />));
   afterEach(() => this.form.reset());

@@ -1,13 +1,13 @@
 import React from 'react';
 import { mount } from 'cypress-react-unit-test';
-import BasicScenario from '@examples/reactive-props/Basic';
-import DelegatedScenario from '@examples/reactive-props/Delegated';
+import DynamicRequired from '@examples/reactive-props/DynamicRequired';
+import DelegatedScenario from '@examples/reactive-props/DelegatedSubscription';
 import InterdependentScenario from '@examples/reactive-props/Interdependent';
 import SingleTargetScenario from '@examples/reactive-props/SingleTarget';
 
 describe('Reactive props', function () {
   it('Direct field subscription', () => {
-    mount(<BasicScenario />);
+    mount(<DynamicRequired />);
 
     cy.get('[name="lastName"]').should('have.attr', 'required');
     cy.get('[name="lastName"]')
