@@ -3,8 +3,8 @@ import { setOptions } from '@storybook/addon-options';
 import centered from '@storybook/addon-centered';
 
 setOptions({
-  name: 'React Advanced Form',
-  showAddonPanel: false
+  hierarchySeparator: /\/|\./,
+  hierarchyRootSeparator: /\|/
 });
 
 addDecorator(centered);

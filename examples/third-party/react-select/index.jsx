@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form } from '@lib';
+import Button from '@shared/Button';
 import Select from './Select';
 
 const options = [
@@ -14,10 +15,10 @@ export default class ReactSelectExample extends React.Component {
       <React.Fragment>
         <h1>react-select</h1>
 
-        <Form>
+        <Form onSubmitStart={ this.props.onSubmitStart }>
           <Select
             name="food"
-            label="Choose a single favorite food"
+            label="Choose a single value"
             options={ options } />
 
           <Select
@@ -25,6 +26,8 @@ export default class ReactSelectExample extends React.Component {
             label="Choose multiple values"
             options={ options }
             multi />
+
+          <Button>Submit</Button>
         </Form>
       </React.Fragment>
     );

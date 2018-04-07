@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form } from '@lib';
+import Button from '@shared/Button';
 import Slider from './Slider';
 
 export default class SliderExample extends React.Component {
@@ -8,7 +9,7 @@ export default class SliderExample extends React.Component {
       <React.Fragment>
         <h1>react-slider</h1>
 
-        <Form>
+        <Form onSubmitStart={ this.props.onSubmitStart }>
           <Slider
             name="singleValue"
             label="Select a single value"
@@ -25,6 +26,8 @@ export default class SliderExample extends React.Component {
               from: 1500,
               to: 3500
             }} />
+
+          <Button>Submit</Button>
         </Form>
       </React.Fragment>
     );

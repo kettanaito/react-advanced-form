@@ -18,7 +18,7 @@ class Select extends React.Component {
     /* Compose next value based on "multi" prop */
     const { multi } = this.props;
     const singleOption = selectedOption && selectedOption.value;
-    const nextValue = multi ? selectedOption.map(option => option.value) : selectedOption
+    const nextValue = multi ? selectedOption.map(option => option.value) : singleOption;
 
     /* Dispatching "react-advanced-form" field change handler to update the field record */
     this.props.handleFieldChange({ nextValue });
@@ -28,7 +28,7 @@ class Select extends React.Component {
     const { fieldProps, label } = this.props;
 
     return (
-      <div>
+      <div className="form-group">
         { label && (
           <label>{ label }</label>
         ) }

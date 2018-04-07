@@ -1,6 +1,15 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+function logSerialized({ serialized }) {
+  return action('serialized')(serialized);
+}
+
+function addComponent(Component) {
+  return () => (<Component.type { ...Component.props } onSubmitStart={ logSerialized } />);
+}
 
 /* Basics */
 import UncontrolledFields from './basics/UncontrolledFields';
@@ -17,10 +26,10 @@ import FormPropsRules from './validation/SyncValidation/Form.props.rules';
 import FieldPropsAsyncRule from './validation/AsyncValidation/Field.props.asyncRule';
 
 /* Reactive props */
-import RxPropsBasic from './reactive-props/Basic';
+import RxPropsDynamicRequired from './reactive-props/DynamicRequired';
 import RxPropsSingleTarget from './reactive-props/SingleTarget';
 import RxPropsInterdependent from './reactive-props/Interdependent';
-import RxPropsDelegated from './reactive-props/Delegated';
+import RxPropsDelegatedSubscription from './reactive-props/DelegatedSubscription';
 
 /* Full examples */
 import RegistrationForm from './full/RegistrationForm';
@@ -29,33 +38,35 @@ import RegistrationForm from './full/RegistrationForm';
 import ReactSelect from './third-party/react-select';
 import ReactSlider from './third-party/react-slider';
 import ReactDatepicker from './third-party/react-datepicker';
+import ReactGoogleMaps from './third-party/react-google-maps';
 
-storiesOf('Basics', module)
-  .add('Uncontrolled fields', () => <UncontrolledFields />)
-  .add('Controlled fields', () => <ControlledFields />)
+storiesOf('Integration tests|Basics', module)
+  .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
+  .add('Controlled fields', addComponent(<ControlledFields />))
 
-storiesOf('Field grouping', module)
-  .add('Simple group', () => <SimpleGroup />)
-  .add('Nested groups', () => <NestedGroups />)
-  .add('Split groups', () => <SplitGroups />)
+storiesOf('Integration tests|Synchronous validation', module)
+  .add('Field.props.rule', addComponent(<FieldPropsRule />))
+  .add('Form.props.rules', addComponent(<FormPropsRules />))
 
-storiesOf('Synchronous validation', module)
-  .add('Field.props.rule', () => <FieldPropsRule />)
-  .add('Form.props.rules', () => <FormPropsRules />)
+storiesOf('Integration tests|Asynchronous validation', module)
+  .add('Field.props.asyncRule', addComponent(<FieldPropsAsyncRule />))
 
-storiesOf('Asynchronous validation', module)
-  .add('Field.props.asyncRule', () => <FieldPropsAsyncRule />)
+storiesOf('Advanced|Field grouping', module)
+  .add('Simple group', addComponent(<SimpleGroup />))
+  .add('Nested groups', addComponent(<NestedGroups />))
+  .add('Split groups', addComponent(<SplitGroups />))
 
-storiesOf('Reactive props', module)
-  .add('Basic', () => <RxPropsBasic />)
-  .add('Single field target', () => <RxPropsSingleTarget />)
-  .add('Interdependent fields', () => <RxPropsInterdependent />)
-  .add('Delegated subscription', () => <RxPropsDelegated />)
+storiesOf('Advanced|Reactive props', module)
+  .add('Dynamic require', addComponent(<RxPropsDynamicRequired />))
+  .add('Single field target', addComponent(<RxPropsSingleTarget />))
+  .add('Interdependent fields', addComponent(<RxPropsInterdependent />))
+  .add('Delegated subscription', addComponent(<RxPropsDelegatedSubscription />))
 
-storiesOf('Full examples', module)
-  .add('Registration Form', () => <RegistrationForm />)
+storiesOf('Other|Third-party fields', module)
+  .add('react-select', addComponent(<ReactSelect />))
+  .add('react-rangeslider', addComponent(<ReactSlider />))
+  .add('react-datepicker', addComponent(<ReactDatepicker />))
+  .add('react-google-maps', addComponent(<ReactGoogleMaps />))
 
-storiesOf('Third-party integrations', module)
-  .add('react-select', () => <ReactSelect />)
-  .add('react-rangeslider', () => <ReactSlider />)
-  .add('react-datepicker', () => <ReactDatepicker />)
+storiesOf('Other|Full examples', module)
+  .add('Registration Form', addComponent(<RegistrationForm />))
