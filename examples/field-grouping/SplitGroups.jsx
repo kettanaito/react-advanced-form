@@ -1,62 +1,80 @@
 import React from 'react';
 import { Form, Field } from '@lib';
 import { Input, Checkbox } from '@fields';
+import Button from '@shared/Button';
 
 export default class SplitGroups extends React.Component {
   render() {
     return (
-      <Form ref={ this.props.getRef }>
-        <Input
-          name="email"
-          type="email"
-          label="E-mail"
-          initialValue="john@maverick.com" />
+      <React.Fragment>
+        <h1>Split field groups</h1>
 
-        <Field.Group name="primaryInfo">
-          <Input
-            name="firstName"
-            label="First name"
-            initialValue="John" />
-          <Input
-            name="lastName"
-            label="Last name"
-            initialValue="Maverick" />
+        <Form
+          ref={ this.props.getRef }
+          onSubmitStart={ this.props.onSubmitStart }>
 
-          <Field.Group name="billingAddress">
-            <Input
-              name="street"
-              label="Street"
-              initialValue="Sunwell ave." />
-          </Field.Group>
-        </Field.Group>
+          <div className="row">
 
-        <Input
-          name="password"
-          type="password"
-          label="Password"
-          initialValue="super-secret" />
+            <div className="col-6">
+              <Input
+                name="email"
+                type="email"
+                label="E-mail"
+                initialValue="john@maverick.com" />
 
-        <Field.Group name="primaryInfo">
-          <Checkbox
-            name="newsletter"
-            label="Subscribe to newsletter"
-            checked />
+              <Input
+                name="password"
+                type="password"
+                label="Password"
+                initialValue="super-secret" />
 
-          <Field.Group name="billingAddress">
-            <Input
-              name="houseNumber"
-              label="House number"
-              initialValue="3" />
-          </Field.Group>
-        </Field.Group>
+                <Field.Group name="primaryInfo">
+                <Input
+                  name="firstName"
+                  label="First name"
+                  initialValue="John" />
+                <Input
+                  name="lastName"
+                  label="Last name"
+                  initialValue="Maverick" />
 
-        <Field.Group name="billingAddress">
-          <Checkbox
-            name="noCollision"
-            label="Nesting is important"
-            checked />
-        </Field.Group>
-      </Form>
+                <Field.Group name="billingAddress">
+                  <Input
+                    name="street"
+                    label="Street"
+                    initialValue="Sunwell ave." />
+                </Field.Group>
+              </Field.Group>
+            </div>
+
+            <div className="col-6">
+              <Field.Group name="primaryInfo">
+                <Checkbox
+                  name="newsletter"
+                  label="Subscribe to newsletter"
+                  checked />
+
+                <Field.Group name="billingAddress">
+                  <Input
+                    name="houseNumber"
+                    label="House number"
+                    initialValue="3" />
+                </Field.Group>
+              </Field.Group>
+
+              <Field.Group name="billingAddress">
+                <Checkbox
+                  name="noCollision"
+                  label="Nesting is important"
+                  checked />
+              </Field.Group>
+            </div>
+
+          </div>
+
+          <Button>Submit</Button>
+        </Form>
+      </React.Fragment>
     );
   }
 }

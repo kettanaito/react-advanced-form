@@ -3,20 +3,17 @@ import { Form } from '@lib';
 import { Input } from '@fields';
 import Button from '@shared/Button';
 
-export default class RxPropsInterdependent extends React.Component {
+export default class RxPropsDynamicRequired extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <h1>Interdependent fields</h1>
+        <h1>Dynamic required</h1>
 
         <Form onSubmitStart={ this.props.onSubmitStart }>
           <Input
             name="firstName"
             label="First name"
-            hint="Required when `lastName` has value"
-            required={({ fields }) => {
-              return !!fields.lastName.value;
-            }} />
+            initialValue="John" />
           <Input
             name="lastName"
             label="Last name"

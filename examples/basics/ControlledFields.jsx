@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form } from '@lib';
 import { Input, Radio, Checkbox, Select, Textarea } from '@fields';
+import Button from '@shared/Button';
 
 export default class ControlledFields extends React.Component {
   state = {
@@ -31,8 +32,13 @@ export default class ControlledFields extends React.Component {
     } = this.state;
 
     return (
-      <div>
-        <Form id="form" ref={ this.props.getRef }>
+      <React.Fragment>
+        <h1>Controlled fields</h1>
+
+        <Form
+          id="form"
+          ref={ this.props.getRef }
+          onSubmitStart={ this.props.onSubmitStart }>
           { /* Inputs */ }
           <Input
             id="inputOne"
@@ -111,8 +117,10 @@ export default class ControlledFields extends React.Component {
             onChange={ this.handleFieldChange }
             value={ textareaTwo }
             onChange={ this.handleFieldChange } />
+
+            <Button>Submit</Button>
         </Form>
-      </div>
+      </React.Fragment>
     );
   }
 }

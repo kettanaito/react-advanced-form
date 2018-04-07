@@ -14,9 +14,12 @@ class Datepicker extends React.Component {
     const { fieldProps } = this.props;
 
     return (
-      <ReactDatepicker
-        {...fieldProps}
-        onChange={this.handleChange} />
+      <div className="form-group">
+        <ReactDatepicker
+          {...fieldProps}
+          className="form-control"
+          onChange={this.handleChange} />
+      </div>
     );
   }
 }
