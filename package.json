@@ -33,12 +33,12 @@
   "engines": {
     "node": ">=6"
   },
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "start": "start-storybook -p 6009 -s ./",
     "dev": "NODE_ENV=development webpack -w",
     "cypress": "node_modules/.bin/cypress open",
-    "clean": "rm -rf ./lib && exit 0",
+    "clean": "del-cli lib/* !lib/index.js",
     "build": "npm run clean && npm run build:dev && npm run build:prod && npm run build:enhancers",
     "build:prod": "NODE_ENV=production webpack",
     "build:dev": "NODE_ENV=development webpack",
@@ -78,6 +78,7 @@
     "chai": "^4.1.2",
     "cypress": "^2.1.0",
     "cypress-react-unit-test": "^1.2.1",
+    "del-cli": "^1.1.0",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.19.1",
