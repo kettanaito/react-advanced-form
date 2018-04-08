@@ -1,3 +1,7 @@
+/**
+ * Mask enhancer.
+ * Applies the provided mask to the field.
+ */
 import PropTypes from 'prop-types';
 import Enhancer from '../classes/Enhancer';
 
@@ -31,6 +35,9 @@ function ensureMask(string, mask, allowOverlay = true) {
 
 export default class Mask extends Enhancer {
   /* PropTypes added by the enhancer */
+  //
+  // TODO This doesn't seem to do anything anymore
+  //
   appendPropTypes() {
     return {
       mask: PropTypes.string,
@@ -38,13 +45,17 @@ export default class Mask extends Enhancer {
     };
   }
 
-  interceptChange({ nextValue, ...rest }) {
-    const { mask, useStrictMask } = this.props;
+  constructor(props) {
+    super(props);
+    const { mask, useStrictMask } = props;
 
-    return {
-      ...rest,
-      // originalNextValue: nextValue, // This would be nice to store
-      nextValue: ensureMask(nextValue, mask, !useStrictMask)
-    };
+    this.intercept('fieldChange', ({ nextValue, ...rest }) => {
+      console.warn('mask: intercepting...');
+
+      return {
+        ...rest,
+        nextValue: ensureMask(nextValue, mask, !useStrictMask)
+      };
+    });
   }
 }

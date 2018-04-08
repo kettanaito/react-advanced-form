@@ -88,18 +88,16 @@ export default class Form extends React.Component {
     };
   }
 
-  interceptors = {
-    fieldChange: []
-  }
-
   interceptFieldEvent = (eventName, eventData) => {
-    const interceptors = this.interceptors[eventName];
-    if (!isset(interceptors)) {
-      return eventData;
-    }
+    return eventData.ref.context.enhancers.reduce((nextEventData, enhancer) => {
+      const eventInterceptors = enhancer.interceptors[eventName];
+      if (!isset(eventInterceptors)) {
+        return nextEventData;
+      }
 
-    return interceptors.reduce((nextEventData, interceptor) => {
-      return interceptor(nextEventData);
+      return eventInterceptors.reduce((interceptedEventData, interceptor) => {
+        return interceptor(interceptedEventData);
+      }, nextEventData);
     }, eventData);
   }
 

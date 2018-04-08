@@ -8,7 +8,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class Group extends React.Component {
-  static displayName = 'Field.Group'
+  static displayName = 'Field.Group';
 
   static propTypes = {
     name: PropTypes.string.isRequired

@@ -59,6 +59,7 @@ export default function connectField(options) {
       }
 
       static contextTypes = {
+        enhancers: PropTypes.array,
         form: PropTypes.object.isRequired,
         fields: CustomPropTypes.Map.isRequired,
         fieldGroup: PropTypes.arrayOf(PropTypes.string)
@@ -258,9 +259,8 @@ export default function connectField(options) {
         const { props: prevProps, contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
-        const fieldPropsChange = camelize(...nextContextProps.get('fieldPath'), 'props', 'change');
-
-        this.eventEmitter.emit(fieldPropsChange, {
+        const fieldPropsChangeEvent = camelize(...this.fieldPath, 'props', 'change');
+        this.eventEmitter.emit(fieldPropsChangeEvent, {
           prevProps,
           nextProps,
           prevContextProps,
@@ -300,7 +300,9 @@ export default function connectField(options) {
         if (Component instanceof React.Component) return;
 
         const { innerRef } = this.props;
-        if (innerRef) innerRef(Component);
+        if (innerRef) {
+          innerRef(Component);
+        }
       }
 
       /**
@@ -310,6 +312,7 @@ export default function connectField(options) {
       handleFocus = (event) => {
         this.eventEmitter.emit('fieldFocus', {
           event,
+          ref: this,
           fieldProps: this.contextProps
         });
       }
@@ -337,6 +340,7 @@ export default function connectField(options) {
 
         this.eventEmitter.emit('fieldChange', {
           event,
+          ref: this,
           nextValue,
           prevValue,
           fieldProps: contextProps
@@ -350,6 +354,7 @@ export default function connectField(options) {
       handleBlur = (event) => {
         this.eventEmitter.emit('fieldBlur', {
           event,
+          ref: this,
           fieldProps: this.contextProps
         });
       }

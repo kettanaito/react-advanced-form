@@ -16,18 +16,16 @@ export default function applyEnhancers(...enhancers) {
       'of enhancers separated by comma, but got none.', fieldComponentName);
 
     class EnhancedField extends React.Component {
-      static displayName = `Enhanced(${fieldComponentName})`
+      static displayName = `Enhanced(${fieldComponentName})`;
 
-      static contextTypes = {
-        form: PropTypes.object.isRequired
+      static childContextTypes = {
+        enhancers: PropTypes.array
       }
 
-      constructor(props, context) {
-        super(props, context);
-
-        enhancers.forEach((Enhancer) => {
-          new Enhancer(props, context);
-        });
+      getChildContext() {
+        return {
+          enhancers: enhancers.map(Enhancer => new Enhancer(this.props))
+        };
       }
 
       render() {
