@@ -10,8 +10,7 @@ const PRODUCTION = (nodeEnv === 'production');
 
 module.exports = {
   entry: {
-    index: ['regenerator-runtime/runtime', path.resolve(__dirname, 'src/index.js')],
-    'enhancers/mask': path.resolve(__dirname, 'src/enhancers/mask')
+    index: ['regenerator-runtime/runtime', path.resolve(__dirname, 'src/index.js')]
   },
   externals: {
     react: 'umd react',
