@@ -10,6 +10,7 @@ describe('General', () => {
     expect(libExports).to.have.all.keys([
       'createField',
       'fieldPresets',
+      'applyEnhancers',
       'FormProvider',
       'Form',
       'Field',

@@ -110,7 +110,7 @@ export default class Form extends React.Component {
   createInterceptable(eventName) {
     return Observable.fromEvent(this.eventEmitter, eventName).map((eventData) => {
       return this.interceptFieldEvent(eventName, eventData);
-    })
+    });
   }
 
   constructor(props, context) {
