@@ -3,7 +3,7 @@
 <br />
 
 <p align="center">
-  <img src="symbol.png" />
+  <img src="./logo.png" alt="React Advanced Form" />
 </p>
 
 <h1 align="center">React Advanced Form</h1>
