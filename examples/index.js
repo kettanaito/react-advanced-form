@@ -38,7 +38,6 @@ import RegistrationForm from './full/RegistrationForm';
 import ReactSelect from './third-party/react-select';
 import ReactSlider from './third-party/react-slider';
 import ReactDatepicker from './third-party/react-datepicker';
-import ReactGoogleMaps from './third-party/react-google-maps';
 
 storiesOf('Integration tests|Basics', module)
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
@@ -66,7 +65,6 @@ storiesOf('Other|Third-party fields', module)
   .add('react-select', addComponent(<ReactSelect />))
   .add('react-rangeslider', addComponent(<ReactSlider />))
   .add('react-datepicker', addComponent(<ReactDatepicker />))
-  .add('react-google-maps', addComponent(<ReactGoogleMaps />))
 
 storiesOf('Other|Full examples', module)
   .add('Registration Form', addComponent(<RegistrationForm />))
