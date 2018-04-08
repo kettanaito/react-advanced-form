@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { EventEmitter } from 'events';
 import { fromJS, List, Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/bufferTime';
 import 'rxjs/add/observable/fromEvent';
 
@@ -91,17 +92,25 @@ export default class Form extends React.Component {
     fieldChange: []
   }
 
-  interceptFieldEvent = (eventName, args) => {
-    const fullEventName = camelize('field', eventName);
-    const eventInterceptors = this.interceptors[fullEventName];
-
-    if (!eventInterceptors) {
-      return args;
+  interceptFieldEvent = (eventName, eventData) => {
+    const interceptors = this.interceptors[eventName];
+    if (!isset(interceptors)) {
+      return eventData;
     }
 
-    return eventInterceptors.reduce((interceptedArgs, interceptor) => {
-      return (interceptedArgs = interceptor(interceptedArgs));
-    }, args);
+    return interceptors.reduce((nextEventData, interceptor) => {
+      return interceptor(nextEventData);
+    }, eventData);
+  }
+
+  /**
+   * Creates an Observable automatically mapped with the event-specific interceptor function
+   * @param {string} eventName
+   */
+  createInterceptable(eventName) {
+    return Observable.fromEvent(this.eventEmitter, eventName).map((eventData) => {
+      return this.interceptFieldEvent(eventName, eventData);
+    })
   }
 
   constructor(props, context) {
@@ -131,11 +140,13 @@ export default class Form extends React.Component {
     Observable.fromEvent(eventEmitter, 'fieldRegister')
       .bufferTime(100)
       .subscribe(pendingFields => pendingFields.forEach(this.registerField));
-    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus);
-    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange);
-    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur);
-    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField);
-    Observable.fromEvent(eventEmitter, 'validateField').subscribe(this.validateField);
+
+    this.createInterceptable('fieldFocus').subscribe(this.handleFieldFocus);
+    this.createInterceptable('fieldChange').subscribe(this.handleFieldChange);
+    this.createInterceptable('fieldBlur').subscribe(this.handleFieldBlur);
+
+    this.createInterceptable('validateField').subscribe(this.validateField);
+    this.createInterceptable('fieldUnregister').subscribe(this.unregisterField);
   }
 
   /**
@@ -382,12 +393,11 @@ export default class Form extends React.Component {
     }
 
     const valuePropName = fieldProps.get('valuePropName');
-    const { nextValue: resolvedNextValue } = this.interceptFieldEvent('change', eventPayload);
 
     const { nextFieldProps: updatedFieldProps } = await this.updateField({
       fieldPath: fieldProps.get('fieldPath'),
       update: fieldProps => fieldProps
-        .set(valuePropName, resolvedNextValue)
+        .set(valuePropName, nextValue)
         .set('validated', false)
         .set('validating', false)
         .set('validatedSync', false)

@@ -80,6 +80,10 @@ export default function connectField(options) {
         this.contextProps = this.register();
       }
 
+      get eventEmitter() {
+        return this.context.form.eventEmitter;
+      }
+
       /* Registers the current field within the parent form's state */
       register() {
         const { props: directProps, fieldPath } = this;
@@ -186,7 +190,7 @@ export default function connectField(options) {
         console.groupEnd();
 
         /* Notify the parent Form that a new field prompts to register */
-        form.eventEmitter.emit('fieldRegister', {
+        this.eventEmitter.emit('fieldRegister', {
           fieldProps,
           fieldOptions: {
             allowMultiple: hocOptions.allowMultiple,
@@ -226,7 +230,7 @@ export default function connectField(options) {
         });
 
         if (controlled && shouldUpdateRecord) {
-          this.context.form.eventEmitter.emit('fieldChange', {
+          this.eventEmitter.emit('fieldChange', {
             event: {
               nativeEvent: {
                 isForcedUpdate: true
@@ -256,7 +260,7 @@ export default function connectField(options) {
 
         const fieldPropsChange = camelize(...nextContextProps.get('fieldPath'), 'props', 'change');
 
-        this.context.form.eventEmitter.emit(fieldPropsChange, {
+        this.eventEmitter.emit(fieldPropsChange, {
           prevProps,
           nextProps,
           prevContextProps,
@@ -268,7 +272,7 @@ export default function connectField(options) {
        * Deletes the field's record upon unmounting.
        */
       componentWillUnmount() {
-        this.context.form.eventEmitter.emit('fieldUnregister', this.contextProps);
+        this.eventEmitter.emit('fieldUnregister', this.contextProps);
       }
 
       /**
@@ -304,7 +308,7 @@ export default function connectField(options) {
        * @param {Event} event
        */
       handleFocus = (event) => {
-        this.context.form.eventEmitter.emit('fieldFocus', {
+        this.eventEmitter.emit('fieldFocus', {
           event,
           fieldProps: this.contextProps
         });
@@ -331,14 +335,12 @@ export default function connectField(options) {
         console.log('nextValue', nextValue);
         console.groupEnd();
 
-        const eventPayload = {
+        this.eventEmitter.emit('fieldChange', {
           event,
           nextValue,
           prevValue,
           fieldProps: contextProps
-        };
-
-        this.context.form.eventEmitter.emit('fieldChange', eventPayload);
+        });
       }
 
       /**
@@ -346,7 +348,7 @@ export default function connectField(options) {
        * @param {Event} event
        */
       handleBlur = (event) => {
-        this.context.form.eventEmitter.emit('fieldBlur', {
+        this.eventEmitter.emit('fieldBlur', {
           event,
           fieldProps: this.contextProps
         });

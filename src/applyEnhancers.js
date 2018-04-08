@@ -12,7 +12,7 @@ export default function applyEnhancers(...enhancers) {
   return (Field) => {
     const fieldComponentName = getComponentName(Field);
 
-    invariant(enhancers && enhancers.length > 0, 'Cannot apply enhancers to the `%s` field. Expected the list ' +
+    invariant(enhancers && (enhancers.length > 0), 'Cannot apply enhancers to the `%s` field. Expected the list ' +
       'of enhancers separated by comma, but got none.', fieldComponentName);
 
     class EnhancedField extends React.Component {
@@ -25,7 +25,9 @@ export default function applyEnhancers(...enhancers) {
       constructor(props, context) {
         super(props, context);
 
-        enhancers.forEach(Enhancer => new Enhancer(props, context));
+        enhancers.forEach((Enhancer) => {
+          new Enhancer(props, context);
+        });
       }
 
       render() {

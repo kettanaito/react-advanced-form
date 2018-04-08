@@ -30,6 +30,7 @@ function ensureMask(string, mask, allowOverlay = true) {
 }
 
 export default class Mask extends Enhancer {
+  /* PropTypes added by the enhancer */
   appendPropTypes() {
     return {
       mask: PropTypes.string,
@@ -42,6 +43,7 @@ export default class Mask extends Enhancer {
 
     return {
       ...rest,
+      // originalNextValue: nextValue, // This would be nice to store
       nextValue: ensureMask(nextValue, mask, !useStrictMask)
     };
   }

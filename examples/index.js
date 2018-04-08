@@ -65,7 +65,7 @@ storiesOf('Advanced|Reactive props', module)
   .add('Delegated subscription', addComponent(<RxPropsDelegatedSubscription />))
 
 storiesOf('Advanced|Enhancers', module)
-  .add('Mask', () => <MaskEnhancer />)
+  .add('Mask', addComponent(<MaskEnhancer />))
 
 storiesOf('Other|Third-party fields', module)
   .add('react-select', addComponent(<ReactSelect />))
