@@ -2,12 +2,12 @@
 
 * [Specification](#specification)
 * [Declaration](#declaration)
-* [Options](./options.md)
-  * [valuePropName](./options.md#valuepropname)
-  * [mapPropsToField](./options.md#mappropstofield)
-  * [enforceProps](./options.md#enforceprops)
-* [Presets](./presets.md)
-* [Exposed props](./props.md)
+* [Options](./createField/options.md)
+  * [valuePropName](./createField/options.md#valuepropname)
+  * [mapPropsToField](./createField/options.md#mappropstofield)
+  * [enforceProps](./createField/options.md#enforceprops)
+* [Presets](./createField/presets.md)
+* [Exposed props](./createField/props.md)
 * [Custom event handlers](#custom-event-handlers)
 
 ## Specification
@@ -15,7 +15,7 @@ A high-order component which enhances the provided custom component (`WrappedCom
 
 `createField` is designed for both custom fields implementation and field styling.
 
-> It is important to understand the [Field lifecycle](../../architecture/field-lifecycle.md) before creating custom fields. This will significantly reduce the amount of questions and increase the developer's experience.
+> It is important to understand the [Field lifecycle](../architecture/field-lifecycle.md) before creating custom fields. This will significantly reduce the amount of questions and increase the developer's experience.
 
 ## Declaration
 ```jsx

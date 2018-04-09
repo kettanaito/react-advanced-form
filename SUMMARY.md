@@ -25,8 +25,7 @@
 
 ## High-order components
 
-* createField
-  * [Basics](./docs/hoc/createField/basics.md)
+* [createField](./docs/hoc/createField.md)
   * [Options](./docs/hoc/createField/options.md)
   * [Presets](./docs/hoc/createField/presets.md)
   * [Exposed props](./docs/hoc/createField/props.md)
