@@ -89,7 +89,13 @@ export default class Form extends React.Component {
   }
 
   interceptFieldEvent = (eventName, eventData) => {
-    return eventData.ref.context.enhancers.reduce((nextEventData, enhancer) => {
+    const { enhancers: fieldEnhancers } = eventData.ref.context;
+
+    if (!isset(fieldEnhancers)) {
+      return eventData;
+    }
+
+    return fieldEnhancers.reduce((nextEventData, enhancer) => {
       const eventInterceptors = enhancer.interceptors[eventName];
       if (!isset(eventInterceptors)) {
         return nextEventData;
