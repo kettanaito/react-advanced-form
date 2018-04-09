@@ -13,10 +13,10 @@
 type ValidationRules = {
   extend?: boolean,
   type: {
-    [fieldType: string]: RuleDeclaraion
+    [fieldType: string]: RuleDefinition
   },
   name: {
-    [fieldName: string]: RuleDeclaraion
+    [fieldName: string]: RuleDefinition
   }
 }
 
@@ -27,10 +27,10 @@ type RuleResolver = ({
   form: ReactComponent // reference to the Form itself
 }) => boolean
 
-type RuleDeclaraion = RuleResolver | { [ruleName: string]: RuleResolver;
+type RuleDefinition = RuleResolver | { [ruleName: string]: RuleResolver;
 ```
 
-A `RuleResolver` must always return a `boolean`, stating that the rule has been resolved.
+A rule resolver function must always return a `boolean`, stating that the current state of the field satisfies the rule.
 
 ## Priority
 Validation rules are executed by a certain priority.
@@ -62,7 +62,7 @@ export default {
 Named rules allow to precisely control the validation messages displayed respectively to the rule's name. Read more about this in [Validation messages: Named resolvers](./messages.md#named-resolvers) section.
 
 ## Multiple rules
-It is possible to have multiple rules on the same selector:
+One field selector can have multiple rules declared at once:
 
 ```jsx
 // src/validation-rules.js
@@ -78,14 +78,14 @@ export default {
 
 > **Note:** Each of the multiple validation rules **must be named**.
 
-Multiple type-specific rules are declared in the very same way.
+Multiple type-specific rules can be declared in the very same way.
 
-Sibling rule declarations are always executed regardless of the status of the previous rule. Considering the example above, `oneNumber` rule will always be executed even if `capitalLetter` rejects.
+Sibling rules are always executed in parallel, regardless of the resolving status of the siblings. Considering the example above, `oneNumber` rule will always be executed even if `capitalLetter` rule rejects.
 
 ## Referencing fields
-As mentioned in [Definition](#definition), `RuleResolver` function is exposed a `fields` Object. This allows the rule to reference another fields present in the same form and base the validation logic around their props.
+As mentioned in the [Definition](#definition), resolver function exposes a `fields` object. This allows to reference another fields present in the same form, and base the validation logic on their state.
 
-When the resolver function references any field using `fields` Object, this resolver gets executed each time the referenced prop of the referenced field is updated. Consider the following example:
+When the resolver function references any field using `fields` Object, this resolver gets executed each time the referenced prop of the referenced field updates. Consider the following example:
 
 ```js
 {
