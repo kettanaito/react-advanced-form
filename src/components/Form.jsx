@@ -228,7 +228,7 @@ export default class Form extends React.Component {
    * @returns {Promise}
    */
   updateField = ({ fieldPath: explicitFieldPath, fieldProps: explicitFieldProps, update }) => {
-    invariant(update, 'Field update failed: expected an `update` function, but got:', update);
+    invariant(update, 'Field update failed: expected an `update` function, but got: %s', update);
     invariant(explicitFieldPath || explicitFieldProps, 'Field update failed: expected `fieldPath` or `fieldProps` ' +
       'provided, but got: %s.', explicitFieldPath || explicitFieldProps);
 
