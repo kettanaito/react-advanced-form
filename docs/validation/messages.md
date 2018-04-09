@@ -123,3 +123,7 @@ This is the priority sequence in which resolvers will attempt to resolve the val
 1. `general.invalid`
 
 The validation message resolves as soon as the resolver returns the value. The same sequence applies for the type-specific named resolvers.
+
+## Example
+
+<iframe src="https://codesandbox.io/embed/53wlvmp42l?module=%2Fsrc%2Fvalidation-messages.js&view=editor" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
