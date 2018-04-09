@@ -1,11 +1,17 @@
 # Validation rules
 
+* [Introduction](#introduction)
 * [Definition](#definition)
 * [Priority](#priority)
 * [Named rules](#named-rules)
 * [Multiple rules](#multiple-rules)
 * [Extending rules](#extending-rules)
 * [Example](#example)
+
+## Introduction
+As opposed to many solutions where a developer is being exposed a single `validate` callback and is forced to stuff all the validation logic inside, React Advanced Form uses a clean validation schema to provide validation to the fields.
+
+Validation schema is a plain JavaScript object with the defined structure, which contains the validation rules. Each rule is applied to a field by the field's selector. There are `name` and `type` field selectors.
 
 ## Definition
 
@@ -33,18 +39,16 @@ type RuleDefinition = RuleResolver | { [ruleName: string]: RuleResolver;
 A rule resolver function must always return a `boolean`, stating that the current state of the field satisfies the rule.
 
 ## Priority
-Validation rules are executed by a certain priority.
+Validation rules are executed in a certain order and priority.
 
 ### Context priority
 A synchronous rule declared under [`Field.props.rule`](../components/Field/props/rule.md) has the highest priority and is executed first, if present.
 
 ### Selector priority
-There are two kinds of validation selectors:
+There are two kinds of field selectors:
 
-* `name`
-* `type`
-
-Name-specific validation rules always have higher priority over type-specific rules. That means whenever name-specific rule rejects, any following type-specific rules *will not be executed*.
+* `name` selectors allow to reference a field by its name. These have the highest priority in the validation schema and are executed first. Whenever a name-specific rule rejects, any type-specific rules for the same field *will not* be executed.
+* `type` selectors reference a field by its type. These are complimentary to the name-specific rules, and are executed after them.
 
 ## Named rules
 Each rule may have its own unique name:
@@ -59,10 +63,10 @@ export default {
 }
 ```
 
-Named rules allow to precisely control the validation messages displayed respectively to the rule's name. Read more about this in [Validation messages: Named resolvers](./messages.md#named-resolvers) section.
+The main purpose of the named rule is to be able to associate a specific validation message with it, based on its name. Learn more about this in [Validation messages: Named resolvers](./messages.md#named-resolvers) section.
 
 ## Multiple rules
-One field selector can have multiple rules declared at once:
+One field selector can have multiple rules:
 
 ```jsx
 // src/validation-rules.js
@@ -76,16 +80,16 @@ export default {
 };
 ```
 
-> **Note:** Each of the multiple validation rules **must be named**.
+> **Note:** Each of the multiple validation rules *must* be a [named rule](#named-rules).
 
-Multiple type-specific rules can be declared in the very same way.
+Multiple type-specific rules are declared in the same way.
 
-Sibling rules are always executed in parallel, regardless of the resolving status of the siblings. Considering the example above, `oneNumber` rule will always be executed even if `capitalLetter` rule rejects.
+With the multiple rules the execution order differs. Named rules of the same selector (name/type) are executed in parallel, regardless of the resolving status of their siblings. Considering the example above, `oneNumber` rule will be executed even if `capitalLetter` rejects.
 
 ## Referencing fields
-As mentioned in the [Definition](#definition), resolver function exposes a `fields` object. This allows to reference another fields present in the same form, and base the validation logic on their state.
+There is a `field` argument property exposed in each resolver function. It allows to reference another fields of the same form, and base the validation logic on their state.
 
-When the resolver function references any field using `fields` Object, this resolver gets executed each time the referenced prop of the referenced field updates. Consider the following example:
+Whenever a field is referenced in a resolver, the latter is automatically called each time the referenced field's prop update. Consider the following example:
 
 ```js
 {
@@ -97,7 +101,7 @@ When the resolver function references any field using `fields` Object, this reso
 }
 ```
 
-The `[name="password"]` field is being referenced in the rule resolver above. Therefore, whenever the `value` prop of the `[name="password"]` field is changed, the `[name="confirmPassword"]` field is re-validated to reflect that changes. That is a built-in logic and is executed automatically.
+Based on the declaration above, a `[name="confirmPassword"]` field is valid when its `value` equals to the `value` prop of the `[name="password"]` sibling field. By referencing another field, `confirmPassword` field is re-validated *each time* when the `value` prop of `password` field updates.
 
 ## Extending rules
 While having application-wide rules is the recommended approach, each `Form` instance can have its own validation rules, which may, or may not extend the application-wide rules.
@@ -114,122 +118,5 @@ const customRules = {
 ```
 
 ## Example
-As an example, we will be creating a real-world registraion form for our imaginary application. This should give you an overview of how you can manage validation in your project.
 
-First, let's declare the validation rules:
-
-```js
-// src/app/validation-rules.js
-import isEmail from 'validator/lib/isEmail';
-
-export default {
-  type: {
-    email: ({ value }) => isEmail(value),
-    password: {
-      capitalLetter: ({ value }) => /[A-Z]/.test(value),
-      oneNumber: ({ value }) => /[0-9]/.test(value)
-    }
-  }
-};
-```
-
-Now, let's apply those rules to the whole application, making *all* forms in our app abide by those rules:
-
-```jsx
-// src/app/index.js
-import React from 'react';
-import { FormProvider } from 'react-advanced-form';
-import validationRules from './validation-rules';
-
-const renderApp = ({ children }) => (
-  <FormProvider rules={ validationRules }>
-    { children }
-  </FormProvider>
-);
-
-// render the app using ReactDOM.render()
-```
-
-Now, let's declare a `RegistrationForm` component:
-
-```jsx
-// src/app/components/Registration/Form.jsx
-import React from 'react';
-import { Form } from 'react-advanced-form';
-import { Input } from 'react-advanced-form-addons';
-
-export default class RegistrationForm extends React.Component {
-  render() {
-    return (
-      <Form action={ this.registerUser }>
-        <Input
-          name="email"
-          type="email"
-          required />
-        <Input
-          name="password"
-          type="password"
-          required />
-        <Input
-          name="confirmPassword"
-          type="password"
-          required />
-      </Form>
-    );
-  }
-}
-```
-
-Great! Our form is done, but let's take it one step further and declare some validation rules specific to this very form. We will use those to validate the `confirmPassword` field, to make sure it equals to the `password` field's value.
-
-```js
-// src/app/components/Registration/rules.js
-export default {
-  /**
-   * Set "extend" to "true" because our RegistrationForm should abide
-   * by the "email" and "password" application-wide rules shipped by
-   * the <FormProvider> for all children forms.
-   */
-  extends: true,
-  name: {
-    confirmPassword: ({ value, fields }) => {
-      return (value === fields.password.value);
-    }
-  }
-}
-```
-
-Now let's pass this unique validation rules to our `RegistraionForm`:
-
-```jsx
-// src/app/components/Registration/Form.jsx
-import React from 'react';
-import { Form } from 'react-advanced-form';
-import { Input } from 'react-advanced-form-addons';
-
-/* Import form-specific rules */
-import validationRules from './rules';
-
-export default class RegistrationForm extends React.Component {
-  render() {
-    return (
-      <Form
-        action={ this.registerUser }
-        rules={ validationRules }>
-        <Input
-          name="email"
-          type="email"
-          required />
-        <Input
-          name="password"
-          type="password"
-          required />
-        <Input
-          name="confirmPassword"
-          type="password"
-          required />
-      </Form>
-    );
-  }
-}
-```
+<iframe src="https://codesandbox.io/embed/53wlvmp42l?module=%2Fsrc%2Fvalidation-rules.js&moduleview=1" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
