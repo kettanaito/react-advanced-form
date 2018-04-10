@@ -1,5 +1,8 @@
 {
     "root": "./",
     "title": "React Advanced Form",
-    "plugins": ["prism", "-highlight"]
+    "plugins": ["custom-favicon", "prism", "-highlight"],
+    "pluginsConfig": {
+        "favicon": "./favicon.ico"
+    }
 }

@@ -86,6 +86,7 @@
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-mocha": "^4.11.0",
     "eslint-plugin-react": "^7.7.0",
+    "gitbook-plugin-custom-favicon": "0.0.4",
     "gitbook-plugin-prism": "^2.3.0",
     "immutable": "^3.8.2",
     "jsdom": "^11.6.2",
