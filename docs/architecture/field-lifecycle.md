@@ -93,7 +93,7 @@ Developer must provide the custom event handlers during the field's declaration,
 ```jsx
 // src/components/Input.jsx
 import React from 'react';
-import { createField } from 'react-advanced-form';
+import { createField, fieldPresets } from 'react-advanced-form';
 
 class Input extends React.Component {
   /**
@@ -102,10 +102,10 @@ class Input extends React.Component {
   handleChange = (event) => {
     const { value: nextValue } = event.target;
 
-    // any additional logic here
+    // ...
 
-    /* It is MANDATORY to dispatch the native RAF event handler */
-    return this.props.handleFieldChange({ event });
+    /* It is mandatory to dispatch the native RAF event handler */
+    this.props.handleFieldChange({ event });
   }
 
   render() {
@@ -119,7 +119,7 @@ class Input extends React.Component {
   }
 }
 
-export default createField()(Input);
+export default createField(fieldPresets.input)(Input);
 ```
 
 When overriding the essential event handler managed by the `Form` automatically, the one must always dispatch the respective native event handler available via props:
