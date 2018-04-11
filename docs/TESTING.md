@@ -2,7 +2,7 @@
 
 Proper and thorough testing is a guarantee of stable and reliable implementation. Please write tests, whether that's unit or integration ones (or both) when contributing to React Advanced Form to make sure the library performs on its best.
 
-Below, there are goine to be some guidelines on how to write the tests and which technologies are used during the development of the library.
+See the list of technologies used for testing and the guidelines on writing tests below.
 
 ## CLI
 **Run all tests:**
@@ -97,10 +97,9 @@ All tests have passed and our change is ready to be committed!
   * **components/**. Set of React components used in the integration scenarios.
   * **integration/**. The integration tests themselves.
   * **plugins/**. Plugins for Cypress.
-  * **scenarios/**. List of testing scenarios, later included in the integration test files.
   * **support/**. Utils and helpers for Cypress.
 
-> **Note:** Integration test files are split into dedicated folders, so that the tests responsible for validation are under `validation/` folder, and so on. Please respect a clean and meaningful folder structure while writing tests.
+> **Note:** Integration tests load components located in `examples/` folder. That is a unified directory to contain different scenarios, as well as having examples tested.
 
 ### Workflow
 0. (*Optional*) Provide any utils or helpers needed for your integration test(s).
@@ -108,79 +107,3 @@ All tests have passed and our change is ready to be committed!
 1. Write an appropriate test scenario under `./cypress/scenarios`.
 1. Connect the scenario in your integration test file.
 1. Run the integration tests by `npm run test:integration`. Ensure all tests are passing, including your new ones.
-
-### Example
-Let's say we have enhanced the synchronous validation algorithm and now we need to cover our change in a form of writing an integration test.
-
-First, let's create a new integration test file under the `validation/SyncValidation` directory, as our test relates to synchronous validation:
-
-```jsx
-// cypress/integration/validation/SyncValidation/enhanced.algorithm.spec.jsx
-import React from 'react';
-import { mount } from 'cypress-react-unit-test';
-import Scenario from '@scenarios/SyncValidation/EnhancedAlgorithm.jsx';
-
-describe('Enhanced algorithm', () => {
-  before(() => {
-    /* Note how we are getting the reference to the form */
-    mount(<Scenario getRef={ form => this.form = form } />);
-  });
-
-  afterEach(() => {
-    /* Let's clear our form after each test */
-    this.form.reset();
-  });
-
-  it('Does what it is meant to do', () => {
-    cy.get('#fieldOne')
-      .type('foo').should('have.value', 'foo')
-      .should('have.class', 'valid');
-  });
-
-  it('Does another great thing', () => {
-    // ...
-  });
-});
-```
-
-Now, let's write the scenario:
-
-```jsx
-// cypress/scenarios/SyncValidation/EnhancedAlgorithm.jsx
-import React from 'react';
-import { Form } from '@lib';
-import { Input } from '@components';
-
-export default class EnhancedAlgorithm extends React.Component {
-  render() {
-    return (
-      <Form ref={ this.props.getRef }>
-        <Input name="fieldOne" />
-      </Form>
-    );
-  }
-}
-```
-
-> **Note:** You need to include the *built* version of the library (from `@lib`), while field components are imported from `./cypress/components` alias, which is `@components`.
-
-Now, let's include our new integration test into the `SyncValidation` tests for it to appear in the list of all validation-related tests:
-
-```js
-// cypress/integration/SyncValidation/index.js
-require('./EnhancedAlgorithm');
-```
-
-During the development it is faster to run our new integration test(s) directly. Do so via Cypress GUI:
-
-```bash
-npm run cypress
-```
-
-However, after our test looks great, we need to make sure the changes do not affect other tests. For that, we must run all integration tests using the following command:
-
-```bash
-npm run test:integartion
-```
-
-Great! Our new test and all other tests are passing, so the change is ready to be committed!
