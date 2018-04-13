@@ -12,6 +12,9 @@ const rules = {
     fieldOne: ({ value, fieldProps }) => {
       const { ref: { props } } = fieldProps;
       return (value !== 'foo');
+    },
+    fieldTwo: ({ value, getFieldProp }) => {
+      return (value === getFieldProp(['fieldOne', 'value']));
     }
   }
 };
@@ -25,6 +28,10 @@ export default class FormPropsRules extends React.Component {
           name="fieldOne"
           label="Field one"
           hint="Must be more than 3 characters and not equal to `foo`" />
+        <Input
+          name="fieldTwo"
+          label="Field two"
+          hint="Valid when equals to `fieldOne` value" />
       </Form>
     );
   }
