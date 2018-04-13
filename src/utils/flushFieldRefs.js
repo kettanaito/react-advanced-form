@@ -1,50 +1,21 @@
-import ensafeMap from './ensafeMap';
 import dispatch from './dispatch';
+import createPropGetter from './fieldUtils/createPropGetter';
 
 /**
- * Recursively proxies the given origin. Calls optional "callback" function whenever any property
- * if the origin is being referenced.
- * @param {Object} origin
- * @param {Function} callback
- * @returns {Proxy}
- */
-function proxyWithCallback(origin, callback) {
-  return new Proxy(origin, {
-    get(target, propName) {
-      if (callback) callback({ target, propName });
-      return proxyWithCallback({}, callback);
-    }
-  });
-}
-
-/**
- * Returns the collection of field paths of the fields referenced within the provided method.
+ * Returns the map of flushed field props paths referenced within the provided
+ * method, and its initial value.
  * @param {Function} method
- * @param {Object} fields
+ * @param {CallbackHandlerArgs} methodArgs
  */
-export default function flushFieldRefs(method, { fields, ...restParams }) {
-  const { form } = restParams;
+export default function flushFieldRefs(method, methodArgs) {
+  const { fields, form } = methodArgs;
   const refs = [];
-  const mutableFields = fields.toJS();
+  const getFieldProp = createPropGetter(fields, propPath => refs.push(propPath));
 
-  /* Assign a temporary property to state the root level of target Object */
-  mutableFields.__IS_ROOT__ = true;
-
-  const fieldsProxy = proxyWithCallback(mutableFields, ({ target, propName }) => {
-    if (target.__IS_ROOT__) {
-      refs.push([]);
-    }
-
-    const refEntry = refs[refs.length - 1];
-    refEntry.push(propName);
-  });
-
-  /* First, execute the method with proxied fields to gather the field path refs */
-  dispatch(method, restParams, form.context, { fields: fieldsProxy });
-
-  /* Second, execute the method with missing path refs set to "undefined" to prevent throwing */
-  const safeFields = ensafeMap(fields, refs);
-  const initialValue = dispatch(method, { ...restParams, fields: safeFields }, form.context);
+  const initialValue = dispatch(method, {
+    ...methodArgs,
+    getFieldProp
+  }, form.context);
 
   return { refs, initialValue };
 }

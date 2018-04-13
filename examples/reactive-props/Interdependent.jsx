@@ -14,15 +14,15 @@ export default class RxPropsInterdependent extends React.Component {
             name="firstName"
             label="First name"
             hint="Required when `lastName` has value"
-            required={({ fields }) => {
-              return !!fields.lastName.value;
+            required={({ getFieldProp }) => {
+              return !!getFieldProp(['lastName', 'value']);
             }} />
           <Input
             name="lastName"
             label="Last name"
             hint="Required when `firstName` has value"
-            required={({ fields }) => {
-              return !!fields.firstName.value;
+            required={({ getFieldProp }) => {
+              return !!getFieldProp(['firstName', 'value']);
             }} />
 
           <Button>Submit</Button>

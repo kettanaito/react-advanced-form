@@ -1,5 +1,5 @@
 import makeObservable from './makeObservable';
-import ensafeMap from '../ensafeMap';
+import createPropGetter from '../fieldUtils/createPropGetter';
 
 /**
  * @param {Map} fieldProps
@@ -14,16 +14,16 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
   const resolverArgs = { fieldProps, fields, form };
 
   rxProps.forEach((resolver, rxPropName) => {
-    const { refs } = makeObservable(resolver, resolverArgs, {
+    makeObservable(resolver, resolverArgs, {
       initialCall: true,
       subscribe({ nextContextProps, shouldValidate = true }) {
         const refFieldPath = nextContextProps.get('fieldPath');
         const nextFields = form.state.fields.set(refFieldPath, nextContextProps);
-        const safeFields = ensafeMap(nextFields, refs);
 
         const nextPropValue = resolver({
           fieldProps: fieldProps.toJS(),
-          fields: safeFields.toJS(),
+          fields: nextFields.toJS(),
+          getFieldProp: createPropGetter(nextFields),
           form
         }, form.context);
 
