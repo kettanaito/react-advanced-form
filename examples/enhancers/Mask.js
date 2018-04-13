@@ -4,7 +4,7 @@ import { Input } from '@fields';
 import Button from '@shared/Button';
 import mask from '@lib/enhancers/mask';
 
-const CreditCardInput = applyEnhancers(mask)(Input);
+const InputWithMask = applyEnhancers(mask)(Input);
 
 export default class MaskEnhancer extends React.Component {
   render() {
@@ -12,12 +12,17 @@ export default class MaskEnhancer extends React.Component {
       <React.Fragment>
         <h1>Mask</h1>
         <Form onSubmitStart={ this.props.onSubmitStart }>
-          <CreditCardInput
+          <InputWithMask
             name="creditCardNumber"
             label="Enter a credit card number"
             mask="#### #### #### ####"
-            useStrictMask
-          />
+            useStrictMask />
+
+          <InputWithMask
+            name="phoneNumber"
+            label="Enter a phone number"
+            mask="+(###) ### ## ##"
+            useStrictMask />
 
           <Button>Submit</Button>
         </Form>

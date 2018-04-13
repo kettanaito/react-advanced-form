@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
+const createEnhancersConfig = require('./webpack.enhancers.config');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 /* Environment */
@@ -8,7 +9,7 @@ const nodeEnv = process.env.NODE_ENV || 'development';
 const DEVELOPMENT = (nodeEnv === 'development');
 const PRODUCTION = (nodeEnv === 'production');
 
-module.exports = {
+const libConfig = {
   entry: {
     index: ['regenerator-runtime/runtime', path.resolve(__dirname, 'src/index.js')]
   },
@@ -69,3 +70,8 @@ module.exports = {
     extensions: ['.js', '.jsx']
   }
 };
+
+module.exports = [
+  libConfig,
+  createEnhancersConfig(libConfig)
+];

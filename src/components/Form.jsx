@@ -33,7 +33,7 @@ function getInnerRef(element, callback) {
   if (callback) callback(element);
 }
 
-function filterFields(entry) {
+function findFields(entry) {
   return entry.has('fieldPath');
 }
 
@@ -88,32 +88,14 @@ export default class Form extends React.Component {
     };
   }
 
-  interceptFieldEvent = (eventName, eventData) => {
-    const { enhancers: fieldEnhancers } = eventData.ref.context;
-
-    if (!isset(fieldEnhancers)) {
-      return eventData;
-    }
-
-    return fieldEnhancers.reduce((nextEventData, enhancer) => {
-      const eventInterceptors = enhancer.interceptors[eventName];
-      if (!isset(eventInterceptors)) {
-        return nextEventData;
-      }
-
-      return eventInterceptors.reduce((interceptedEventData, interceptor) => {
-        return interceptor(interceptedEventData);
-      }, nextEventData);
-    }, eventData);
-  }
-
   /**
-   * Creates an Observable automatically mapped with the event-specific interceptor function
+   * Creates an Observable which is mapped using the event-specific interceptor function.
    * @param {string} eventName
+   * @returns {Observable}
    */
   createInterceptable(eventName) {
     return Observable.fromEvent(this.eventEmitter, eventName).map((eventData) => {
-      return this.interceptFieldEvent(eventName, eventData);
+      return formUtils.interceptFieldEvent(eventName, eventData);
     });
   }
 
@@ -634,7 +616,7 @@ export default class Form extends React.Component {
    * validations to be completed.
    * @param {Function} predicate (Optional) Predicate function to filter the fields.
    */
-  validate = async (predicate = filterFields) => {
+  validate = async (predicate = findFields) => {
     const { fields } = this.state;
     const flattenedFields = flattenDeep(fields, predicate, true);
 
@@ -670,7 +652,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Resets all the fields to their initial state upon mounting.
+   * Resets the form fields to their initial state.
    */
   reset = () => {
     const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));

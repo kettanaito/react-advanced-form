@@ -7,6 +7,11 @@
 export default class Enhancer {
   interceptors = [];
 
+  /**
+   * Adds a custom mapping function to the provided event name.
+   * @param {string} eventName The name of the event to intercept.
+   * @param {Function} interceptor The handler of the intercepted event.
+   */
   intercept(eventName, interceptor) {
     const eventInterceptors = this.interceptors[eventName] || [];
     this.interceptors[eventName] = eventInterceptors.concat(interceptor);

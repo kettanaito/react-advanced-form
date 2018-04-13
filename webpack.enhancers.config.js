@@ -15,7 +15,7 @@ function getEntries() {
   }, {});
 }
 
-module.exports = {
+module.exports = (defaultConfig) => ({
   entry: getEntries(),
   externals: defaultConfig.externals,
   output: {
@@ -26,4 +26,4 @@ module.exports = {
   },
   module: defaultConfig.module,
   plugins: defaultConfig.plugins
-};
+});

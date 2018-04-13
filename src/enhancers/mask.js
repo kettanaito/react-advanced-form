@@ -18,7 +18,7 @@ function ensureMask(string, mask, allowOverlay = true) {
   }
 
   /* Forced convert the given string to an actual string and ensure linear character indexes */
-  const forcedString = string.toString().replace(/\s+/g, '');
+  const forcedString = string.toString().replace(/\W+/g, '');
 
   /* Replace the mask's placeholders with the characters from the string, appending an overlay */
   let i = 0;
@@ -49,6 +49,11 @@ export default class Mask extends Enhancer {
     super(props);
     const { mask, useStrictMask } = props;
 
+    /**
+     * Intercept field change event before updating the field record.
+     * This enhancer affects the entered value of the field by pre-formatting it to match
+     * the provided mask.
+     */
     this.intercept('fieldChange', ({ nextValue, ...rest }) => {
       console.warn('mask: intercepting...');
 
