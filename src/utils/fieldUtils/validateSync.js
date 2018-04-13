@@ -1,9 +1,9 @@
 /**
  * Synchronous validation of a field.
  */
+import createPropGetter from './createPropGetter';
 import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
 import { ruleSelectors } from '../formUtils/getFieldRules';
-import ensafeMap from '../ensafeMap';
 import dispatch from '../dispatch';
 
 /**
@@ -18,7 +18,7 @@ import dispatch from '../dispatch';
  */
 function getRejectedRules(resolverArgs) {
   const rejectedRules = [];
-  const { fieldProps, fields: fieldsOrigin, form } = resolverArgs;
+  const { fieldProps, form } = resolverArgs;
 
   /* Iterating through each rule selector ("name" and "type") */
   ruleSelectors.forEach((ruleSelector) => {
@@ -33,11 +33,8 @@ function getRejectedRules(resolverArgs) {
     }
 
     rules.forEach((rule) => {
-      const { refs, name, selector, resolver } = rule;
-      const fields = ensafeMap(fieldsOrigin, refs);
-
-      // Cannot use Immutable instances in the resolver since it's unclear how to proxy them
-      const isExpected = dispatch(resolver, { ...resolverArgs, fields }, { withImmutable: false });
+      const { name, selector, resolver } = rule;
+      const isExpected = dispatch(resolver, resolverArgs, form.context);
 
       if (isExpected) {
         return;
@@ -90,20 +87,21 @@ export default function validateSync({ fieldProps, fields, form }) {
     return composeResult(true);
   }
 
+  const resolverArgs = {
+    [valuePropName]: value,
+    fieldProps,
+    getFieldProp: createPropGetter(fields),
+    fields,
+    form
+  };
+
   if (rule) {
     //
     // TODO Make observable and ensafe {Field.props.rule} resolver as well.
     //
     const isExpected = (typeof rule === 'function')
       /* Enfore mutability of args for fields proxying */
-      ? dispatch(rule, {
-        [valuePropName]: value,
-        fieldProps,
-        fields,
-        form
-      }, {
-        withImmutable: false
-      })
+      ? dispatch(rule, resolverArgs, { withImmutable: false })
       : rule.test(value);
 
     if (!isExpected) {
@@ -118,12 +116,7 @@ export default function validateSync({ fieldProps, fields, form }) {
    * A form-wide validation provided by "rules" property of the Form.
    * The latter property is also inherited from the context passed by FormProvider.
    */
-  const rejectedRules = getRejectedRules({
-    [valuePropName]: value,
-    fieldProps,
-    fields,
-    form
-  });
+  const rejectedRules = getRejectedRules(resolverArgs);
 
   if (rejectedRules.length > 0) {
     return composeResult(false, rejectedRules);
