@@ -14,8 +14,8 @@ export default class RxPropsSingleTarget extends React.Component {
             name="firstName"
             label="First name"
             hint="Required when `lastName` has value"
-            required={({ getFieldProp }) => {
-              return !!getFieldProp(['lastName', 'value']);
+            required={({ get }) => {
+              return !!get(['lastName', 'value']);
             }} />
           <Input
             name="lastName"
@@ -24,8 +24,8 @@ export default class RxPropsSingleTarget extends React.Component {
             name="fieldThree"
             label="Some field three"
             hint="Required when `lastName` has value"
-            required={({ getFieldProp }) => {
-              return !!getFieldProp(['lastName', 'value'])
+            required={({ get }) => {
+              return !!get(['lastName', 'value'])
             }} />
           <Button>Submit</Button>
         </Form>

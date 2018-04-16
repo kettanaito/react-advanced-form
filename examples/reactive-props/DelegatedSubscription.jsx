@@ -14,8 +14,8 @@ export default class RxPropsDelegatedSubscription extends React.Component {
             name="firstName"
             label="Fisrt name"
             hint="Required when `lastName` has value"
-            required={({ getFieldProp }) => {
-              return !!getFieldProp(['lastName', 'value']);
+            required={({ get }) => {
+              return !!get(['lastName', 'value']);
             }} />
           <Input
             name="lastName"

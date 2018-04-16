@@ -6,14 +6,14 @@ import { flushFieldRefs, fieldUtils } from '../../../src/utils';
 describe('flushFieldRefs', function () {
   it('Flushes referenced field paths properly', () => {
     const fields = fromJS({ fieldOne: { value: 'foo' } });
-    const method = ({ getFieldProp }) => {
-      getFieldProp(['fieldOne', 'value']);
-      getFieldProp(['groupOne', 'fieldOne', 'required']);
+    const method = ({ get }) => {
+      get(['fieldOne', 'value']);
+      get(['groupOne', 'fieldOne', 'required']);
     };
 
-    const getFieldProp = fieldUtils.createPropGetter(fields);
+    const fieldPropGetter = fieldUtils.createPropGetter(fields);
     const { refs } = flushFieldRefs(method, {
-      getFieldProp,
+      get: fieldPropGetter,
       fields,
       form
     });
@@ -25,9 +25,9 @@ describe('flushFieldRefs', function () {
 
   it('Resolves initial value properly', () => {
     const fields = fromJS({ fieldOne: { value: 'foo' } });
-    const method = ({ getFieldProp }) => {
-      getFieldProp(['nonExisting', 'fieldPath', 'propName']);
-      return getFieldProp(['fieldOne', 'value']);
+    const method = ({ get }) => {
+      get(['nonExisting', 'fieldPath', 'propName']);
+      return get(['fieldOne', 'value']);
     };
 
     const { initialValue } = flushFieldRefs(method, { fields, form });

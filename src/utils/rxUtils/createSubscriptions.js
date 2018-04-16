@@ -23,7 +23,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
         const nextPropValue = resolver({
           fieldProps: fieldProps.toJS(),
           fields: nextFields.toJS(),
-          getFieldProp: createPropGetter(nextFields),
+          get: createPropGetter(nextFields),
           form
         }, form.context);
 

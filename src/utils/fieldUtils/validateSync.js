@@ -90,7 +90,7 @@ export default function validateSync({ fieldProps, fields, form }) {
   const resolverArgs = {
     [valuePropName]: value,
     fieldProps,
-    getFieldProp: createPropGetter(fields),
+    get: createPropGetter(fields),
     fields,
     form
   };
