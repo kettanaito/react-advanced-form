@@ -18,8 +18,8 @@ export default class RxPropsDynamicRequired extends React.Component {
             name="lastName"
             label="Last name"
             hint="Required when `firstName` has value"
-            required={({ getFieldProp }) => {
-              return !!getFieldProp(['firstName', 'value']);
+            required={({ get }) => {
+              return !!get(['firstName', 'value']);
             }} />
 
           <Button>Submit</Button>

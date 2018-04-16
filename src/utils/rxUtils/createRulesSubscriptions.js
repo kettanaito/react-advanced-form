@@ -2,11 +2,12 @@ import makeObservable from './makeObservable';
 import flushFieldRefs from '../flushFieldRefs';
 import getFieldRules from '../formUtils/getFieldRules';
 
-//
-// TODO
-// Change rule subscriptions according to new "getFieldProp" API
-//
-
+/**
+ * Creates an observable for each validation rule which referenced other fields' props.
+ * @param {Map} fieldProps
+ * @param {Map} fields
+ * @param {Object} form
+ */
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   const { rxRules } = form.state;
   const value = fieldProps.get(fieldProps.get('valuePropName'));

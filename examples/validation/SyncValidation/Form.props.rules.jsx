@@ -13,8 +13,8 @@ const rules = {
       const { ref: { props } } = fieldProps;
       return (value !== 'foo');
     },
-    fieldTwo: ({ value, getFieldProp }) => {
-      return (value === getFieldProp(['fieldOne', 'value']));
+    fieldTwo: ({ value, get }) => {
+      return (value === get(['fieldOne', 'value']));
     }
   }
 };
