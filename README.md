@@ -56,13 +56,13 @@ Access the field's `value`, `fieldProps`, `fields` and the `form` as the paramet
 ```jsx
 <Input
   name="firstName"
-  required={({ fields }) => !!fields.lastName.value} />
+  required={({ get }) => !!get(['lastName', 'value'])} />
 <Input
   name="lastName"
-  required={({ fields }) => !!fields.firstName.value} />
+  required={({ get }) => !!get(['firstName', 'value'])} />
 ```
 
-Embrace the power of reactive programming which resolves the prop values automatically whenever the referenced fields update.
+Embrace the power of reactive programming which re-evaluates the resolver function whenever the referenced props update.
 
 * [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/docs/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields. Nested and split groups are supported.
 
