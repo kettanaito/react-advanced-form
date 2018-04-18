@@ -20,7 +20,7 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
 * [**Intuitive usage**](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/creating-form.html). Place a `Form` component, add some fields and the form is working without any effort.
 
 ```jsx
-// No, ths is not a diminished example, this is a completely working form
+// No, this is not a diminished example, this is a completely working form
 <Form action={ this.registerUser }>
   <Input name="username" required />
   <Input name="password" type="password" required />
@@ -62,7 +62,7 @@ Access the field's `value`, `fieldProps`, `fields` and the `form` as the paramet
   required={({ get }) => !!get(['firstName', 'value'])} />
 ```
 
-Embrace the power of reactive programming which re-evaluates the resolver function whenever the referenced props update.
+Embrace the power of reactive programming, which re-evaluates the resolver function whenever the referenced field props update.
 
 * [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/docs/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields. Nested and split groups are supported.
 
