@@ -368,6 +368,7 @@ export default class Form extends React.Component {
       fieldPath: fieldProps.get('fieldPath'),
       update: fieldProps => fieldProps
         .set(valuePropName, nextValue)
+        .set('validated', false)
         .set('validating', false)
         .set('validatedSync', false)
         .set('validSync', false)
@@ -376,14 +377,14 @@ export default class Form extends React.Component {
         // .set('errors', null)
     });
 
-    /* Cancel any pending async validation due to the field value change */
+    /* Cancel any pending async validation due to the field's value change */
     if (updatedFieldProps.has('pendingAsyncValidation')) {
       const cancelPendingValidation = updatedFieldProps.getIn(['pendingAsyncValidation', 'cancel']);
       cancelPendingValidation();
     }
 
     /**
-     * Perform appropriate field validation on change.
+     * Perform appropriate field validation on value change.
      * When field has a value set, perform debounced sync validation. For the cases
      * when the user clears the field instantly, perform instant sync validation.
      *
@@ -393,7 +394,7 @@ export default class Form extends React.Component {
      * most likely means the value update of the controlled field, which must be validated
      * instantly.
      */
-    const shouldDebounce = (!!prevValue && !!nextValue);
+    const shouldDebounce = !!prevValue && !!nextValue;
     const appropriateValidation = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
 
     const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({

@@ -122,9 +122,10 @@ export default function connectField(options) {
           valid: false,
           invalid: false,
           validating: false,
+          validated: false,
           validatedSync: false,
-          validSync: false,
           validatedAsync: false,
+          validSync: false,
           validAsync: false
         };
 
