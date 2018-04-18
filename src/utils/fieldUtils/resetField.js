@@ -1,5 +1,5 @@
 /**
- * Resets the provided field.
+ * Resets the props of the provided field.
  * @param {Map} fieldProps
  * @returns {Map}
  */
@@ -13,6 +13,8 @@ export default function resetField(fieldProps) {
     expected: true,
     valid: false,
     invalid: false,
+    validating: false,
+    validated: false,
     validSync: false,
     validAsync: false,
     validatedSync: false,

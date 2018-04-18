@@ -23,7 +23,10 @@ export const customRulesKey = 'rule';
  * @return {Map}
  */
 export const composeResult = (expected, rejectedRules = [], extra) => Map({
-  propsPatch: Map({ expected }),
+  propsPatch: Map({
+    validated: true,
+    expected
+  }),
   rejectedRules: Array.isArray(rejectedRules) ? rejectedRules : [rejectedRules],
   extra
 });
@@ -50,7 +53,9 @@ const sequenceIterator = ({ acc, variables, resolved, isLast, breakIteration }) 
   const expected = resolved.getIn(['propsPatch', 'expected']);
 
   /* Prevent any following validation once the previous one fails */
-  if (!isLast && !expected) breakIteration();
+  if (!isLast && !expected) {
+    breakIteration();
+  }
 
   /* Get the name of the sequence entry (which is the validation type) */
   const { validationType } = variables;
@@ -69,7 +74,7 @@ const sequenceIterator = ({ acc, variables, resolved, isLast, breakIteration }) 
  * It is important to resolve the validation immediately once the field becomes invalid.
  * @param {Map} fieldProps
  * @param {Map} fields
- * @param {object} form
+ * @param {Object} form
  * @param {Map} formRules
  * @return {boolean}
  */
