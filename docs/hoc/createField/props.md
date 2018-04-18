@@ -28,7 +28,8 @@ A representation of the field's record has multiple properties reflecting its st
 | `validating` | `boolean` | Indicates whether the field is being validated at the moment. |
 | `valid` | `boolean` | Indicates whether the field has passed all the validations. |
 | `invalid` | `boolean` | Indicates whether the field has not passed all the validations. |
-| `errors` | `string[]` | Lorem ipsum. |
+| `errors` | `string[]` | Collection of validation errors relative to the fields at the given point of time. |
+| `validated`| `boolean` | Indicates that the field has been validated, regardless of the validation type and status. |
 | `validatedSync` | `boolean` | Indicates whether the field has been validated synchronously. |
 | `validSync` | `boolean` | Indicates whether the field is valid relatively to its synchronous validation rules. |
 | `validatedAsync` | `boolean` | Indicates whether the field has been validated asynchronously. |
