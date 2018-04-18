@@ -111,10 +111,34 @@ npm install react-advanced-form --save
 ```
 
 ### Guidelines
-Starting with something new may appear challenging. Good that there is a detailed step-by-step instruction on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/installation.html). It contains a minimal information you need to install, prepare and use this solution in your project.
+Starting with something new may appear challenging. There is a step-by-step instructions on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/installation.html), which ensure easy and clear integration process.
 
 ## Documenation
 See the [Documentation](https://kettanaito.gitbooks.io/react-advanced-form) for the list of all available features, their descriptions and examples of usage.
+
+Help to improve the documentation by submitting a [Pull request](https://github.com/kettanaito/react-advanced-form/pulls) with your ideas.
+
+## Browser support
+<table>
+  <tr>
+    <th>Chrome</th>
+    <th>Firefox</th>
+    <th>Safari</th>
+    <th>iOS Safari</th>
+    <th>Edge</th>
+    <th>Internet Explorer</th>
+  </tr>
+  <tr>
+    <td align="center">65+</td>
+    <td align="center">57+</td>
+    <td align="center">9+</td>
+    <td align="center">8+</td>
+    <td align="center">41+</td>
+    <td align="center">–</td>
+  </tr>
+</table>
+
+There is no official support for Internet Explorer. No features are tested to ensure working there. They may, or may not work. Microsoft has stopped IE support, and so should you application.
 
 ## Contributing
 Any of your contributions are highly appreciated. See the [Contribution guidelines](https://kettanaito.gitbooks.io/react-advanced-form/docs/CONTRIBUTING.html) to get to know the process better. Moreover, development isn't the only way to contribute, there are [many more](https://kettanaito.gitbooks.io/react-advanced-form/docs/CONTRIBUTING.html#other-contributions).
