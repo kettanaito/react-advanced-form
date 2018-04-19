@@ -99,9 +99,6 @@ export default function validateSync({ fieldProps, fields, form }) {
   };
 
   if (rule) {
-    //
-    // TODO Make observable
-    //
     const isExpected = (typeof rule === 'function')
       ? dispatch(rule, resolverArgs, form.context)
       : rule.test(value);

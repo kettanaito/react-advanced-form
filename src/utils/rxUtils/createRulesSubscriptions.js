@@ -5,7 +5,7 @@ import getFieldRules from '../formUtils/getFieldRules';
 function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
   const resolver = fieldProps.get('rule');
 
-  if (!resolver || (typeof resolver !== 'function')) {
+  if (typeof resolver !== 'function') {
     return ruleGroups;
   }
 
@@ -50,11 +50,9 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     }
   });
 
-  // ...
-  // Check the Field.props.rule, create observable when necessary
-  // Add "rule" key to "ruleGroups", and its value to
   //
-
+  //
+  // Any way to do this in one call?
   const finalRuleGroups = addFieldPropsRule(ruleGroups, fieldProps, resolverArgs);
 
   if (finalRuleGroups.size === 0) {
