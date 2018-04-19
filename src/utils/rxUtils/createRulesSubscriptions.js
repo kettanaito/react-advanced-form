@@ -2,6 +2,14 @@ import makeObservable from './makeObservable';
 import flushFieldRefs from '../flushFieldRefs';
 import getFieldRules from '../formUtils/getFieldRules';
 
+/**
+ * Appends the "Field.props.rule" resolver function to the provided
+ * rule groups in case the resolver is a reactive function.
+ * @param {Map} ruleGroups
+ * @param {Map} fieldProps
+ * @param {Object} resolverArgs
+ * @returns {Map}
+ */
 function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
   const resolver = fieldProps.get('rule');
 
@@ -37,7 +45,11 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     form
   };
 
-  const ruleGroups = getFieldRules({
+  /**
+   * Get the collection of reactive rules from the form validation schema
+   * relative to the registered field.
+   */
+  const schemaRuleGroups = getFieldRules({
     fieldProps,
     schema: form.formRules,
     transformRule(ruleParams) {
@@ -50,12 +62,12 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     }
   });
 
-  //
-  //
-  // Any way to do this in one call?
-  const finalRuleGroups = addFieldPropsRule(ruleGroups, fieldProps, resolverArgs);
+  /**
+   * Add "Field.props.rule" in case the latter has field references.
+   */
+  const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs);
 
-  if (finalRuleGroups.size === 0) {
+  if (ruleGroups.size === 0) {
     return rxRules;
   }
 
@@ -64,7 +76,7 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
    * The observable will listen for the referenced props change event and re-evaluate
    * the validation rule(s) where that prop is referenced.
    */
-  finalRuleGroups.forEach((ruleGroup) => {
+  ruleGroups.forEach((ruleGroup) => {
     ruleGroup.forEach((rule) => {
       /* Bypass rule resolvers without field references */
       if (rule.refs.length === 0) {
