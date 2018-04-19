@@ -96,7 +96,7 @@ export default class Form extends React.Component {
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime;
 
     /* Define validation rules */
-    this.formRules = formUtils.getRules(explicitRules, rules);
+    this.formRules = formUtils.mergeRules(explicitRules, rules);
 
     /**
      * Define validation messages once, since those should be converted to immutable, which is

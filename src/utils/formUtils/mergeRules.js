@@ -7,7 +7,7 @@ import { fromJS, Map } from 'immutable';
  * @param {Map} contextRules
  * @returns {Map}
  */
-export default function getRules(formRules, contextRules) {
+export default function mergeRules(formRules, contextRules) {
   if (!formRules) return (contextRules || Map());
 
   const iterableRules = fromJS(formRules);
