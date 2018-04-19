@@ -31,12 +31,6 @@ export default class FieldPropsRule extends React.Component {
           hint="Only lowercase letters allowed"
           rule={/^[a-z]+$/}
           required />
-
-        <Input
-          name="foo"
-          rule={({ value, get }) => {
-            return (value === get(['fieldOne', 'value']));
-          }} />
       </Form>
     );
   }

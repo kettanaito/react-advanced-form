@@ -56,7 +56,15 @@ function createObserver({ fieldPath, props, form, subscribe, observerOptions }) 
  * @param {Object<argName: argValue>} methodArgs
  * @param {Options} options
  */
-export default function makeObservable(method, methodArgs, { observerOptions, subscribe, initialCall = false }) {
+export default function makeObservable(
+  method,
+  methodArgs,
+  {
+    observerOptions,
+    subscribe,
+    initialCall = false
+  }
+) {
   const { fieldProps, fields, form } = methodArgs;
   const { refs, initialValue } = flushFieldRefs(method, methodArgs);
 
