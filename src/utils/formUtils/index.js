@@ -1,2 +1,2 @@
-export getRules from './getRules';
+export mergeRules from './mergeRules';
 export getFieldRules from './getFieldRules';
