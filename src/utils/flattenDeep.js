@@ -2,7 +2,7 @@ import { Map } from 'immutable';
 
 /**
  * Flattens the given Iterable. Returns entries which satisfy the predicate function and
- * applies optional transformations for keys and values of the returned Iterable.
+ * applies optional transformations for keys and/or values of the respective Iterable.
  * @param {Iterable} iter
  * @param {Function} predicate
  * @param {boolean} flattenKeys
@@ -32,11 +32,19 @@ export default function flattenDeep(
       return acc.setIn(resolvedKeyPath, resolvedValue);
     }
 
-    /* Do not call flatten recursively in case the current value is not an instance of iterable */
+    /* Do not call flatten recursively in case the current value is not an instance of Iterable */
     if (!Map.isMap(value)) {
       return acc;
     }
 
-    return flattenDeep(value, predicate, flattenKeys, transformValue, transformKey, deepKeyPath, acc);
+    return flattenDeep(
+      value,
+      predicate,
+      flattenKeys,
+      transformValue,
+      transformKey,
+      deepKeyPath,
+      acc
+    );
   }, nextAcc);
 }

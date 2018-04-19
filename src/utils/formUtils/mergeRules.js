@@ -1,8 +1,8 @@
 import { fromJS, Map } from 'immutable';
 
 /**
- * Returns the iterable instance of form rules based on the provided proprietary rules and the inherited
- * context rules.
+ * Returns the iterable instance of form rules based on the provided proprietary rules
+ * and the inherited context rules.
  * @param {Object} formRules
  * @param {Map} contextRules
  * @returns {Map}
