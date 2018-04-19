@@ -179,7 +179,11 @@ export default class Form extends React.Component {
      * resolve them once their dependencies update. Returns the Map of the recorded formatted rules.
      * That Map is later used during the sync validation as the rules source.
      */
-    const nextRxRules = rxUtils.createRulesSubscriptions({ fieldProps, fields, form: this });
+    const nextRxRules = rxUtils.createRulesSubscriptions({
+      fieldProps,
+      fields,
+      form: this
+    });
 
     this.setState({ fields: nextFields, rxRules: nextRxRules }, () => {
       /* Emit the field registered event */

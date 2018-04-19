@@ -9,6 +9,7 @@ import camelize from '../camelize';
  * @param {Object} nextProps
  * @param {Map} prevContextProps
  * @param {Map} nextContextProps
+ * @returns {boolean}
  */
 const defaultPredicate = ({ propName, prevProps, nextProps }) => {
   return (prevProps[propName] !== nextProps[propName]);
@@ -18,8 +19,9 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
  * Creates an observer listening to the props changes of the provided field.
  * Then emits on each prop change which satisfies the given predicate function.
  * @param {string} fieldPath Field path of the subscribed target field.
- * @param {Array<string>|string} props
- * @param {Function: boolean} predicate
+ * @param {string[]|string} props
+ * @param {(eventData: EventData) => boolean} predicate
+ * @param {(eventData: EventData) => any} getNextValue
  * @param {EventEmitter} eventEmitter
  * @return {Observable}
  */
@@ -34,7 +36,9 @@ export default function addPropsObserver({ fieldPath, props, predicate, getNextV
         const hasPropsChanged = appropriatePredicate({ ...eventData, propName });
 
         if (hasPropsChanged) {
-          acc[propName] = getNextValue ? getNextValue({ ...eventData, propName }) : eventData.nextProps[propName];
+          acc[propName] = getNextValue
+            ? getNextValue({ ...eventData, propName })
+            : eventData.nextProps[propName];
         }
 
         return acc;
@@ -46,5 +50,7 @@ export default function addPropsObserver({ fieldPath, props, predicate, getNextV
       };
     })
     /* Emit the caught events with changed props only */
-    .filter(({ changedProps }) => (Object.keys(changedProps).length > 0));
+    .filter(({ changedProps }) => {
+      return (Object.keys(changedProps).length > 0);
+    });
 }

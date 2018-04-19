@@ -2,11 +2,29 @@ import makeObservable from './makeObservable';
 import flushFieldRefs from '../flushFieldRefs';
 import getFieldRules from '../formUtils/getFieldRules';
 
+function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
+  const resolver = fieldProps.get('rule');
+
+  if (!resolver || (typeof resolver !== 'function')) {
+    return ruleGroups;
+  }
+
+  const { refs } = flushFieldRefs(resolver, resolverArgs);
+
+  return ruleGroups.set('rule', [{
+    refs,
+    resolver
+  }]);
+}
+
 /**
- * Creates an observable for each validation rule which referenced other fields' props.
+ * Creates an observable for each validation rule which references other fields' props.
+ * Flattens deep the validation schema, finding the rules relevant to the currently
+ * registering field, and creates observables for those rules which reference another fields.
  * @param {Map} fieldProps
  * @param {Map} fields
  * @param {Object} form
+ * @returns {Map}
  */
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   const { rxRules } = form.state;
@@ -23,14 +41,23 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     fieldProps,
     schema: form.formRules,
     transformRule(ruleParams) {
+      const { refs } = flushFieldRefs(ruleParams.resolver, resolverArgs);
+
       return {
         ...ruleParams,
-        refs: flushFieldRefs(ruleParams.resolver, resolverArgs)
+        refs
       };
     }
   });
 
-  if (ruleGroups.size === 0) {
+  // ...
+  // Check the Field.props.rule, create observable when necessary
+  // Add "rule" key to "ruleGroups", and its value to
+  //
+
+  const finalRuleGroups = addFieldPropsRule(ruleGroups, fieldProps, resolverArgs);
+
+  if (finalRuleGroups.size === 0) {
     return rxRules;
   }
 
@@ -39,8 +66,9 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
    * The observable will listen for the referenced props change event and re-evaluate
    * the validation rule(s) where that prop is referenced.
    */
-  ruleGroups.forEach((ruleGroup) => {
+  finalRuleGroups.forEach((ruleGroup) => {
     ruleGroup.forEach((rule) => {
+      /* Bypass rule resolvers without field references */
       if (rule.refs.length === 0) {
         return;
       }
