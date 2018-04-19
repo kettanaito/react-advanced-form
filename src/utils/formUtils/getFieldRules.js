@@ -1,5 +1,10 @@
 import flattenDeep from '../flattenDeep';
 
+/**
+ * Collection of rule selectors listed in the strict order.
+ * The selectors reference to the respective field selectors in the
+ * validation rules schema.
+ */
 export const ruleSelectors = [
   fieldProps => ['name', fieldProps.get('name')],
   fieldProps => ['type', fieldProps.get('type')]
@@ -36,6 +41,11 @@ function generateValueTransformer(ruleFormatter) {
   };
 }
 
+/**
+ * Generates a predicate function based on the provided field props.
+ * @param {Map} fieldProps
+ * @returns {Function}
+ */
 function generatePredicate(fieldProps) {
   return (value, deepKeyPath) => {
     return ruleSelectors.some((ruleSelector) => {

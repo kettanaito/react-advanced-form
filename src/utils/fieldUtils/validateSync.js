@@ -1,6 +1,3 @@
-/**
- * Synchronous validation of a field.
- */
 import createPropGetter from './createPropGetter';
 import { commonErrorTypes, createRejectedRule, composeResult } from './validate';
 import { ruleSelectors } from '../formUtils/getFieldRules';
@@ -55,16 +52,22 @@ function getRejectedRules(resolverArgs) {
   return rejectedRules;
 }
 
+/**
+ * Performs a synchronous validation of the provided field.
+ * @param {Map} fieldProps
+ * @param {Map} fields
+ * @param {Object} form
+ * @returns {ValidationResult}
+ */
 export default function validateSync({ fieldProps, fields, form }) {
-  /* Get properties shorthand references */
-  const name = fieldProps.get('name');
-  const type = fieldProps.get('type');
+  const { rxRules } = form.state;
+  const fieldName = fieldProps.get('name');
+  const fieldType = fieldProps.get('type');
   const valuePropName = fieldProps.get('valuePropName');
   const value = fieldProps.get(valuePropName);
   const required = fieldProps.get('required');
   const rule = fieldProps.get('rule');
   const asyncRule = fieldProps.get('asyncRule');
-  const { rxRules } = form.state;
 
   /* Empty optional fields are expected */
   if (!value && !required) {
@@ -79,8 +82,8 @@ export default function validateSync({ fieldProps, fields, form }) {
   }
 
   /* Assume Field doesn't have any relevant validation rules */
-  const hasFormNameRules = rxRules.has(`name.${name}`);
-  const hasFormTypeRules = rxRules.has(`type.${type}`);
+  const hasFormNameRules = rxRules.has(`name.${fieldName}`);
+  const hasFormTypeRules = rxRules.has(`type.${fieldType}`);
   const hasFormRules = hasFormNameRules || hasFormTypeRules;
 
   if (!rule && !asyncRule && !hasFormRules) {
@@ -97,11 +100,10 @@ export default function validateSync({ fieldProps, fields, form }) {
 
   if (rule) {
     //
-    // TODO Make observable and ensafe {Field.props.rule} resolver as well.
+    // TODO Make observable
     //
     const isExpected = (typeof rule === 'function')
-      /* Enfore mutability of args for fields proxying */
-      ? dispatch(rule, resolverArgs, { withImmutable: false })
+      ? dispatch(rule, resolverArgs, form.context)
       : rule.test(value);
 
     if (!isExpected) {
