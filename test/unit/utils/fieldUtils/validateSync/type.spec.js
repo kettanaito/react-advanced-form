@@ -14,7 +14,7 @@ describe('Type-specific validation', () => {
     })
   });
 
-  it('Functional rule', () => {
+  it('Supports type-specific rule as a functional rule', () => {
     const schema = fromJS({
       type: {
         text: ({ value }) => /^\d+$/.test(value)
@@ -69,7 +69,7 @@ describe('Type-specific validation', () => {
     expect(resultTwo).to.have.property('rejectedRules').with.length(0);
   });
 
-  it('Multiple named rules', () => {
+  it('Supports multiple named rules', () => {
     const schema = fromJS({
       type: {
         password: {

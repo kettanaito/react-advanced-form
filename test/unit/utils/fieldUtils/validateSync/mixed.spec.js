@@ -9,7 +9,7 @@ import { formUtils, fieldUtils } from '../../../../../src/utils';
 describe('Mixed validation', function () {
   const fields = Map({});
 
-  it('Name-specific rules are prior to type-specific rule', () => {
+  it('Executes name-specific rules prior to type-specific rules', () => {
     const schema = fromJS({
       type: {
         text: ({ value }) => (value.length < 5)

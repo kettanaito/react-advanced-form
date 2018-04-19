@@ -12,7 +12,7 @@ describe('Uncontrolled fields interactions', function () {
     this.form.reset();
   });
 
-  it('form renders with proper initial state.fields values', () => {
+  it('Form renders with proper initial state.fields values', () => {
     cy.get('#form').should(() => {
       const serialized = this.form.serialize();
       expect(serialized).to.deep.equal({
@@ -26,7 +26,7 @@ describe('Uncontrolled fields interactions', function () {
     });
   });
 
-  it('fields interactions change form state properly', () => {
+  it('Fields interactions change form state properly', () => {
     cy.get('#inputOne').type('first value');
     cy.get('#inputTwo').clear().type('second value')
     cy.get('#radio3').check();

@@ -10,7 +10,7 @@ describe('Asynchronous validation', function () {
   afterEach(() => this.form.reset());
 
   describe('Logic', () => {
-    it('empty optional field with async rule resolves', () => {
+    it('Empty optional field with async rule resolves', () => {
       cy.get('#fieldOne')
         .focus()
         .blur()
@@ -18,7 +18,7 @@ describe('Asynchronous validation', function () {
         .should('not.have.class', 'is-invalid');
     });
 
-    it('empty required field with async rule rejects', () => {
+    it('Empty required field with async rule rejects', () => {
       cy.get('#fieldTwo')
         .focus()
         .blur()
@@ -26,7 +26,7 @@ describe('Asynchronous validation', function () {
         .should('have.class', 'is-invalid');
     });
 
-    it('field with rejected sync rule does not call async rule', () => {
+    it('Field with rejected sync rule does not call async rule', () => {
       cy.get('#fieldThree')
         .type('foo').should('have.value', 'foo')
         .should('have.class', 'is-invalid')
@@ -43,7 +43,7 @@ describe('Asynchronous validation', function () {
         .should('have.class', 'is-invalid');
     });
 
-    it('field with expected value resolves', () => {
+    it('Field with expected value resolves', () => {
       cy.get('#fieldOne')
         .type('expected value').should('have.value', 'expected value')
         .blur().should('have.class', 'is-validating')
@@ -52,7 +52,7 @@ describe('Asynchronous validation', function () {
         .should('have.class', 'is-valid');
     });
 
-    it('field with unexpected value rejects', () => {
+    it('Field with unexpected value rejects', () => {
       cy.get('#fieldOne')
         .type('foo').should('have.value', 'foo')
         .blur().should('have.class', 'is-validating')
@@ -61,7 +61,7 @@ describe('Asynchronous validation', function () {
         .should('have.class', 'is-invalid');
     });
 
-    it('cancels pending async validation on state reset', () => {
+    it('Cancels pending async validation on state reset', () => {
       cy.get('#fieldOne')
         .type('foo').should('have.value', 'foo')
         .blur({ force: true }).should('have.class', 'is-validating')
@@ -78,7 +78,7 @@ describe('Asynchronous validation', function () {
   });
 
   describe('Messages', () => {
-    it('error message can access "extra" received from response', () => {
+    it('Error message can access "extra" received from response', () => {
       cy.get('#fieldFour')
         .type('foo').should('have.value', 'foo')
         .blur().should('have.class', 'is-validating')
