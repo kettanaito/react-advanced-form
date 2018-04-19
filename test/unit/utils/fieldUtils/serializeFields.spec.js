@@ -52,7 +52,7 @@ describe('serializeFields', function () {
     });
   });
 
-  it('Bypass the fields marked as "skip"', () => {
+  it('Bypasses the fields marked as "skip"', () => {
     const fields = fromJS({
       fieldOne: { fieldPath: ['fieldOne'], value: 'foo', valuePropName: 'value' },
       fieldTwo: { fieldPath: ['fieldTwo'], value: 'skipped', valuePropName: 'value', skip: true },

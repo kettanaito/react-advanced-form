@@ -9,7 +9,7 @@ describe('Controlled fields interactions', function () {
   before(() => mount(<Scenario getRef={ form => this.form = form } />));
   afterEach(() => this.form.reset());
 
-  it('form rendered with proper initial state.fields values', () => {
+  it('Form rendered with proper initial state.fields values', () => {
     cy.get('#form').should(() => {
       const serialized = this.form.serialize();
       expect(serialized).to.deep.equal({
@@ -23,7 +23,7 @@ describe('Controlled fields interactions', function () {
     });
   });
 
-  it('controlled fields interactions change form state properly', () => {
+  it('Controlled fields interactions change form state properly', () => {
     cy.get('#inputOne').type('first value').should('have.value', 'first value');
     cy.get('#inputTwo').clear().type('second value').should('have.value', 'second value');
     cy.get('#radio3').check().should('be.checked');

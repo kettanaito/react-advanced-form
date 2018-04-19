@@ -9,7 +9,7 @@ import { formUtils, fieldUtils } from '../../../../../src/utils';
 describe('Name-specific validation', () => {
   const fields = Map({});
 
-  it('Functional rule', () => {
+  it('Supports name-specific rule as a functional rule', () => {
     const schema = fromJS({
       name: {
         fieldName: ({ value }) => /^\d+$/.test(value)
@@ -56,7 +56,7 @@ describe('Name-specific validation', () => {
     expect(resultTwo).to.have.property('rejectedRules').with.length(0);
   });
 
-  it('Multiple named rules', () => {
+  it('Supports multiple named rules', () => {
     const schema = fromJS({
       name: {
         fieldName: {

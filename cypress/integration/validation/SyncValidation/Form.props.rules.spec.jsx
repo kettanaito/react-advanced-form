@@ -5,7 +5,7 @@ import Scenario, { fieldSelector } from '@examples/validation/SyncValidation/For
 describe('Form.props.rules', function () {
   before(() => mount(<Scenario />));
 
-  it('empty optional field with Form.props.rules resolves', () => {
+  it('Empty optional field with Form.props.rules resolves', () => {
     cy.get(fieldSelector)
       .focus()
       .blur()
@@ -13,7 +13,7 @@ describe('Form.props.rules', function () {
       .should('not.have.class', 'is-invalid')
   });
 
-  it('clearing optional unexpected field resets validation status', () => {
+  it('Clearing optional unexpected field resets validation status', () => {
     cy.get(fieldSelector)
       .clear().type('foo').should('have.value', 'foo')
       .should('have.class', 'is-invalid')
@@ -22,7 +22,7 @@ describe('Form.props.rules', function () {
       .should('not.have.class', 'is-valid')
   });
 
-  it('clearing required unexpected field retains validation status', () => {
+  it('Clearing required unexpected field retains validation status', () => {
     mount(<Scenario required />);
 
     cy.get(fieldSelector)
@@ -33,35 +33,35 @@ describe('Form.props.rules', function () {
       .should('not.have.class', 'is-valid')
   });
 
-  it('optional field with name-specific matching value resolves', () => {
+  it('Optional field with name-specific matching value resolves', () => {
     cy.get(fieldSelector)
       .clear().type('some').should('have.value', 'some')
       .should('have.class', 'is-valid')
       .should('not.have.class', 'is-invalid')
   });
 
-  it('optional field with name-specific unmatching value rejects', () => {
+  it('Optional field with name-specific unmatching value rejects', () => {
     cy.get(fieldSelector)
       .clear().type('foo').should('have.value', 'foo')
       .should('have.class', 'is-invalid')
       .should('not.have.class', 'is-valid')
   });
 
-  it('optional field with type-specific matching value resolves', () => {
+  it('Optional field with type-specific matching value resolves', () => {
     cy.get(fieldSelector)
       .clear().type('some').should('have.value', 'some')
       .should('have.class', 'is-valid')
       .should('not.have.class', 'is-invalid')
   });
 
-  it('optional field with type-specific unmatching value rejects', () => {
+  it('Optional field with type-specific unmatching value rejects', () => {
     cy.get(fieldSelector)
       .clear().type('123').should('have.value', '123')
       .should('have.class', 'is-invalid')
       .should('not.have.class', 'is-valid')
   });
 
-  it('required field with name-specific matching value resolves', () => {
+  it('Required field with name-specific matching value resolves', () => {
     mount(<Scenario required />);
 
     cy.get(fieldSelector)
@@ -70,7 +70,7 @@ describe('Form.props.rules', function () {
       .should('not.have.class', 'is-invalid')
   });
 
-  it('required field with name-specific unmatching value rejects', () => {
+  it('Required field with name-specific unmatching value rejects', () => {
     mount(<Scenario required />);
 
     cy.get(fieldSelector)
@@ -79,7 +79,7 @@ describe('Form.props.rules', function () {
       .should('not.have.class', 'is-valid')
   });
 
-  it('re-evaluates rule when referenced field prop updates', () => {
+  it('Re-evaluates rule when referenced field prop updates', () => {
     cy.get('[name="fieldOne"]')
       .clear()
       .type('something').should('have.value', 'something')
