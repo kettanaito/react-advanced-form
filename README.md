@@ -15,9 +15,9 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
 ## Features
 * **Boilterplate-free**. Remember how you were tossing tons of configurations for high-order components around each form? No more. Create clean and powerful forms without repeating yourself, without building crazy abstractions.
 
-* [**Composite fields**](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/creating-fields.html). React Advanced Form is *field-centric*. That means you define flexible and reusable fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
+* [**Composite fields**](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/creating-fields.html). React Advanced Form is *field-centric*. That means you define flexible fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
 
-* [**Intuitive usage**](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/creating-form.html). Place a `Form` component, add some fields and the form is working without any effort.
+* [**Intuitive usage**](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/creating-form.html). Place a `Form` component, add some fields and the form is working without extra effort.
 
 ```jsx
 // No, this is not a diminished example, this is a completely working form
@@ -49,7 +49,7 @@ export default {
 };
 ```
 
-Access the field's `value`, `fieldProps`, `fields` and the `form` as the parameters of each resolver function. Apply the rules application-wide via `FormProvider`, or extend/override them for a specific form. Say goodbye to crowded `validate` functions, welcome **clean validation schemas**!
+Access the field's `value`, `fieldProps`, `fields` and the `form` as the parameters of each resolver function. Apply the rules application-wide via `FormProvider`, or extend/override them for a specific form. **Say goodbye to crowded `validate` functions, welcome clean validation schemas**!
 
 * [**Reactive props**](https://kettanaito.gitbooks.io/react-advanced-form/docs/architecture/reactive-props.html). How much effort would it take you to make one field required based on another field(s)? Yes, the correct answer is—*one line of code*:
 
@@ -62,7 +62,7 @@ Access the field's `value`, `fieldProps`, `fields` and the `form` as the paramet
   required={({ get }) => !!get(['firstName', 'value'])} />
 ```
 
-Embrace the power of reactive programming, which re-evaluates the resolver function whenever the referenced field props update.
+Embrace the power of reactive programming, which re-evaluates a resolver function whenever the referenced field props update.
 
 * [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/docs/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields. Nested and split groups are supported.
 
@@ -114,9 +114,9 @@ npm install react-advanced-form --save
 Starting with something new may appear challenging. There is a step-by-step instructions on how to [Get started with React Advanced Form](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/installation.html), which ensure easy and clear integration process.
 
 ## Documenation
-See the [Documentation](https://kettanaito.gitbooks.io/react-advanced-form) for the list of all available features, their descriptions and examples of usage.
+See the [Documentation](https://kettanaito.gitbooks.io/react-advanced-form) for the list of all available features, their descriptions and usage examples.
 
-Help to improve the documentation by submitting a [Pull request](https://github.com/kettanaito/react-advanced-form/pulls) with your ideas.
+Help to improve the documentation by submitting a [Pull request](https://github.com/kettanaito/react-advanced-form/pulls) with your suggestions or ideas.
 
 ## Browser support
 <table>
@@ -138,7 +138,7 @@ Help to improve the documentation by submitting a [Pull request](https://github.
   </tr>
 </table>
 
-There is no official support for Internet Explorer. No features are tested to ensure working there. They may, or may not work. Microsoft has stopped IE support, and so should you application.
+> There is no official support for Internet Explorer. No features are tested to ensure working there. They may, or may not work. Microsoft has stopped IE support, and so should you application.
 
 ## Contributing
 Any of your contributions are highly appreciated. See the [Contribution guidelines](https://kettanaito.gitbooks.io/react-advanced-form/docs/CONTRIBUTING.html) to get to know the process better. Moreover, development isn't the only way to contribute, there are [many more](https://kettanaito.gitbooks.io/react-advanced-form/docs/CONTRIBUTING.html#other-contributions).
