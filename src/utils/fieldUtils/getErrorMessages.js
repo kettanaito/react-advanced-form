@@ -88,9 +88,9 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
       return messagesList;
     }
 
-    const isFunctionalMessage = (typeof message === 'function');
-    const resolvedMessage = isFunctionalMessage ? dispatch(message, resolverArgs, form.context) : message;
-    const isMessageValid = isFunctionalMessage ? !!resolvedMessage : true;
+    const isResolver = (typeof message === 'function');
+    const resolvedMessage = isResolver ? dispatch(message, resolverArgs, form.context) : message;
+    const isMessageValid = isResolver ? !!resolvedMessage : true;
 
     /* Throw on functional messages that return falsy values */
     invariant(isMessageValid, 'Expected the error message declaration of the rule `%s` to return a String, ' +

@@ -27,8 +27,9 @@ module.exports = {
     'no-console': 0,
     'max-len': [1, 120],
     'consistent-return': 0,
+    'semi': 0,
+    'comma-dangle': 0,
     'array-callback-return': 0,
-    'import/no-extraneous-dependencies': 0,
     'arrow-body-style': 0,
     'object-curly-newline': 0,
     'no-mixed-operators': 0,
@@ -36,7 +37,6 @@ module.exports = {
     'no-shadow': 0,
     'func-names': 0,
     'no-param-reassign': 0,
-    'import/prefer-default-export': 0,
     'class-methods-use-this': 0,
     'no-prototype-builtins': 0,
     'no-await-in-loop': 0,
@@ -46,6 +46,11 @@ module.exports = {
     'no-confusing-arrow': 0,
     'padded-blocks': 0,
     'no-underscore-dangle': 0,
+
+    /* Import */
+    'import/no-extraneous-dependencies': 0,
+    'import/prefer-default-export': 0,
+    'import/no-named-as-default-member': 0,
 
     /* React */
     'react/jsx-uses-react': 2,

@@ -1,9 +1,8 @@
 //
-//
 // TODO It would be great to allow any prop to be a function with the unified
 // resolver interface.
 //
-//
+
 /* The list of supported dynamic props */
 export const supportedRxProps = ['required'];
 

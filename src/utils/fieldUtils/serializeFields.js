@@ -6,10 +6,14 @@ function defaultTransformValue(fieldProps) {
 }
 
 function predicate(fieldProps) {
-  if (!Map.isMap(fieldProps) || !fieldProps.has('fieldPath')) return;
+  if (!Map.isMap(fieldProps) || !fieldProps.has('fieldPath')) {
+    return;
+  }
 
   /* Bypass the fields which should be skipped */
-  if (fieldProps.get('skip')) return false;
+  if (fieldProps.get('skip')) {
+    return false;
+  }
 
   /* Grab the field's value */
   const defaultValue = fieldProps.get(fieldProps.get('valuePropName'));
@@ -17,7 +21,9 @@ function predicate(fieldProps) {
   /* Bypass checkboxes with no value */
   const isCheckbox = (fieldProps.get('type') === 'checkbox');
   const hasEmptyValue = (defaultValue === '');
-  if (!isCheckbox && hasEmptyValue) return false;
+  if (!isCheckbox && hasEmptyValue) {
+    return false;
+  }
 
   return true;
 }

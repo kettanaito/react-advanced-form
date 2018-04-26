@@ -98,6 +98,13 @@ export default function validateSync({ fieldProps, fields, form }) {
     form
   };
 
+  //
+  // Create a chainable interface for these granular validator functions
+  // seq(vali).then(sfog);
+  // Or dive even deeper, and chain validators on the type/name rules level,
+  // because there is the exact sequencing and cancellation of rules.
+  //
+
   if (rule) {
     const isExpected = (typeof rule === 'function')
       ? dispatch(rule, resolverArgs, form.context)

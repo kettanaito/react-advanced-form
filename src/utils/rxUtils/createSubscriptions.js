@@ -8,7 +8,9 @@ import createPropGetter from '../fieldUtils/createPropGetter';
  */
 export default function createSubscriptions({ fieldProps, fields, form }) {
   const rxProps = fieldProps.get('reactiveProps');
-  if (!rxProps) return;
+  if (!rxProps) {
+    return;
+  }
 
   const subscriberFieldPath = fieldProps.get('fieldPath');
   const resolverArgs = { fieldProps, fields, form };

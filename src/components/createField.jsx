@@ -7,6 +7,7 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
+import validateFunc from '../utils/validation';
 import { isset, camelize, debounce, CustomPropTypes, getComponentName, rxUtils } from '../utils';
 
 /* Default options for `connectField()` HOC */
@@ -161,7 +162,12 @@ export default function connectField(options) {
          * Wrapping the validate method for each field means that each re-occuring call to that method is
          * going to be debounced relatively to the field, regardless of the other fields being validated.
          */
-        fieldRecord.debounceValidate = debounce(form.validateField, form.debounceTime);
+        // fieldRecord.debounceValidate = debounce(form.validateField, form.debounceTime);
+
+        //
+        // TODO Check the function wrapped in debounce.
+        //
+        fieldRecord.debounceValidate = debounce(validateFunc, form.debounceTime);
 
         /* Create immutable field props from the mutable field record */
         let fieldProps = Map(fieldRecord);

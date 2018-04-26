@@ -4,11 +4,12 @@
  * @param {number} duration
  * @param {boolean} immediate
  * @return {func}
+ * @flow
  */
-export default function debounce(func, duration, immediate = false) {
+export default function debounce(func: Function, duration: number, immediate: boolean = false) {
   let timeout;
 
-  return function (...args) {
+  return function (...args: mixed[]) {
     const context = this;
 
     return new Promise((resolve) => {

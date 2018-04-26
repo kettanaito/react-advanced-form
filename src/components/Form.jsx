@@ -10,6 +10,7 @@ import 'rxjs/add/observable/fromEvent';
 /* Internal modules */
 import { defaultDebounceTime, TValidationRules, TValidationMessages } from './FormProvider';
 import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
+import validatorFunc from '../utils/validation';
 import {
   CustomPropTypes,
   isset,
@@ -161,7 +162,7 @@ export default class Form extends React.Component {
      * of the respective field component. Only the changes in the props relative to the record
      * should be observed and synchronized.
      */
-    rxUtils.addPropsObserver({
+    rxUtils.createPropsObserver({
       fieldPath,
       props: ['type'],
       eventEmitter
@@ -262,6 +263,27 @@ export default class Form extends React.Component {
   }
 
   /**
+   * @param {Map} nextFieldProps
+   * @returns {Promise}
+   */
+  updateFieldsWith = (nextFieldProps) => {
+    const nextFields = fieldUtils.__foo__.updateCollectionWith(nextFieldProps, this.state.fields);
+
+    console.warn('updateFieldsWith');
+    console.log('nextFieldProps', nextFieldProps.toJS());
+    console.log('nextFields:', nextFields.toJS());
+    console.log(' ');
+
+    return new Promise((resolve, reject) => {
+      try {
+        this.setState({ fields: nextFields }, resolve.bind(this, nextFields));
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  /**
    * Deletes the field record from the state.
    * @param {Map} fieldProps
    */
@@ -280,7 +302,9 @@ export default class Form extends React.Component {
    */
   handleFirstChange = ({ event, nextValue, prevValue, fieldProps }) => {
     const { onFirstChange } = this.props;
-    if (!onFirstChange) return;
+    if (!onFirstChange) {
+      return;
+    }
 
     dispatch(onFirstChange, {
       event,
@@ -301,22 +325,24 @@ export default class Form extends React.Component {
    */
   handleFieldFocus = async ({ event, fieldProps }) => {
     /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) return;
+    if (!this.hasField(fieldProps)) {
+      return;
+    }
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldFocus');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.groupEnd();
 
-    const { nextFieldProps, nextFields } = await this.updateField({
-      fieldPath: fieldProps.get('fieldPath'),
-      update: fieldProps => fieldProps.set('focused', true)
-    });
+    const nextFieldProps = fieldUtils.__foo__.setFocus(fieldProps);
+    const nextFields = await this.updateFieldsWith(nextFieldProps);
 
     /* Call custom onFocus handler */
-    const onFocusHandler = fieldProps.get('onFocus');
-    if (!onFocusHandler) return;
+    const customFocusHandler = fieldProps.get('onFocus');
+    if (!customFocusHandler) {
+      return;
+    }
 
-    dispatch(onFocusHandler, {
+    dispatch(customFocusHandler, {
       event,
       fieldProps: nextFieldProps,
       fields: nextFields,
@@ -331,9 +357,11 @@ export default class Form extends React.Component {
    * @param {mixed} prevValue
    * @param {mixed} nextValue
    */
-  handleFieldChange = async ({ event, fieldProps, prevValue, nextValue }) => {
+  handleFieldChange = async ({ event, prevValue, nextValue, fieldProps }) => {
     /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) return;
+    if (!this.hasField(fieldProps)) {
+      return;
+    }
 
     console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
@@ -350,13 +378,13 @@ export default class Form extends React.Component {
      */
     const isForcedUpdate = event && !((event.nativeEvent || event).isForcedUpdate);
     const isControlled = fieldProps.get('controlled');
-    const onChangeHandler = fieldProps.get('onChange');
+    const customChangeHandler = fieldProps.get('onChange');
 
     if (isForcedUpdate && isControlled) {
-      invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
-      'but received: %s.', fieldProps.get('name'), onChangeHandler);
+      invariant(customChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
+        'but got: %s.', fieldProps.get('name'), customChangeHandler);
 
-      return dispatch(onChangeHandler, {
+      return dispatch(customChangeHandler, {
         event,
         nextValue,
         prevValue,
@@ -366,26 +394,41 @@ export default class Form extends React.Component {
       }, this.context);
     }
 
-    const valuePropName = fieldProps.get('valuePropName');
+    /* Reset the field's validity state */
+    const resetField = fieldUtils.__foo__.resetValidationState(fieldProps);
 
-    const { nextFieldProps: updatedFieldProps } = await this.updateField({
-      fieldPath: fieldProps.get('fieldPath'),
-      update: fieldProps => fieldProps
-        .set(valuePropName, nextValue)
-        .set('validated', false)
-        .set('validating', false)
-        .set('validatedSync', false)
-        .set('validSync', false)
-        .set('validatedAsync', false)
-        .set('validAsync', false)
-        // .set('errors', null)
-    });
+    /* Update the field's value prop with the next value */
+    const updatedFieldProps = fieldUtils.__foo__.setValue(resetField, nextValue);
+    await this.updateFieldsWith(updatedFieldProps);
 
-    /* Cancel any pending async validation due to the field's value change */
-    if (updatedFieldProps.has('pendingAsyncValidation')) {
-      const cancelPendingValidation = updatedFieldProps.getIn(['pendingAsyncValidation', 'cancel']);
-      cancelPendingValidation();
+    /**
+     * Cancel any pending async validation.
+     * Once the field's value has changed, the previously dispatched async validation
+     * is no longer relevant, since it validates the previous value.
+     */
+    const pendingAsyncValidation = updatedFieldProps.get('pendingAsyncValidation');
+    if (pendingAsyncValidation) {
+      pendingAsyncValidation.get('cancel')();
     }
+
+    /**
+     * Determine whether debounced validation is necessary.
+     * For example, for immediate clearing of field value the validation must be
+     * performed immediately, while for typing the value it must be debounced.
+     */
+    const shouldDebounce = !!prevValue && !!nextValue;
+    const validatorFunc = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
+
+    const validationArgs = {
+      fieldProps,
+      fields: this.state.fields,
+      form: this
+    };
+
+    // Should this be encapsulated into Form.validateField, or be an independent function?
+    const validationResult = validatorFunc(validationArgs);
+
+    console.warn({ validationResult })
 
     /**
      * Perform appropriate field validation on value change.
@@ -398,14 +441,16 @@ export default class Form extends React.Component {
      * most likely means the value update of the controlled field, which must be validated
      * instantly.
      */
-    const shouldDebounce = !!prevValue && !!nextValue;
-    const appropriateValidation = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
+    // const shouldDebounce = !!prevValue && !!nextValue;
+    // const appropriateValidation = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
 
-    const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({
-      type: SyncValidationType,
-      fieldProps: updatedFieldProps,
-      forceProps: !shouldDebounce
-    });
+    //
+    // TODO NEEDS TO BE HANDLED FUNCTIONALLY
+    // const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({
+    //   type: SyncValidationType,
+    //   fieldProps: updatedFieldProps,
+    //   forceProps: !shouldDebounce
+    // });
 
     /**
      * Call custom "onChange" handler for uncontrolled fields only.
@@ -414,20 +459,20 @@ export default class Form extends React.Component {
      * Controlled fields dispatch "onChange" handler at the beginning of this method.
      * There is no need to dispatch the handler method once more.
      */
-    if (!isControlled && onChangeHandler) {
-      dispatch(onChangeHandler, {
-        event,
-        nextValue,
-        prevValue,
-        fieldProps: validatedFieldProps,
-        fields: nextFields,
-        form: this
-      }, this.context);
-    }
+    // if (!isControlled && customChangeHandler) {
+    //   dispatch(customChangeHandler, {
+    //     event,
+    //     nextValue,
+    //     prevValue,
+    //     fieldProps: validatedFieldProps,
+    //     fields: nextFields,
+    //     form: this
+    //   }, this.context);
+    // }
 
     /* Mark form as dirty if it's not already */
     if (!this.state.dirty) {
-      this.handleFirstChange({ event, nextValue, prevValue, fieldProps });
+      this.handleFirstChange({ event, prevValue, nextValue, fieldProps });
     }
   }
 
@@ -438,7 +483,9 @@ export default class Form extends React.Component {
    */
   handleFieldBlur = async ({ event, fieldProps }) => {
     /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) return;
+    if (!this.hasField(fieldProps)) {
+      return;
+    }
 
     const fieldPath = fieldProps.get('fieldPath');
     const asyncRule = fieldProps.get('asyncRule');
@@ -491,10 +538,12 @@ export default class Form extends React.Component {
     });
 
     /* Call custom onBlur handler */
-    const onBlur = nextFieldProps.get('onBlur');
-    if (!onBlur) return;
+    const customBlurHandler = nextFieldProps.get('onBlur');
+    if (!customBlurHandler) {
+      return;
+    }
 
-    dispatch(onBlur, {
+    dispatch(customBlurHandler, {
       event,
       fieldProps: nextFieldProps,
       fields: nextFields,
@@ -506,9 +555,9 @@ export default class Form extends React.Component {
    * Validates the provided field.
    * @param {Map} fieldProps
    * @param {ValidationType} type
-   * @param {boolean} forceProps (Optional) Use the field props from the arguments instead of form's state.
-   * @param {Map} fields (Optional) Explicit fields state to prevent validation concurrency.
-   * @param {boolean} force (Optional) Force validation. Bypass "shouldValidate" logic.
+   * @param {boolean?} forceProps Use the field props from the arguments instead of form's state.
+   * @param {Map?} fields Explicit fields state to prevent validation concurrency.
+   * @param {boolean?} force Force validation. Bypass "shouldValidate" logic.
    */
   validateField = async ({
     type = BothValidationType,
@@ -541,31 +590,39 @@ export default class Form extends React.Component {
 
     /* Bypass the validation when none is needed */
     if (!shouldValidate) {
-      return {
-        nextFieldProps: fieldProps,
-        nextFields: fields
-      };
+      return fields;
     }
 
     /* Perform the validation */
-    const validationResult = await fieldUtils.validate({
+
+    //
+    // TODO Which arguments does it expect?
+    // It seems like there can be different validators sequence depending on the validation type.
+    //
+    const validationResult = validateFunc(...);
+
+    // const validationResult = await fieldUtils.validate({
+    //   type,
+    //   fieldProps,
+    //   fields,
+    //   form: this,
+    //   formRules
+    // });
+    const expected = validationResult.getIn(['propsPatch', 'expected']);
+
+    /* Reflect validation result in the field props */
+    let nextFieldProps = fieldUtils.__foo__.reflectValidation({
       type,
       fieldProps,
-      fields,
-      form: this,
-      formRules
+      validationResult,
+      shouldValidate
     });
 
-    /* Update the validity state (valid/invalid) of the field */
-    let propsPatch = validationResult.get('propsPatch');
-    const expected = propsPatch.get('expected');
-
-    /* Determine if there are any messages available to form */
+    /* Set error messages to the field */
     const { messages } = this;
-    const hasMessages = messages && (messages.size > 0);
+    const hasFormMessages = messages && messages.size > 0;
 
-    /* Get the validation messages based on the validation result */
-    if (hasMessages && !expected) {
+    if (hasFormMessages && !expected) {
       const errorMessages = fieldUtils.getErrorMessages({
         validationResult,
         messages,
@@ -574,29 +631,15 @@ export default class Form extends React.Component {
         form: this
       });
 
-      if (errorMessages) {
-        propsPatch = propsPatch.set('errors', errorMessages);
-      }
+      nextFieldProps = fieldUtils.__foo__.setErrors(nextFieldProps, errorMessages);
     }
 
-    /**
-     * Get the next validity (valid/invalid) state.
-     * Based on the changed fieldProps, the field aquires a new validity state,
-     * which means its "valid" and "invalid" props values are updated.
-     */
-    const nextFieldProps = fieldProps.merge(propsPatch);
-    const nextValidityState = fieldUtils.getValidityState({
-      fieldProps: nextFieldProps,
-      needsValidation
-    });
+    console.log('validation is done, props:', nextFieldProps.toJS());
 
     /* Update the field in the state to reflect the changes */
-    return this.updateField({
-      fieldProps: nextFieldProps,
-      update: fieldProps => fieldProps
-        .merge(propsPatch)
-        .merge(nextValidityState)
-    });
+    // BEWARE That previously "validate" method exposed "nextFields" and "nextFieldProps" as Object props.
+    // Now it just returns a Map, which is the nextFields alone
+    return this.updateFieldsWith(nextFieldProps);
   }
 
   /**
@@ -616,7 +659,7 @@ export default class Form extends React.Component {
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(validationSequence);
 
-    const isFormValid = !validatedFields.some(({ nextFieldProps }) => {
+    const isFormValid = !validatedFields.some((nextFieldProps) => {
       return !nextFieldProps.get('expected');
     });
 
@@ -643,7 +686,7 @@ export default class Form extends React.Component {
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
-    const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
+    const nextFields = this.state.fields.map(fieldProps => fieldUtils.__foo__.reset(fieldProps));
 
     this.setState({ fields: nextFields }, () => {
       /* Validate only non-empty fields, since empty required fields should not be unexpected on reset */

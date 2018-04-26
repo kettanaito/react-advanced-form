@@ -1,6 +1,6 @@
 import { Map } from 'immutable';
 import { Observable } from 'rxjs/Observable';
-import addPropsObserver from './addPropsObserver';
+import createPropsObserver from './createPropsObserver';
 import flushFieldRefs from '../flushFieldRefs';
 import camelize from '../camelize';
 
@@ -11,7 +11,9 @@ import camelize from '../camelize';
  */
 function formatRefs(refs) {
   return refs.reduce((formatted, ref) => {
-    if (ref.length < 2) return formatted;
+    if (ref.length < 2) {
+      return formatted;
+    }
 
     /* Assume the last referenced key is always a prop name */
     const fieldPath = ref.slice(0, ref.length - 1);
@@ -36,7 +38,7 @@ function formatRefs(refs) {
  * @returns {Subscription}
  */
 function createObserver({ fieldPath, props, form, subscribe, observerOptions }) {
-  return addPropsObserver({
+  return createPropsObserver({
     fieldPath,
     props,
     predicate({ propName, prevContextProps, nextContextProps }) {
