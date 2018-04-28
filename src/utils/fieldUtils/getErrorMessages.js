@@ -1,7 +1,8 @@
 import invariant from 'invariant';
-import { customRulesKey } from './validate';
 import warning from '../warning';
 import dispatch from '../dispatch';
+
+const customRulesKey = 'rule';
 
 function resolveMessage({ messages, rejectedRule, fieldProps }) {
   const { name: ruleName, selector, isCustom } = rejectedRule;

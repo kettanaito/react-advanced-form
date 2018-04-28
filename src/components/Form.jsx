@@ -564,6 +564,9 @@ export default class Form extends React.Component {
       force = false
     } = args;
 
+    //
+    // TODO Shouldn't this be "this.rxRules"???
+    //
     const { formRules } = this;
     const fields = explicitFields || this.state.fields;
 
@@ -609,13 +612,6 @@ export default class Form extends React.Component {
 
     console.log({ validationResult });
 
-    // const validationResult = await fieldUtils.validate({
-    //   type,
-    //   fieldProps,
-    //   fields,
-    //   form: this,
-    //   formRules
-    // });
     const expected = validationResult.expected;
 
     console.warn('\n\n field validated, expected: %s. reflecting validation state...', expected)
