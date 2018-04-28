@@ -11,8 +11,11 @@ import mapToSingleResult from './mapToSingleResult';
 import getRules from './getRules';
 import dispatch from '../dispatch';
 import * as recordUtils from '../recordUtils';
-import { SequenceEqualSubscriber } from 'rxjs/operators/sequenceEqual';
 
+/**
+ * Applies the given resolver function and returns
+ * the validation result.
+ */
 function applyResolver(resolver, resolverArgs) {
   const expected = dispatch(resolver, resolverArgs, resolverArgs.form.context);
   return createValidationResult(expected);
@@ -72,7 +75,10 @@ function applyFormRules(resolverArgs) {
   const hasTypeRules = rules.type && (rules.type.length > 0);
   console.log({ rules });
 
-  // TODO Perform this exclusion better
+  //
+  // TODO
+  // Perform this exclusion better
+  //
   if (!hasNameRules && !hasTypeRules) {
     return createValidationResult(true);
   }
@@ -89,20 +95,18 @@ function applyFormRules(resolverArgs) {
  * Performs synchronous validation.
  */
 export default function validateSync(args) {
-  const { fieldProps, form } = args;
+  const resolverArgs = createResolverArgs(args);
+  const { value, fieldProps, form } = resolverArgs;
   const { rxRules } = form.state;
-  const {
-    name: fieldName,
-    type: fieldType,
-    required,
-    rule,
-    asyncRule
-  } = fieldProps;
-
-  const value = recordUtils.getValue(fieldProps);
+  const { required } = fieldProps;
 
   console.log(' ');
-  console.log('validateSync:', fieldName, fieldType);
+  console.log('validateSync:', fieldProps.name, fieldProps.type);
+
+  //
+  // TODO
+  // See if this bypassing logic can be implemented using functional approach.
+  //
 
   /* Treat empty optional fields as expected */
   if (!value && !required) {
@@ -118,18 +122,7 @@ export default function validateSync(args) {
     }));
   }
 
-  const hasFormNameRules = rxRules.has(`name.${fieldName}`);
-  const hasFormTypeRules = rxRules.has(`type.${fieldType}`);
-  const hasFormRules = hasFormNameRules || hasFormTypeRules;
-
-  if (!rule && !asyncRule && !hasFormRules) {
-    console.log('field has no rules, bypassing...')
-    return createValidationResult(true);
-  }
-
   console.log('validateSync seq...')
-
-  const resolverArgs = createResolverArgs(args);
   console.log({ resolverArgs })
 
   /* Apply the list of validators in a breakable sequence and reduce the results to the single one */

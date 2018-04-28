@@ -15,7 +15,8 @@ import makeCancelable from '../makeCancelable';
 // };
 
 export default async function validateAsync(args) {
-  const { fieldProps, form } = args;
+  const resolverArgs = createResolverArgs(args);
+  const { value, fieldProps, form } = resolverArgs;
 
   /**
    * Treat already async valid field as expected.
@@ -27,27 +28,34 @@ export default async function validateAsync(args) {
     return createValidationResult(true);
   }
 
-  const { valuePropName, asyncRule } = fieldProps;
-  const value = fieldProps[valuePropName];
+  const { asyncRule } = fieldProps;
 
   /* Treat empty field or field without async rule as expected */
   if (!asyncRule || !value) {
     return createValidationResult(true);
   }
 
-  const resolverArgs = createResolverArgs(args);
   const pendingValidation = makeCancelable(
     dispatch(asyncRule, resolverArgs, form.context);
   );
+
+  //
+  // TODO
+  // Pending validation reference must be set on the field's record in order
+  // to cancel itself on field change. This breaks the functional paradigm and
+  // creates a side effect for this validation function.
+  // Think of another way of getting pending validation (req) reference.
+  //
 
   const res = await pendingValidation.itself;
   const { valid, ...extraProps } = res;
 
   //
-  // TODO Invariant improper response object structure here.
+  // TODO
+  // Invariant improper response object structure here.
   //
 
-  const rejectedRules = valid ? [] : createRejectedRule({
+  const rejectedRules = valid ? undefined : createRejectedRule({
     name: errorTypes.async,
     isCustom: true
   });

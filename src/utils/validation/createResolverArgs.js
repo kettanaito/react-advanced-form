@@ -1,5 +1,6 @@
 // import type { Map } from 'immutable';
 // import type { Component } from 'react';
+import createPropGetter from '../fieldUtils/createPropGetter';
 
 // type TOriginalArgs = {
 //   fieldProps: Map<string, string>,
@@ -13,15 +14,16 @@
 
 /**
  * Returns the unified interface of each validation rule resolver
- * based on the passed generic callback arguments.
+ * arguments Object based on the passed arguments.
  */
 export default function createResolverArgs(args) {
-  const { fieldProps } = args;
+  const { fieldProps, fields } = args;
   const valuePropName = fieldProps.get('valuePropName');
   const value = fieldProps.get(valuePropName);
 
   return {
     ...args,
-    [valuePropName]: value
+    [valuePropName]: value,
+    get: createPropGetter(fields)
   };
 }

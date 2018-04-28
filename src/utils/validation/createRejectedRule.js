@@ -14,9 +14,7 @@ export type TRejectedRule = {
 };
 
 /**
- * Creates a rejected rule.
- * Used as the unification function to produce the validation result
- * in case of rejected validation rule.
+ * Creates a rejected rule with the standardized shape.
  */
 export default function createRejectedRule({
   name,

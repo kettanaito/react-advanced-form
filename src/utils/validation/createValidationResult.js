@@ -9,7 +9,7 @@ export type TValidationResult = {
 };
 
 /**
- * Returns the unified entity of a validation result.
+ * Returns the unified entity of the validation result.
  * Includes the indicator whether the field's value is expected,
  * the list of rejected validation rules, and any extra params
  * propagated by the validator function.

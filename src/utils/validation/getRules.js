@@ -17,12 +17,18 @@
  * Returns the collection of validation rules of the given selector
  * applicabale to the given field.
  */
-export function getRulesGroup(fieldProps, schema, selector) {
-  console.groupCollapsed('getRulesGroup', fieldProps.name);
+export function getRulesBySelector(selector, fieldProps, schema) {
+  console.groupCollapsed('getRulesBySelector', selector, fieldProps.name);
   const keyPath = [selector, fieldProps.get(selector)];
+
   console.log({ keyPath });
   console.groupEnd();
 
+  //
+  // TODO
+  // Shallow keyed collection is not a usual behavior, but only suitable
+  // for the reduced schema into "rxRules". Think of the unified interface.
+  //
   return schema.get(keyPath.join('.'));
 }
 
@@ -35,7 +41,7 @@ export default function getRules(fieldProps, schema) {
     'type',
     'name'
   ].reduce((rules, selector) => {
-    const rulesGroup = getRulesGroup(fieldProps, schema, selector);
+    const rulesGroup = getRulesBySelector(selector, fieldProps, schema);
 
     if (rulesGroup) {
       rules[selector] = rulesGroup
@@ -45,7 +51,7 @@ export default function getRules(fieldProps, schema) {
   }, {});
 
   // return {
-  //   type: getRulesGroup(fieldProps, schema, 'type'),
-  //   name: getRulesGroup(fieldProps, schema, 'name'),
+  //   type: getRulesBySelector(fieldProps, schema, 'type'),
+  //   name: getRulesBySelector(fieldProps, schema, 'name'),
   // };
 }

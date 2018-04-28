@@ -3,7 +3,7 @@ import type { TValidatorFunc } from './index';
 import type { TValidationResult } from './createValidationResult';
 import type { TValidatorArgs } from './getRules';
 
-function foo(initialAcc: TValidationResult, results: TValidationResult[]) {
+function reduceValidationResults(initialAcc: TValidationResult, results: TValidationResult[]) {
   return results.reduce((acc: TValidationResult, result: TValidationResult) => {
     acc.expected = acc.expected ? result.expected : acc.expected;
     acc.rejectedRules = acc.rejectedRules.concat(result.rejectedRules);
@@ -25,7 +25,7 @@ export default function mapToSingleResult(...validators: TValidatorFunc[]) {
       console.log('validator acc:', validatorResult);
       console.log('prev reduced', Object.assign({}, acc));
 
-      const nextAcc = foo(acc, validatorResultArr);
+      const nextAcc = reduceValidationResults(acc, validatorResultArr);
       console.log({ nextAcc })
 
       return nextAcc;
