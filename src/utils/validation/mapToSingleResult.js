@@ -11,7 +11,7 @@ function foo(initialAcc: TValidationResult, results: TValidationResult[]) {
   } , initialAcc);
 }
 
-export default function reduceValidationResults(...validators: TValidatorFunc[]) {
+export default function mapToSingleResult(...validators: TValidatorFunc[]) {
   console.log('...validators', validators)
 
   return (args: TValidatorArgs) => {

@@ -5,7 +5,7 @@ import type { TRejectedRule } from './createRejectedRule';
 import type { TValidationResult } from './createValidationResult';
 
 import { createSeq } from '../creators';
-import reduceValidationResults from './reduceValidationResults';
+import mapToSingleResult from './mapToSingleResult';
 import validateSync from './validateSync';
 // import validateAsync from './validateAsync';
 
@@ -17,18 +17,11 @@ export type TValidatorFunc = (args: TValidatorArgs) => TValidationResult;
  */
 export const seq: TSeq<TValidatorFunc, TValidatorArgs, TValidationResult> = createSeq(
   (result: TValidationResult) => result.expected
-
-  // (results: TValidationResult[]) => {
-  //   console.log('seq predicate results:', results);
-  //   return results.every(result => result.expected);
-  // }
 );
 
-const validateFunc = reduceValidationResults(
+export default mapToSingleResult(
   seq(
     validateSync,
     // validateAsync
   )
 );
-
-export default validateFunc;

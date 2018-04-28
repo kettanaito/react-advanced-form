@@ -18,7 +18,12 @@
  * applicabale to the given field.
  */
 export function getRulesGroup(fieldProps, schema, selector) {
-  return schema.getIn([selector, fieldProps.get(selector)]);
+  console.groupCollapsed('getRulesGroup', fieldProps.name);
+  const keyPath = [selector, fieldProps.get(selector)];
+  console.log({ keyPath });
+  console.groupEnd();
+
+  return schema.get(keyPath.join('.'));
 }
 
 /**

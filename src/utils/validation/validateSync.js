@@ -7,26 +7,42 @@ import errorTypes from './errorTypes';
 import createResolverArgs from './createResolverArgs';
 import createRejectedRule from './createRejectedRule';
 import createValidationResult from './createValidationResult';
-import reduceValidationResults from './reduceValidationResults';
+import mapToSingleResult from './mapToSingleResult';
 import getRules from './getRules';
 import dispatch from '../dispatch';
 import * as recordUtils from '../recordUtils';
+import { SequenceEqualSubscriber } from 'rxjs/operators/sequenceEqual';
+
+function applyResolver(resolver, resolverArgs) {
+  const expected = dispatch(resolver, resolverArgs, resolverArgs.form.context);
+  return createValidationResult(expected);
+}
+
+function mapRulesToResolvers(rules) {
+  return rules.map(({ resolver }) => {
+    return resolverArgs => applyResolver(resolver, resolverArgs);
+  });
+}
 
 /**
  * Applies the validator provided by "Field.props.rule".
  */
 function applyFieldRule(resolverArgs) {
-  console.log('applying Field.props.rule...');
+  console.warn('applyFieldRule...');
 
-  const { fieldProps, form } = resolverArgs;
+  const { value, fieldProps, form } = resolverArgs;
   const { rule } = fieldProps;
-  const value = recordUtils.getValue(fieldProps);
+
+  if (!rule) {
+    console.log('field has no "rule", bypassing...');
+    return createValidationResult(true);
+  }
 
   console.log({ value })
 
   const expected = (typeof rule === 'function')
-    ? dispatch(rule, resolverArgs, form.context)
-    : rule.test(value);
+    ? applyResolver(rule, resolverArgs) // this will return ValidationResult
+    : rule.test(value); // while this will return boolean
 
   const rejectedRules = expected ? undefined : createRejectedRule({
     name: errorTypes.invalid
@@ -41,25 +57,32 @@ function applyFieldRule(resolverArgs) {
 
 /**
  * Sequentially applies validation rules from the schema
- * relevent to the given field.
+ * relevant to the given field.
  */
 function applyFormRules(resolverArgs) {
-  console.log('Applying form rules...');
+  console.log(' ');
+  console.warn('applyFormRules...');
 
   const { fieldProps, form } = resolverArgs;
   const { rxRules: schema } = form.state;
+  console.log('schema', schema && schema.toJS());
 
   const rules = getRules(fieldProps, schema);
+  const hasNameRules = rules.name && (rules.name.length > 0);
+  const hasTypeRules = rules.type && (rules.type.length > 0);
   console.log({ rules });
 
-  const validationSeq = reduceValidationResults(
-    seq(
-      rules.name,
-      rules.type
-    )
-  );
+  // TODO Perform this exclusion better
+  if (!hasNameRules && !hasTypeRules) {
+    return createValidationResult(true);
+  }
 
-  return validationSeq(resolverArgs);
+  return mapToSingleResult(
+    seq(
+      mapToSingleResult(...mapRulesToResolvers(rules.name)),
+      mapToSingleResult(...mapRulesToResolvers(rules.type)),
+    )
+  )(resolverArgs);
 }
 
 /**
@@ -100,7 +123,7 @@ export default function validateSync(args) {
   const hasFormRules = hasFormNameRules || hasFormTypeRules;
 
   if (!rule && !asyncRule && !hasFormRules) {
-    console.log('no rules for a field, bypassing...')
+    console.log('field has no rules, bypassing...')
     return createValidationResult(true);
   }
 
@@ -109,16 +132,11 @@ export default function validateSync(args) {
   const resolverArgs = createResolverArgs(args);
   console.log({ resolverArgs })
 
-  /* Apply the list of validators in a breakable sequence and reduce their results */
-  const validationSeq = reduceValidationResults(
+  /* Apply the list of validators in a breakable sequence and reduce the results to the single one */
+  return mapToSingleResult(
     seq(
       applyFieldRule,
-      // applyFormRules
+      applyFormRules
     )
-  );
-
-  const res = validationSeq(resolverArgs);
-  console.log('validateSync seq res:', res)
-
-  return res;
+  )(resolverArgs);
 }
