@@ -34,7 +34,7 @@ export default {
    * to the field's record, other radio fields are registered, but their value is ignored.
    */
   beforeRegister({ fieldProps, fields }) {
-    const fieldPath = fieldProps.get('fieldPath');
+    const { fieldPath } = fieldProps;
     const alreadyExist = fields.hasIn(fieldPath);
 
     if (!alreadyExist) {

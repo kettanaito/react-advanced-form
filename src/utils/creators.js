@@ -14,7 +14,7 @@ export const parallel: TParallel<Function, any, any> = (...funcs) => {
   };
 }
 
-type TSeqPredicate<R> = (results: R[]) => boolean;
+type TSeqPredicate<R> = (result: R, results: R[]) => boolean;
 export type TSeq<F, A, R> = (predicate: TSeqPredicate<R>) => (...funcs: F[]) => (...args: A[]) => R;
 
 /**
@@ -32,7 +32,7 @@ export const createSeq: TSeq<Function, string, any> = (predicate) => {
         result = funcs[funcIndex](...args);
         results = results.concat(result);
         funcIndex++;
-      } while ((funcIndex < funcs.length) && predicate(result));
+      } while ((funcIndex < funcs.length) && predicate(result, results));
 
       return results;
     };

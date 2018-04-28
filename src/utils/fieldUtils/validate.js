@@ -72,14 +72,14 @@ const sequenceIterator = ({ acc, variables, resolved, isLast, breakIteration }) 
  * Determines whether the given Field is valid.
  * Validation of each field is a complex process consisting of several steps.
  * It is important to resolve the validation immediately once the field becomes invalid.
- * @param {Map} fieldProps
+ * @param {Record} fieldProps
  * @param {Map} fields
  * @param {Object} form
  * @param {Map} formRules
  * @return {boolean}
  */
 export default function validate({ type, fieldProps, fields, form }) {
-  // console.groupCollapsed(`fieldUtils @ validate "${fieldProps.get('fieldPath')}"`);
+  // console.groupCollapsed(`fieldUtils @ validate "${fieldProps.fieldPath}"`);
   // console.log('type', type);
   // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
   // console.log('fields', fields);

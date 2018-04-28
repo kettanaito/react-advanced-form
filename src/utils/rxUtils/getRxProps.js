@@ -8,11 +8,9 @@ export const supportedRxProps = ['required'];
 
 /**
  * Returns the collection of the reactive props present on the provided field.
- * @param {Map} fieldProps
- * @returns {Map}
  */
-export default function getRxProps(fieldProps) {
-  return fieldProps.filter((_, propName) => {
-    return (supportedRxProps.includes(propName)) && (typeof fieldProps.get(propName) === 'function');
+export default function getRxProps(fieldRecord) {
+  return fieldRecord.filter((propName) => {
+    return (supportedRxProps.includes(propName)) && (typeof fieldRecord[propName] === 'function');
   });
 }

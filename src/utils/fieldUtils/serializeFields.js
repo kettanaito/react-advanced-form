@@ -1,25 +1,22 @@
-import { Map } from 'immutable';
+import { Record } from 'immutable';
 import flattenDeep from '../flattenDeep';
+import * as recordUtils from '../recordUtils';
 
-function defaultTransformValue(fieldProps) {
-  return fieldProps.get(fieldProps.get('valuePropName'));
-}
-
-function predicate(fieldProps) {
-  if (!Map.isMap(fieldProps) || !fieldProps.has('fieldPath')) {
+function predicate(fieldRecord) {
+  if (!Record.isRecord(fieldRecord) || !fieldRecord.fieldPath) {
     return;
   }
 
   /* Bypass the fields which should be skipped */
-  if (fieldProps.get('skip')) {
+  if (fieldRecord.skip) {
     return false;
   }
 
   /* Grab the field's value */
-  const defaultValue = fieldProps.get(fieldProps.get('valuePropName'));
+  const defaultValue = recordUtils.getValue(fieldRecord);
 
   /* Bypass checkboxes with no value */
-  const isCheckbox = (fieldProps.get('type') === 'checkbox');
+  const isCheckbox = (fieldRecord.type === 'checkbox');
   const hasEmptyValue = (defaultValue === '');
   if (!isCheckbox && hasEmptyValue) {
     return false;
@@ -34,6 +31,6 @@ function predicate(fieldProps) {
  * @param {Function} transformValue
  * @returns {Map}
  */
-export default function serializeFields(fields, transformValue = defaultTransformValue) {
+export default function serializeFields(fields, transformValue = recordUtils.getValue) {
   return flattenDeep(fields, predicate, false, transformValue);
 }

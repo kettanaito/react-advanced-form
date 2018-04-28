@@ -1,13 +1,6 @@
 // import type { Map } from 'immutable';
 // import type { Component } from 'react';
 
-// export type TRuleResolverArgs = {
-//   value: mixed,
-//   fieldProps: Map<string, string>,
-//   fields: Component<any, any, any>,
-//   form: mixed
-// };
-
 // export type TRule = (args: TRuleResolverArgs) => boolean;
 
 // export type TFieldRules = {
@@ -33,8 +26,21 @@ export function getRulesGroup(fieldProps, schema, selector) {
  * applicable to the given field.
  */
 export default function getRules(fieldProps, schema) {
-  return {
-    type: getRulesGroup(fieldProps, schema, 'type'),
-    name: getRulesGroup(fieldProps, schema, 'name'),
-  };
+  return [
+    'type',
+    'name'
+  ].reduce((rules, selector) => {
+    const rulesGroup = getRulesGroup(fieldProps, schema, selector);
+
+    if (rulesGroup) {
+      rules[selector] = rulesGroup
+    }
+
+    return rules;
+  }, {});
+
+  // return {
+  //   type: getRulesGroup(fieldProps, schema, 'type'),
+  //   name: getRulesGroup(fieldProps, schema, 'name'),
+  // };
 }

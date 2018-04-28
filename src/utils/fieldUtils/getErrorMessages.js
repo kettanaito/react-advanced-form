@@ -5,8 +5,7 @@ import dispatch from '../dispatch';
 
 function resolveMessage({ messages, rejectedRule, fieldProps }) {
   const { name: ruleName, selector, isCustom } = rejectedRule;
-  const fieldName = fieldProps.get('name');
-  const fieldType = fieldProps.get('type');
+  const { name: fieldName, type: fieldType } = fieldProps;
 
   const primitiveErrorType = isCustom ? 'invalid' : ruleName;
   const path = isCustom ? [customRulesKey, ruleName] : [ruleName];
@@ -49,11 +48,12 @@ function resolveMessage({ messages, rejectedRule, fieldProps }) {
  */
 export default function getErrorMessages({ validationResult, messages, fieldProps, fields, form }) {
   /* No errors - no error messages */
-  const rejectedRules = validationResult.get('rejectedRules');
+  const rejectedRules = validationResult.rejectedRules;
   if (!rejectedRules || (rejectedRules.length === 0)) return;
 
+  // TODO Use unified resolver creator func
   const defaultResolverArgs = {
-    value: fieldProps.get('value'),
+    value: fieldProps.value,
     fieldProps,
     fields,
     form
@@ -61,7 +61,7 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
   const defaultResolverKeys = Object.keys(defaultResolverArgs);
 
   /* Get the extra properties coming from the async validation result */
-  const extra = validationResult.get('extra');
+  const extra = validationResult.extra;
   const extraKeys = extra && Object.keys(extra);
   const overridesExtras = extraKeys && extraKeys.some(extraKey => defaultResolverKeys.includes(extraKey));
 

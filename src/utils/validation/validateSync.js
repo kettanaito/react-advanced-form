@@ -7,25 +7,34 @@ import errorTypes from './errorTypes';
 import createResolverArgs from './createResolverArgs';
 import createRejectedRule from './createRejectedRule';
 import createValidationResult from './createValidationResult';
+import reduceValidationResults from './reduceValidationResults';
 import getRules from './getRules';
 import dispatch from '../dispatch';
-import fieldUtils from '../fieldUtils';
+import * as recordUtils from '../recordUtils';
 
 /**
  * Applies the validator provided by "Field.props.rule".
  */
 function applyFieldRule(resolverArgs) {
+  console.log('applying Field.props.rule...');
+
   const { fieldProps, form } = resolverArgs;
-  const value = fieldUtils.__foo__.getValue(fieldProps);
-  const rule = fieldProps.get('rule');
+  const { rule } = fieldProps;
+  const value = recordUtils.getValue(fieldProps);
+
+  console.log({ value })
 
   const expected = (typeof rule === 'function')
     ? dispatch(rule, resolverArgs, form.context)
     : rule.test(value);
 
-  const rejectedRules = expected ? [] : createRejectedRule({
+  const rejectedRules = expected ? undefined : createRejectedRule({
     name: errorTypes.invalid
   });
+
+  console.log({ expected })
+  console.log({ rejectedRules })
+  console.log(' ')
 
   return createValidationResult(expected, rejectedRules);
 }
@@ -35,15 +44,22 @@ function applyFieldRule(resolverArgs) {
  * relevent to the given field.
  */
 function applyFormRules(resolverArgs) {
-  const { fieldProps } = resolverArgs;
+  console.log('Applying form rules...');
 
-  const rules = getRules(fieldProps);
+  const { fieldProps, form } = resolverArgs;
+  const { rxRules: schema } = form.state;
+
+  const rules = getRules(fieldProps, schema);
   console.log({ rules });
 
-  return seq(
-    rules.name,
-    rules.type
+  const validationSeq = reduceValidationResults(
+    seq(
+      rules.name,
+      rules.type
+    )
   );
+
+  return validationSeq(resolverArgs);
 }
 
 /**
@@ -52,22 +68,26 @@ function applyFormRules(resolverArgs) {
 export default function validateSync(args) {
   const { fieldProps, form } = args;
   const { rxRules } = form.state;
-  const fieldName = fieldProps.get('name');
-  const fieldType = fieldProps.get('type');
-  const value = fieldUtils.__foo__.getValue(fieldProps);
-  const required = fieldProps.get('required');
-  const rule = fieldProps.get('rule');
-  const asyncRule = fieldProps.get('asyncRule');
+  const {
+    name: fieldName,
+    type: fieldType,
+    required,
+    rule,
+    asyncRule
+  } = fieldProps;
+
+  const value = recordUtils.getValue(fieldProps);
 
   console.log(' ');
   console.log('validateSync:', fieldName, fieldType);
 
-  // Add bypassing logic
+  /* Treat empty optional fields as expected */
   if (!value && !required) {
     console.log('optional empty field, bypassing...')
     return createValidationResult(true);
   }
 
+  /* Treat empty required fields as unexpected */
   if (!value && required) {
     console.log('empty required field, throwing...')
     return createValidationResult(false, createRejectedRule({
@@ -81,17 +101,24 @@ export default function validateSync(args) {
 
   if (!rule && !asyncRule && !hasFormRules) {
     console.log('no rules for a field, bypassing...')
-    // And this will return just one Object. :/
     return createValidationResult(true);
   }
 
-  const executeValidationSeq = seq(
-    applyFieldRule,
-    applyFormRules
-  );
+  console.log('validateSync seq...')
 
   const resolverArgs = createResolverArgs(args);
+  console.log({ resolverArgs })
 
-  // This will return array of Objects
-  return executeValidationSeq(resolverArgs);
+  /* Apply the list of validators in a breakable sequence and reduce their results */
+  const validationSeq = reduceValidationResults(
+    seq(
+      applyFieldRule,
+      // applyFormRules
+    )
+  );
+
+  const res = validationSeq(resolverArgs);
+  console.log('validateSync seq res:', res)
+
+  return res;
 }

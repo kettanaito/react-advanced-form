@@ -7,8 +7,15 @@ import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import validateFunc from '../utils/validation';
-import { isset, camelize, debounce, CustomPropTypes, getComponentName, rxUtils } from '../utils';
+import {
+  isset,
+  camelize,
+  debounce,
+  CustomPropTypes,
+  getComponentName,
+  recordUtils,
+  rxUtils
+} from '../utils';
 
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
@@ -98,6 +105,83 @@ export default function connectField(options) {
         const registeredValue = isset(contextValue)
           ? contextValue
           : (value || initialValue || hocOptions.initialValue);
+
+        const initialFieldProps = {
+          ref: this,
+          fieldGroup,
+          name: directProps.name,
+          type: directProps.type,
+          valuePropName,
+          [valuePropName]: registeredValue,
+          initialValue: directProps.hasOwnProperty('initialValue') ? initialValue : registeredValue,
+          controlled: directProps.hasOwnProperty('value'),
+          required: directProps.required,
+          // TODO Debounce isolate validateField method to handle formless fields
+          debounceValidate: debounce(form.validateField, form.debounceTime),
+          skip: directProps.skip,
+
+          rule: directProps.rule,
+          asyncRule: directProps.asyncRule,
+          onFocus: directProps.onFocus,
+          onChange: directProps.onChange,
+          onBlur: directProps.onBlur,
+        };
+
+        /* (Optional) Alter the field record using HOC options */
+        const mappedFieldProps = hocOptions.mapPropsToField({
+          fieldRecord: initialFieldProps, // TODO Align naming
+          props: directProps,
+          valuePropName,
+          context: this.context
+        });
+
+        // const rxProps = rxUtils.getRxProps(mappedFieldProps);
+        // if (rxProps.size > 0) {
+        //   mappedFieldProps = mappedFieldProps.set('reactiveProps', rxProps);
+
+        //   //
+        //   // TODO Use "Iterable.deleteAll(keys)" once Immutable 4 lands
+        //   //
+        //   rxProps.forEach((_, rxPropName) => {
+        //     mappedFieldProps = mappedFieldProps.delete(rxPropName);
+        //   });
+        // }
+
+        const _fieldRecord_ = recordUtils.createField(mappedFieldProps);
+
+        console.warn('_fieldRecord_', _fieldRecord_ && _fieldRecord_.toJS())
+        console.log('fieldPath:', _fieldRecord_.fieldPath);
+        console.log('fieldPath:', _fieldRecord_.get('fieldPath'));
+        console.log('valuePropName:', _fieldRecord_[valuePropName]);
+        console.log('value:', _fieldRecord_.value);
+        console.log(_fieldRecord_.set('value', 'foo').toJS());
+        console.log(' ')
+
+        console.groupEnd();
+
+        /* Notify the parent Form that a new field prompts to register */
+        form.eventEmitter.emit('fieldRegister', {
+          fieldProps: _fieldRecord_,
+          fieldOptions: {
+            allowMultiple: hocOptions.allowMultiple,
+            beforeRegister: hocOptions.beforeRegister,
+            shouldValidateOnMount: hocOptions.shouldValidateOnMount({
+              fieldRecord: mappedFieldProps,
+              props: directProps,
+              context: this.context,
+              valuePropName
+            })
+          }
+        });
+
+        return _fieldRecord_;
+
+        //
+        //
+        //
+        //
+        //
+        //
 
         const defaultFieldRecord = {
           /* Internals */
@@ -210,7 +294,9 @@ export default function connectField(options) {
 
       componentWillReceiveProps(nextProps) {
         const { contextProps } = this;
-        if (!contextProps) return;
+        if (!contextProps) {
+          return;
+        }
 
         /**
          * Handle value change of controlled fields.
@@ -259,7 +345,7 @@ export default function connectField(options) {
         const { props: prevProps, contextProps: prevContextProps } = this;
         this.contextProps = nextContextProps;
 
-        const fieldPropsChange = camelize(...nextContextProps.get('fieldPath'), 'props', 'change');
+        const fieldPropsChange = camelize(...nextContextProps.fieldPath, 'props', 'change');
 
         this.context.form.eventEmitter.emit(fieldPropsChange, {
           prevProps,
@@ -298,10 +384,14 @@ export default function connectField(options) {
          * "input", but custom React Component, which would be the same what "innerRef"
          * references. In that case, omit explicit call of "innerRef".
          */
-        if (Component instanceof React.Component) return;
+        if (Component instanceof React.Component) {
+          return;
+        }
 
         const { innerRef } = this.props;
-        if (innerRef) innerRef(Component);
+        if (innerRef) {
+          innerRef(Component);
+        }
       }
 
       /**

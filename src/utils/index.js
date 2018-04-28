@@ -11,9 +11,10 @@ export makeCancelable from './makeCancelable';
 
 /* Composite utils */
 export * as CustomPropTypes from './propTypes';
-export * as formUtils from './formUtils';
+export * as recordUtils from './recordUtils';
 export * as fieldUtils from './fieldUtils';
+export * as formUtils from './formUtils';
 export * as rxUtils from './rxUtils';
 
-/* Mist */
+/* Misc */
 export getComponentName from './getComponentName';

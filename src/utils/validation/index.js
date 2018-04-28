@@ -2,18 +2,12 @@
 import type { TSeq } from '../creators';
 import type { TValidatorArgs } from './getRules';
 import type { TRejectedRule } from './createRejectedRule';
+import type { TValidationResult } from './createValidationResult';
 
 import { createSeq } from '../creators';
-import createValidateFunc from './createValidateFunc';
+import reduceValidationResults from './reduceValidationResults';
 import validateSync from './validateSync';
 // import validateAsync from './validateAsync';
-
-export type TValidationResultExtra = Object;
-export type TValidationResult = {
-  expected: boolean,
-  rejectedRules?: TRejectedRule[],
-  extra?: TValidationResultExtra
-};
 
 export type TValidatorFunc = (args: TValidatorArgs) => TValidationResult;
 
@@ -22,10 +16,15 @@ export type TValidatorFunc = (args: TValidatorArgs) => TValidationResult;
  * returns "expected" property equal to "true".
  */
 export const seq: TSeq<TValidatorFunc, TValidatorArgs, TValidationResult> = createSeq(
-  (results: TValidationResult[]) => results.every(result => result.expected)
+  (result: TValidationResult) => result.expected
+
+  // (results: TValidationResult[]) => {
+  //   console.log('seq predicate results:', results);
+  //   return results.every(result => result.expected);
+  // }
 );
 
-const validateFunc = createValidateFunc(
+const validateFunc = reduceValidationResults(
   seq(
     validateSync,
     // validateAsync
