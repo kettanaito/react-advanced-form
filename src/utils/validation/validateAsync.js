@@ -36,7 +36,7 @@ export default async function validateAsync(args) {
   }
 
   const pendingValidation = makeCancelable(
-    dispatch(asyncRule, resolverArgs, form.context);
+    dispatch(asyncRule, resolverArgs, form.context)
   );
 
   //

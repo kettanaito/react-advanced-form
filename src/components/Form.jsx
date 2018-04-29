@@ -9,7 +9,6 @@ import 'rxjs/add/observable/fromEvent';
 
 /* Internal modules */
 import { defaultDebounceTime, TValidationRules, TValidationMessages } from './FormProvider';
-import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
 import {
   CustomPropTypes,
   isset,
@@ -22,6 +21,7 @@ import {
   rxUtils
 } from '../utils';
 import validateFunc from '../utils/validation';
+import shouldValidate from '../utils/validation/shouldValidate';
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
@@ -426,6 +426,7 @@ export default class Form extends React.Component {
     // Should this be encapsulated into Form.validateField, or be an independent function?
     //
     const validationResult = await appropriateValidation({
+      types: ['sync'],
       fieldProps: updatedFieldProps,
       fields: this.state.fields,
       form: this
@@ -557,7 +558,7 @@ export default class Form extends React.Component {
    */
   validateField = async (args) => {
     const {
-      type = BothValidationType,
+      types = ['sync', 'async'],
       fieldProps: explicitFieldProps,
       fields: explicitFields,
       forceProps = false,
@@ -577,23 +578,21 @@ export default class Form extends React.Component {
     //
     // TODO Ditch ValidationType class, use pure functions.
     //
-    const needsValidation = type.shouldValidate({
-      validationType: type,
+    const needsValidation = force || shouldValidate(
+      types,
       fieldProps,
       formRules
-    });
-
-    const shouldValidate = force || needsValidation;
+    );
 
     console.groupCollapsed(fieldProps.fieldPath, '@ validateField');
-    console.log('validation type', type);
+    console.log('validation types', types);
     console.log('value', fieldProps.get(fieldProps.get('valuePropName')));
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    console.log('shouldValidate', shouldValidate);
+    console.log('needsValidation', needsValidation);
     console.groupEnd();
 
     /* Bypass the validation when none is needed */
-    if (!shouldValidate) {
+    if (!needsValidation) {
       return fields;
     }
 
@@ -604,7 +603,7 @@ export default class Form extends React.Component {
     // It seems like there can be different validators sequence depending on the validation type.
     //
     const validationResult = await validateFunc({
-      type,
+      types,
       fieldProps,
       fields: this.state.fields,
       form: this
@@ -612,16 +611,16 @@ export default class Form extends React.Component {
 
     console.log({ validationResult });
 
-    const expected = validationResult.expected;
+    const { expected } = validationResult;
 
-    console.warn('\n\n field validated, expected: %s. reflecting validation state...', expected)
+    console.warn('field validated, expected: %s. reflecting validation state...', expected)
 
     /* Reflect the validation result on the field record */
     let nextFieldProps = recordUtils.reflectValidation({
-      type,
+      types,
       fieldProps,
       validationResult,
-      shouldValidate
+      shouldValidate: needsValidation
     });
 
     /* Set error messages to the field */

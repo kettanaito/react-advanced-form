@@ -10,7 +10,6 @@ import createValidationResult from './createValidationResult';
 import mapToSingleResult from './mapToSingleResult';
 import getRules from './getRules';
 import dispatch from '../dispatch';
-import * as recordUtils from '../recordUtils';
 
 /**
  * Applies the given resolver function and returns
@@ -31,17 +30,19 @@ function mapRulesToResolvers(rules) {
  * Applies the validator provided by "Field.props.rule".
  */
 function applyFieldRule(resolverArgs) {
-  console.warn('applyFieldRule...');
+  console.groupCollapsed('applyFieldRule...');
 
-  const { value, fieldProps, form } = resolverArgs;
+  const { value, fieldProps } = resolverArgs;
   const { rule } = fieldProps;
 
+  console.log({ value })
+  console.log({ rule });
+
   if (!rule) {
-    console.log('field has no "rule", bypassing...');
+    console.log('has no rule, bypassing...');
+    console.groupEnd();
     return createValidationResult(true);
   }
-
-  console.log({ value })
 
   const expected = (typeof rule === 'function')
     ? applyResolver(rule, resolverArgs) // this will return ValidationResult
@@ -53,7 +54,7 @@ function applyFieldRule(resolverArgs) {
 
   console.log({ expected })
   console.log({ rejectedRules })
-  console.log(' ')
+  console.groupEnd();
 
   return createValidationResult(expected, rejectedRules);
 }
@@ -63,16 +64,17 @@ function applyFieldRule(resolverArgs) {
  * relevant to the given field.
  */
 function applyFormRules(resolverArgs) {
-  console.log(' ');
-  console.warn('applyFormRules...');
+  console.groupCollapsed('applyFormRules...');
 
   const { fieldProps, form } = resolverArgs;
   const { rxRules: schema } = form.state;
+
   console.log('schema', schema && schema.toJS());
 
   const rules = getRules(fieldProps, schema);
   const hasNameRules = rules.name && (rules.name.length > 0);
   const hasTypeRules = rules.type && (rules.type.length > 0);
+
   console.log({ rules });
 
   //
@@ -80,8 +82,12 @@ function applyFormRules(resolverArgs) {
   // Perform this exclusion better
   //
   if (!hasNameRules && !hasTypeRules) {
+    console.log('has no relevant rules, bypassing...');
+    console.groupEnd();
     return createValidationResult(true);
   }
+
+  console.groupEnd();
 
   return mapToSingleResult(
     seq(
@@ -96,12 +102,10 @@ function applyFormRules(resolverArgs) {
  */
 export default function validateSync(args) {
   const resolverArgs = createResolverArgs(args);
-  const { value, fieldProps, form } = resolverArgs;
-  const { rxRules } = form.state;
+  const { value, fieldProps } = resolverArgs;
   const { required } = fieldProps;
 
-  console.log(' ');
-  console.log('validateSync:', fieldProps.name, fieldProps.type);
+  console.groupCollapsed('validateSync:', fieldProps.name, fieldProps.type);
 
   //
   // TODO
@@ -110,26 +114,34 @@ export default function validateSync(args) {
 
   /* Treat empty optional fields as expected */
   if (!value && !required) {
-    console.log('optional empty field, bypassing...')
+    console.log('optional empty field, bypassing...');
+    console.groupEnd();
     return createValidationResult(true);
   }
 
   /* Treat empty required fields as unexpected */
   if (!value && required) {
-    console.log('empty required field, throwing...')
+    console.log('required empty field, unexpected!');
+    console.groupEnd();
+
     return createValidationResult(false, createRejectedRule({
       name: errorTypes.missing
     }));
   }
 
-  console.log('validateSync seq...')
+  console.log('continue with validators sequence...')
   console.log({ resolverArgs })
 
   /* Apply the list of validators in a breakable sequence and reduce the results to the single one */
-  return mapToSingleResult(
+  const res = mapToSingleResult(
     seq(
       applyFieldRule,
       applyFormRules
     )
   )(resolverArgs);
+
+  console.log('res:', res);
+  console.groupEnd();
+
+  return res;
 }

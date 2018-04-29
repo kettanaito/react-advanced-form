@@ -18,18 +18,21 @@
  * applicabale to the given field.
  */
 export function getRulesBySelector(selector, fieldProps, schema) {
-  console.groupCollapsed('getRulesBySelector', selector, fieldProps.name);
   const keyPath = [selector, fieldProps.get(selector)];
-
-  console.log({ keyPath });
-  console.groupEnd();
 
   //
   // TODO
   // Shallow keyed collection is not a usual behavior, but only suitable
   // for the reduced schema into "rxRules". Think of the unified interface.
   //
-  return schema.get(keyPath.join('.'));
+  const rules = schema.get(keyPath.join('.'));
+
+  console.groupCollapsed('getRulesBySelector', selector, fieldProps.name);
+  console.log({ keyPath });
+  console.log({ rules });
+  console.groupEnd();
+
+  return rules;
 }
 
 /**

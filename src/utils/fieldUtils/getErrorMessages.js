@@ -49,7 +49,7 @@ function resolveMessage({ messages, rejectedRule, fieldProps }) {
  */
 export default function getErrorMessages({ validationResult, messages, fieldProps, fields, form }) {
   /* No errors - no error messages */
-  const rejectedRules = validationResult.rejectedRules;
+  const { rejectedRules, extra } = validationResult;
   if (!rejectedRules || (rejectedRules.length === 0)) return;
 
   // TODO Use unified resolver creator func
@@ -62,7 +62,6 @@ export default function getErrorMessages({ validationResult, messages, fieldProp
   const defaultResolverKeys = Object.keys(defaultResolverArgs);
 
   /* Get the extra properties coming from the async validation result */
-  const extra = validationResult.extra;
   const extraKeys = extra && Object.keys(extra);
   const overridesExtras = extraKeys && extraKeys.some(extraKey => defaultResolverKeys.includes(extraKey));
 

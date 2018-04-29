@@ -10,6 +10,9 @@ export const supportedRxProps = ['required'];
  * Returns the collection of the reactive props present on the provided field.
  */
 export default function getRxProps(fieldRecord) {
+  // return supportedRxProps
+
+  console.log({ fieldRecord })
   return fieldRecord.filter((propName) => {
     return (supportedRxProps.includes(propName)) && (typeof fieldRecord[propName] === 'function');
   });

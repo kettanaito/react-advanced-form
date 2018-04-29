@@ -3,7 +3,6 @@
  * component. Used for custom field styling, implementing fields with custom logic, and
  * third-party field components integration.
  */
-import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
@@ -39,12 +38,6 @@ const defaultOptions = {
     return {};
   }
 };
-
-/**
- * When any of those props are passed to the end instance of the custom field, they are mapped to the
- * field record and called during the field's lifecycle methods in the Form.
- */
-const inheritedProps = ['rule', 'asyncRule', 'onFocus', 'onChange', 'onBlur'];
 
 export default function connectField(options) {
   const hocOptions = { ...defaultOptions, ...options };
@@ -114,9 +107,20 @@ export default function connectField(options) {
           valuePropName,
           [valuePropName]: registeredValue,
           initialValue: directProps.hasOwnProperty('initialValue') ? initialValue : registeredValue,
-          controlled: directProps.hasOwnProperty('value'),
+          controlled: directProps.hasOwnProperty('value'), // TODO Checkboxes are always uncontrolled
           required: directProps.required,
-          // TODO Debounce isolate validateField method to handle formless fields
+
+          //
+          // TODO
+          // Debounce an isolate validateField method to handle formless fields
+          //
+
+          /**
+           * When the validate method is debounced on the form level, different calls to it
+           * from different fields are going to overlap and conflict with each other.
+           * Wrapping the validate method for each field means that each re-occuring call to that method is
+           * going to be debounced relatively to the field, regardless of the other fields being validated.
+           */
           debounceValidate: debounce(form.validateField, form.debounceTime),
           skip: directProps.skip,
 
@@ -136,6 +140,8 @@ export default function connectField(options) {
         });
 
         // const rxProps = rxUtils.getRxProps(mappedFieldProps);
+        // console.log('rxProps', rxProps && rxProps.toJS());
+
         // if (rxProps.size > 0) {
         //   mappedFieldProps = mappedFieldProps.set('reactiveProps', rxProps);
 
@@ -147,21 +153,22 @@ export default function connectField(options) {
         //   });
         // }
 
-        const _fieldRecord_ = recordUtils.createField(mappedFieldProps);
+        const fieldRecord = recordUtils.createField(mappedFieldProps);
+        console.log('after deleting', fieldRecord.delete('required').toJS());
 
-        console.warn('_fieldRecord_', _fieldRecord_ && _fieldRecord_.toJS())
-        console.log('fieldPath:', _fieldRecord_.fieldPath);
-        console.log('fieldPath:', _fieldRecord_.get('fieldPath'));
-        console.log('valuePropName:', _fieldRecord_[valuePropName]);
-        console.log('value:', _fieldRecord_.value);
-        console.log(_fieldRecord_.set('value', 'foo').toJS());
+        console.warn('fieldRecord', fieldRecord && fieldRecord.toJS())
+        console.log('fieldPath:', fieldRecord.fieldPath);
+        console.log('fieldPath:', fieldRecord.get('fieldPath'));
+        console.log('valuePropName:', fieldRecord[valuePropName]);
+        console.log('value:', fieldRecord.value);
+        console.log(fieldRecord.set('value', 'foo').toJS());
         console.log(' ')
 
         console.groupEnd();
 
         /* Notify the parent Form that a new field prompts to register */
         form.eventEmitter.emit('fieldRegister', {
-          fieldProps: _fieldRecord_,
+          fieldProps: fieldRecord,
           fieldOptions: {
             allowMultiple: hocOptions.allowMultiple,
             beforeRegister: hocOptions.beforeRegister,
@@ -174,7 +181,7 @@ export default function connectField(options) {
           }
         });
 
-        return _fieldRecord_;
+        return fieldRecord;
 
         //
         //
@@ -183,113 +190,36 @@ export default function connectField(options) {
         //
         //
 
-        const defaultFieldRecord = {
-          /* Internals */
-          ref: this,
-          fieldPath,
+        // const defaultFieldRecord = {
+        //   /* Internals */
+        //   ref: this,
+        //   fieldPath,
 
-          /* General */
-          name: directProps.name,
-          type: directProps.type,
-          valuePropName,
-          [valuePropName]: registeredValue,
-          initialValue: directProps.hasOwnProperty('initialValue') ? initialValue : registeredValue,
+        //   /* General */
+        //   name: directProps.name,
+        //   type: directProps.type,
+        //   valuePropName,
+        //   [valuePropName]: registeredValue,
+        //   initialValue: directProps.hasOwnProperty('initialValue') ? initialValue : registeredValue,
 
-          /* States */
-          controlled: directProps.hasOwnProperty('value'), // FIXME checkboxes are never controlled
-          focused: false,
+        //   /* States */
+        //   controlled: directProps.hasOwnProperty('value'), // FIXME checkboxes are never controlled
+        //   focused: false,
 
-          /* Validation */
-          errors: null,
-          required: directProps.required,
-          expected: true,
-          skip: directProps.skip,
-          valid: false,
-          invalid: false,
-          validating: false,
-          validated: false,
-          validatedSync: false,
-          validatedAsync: false,
-          validSync: false,
-          validAsync: false
-        };
-
-        /* Inherit expected props to the field record */
-        inheritedProps.forEach((propName) => {
-          const propValue = directProps[propName];
-          if (propValue) {
-            defaultFieldRecord[propName] = propValue;
-          }
-        });
-
-        console.log('defaultFieldRecord:', Object.assign({}, defaultFieldRecord));
-
-        /* (Optional) Alter the field record using HOC options */
-        const fieldRecord = hocOptions.mapPropsToField({
-          fieldRecord: defaultFieldRecord,
-          props: directProps,
-          context: this.context,
-          valuePropName
-        });
-
-        console.log('fieldRecord:', fieldRecord);
-
-        /* Prevent { fieldGroup: undefined } for the fields without a group */
-        if (fieldGroup) {
-          fieldRecord.fieldGroup = fieldGroup;
-        }
-
-        /**
-         * When the validate method is debounced on the form level, different calls to it from different fields
-         * are going to overlap and conflict with each other.
-         *
-         * Wrapping the validate method for each field means that each re-occuring call to that method is
-         * going to be debounced relatively to the field, regardless of the other fields being validated.
-         */
-        // fieldRecord.debounceValidate = debounce(form.validateField, form.debounceTime);
-
-        //
-        // TODO Check the function wrapped in debounce.
-        //
-        fieldRecord.debounceValidate = debounce(validateFunc, form.debounceTime);
-
-        /* Create immutable field props from the mutable field record */
-        let fieldProps = Map(fieldRecord);
-
-        /* Get the list of reactive props of the current field */
-        const rxProps = rxUtils.getRxProps(fieldProps);
-        if (rxProps.size > 0) {
-          fieldProps = fieldProps.set('reactiveProps', rxProps);
-
-          //
-          // TODO Use "Iterable.deleteAll(keys)" once Immutable 4 lands
-          //
-          rxProps.forEach((_, rxPropName) => {
-            fieldProps = fieldProps.delete(rxPropName);
-          });
-        }
-
-        console.log('rxProps:', rxProps && rxProps.toJS());
-        console.log('field record:', Object.assign({}, fieldRecord));
-        console.log('fieldProps:', fieldProps && fieldProps.toJS());
-        console.groupEnd();
-
-        /* Notify the parent Form that a new field prompts to register */
-        form.eventEmitter.emit('fieldRegister', {
-          fieldProps,
-          fieldOptions: {
-            allowMultiple: hocOptions.allowMultiple,
-            beforeRegister: hocOptions.beforeRegister,
-            shouldValidateOnMount: hocOptions.shouldValidateOnMount({
-              fieldRecord,
-              props: directProps,
-              context: this.context,
-              valuePropName
-            })
-          }
-        });
-
-        return fieldProps;
+        //   /* Validation */
+        //   errors: null,
+        //   required: directProps.required,
+        //   expected: true,
+        //   skip: directProps.skip,
+        //   valid: false,
+        //   invalid: false,
+        //   validating: false,
+        //   validated: false,
+        //   validatedSync: false,
+        //   validatedAsync: false,
+        //   validSync: false,
+        //   validAsync: false
+        // };
       }
 
       componentWillReceiveProps(nextProps) {
