@@ -1,19 +1,5 @@
 // @flow
 
-export type TParallel<F, A, R> = (...funcs: F[]) => (...args: A[]) => R;
-
-/**
- * Creates a parallel function iterator that executes the list of the given functions
- * and accumulates their results into a single list.
- */
-export const parallel: TParallel<Function, any, any> = (...funcs) => {
-  return (...args) => {
-    return funcs.reduce((payload, func: Function) => {
-      return payload.concat(func(...args));
-    }, []);
-  };
-}
-
 type TSeqPredicate<R> = (result: R, results: R[]) => boolean;
 export type TSeq<F, A, R> = (predicate: TSeqPredicate<R>) => (...funcs: F[]) => (...args: A[]) => R;
 
