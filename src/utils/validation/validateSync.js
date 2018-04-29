@@ -3,26 +3,37 @@
 // import type { TValidatorArgs } from './getRules';
 
 import { seq } from '.';
+import dispatch from '../dispatch';
 import errorTypes from './errorTypes';
 import createResolverArgs from './createResolverArgs';
 import createRejectedRule from './createRejectedRule';
 import createValidationResult from './createValidationResult';
 import mapToSingleResult from './mapToSingleResult';
 import getRules from './getRules';
-import dispatch from '../dispatch';
 
 /**
  * Applies the given resolver function and returns
  * the validation result.
  */
 function applyResolver(resolver, resolverArgs) {
-  const expected = dispatch(resolver, resolverArgs, resolverArgs.form.context);
-  return createValidationResult(expected);
+  return dispatch(resolver, resolverArgs, resolverArgs.form.context);
+}
+
+function applyRule(rule, resolverArgs) {
+  const { name, selector, resolver } = rule;
+  const expected = applyResolver(resolver, resolverArgs);
+  const rejectedRules = expected ? undefined : createRejectedRule({
+    name: name || errorTypes.invalid,
+    selector,
+    isCustom: !!name
+  });
+
+  return createValidationResult(expected, rejectedRules);
 }
 
 function mapRulesToResolvers(rules) {
-  return rules.map(({ resolver }) => {
-    return resolverArgs => applyResolver(resolver, resolverArgs);
+  return rules.map((rule) => {
+    return resolverArgs => applyRule(rule, resolverArgs);
   });
 }
 
@@ -45,8 +56,8 @@ function applyFieldRule(resolverArgs) {
   }
 
   const expected = (typeof rule === 'function')
-    ? applyResolver(rule, resolverArgs) // this will return ValidationResult
-    : rule.test(value); // while this will return boolean
+    ? applyResolver(rule, resolverArgs)
+    : rule.test(value);
 
   const rejectedRules = expected ? undefined : createRejectedRule({
     name: errorTypes.invalid
@@ -60,8 +71,9 @@ function applyFieldRule(resolverArgs) {
 }
 
 /**
- * Sequentially applies validation rules from the schema
- * relevant to the given field.
+ * Takes the rules from the schema relative to the given field
+ * and applies them in a breakable sequence, retuning the
+ * validation result.
  */
 function applyFormRules(resolverArgs) {
   console.groupCollapsed('applyFormRules...');
@@ -87,14 +99,17 @@ function applyFormRules(resolverArgs) {
     return createValidationResult(true);
   }
 
-  console.groupEnd();
-
-  return mapToSingleResult(
+  const res = mapToSingleResult(
     seq(
       mapToSingleResult(...mapRulesToResolvers(rules.name)),
       mapToSingleResult(...mapRulesToResolvers(rules.type)),
     )
   )(resolverArgs);
+
+  console.log({ res });
+  console.groupEnd();
+
+  return res;
 }
 
 /**

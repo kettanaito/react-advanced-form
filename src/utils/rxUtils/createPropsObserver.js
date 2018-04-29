@@ -2,6 +2,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/filter';
 import camelize from '../camelize';
+import enforceArray from '../enforceArray';
 
 /**
  * @param {string} propName
@@ -28,7 +29,7 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
 export default function createPropsObserver({ fieldPath, props, predicate, getNextValue, eventEmitter }) {
   const propsChangeEvent = camelize(...fieldPath, 'props', 'change');
   const appropriatePredicate = predicate || defaultPredicate;
-  const propsList = Array.isArray(props) ? props : [props];
+  const propsList = enforceArray(props);
 
   return Observable.fromEvent(eventEmitter, propsChangeEvent)
     .map((eventData) => {

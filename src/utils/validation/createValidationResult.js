@@ -1,10 +1,11 @@
 // @flow
 import type { TRejectedRule } from './createRejectedRule';
 
+import enforceArray from '../enforceArray';
+
 export type TValidationType = 'sync' | 'async' | 'both';
 export type TValidationResultExtra = Object;
 export type TValidationResult = {
-  // type: TValidationType,
   expected: boolean,
   rejectedRules?: TRejectedRule[],
   extra?: TValidationResultExtra
@@ -17,15 +18,13 @@ export type TValidationResult = {
  * propagated by the validator function.
  */
 export default function createValidationResult(
-  // type: TValidationType,
   expected: boolean,
   rejectedRules?: TRejectedRule[] | TRejectedRule = [],
   extra?: TValidationResultExtra
 ): TValidationResult {
   return {
-    // type,
     expected,
-    rejectedRules: Array.isArray(rejectedRules) ? rejectedRules : [rejectedRules],
+    rejectedRules: enforceArray(rejectedRules),
     extra
   };
 }

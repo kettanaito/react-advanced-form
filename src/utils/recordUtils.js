@@ -236,9 +236,6 @@ export function reflectValidation({ types, fieldProps, validationResult, shouldV
   const { expected } = validationResult;
   console.log('expected:', expected);
 
-  //
-  // TODO Handle "both" validation type
-  //
   const validProps = types.reduce((props, validationType) => {
     const validPropName = camelize('valid', validationType.name);
     const validatedPropName = camelize('validated', validationType.name);

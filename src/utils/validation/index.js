@@ -20,7 +20,7 @@ export const seq: TSeq<TValidatorFunc, TValidatorArgs, TValidationResult> = crea
   (result: TValidationResult) => result.expected
 );
 
-const allValidators = {
+const validatorsCollection = {
   sync: validateSync,
   async: validateAsync
 };
@@ -34,7 +34,7 @@ export default function vaidateByType(args): TValidationResult {
    * necessary validation types ("sync", "async", or both).
    */
   const validatorsSeq = types.reduce((validators, validationType: TValidationType) => {
-    const validatorFunc = allValidators[validationType];
+    const validatorFunc = validatorsCollection[validationType];
     return validatorFunc ? validators.concat(validatorFunc) : validators;
   }, []);
 

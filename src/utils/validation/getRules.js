@@ -52,9 +52,4 @@ export default function getRules(fieldProps, schema) {
 
     return rules;
   }, {});
-
-  // return {
-  //   type: getRulesBySelector(fieldProps, schema, 'type'),
-  //   name: getRulesBySelector(fieldProps, schema, 'name'),
-  // };
 }
