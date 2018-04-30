@@ -38,12 +38,12 @@ export default {
     }
   },
   name: {
-    confirmPassword: ({ value, fields }) => {
+    confirmPassword: ({ value, get }) => {
       /**
        * The "confirmPassword" field will be re-validated
        * whenever the "value" prop of "userPassword" field updates.
        */
-      return (value === fields.userPassword.value);
+      return (value === get(['userPassword', 'value']);
     }
   }
 };
