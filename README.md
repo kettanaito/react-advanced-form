@@ -43,7 +43,7 @@ export default {
        * The "confirmPassword" field will be re-validated
        * whenever the "value" prop of "userPassword" field updates.
        */
-      return (value === get(['userPassword', 'value']);
+      return (value === get(['userPassword', 'value']));
     }
   }
 };
