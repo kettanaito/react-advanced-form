@@ -13,7 +13,7 @@ import {
   CustomPropTypes,
   getComponentName,
   recordUtils,
-  rxUtils
+  // rxUtils
 } from '../utils';
 
 /* Default options for `connectField()` HOC */

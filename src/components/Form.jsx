@@ -568,7 +568,7 @@ export default class Form extends React.Component {
       fieldProps: explicitFieldProps,
       fields: explicitFields,
       forceProps = false,
-      force = false, // TODO Possibly deprecated?
+      // force = false, // TODO Possibly deprecated?
       shouldUpdateFields = true
     } = args;
 
