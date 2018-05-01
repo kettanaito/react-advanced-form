@@ -2,14 +2,14 @@
 // import type { TValidatorFunc, TValidationResult } from '.';
 // import type { TValidatorArgs } from './getRules';
 
-import { seq } from '.';
-import dispatch from '../dispatch';
-import errorTypes from './errorTypes';
-import createResolverArgs from './createResolverArgs';
-import createRejectedRule from './createRejectedRule';
-import createValidationResult from './createValidationResult';
-import mapToSingleResult from './mapToSingleResult';
-import getRules from './getRules';
+import { seq } from '../';
+import dispatch from '../../dispatch';
+import errorTypes from '../errorTypes';
+import createResolverArgs from '../createResolverArgs';
+import createRejectedRule from '../createRejectedRule';
+import createValidationResult from '../createValidationResult';
+import mapToSingleResult from '../mapToSingleResult';
+import getRules from '../getRules';
 
 /**
  * Applies the given resolver function and returns
@@ -131,6 +131,7 @@ export default function validateSync(args) {
   if (!value && !required) {
     console.log('optional empty field, bypassing...');
     console.groupEnd();
+
     return createValidationResult(true);
   }
 
@@ -144,19 +145,15 @@ export default function validateSync(args) {
     }));
   }
 
-  console.log('continue with validators sequence...')
-  console.log({ resolverArgs })
+  console.log('continue with validators sequence...');
+  console.log({ resolverArgs });
+  console.groupEnd();
 
   /* Apply the list of validators in a breakable sequence and reduce the results to the single one */
-  const res = mapToSingleResult(
+  return mapToSingleResult(
     seq(
       applyFieldRule,
       applyFormRules
     )
   )(resolverArgs);
-
-  console.log('res:', res);
-  console.groupEnd();
-
-  return res;
 }

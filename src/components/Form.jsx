@@ -21,7 +21,6 @@ import {
   rxUtils
 } from '../utils';
 import validateFunc from '../utils/validation';
-import shouldValidate from '../utils/validation/shouldValidate';
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls an optional callback
@@ -168,6 +167,10 @@ export default class Form extends React.Component {
       props: ['type'],
       eventEmitter
     }).subscribe(({ changedProps }) => {
+      //
+      // TODO
+      // RxProps is not aligned with the changes.
+      //
       this.updateField({
         fieldPath,
         update: fieldProps => Object.keys(changedProps).reduce((acc, propName) => {
@@ -264,14 +267,15 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Updates the fields with the given instance of the field and returns
+   * the updated state of the fields.
    * @param {Record} fieldRecord
    * @returns {Promise}
    */
   updateFieldsWith = (fieldRecord) => {
     const nextFields = recordUtils.updateCollectionWith(fieldRecord, this.state.fields);
 
-    console.groupCollapsed('updateFieldsWith');
-    console.warn('stack trace')
+    console.groupCollapsed('updateFieldsWith', fieldRecord.name);
     console.log('fieldRecord:', fieldRecord.toJS());
     console.log('nextFields:', nextFields.toJS());
     console.groupEnd(' ');
@@ -302,7 +306,7 @@ export default class Form extends React.Component {
    * @param {any} prevValue
    * @param {Record} fieldProps
    */
-  handleFirstChange = ({ event, nextValue, prevValue, fieldProps }) => {
+  handleFirstChange = ({ event, prevValue, nextValue, fieldProps }) => {
     const { onFirstChange } = this.props;
     if (!onFirstChange) {
       return;
@@ -397,20 +401,20 @@ export default class Form extends React.Component {
     }
 
     /* Reset the validation state and update the field's value prop */
-    const updatedField = recordUtils.setValue(
+    const updatedFieldProps = recordUtils.setValue(
       recordUtils.resetValidationState(fieldProps),
       nextValue
     );
 
     /* Update fields to reflect the updated field value */
-    await this.updateFieldsWith(updatedField);
+    await this.updateFieldsWith(updatedFieldProps);
 
     /**
      * Cancel any pending async validation.
      * Once the field's value has changed, the previously dispatched async validation
      * is no longer relevant, since it validates the previous value.
      */
-    const pendingAsyncValidation = updatedField.get('pendingAsyncValidation');
+    const pendingAsyncValidation = updatedFieldProps.get('pendingAsyncValidation');
     if (pendingAsyncValidation) {
       pendingAsyncValidation.get('cancel')();
     }
@@ -427,8 +431,8 @@ export default class Form extends React.Component {
     // Should this be encapsulated into Form.validateField, or be an independent function?
     //
     const validationResult = await appropriateValidation({
-      types: ['sync'],
-      fieldProps: updatedField,
+      types: types => [types.sync],
+      fieldProps: updatedFieldProps,
       fields: this.state.fields,
       form: this
     });
@@ -494,7 +498,7 @@ export default class Form extends React.Component {
 
     console.warn('Handle field blur');
 
-    const { fieldPath, asyncRule, validSync, validatedSync, validatedAsync } = fieldProps;
+    const { fieldPath } = fieldProps;
     let nextFieldProps = fieldProps;
     let nextFields = this.state.fields;
 
@@ -514,27 +518,27 @@ export default class Form extends React.Component {
     // Or even better - get rid of classes and determine validation necessity via a pure function?
     //
     //
-    const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
+    // const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
 
     console.groupCollapsed(fieldPath, '@ handleFieldBlur');
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    console.log('should validate', shouldValidate);
+    // console.log('should validate', shouldValidate);
     console.groupEnd();
 
-    if (shouldValidate) {
-      /* Indicate that the validation is running */
-      const validatingField = recordUtils.beginValidation(fieldProps);
+    // if (shouldValidate) {
+    /* Indicate that the validation is running */
+    const validatingField = recordUtils.beginValidation(fieldProps);
 
-      /* Validate the field */
-      const validatedField = await this.validateField({
-        fieldProps: validatingField,
-        shouldUpdateFields: false
-      });
+    /* Validate the field */
+    const validatedField = await this.validateField({
+      fieldProps: validatingField,
+      shouldUpdateFields: false
+    });
 
-      /* Reflect the end of the validation */
-      nextFieldProps = recordUtils.endValidation(validatedField);
-      nextFields = await this.updateFieldsWith(nextFieldProps);
-    }
+    /* Reflect the end of the validation */
+    nextFieldProps = recordUtils.endValidation(validatedField);
+    nextFields = await this.updateFieldsWith(nextFieldProps);
+    // }
 
     /* Call custom onBlur handler */
     const customBlurHandler = nextFieldProps.get('onBlur');
@@ -560,44 +564,40 @@ export default class Form extends React.Component {
    */
   validateField = async (args) => {
     const {
-      types = ['sync', 'async'],
+      types,
       fieldProps: explicitFieldProps,
       fields: explicitFields,
       forceProps = false,
-      force = false,
+      force = false, // TODO Possibly deprecated?
       shouldUpdateFields = true
     } = args;
 
     //
     // TODO Shouldn't this be "this.rxRules"???
     //
-    const { formRules } = this;
+    // const { formRules } = this;
     const fields = explicitFields || this.state.fields;
 
     let fieldProps = forceProps ? explicitFieldProps : fields.getIn(explicitFieldProps.fieldPath);
     fieldProps = fieldProps || explicitFieldProps;
 
-    /* Bypass the validation if the provided validation type has been already validated */
-    //
-    // TODO Ditch ValidationType class, use pure functions.
-    //
-    const needsValidation = force || shouldValidate(
-      types,
-      fieldProps,
-      formRules
-    );
+    /* Determine the necessity of the validation */
+    // const shouldValidate = force || getValidationNecessity(
+    //   types,
+    //   fieldProps,
+    //   formRules
+    // );
 
     console.groupCollapsed(fieldProps.fieldPath, '@ validateField');
     console.log('validation types', types);
     console.log('value', fieldProps.get(fieldProps.get('valuePropName')));
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    console.log('needsValidation', needsValidation);
     console.groupEnd();
 
     /* Bypass the validation when none is needed */
-    if (!needsValidation) {
-      return fieldProps;
-    }
+    // if (!shouldValidate) {
+    //   return fieldProps;
+    // }
 
     /* Perform the validation */
 
@@ -612,7 +612,7 @@ export default class Form extends React.Component {
       form: this
     });
 
-    console.log({ validationResult });
+    console.log('validationResult:', validationResult);
 
     const { expected } = validationResult;
 
@@ -622,8 +622,7 @@ export default class Form extends React.Component {
     let nextFieldProps = recordUtils.reflectValidation({
       types,
       fieldProps,
-      validationResult,
-      shouldValidate: needsValidation
+      validationResult
     });
 
     /* Set error messages to the field */
@@ -645,10 +644,6 @@ export default class Form extends React.Component {
     console.log('validation is done, props:', nextFieldProps.toJS());
 
     /* Update the field in the state to reflect the changes */
-    //
-    // BEWARE That previously "validate" method exposed "nextFields" and "nextFieldProps"
-    // as Object props. Now it just returns a Map, which is the nextFields alone.
-    //
     if (shouldUpdateFields) {
       await this.updateFieldsWith(nextFieldProps);
     }

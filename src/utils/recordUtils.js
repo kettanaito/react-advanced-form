@@ -226,9 +226,8 @@ export function setFocus(fieldRecord, isFocused = true) {
  * @param {Boolean} shouldValidate
  * @returns {Map}
  */
-export function reflectValidation({ types, fieldProps, validationResult, shouldValidate }) {
-  console.groupCollapsed('should relfect validation result');
-  console.log('types:', types);
+export function reflectValidation({ fieldProps, validationResult, shouldValidate }) {
+  console.groupCollapsed('recordUtils.reflectValidation', fieldProps.name);
   console.log('fieldProps:', fieldProps && fieldProps.toJS());
   console.log('validation result:', validationResult);
   console.log('shouldValidate:', shouldValidate);
@@ -236,13 +235,15 @@ export function reflectValidation({ types, fieldProps, validationResult, shouldV
   const { expected } = validationResult;
   console.log('expected:', expected);
 
-  const validProps = types.reduce((props, validationType) => {
+  const validProps = validationResult.types.reduce((props, validationType) => {
     const validPropName = camelize('valid', validationType.name);
     const validatedPropName = camelize('validated', validationType.name);
     props[validPropName] = expected;
     props[validatedPropName] = true;
     return props;
   }, {});
+
+  console.log({ validProps });
 
   const validatedField = fieldProps
     .set('validated', true)
@@ -251,7 +252,7 @@ export function reflectValidation({ types, fieldProps, validationResult, shouldV
 
   const nextFieldProps = setValidityState(validatedField, shouldValidate);
 
-  console.log('nextFieldProps:', nextFieldProps);
+  console.log('nextFieldProps:', nextFieldProps && nextFieldProps.toJS());
   console.groupEnd();
 
   return nextFieldProps;

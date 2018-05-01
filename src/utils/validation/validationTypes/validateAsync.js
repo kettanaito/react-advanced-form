@@ -3,12 +3,12 @@
 // import type { ICancelablePromise } from '../makeCancelable';
 
 import invariant from 'invariant';
-import errorTypes from './errorTypes';
-import createResolverArgs from './createResolverArgs';
-import createValidationResult from './createValidationResult';
-import createRejectedRule from './createRejectedRule';
-import dispatch from '../dispatch';
-import makeCancelable from '../makeCancelable';
+import errorTypes from '../errorTypes';
+import createResolverArgs from '../createResolverArgs';
+import createValidationResult from '../createValidationResult';
+import createRejectedRule from '../createRejectedRule';
+import dispatch from '../../dispatch';
+import makeCancelable from '../../makeCancelable';
 
 // type TAsyncValidationRes = {
 //   valid: boolean,

@@ -77,13 +77,13 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
    * the validation rule(s) where that prop is referenced.
    */
   ruleGroups.forEach((ruleGroup) => {
-    ruleGroup.forEach((rule) => {
+    ruleGroup.forEach(({ refs, resolver }) => {
       /* Bypass rule resolvers without field references */
-      if (rule.refs.length === 0) {
+      if (refs.length === 0) {
         return;
       }
 
-      makeObservable(rule.resolver, resolverArgs, {
+      makeObservable(resolver, resolverArgs, {
         subscribe() {
           form.eventEmitter.emit('validateField', {
             fieldProps,
