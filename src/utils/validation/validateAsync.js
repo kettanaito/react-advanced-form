@@ -2,6 +2,7 @@
 // import type { TValidatorArgs } from './getRules';
 // import type { ICancelablePromise } from '../makeCancelable';
 
+import invariant from 'invariant';
 import errorTypes from './errorTypes';
 import createResolverArgs from './createResolverArgs';
 import createValidationResult from './createValidationResult';
@@ -50,10 +51,9 @@ export default async function validateAsync(args) {
   const res = await pendingValidation.itself;
   const { valid, ...extraProps } = res;
 
-  //
-  // TODO
-  // Invariant improper response object structure here.
-  //
+  invariant(res && res.hasOwnProperty('valid'), 'Failed to async validate the `%s` field. ' +
+  'Expected `asyncRule` to resolve with an Object containing a `valid` prop, but got: %s',
+  fieldProps.name, res);
 
   const rejectedRules = valid ? undefined : createRejectedRule({
     name: errorTypes.async,

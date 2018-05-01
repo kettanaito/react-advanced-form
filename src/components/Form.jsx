@@ -271,6 +271,7 @@ export default class Form extends React.Component {
     const nextFields = recordUtils.updateCollectionWith(fieldRecord, this.state.fields);
 
     console.groupCollapsed('updateFieldsWith');
+    console.warn('stack trace')
     console.log('fieldRecord:', fieldRecord.toJS());
     console.log('nextFields:', nextFields.toJS());
     console.groupEnd(' ');
@@ -395,21 +396,21 @@ export default class Form extends React.Component {
       }, this.context);
     }
 
-    /* Reset the validation state */
-    const resetField = recordUtils.resetValidationState(fieldProps);
-
-    /* Update the field's value prop */
-    const updatedFieldProps = recordUtils.setValue(resetField, nextValue);
+    /* Reset the validation state and update the field's value prop */
+    const updatedField = recordUtils.setValue(
+      recordUtils.resetValidationState(fieldProps),
+      nextValue
+    );
 
     /* Update fields to reflect the updated field value */
-    await this.updateFieldsWith(updatedFieldProps);
+    await this.updateFieldsWith(updatedField);
 
     /**
      * Cancel any pending async validation.
      * Once the field's value has changed, the previously dispatched async validation
      * is no longer relevant, since it validates the previous value.
      */
-    const pendingAsyncValidation = updatedFieldProps.get('pendingAsyncValidation');
+    const pendingAsyncValidation = updatedField.get('pendingAsyncValidation');
     if (pendingAsyncValidation) {
       pendingAsyncValidation.get('cancel')();
     }
@@ -427,7 +428,7 @@ export default class Form extends React.Component {
     //
     const validationResult = await appropriateValidation({
       types: ['sync'],
-      fieldProps: updatedFieldProps,
+      fieldProps: updatedField,
       fields: this.state.fields,
       form: this
     });
@@ -491,7 +492,11 @@ export default class Form extends React.Component {
       return;
     }
 
+    console.warn('Handle field blur');
+
     const { fieldPath, asyncRule, validSync, validatedSync, validatedAsync } = fieldProps;
+    let nextFieldProps = fieldProps;
+    let nextFields = this.state.fields;
 
     /**
      * Determine whether the validation is needed.
@@ -516,23 +521,20 @@ export default class Form extends React.Component {
     console.log('should validate', shouldValidate);
     console.groupEnd();
 
-    //
-    // I think this condition is misleading. If validation is necessary, certain updates to the
-    // field record are applied. But then regardless of this condition, "endValidation" updates
-    // are applied as well.
-    //
     if (shouldValidate) {
       /* Indicate that the validation is running */
       const validatingField = recordUtils.beginValidation(fieldProps);
 
       /* Validate the field */
-      await this.validateField({ fieldProps: validatingField });
-    }
+      const validatedField = await this.validateField({
+        fieldProps: validatingField,
+        shouldUpdateFields: false
+      });
 
-    /* Reflect the end of the validation */
-    // TODO "validatingField" is outdated, need to use the record after "this.validateField"
-    const nextFieldProps = recordUtils.endValidation(validatingField);
-    const nextFields = await this.updateFieldsWith(nextFieldProps);
+      /* Reflect the end of the validation */
+      nextFieldProps = recordUtils.endValidation(validatedField);
+      nextFields = await this.updateFieldsWith(nextFieldProps);
+    }
 
     /* Call custom onBlur handler */
     const customBlurHandler = nextFieldProps.get('onBlur');
@@ -562,7 +564,8 @@ export default class Form extends React.Component {
       fieldProps: explicitFieldProps,
       fields: explicitFields,
       forceProps = false,
-      force = false
+      force = false,
+      shouldUpdateFields = true
     } = args;
 
     //
@@ -593,7 +596,7 @@ export default class Form extends React.Component {
 
     /* Bypass the validation when none is needed */
     if (!needsValidation) {
-      return fields;
+      return fieldProps;
     }
 
     /* Perform the validation */
@@ -646,7 +649,11 @@ export default class Form extends React.Component {
     // BEWARE That previously "validate" method exposed "nextFields" and "nextFieldProps"
     // as Object props. Now it just returns a Map, which is the nextFields alone.
     //
-    return this.updateFieldsWith(nextFieldProps);
+    if (shouldUpdateFields) {
+      await this.updateFieldsWith(nextFieldProps);
+    }
+
+    return nextFieldProps;
   }
 
   /**
