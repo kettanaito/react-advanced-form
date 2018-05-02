@@ -13,7 +13,9 @@
 No boilerplate. No obscure high-order component configurations. No redundant state management. Embrace powerful custom styling, field grouping, advanced multi-layer validation, validation messages with smart fallback system, reactive props resolvers and much more.
 
 ## Features
-* **Boilterplate-free**. Remember how you were tossing tons of configurations for high-order components around each form? No more. Create clean and powerful forms without repeating yourself, without building crazy abstractions.
+* **Boilterplate-free**. Remember tossing tons of configurations for high-order components to forms? No more. Create clean and powerful forms without repeating yourself, without building crazy abstractions.
+
+* **Immutable**. Rest asured as all the fields are controlled using immutable data structures that makes their updates efficient and side-effect free.
 
 * [**Composite fields**](https://kettanaito.gitbooks.io/react-advanced-form/docs/getting-started/creating-fields.html). React Advanced Form is *field-centric*. That means you define flexible fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
 
@@ -62,7 +64,7 @@ Access the field's `value`, `fieldProps`, `fields` and the `form` as the paramet
   required={({ get }) => !!get(['firstName', 'value'])} />
 ```
 
-Embrace the power of reactive programming, which re-evaluates a resolver function whenever the referenced field props update.
+Get as many data from the sibling fields as needed, and build your logic on that. Embrace the power of reactive programming, which re-evaluates a resolver function whenever the referenced field props update.
 
 * [**Field grouping**](https://kettanaito.gitbooks.io/react-advanced-form/docs/components/Field.Group.html). Control the serialized data structure on the layout level by grouping the fields. Nested and split groups are supported.
 
@@ -138,7 +140,7 @@ Help to improve the documentation by submitting a [Pull request](https://github.
   </tr>
 </table>
 
-> There is no official support for Internet Explorer. No features are tested to ensure working there. They may, or may not work. Microsoft has stopped IE support, and so should you application.
+> There is no official support for Internet Explorer. No features are tested to ensure working there. They *may*, or *may not* work. Microsoft has stopped IE support, and so should you application.
 
 ## Contributing
 Any of your contributions are highly appreciated. See the [Contribution guidelines](https://kettanaito.gitbooks.io/react-advanced-form/docs/CONTRIBUTING.html) to get to know the process better. Moreover, development isn't the only way to contribute, there are [many more](https://kettanaito.gitbooks.io/react-advanced-form/docs/CONTRIBUTING.html#other-contributions).
