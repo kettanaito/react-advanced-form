@@ -6,7 +6,7 @@ import type { TValidationResult } from './createValidationResult';
 import { createSeq } from '../creators';
 import mapToSingleResult from './mapToSingleResult';
 import validationTypes from './validationTypes';
-import getValidationTypes from './getValidationTypes';
+import getApplicableValidations from './getApplicableValidations';
 import createValidationResult from './createValidationResult';
 
 export type TValidatorFunc = (args: TValidatorArgs) => TValidationResult;
@@ -19,16 +19,23 @@ export const seq: TSeq<TValidatorFunc, TValidatorArgs, TValidationResult> = crea
   (result: TValidationResult) => result.expected
 );
 
-export default function vaidateByType(args): TValidationResult {
+export default function validate(args): TValidationResult {
   const { types, fieldProps, form } = args;
-  const relevantValidationTypes = types
-    ? types(validationTypes)
-    : getValidationTypes(fieldProps, form);
+
+  if (types) {
+    console.log('has explicitly requested types', types);
+  }
+
+  const explicitValidationTypes = types && types(validationTypes);
+  const relevantValidationTypes = getApplicableValidations(fieldProps, form, explicitValidationTypes);
 
   /* Treat a field with no necessary validation types as expected */
   if (relevantValidationTypes.length === 0) {
     console.log('no validation types applicable, field is expected!');
-    return createValidationResult(true);
+    return {
+      ...createValidationResult(true),
+      types: relevantValidationTypes
+    };
   }
 
   /**

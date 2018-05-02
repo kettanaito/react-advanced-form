@@ -19,32 +19,36 @@ const validationTypes: TValidationTypes = {
     name: 'sync',
     validator: validateSync,
     shouldValidate(fieldRecord, schema) {
-      console.groupCollapsed('validationTypes.sync shouldValidate', fieldRecord.name);
+      console.groupCollapsed('SYNC SHOULD VALIDATE', fieldRecord.name);
       console.log('fieldRecord:', fieldRecord && fieldRecord.toJS());
 
       if (fieldRecord.validSync) {
         console.log('already valid, bypassing...');
         console.groupEnd();
+
         return false;
       }
 
-      console.groupEnd();
-
       const fieldRules = getRules(fieldRecord, schema);
 
-      return (
-        fieldRecord.has('rule') ||
+      const res = (
+        fieldRecord.rule ||
         fieldRules.type ||
         fieldRules.name ||
         fieldRecord.required
       );
+
+      console.log('should validate:', res);
+      console.groupEnd();
+
+      return res;
     }
   },
   async: {
     name: 'async',
     validator: validateAsync,
     shouldValidate(fieldRecord) {
-      return (fieldRecord.validSync && fieldRecord.has('asyncRule') && !fieldRecord.validAsync);
+      return (fieldRecord.validSync && fieldRecord.asyncRule && !fieldRecord.validAsync);
     }
   }
 };
