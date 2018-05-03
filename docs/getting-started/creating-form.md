@@ -3,7 +3,10 @@
 ## Introduction
 React Advanced Form is field-centric. That means that it treats each form as a composite component containing various [field components](./creating-fields).
 
-Simply place a `Form` component and pass the necessary fields as its children. Statically or dynamically, that doesn't matter.
+## Implementation
+
+1. Import and use a `<Form>` component directly from `react-advanced-form` library.
+1. Use necessary field components as the children of the form, no matter the depth or nature (static/dynamic).
 
 ## Example
 ```jsx
@@ -32,4 +35,4 @@ export default class ExampleForm extends React.Component {
 }
 ```
 
-> This is but a minimal example. More complex topics, like field validation or submit handling will be covered in the next steps of this guide.
+> Note that this is a minimal example. More complex topics like field validation or submit handling will be covered in the next steps of this guide.
