@@ -1,11 +1,9 @@
-# Creating form
+# Creating a form
 
 ## Introduction
-After our [composite fields](./creating-fields) are prepared, we can construct any forms we need.
+React Advanced Form is field-centric. That means that it treats each form as a composite component containing various [field components](./creating-fields).
 
-Simply place a `Form` component and pass the necessary fields as its children. No tons of configurations, no obscure field declarations.
-
-At this point we are going to focus on the layout only.
+Simply place a `Form` component and pass the necessary fields as its children. Statically or dynamically, that doesn't matter.
 
 ## Example
 ```jsx
@@ -34,6 +32,4 @@ export default class ExampleForm extends React.Component {
 }
 ```
 
-That's it.
-
-In the next steps we are going to declare some [Validation rules](./validation-rules.md) to make our even more fantastic.
+> This is but a minimal example. More complex topics, like field validation or submit handling will be covered in the next steps of this guide.
