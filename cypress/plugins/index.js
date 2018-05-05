@@ -10,7 +10,7 @@ const webpackOptions = {
         test: /\.jsx?$/i,
         loader: 'babel-loader',
         options: {
-          presets: ['env', 'react'],
+          presets: ['env', 'react', 'flow'],
           plugins: ['transform-class-properties']
         }
       },
@@ -36,6 +36,6 @@ const options = {
   watchOptions: {}
 };
 
-module.exports = (on, config) => {
-  on('file:preprocessor', webpackPreprocessor(options))
+module.exports = (on) => {
+  on('file:preprocessor', webpackPreprocessor(options));
 };

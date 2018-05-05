@@ -39,15 +39,15 @@ import ReactSelect from './third-party/react-select';
 import ReactSlider from './third-party/react-slider';
 import ReactDatepicker from './third-party/react-datepicker';
 
-storiesOf('Integration tests|Basics', module)
+storiesOf('Basics|Interaction', module)
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
   .add('Controlled fields', addComponent(<ControlledFields />))
 
-storiesOf('Integration tests|Synchronous validation', module)
+storiesOf('Basics|Synchronous validation', module)
   .add('Field.props.rule', addComponent(<FieldPropsRule />))
   .add('Form.props.rules', addComponent(<FormPropsRules />))
 
-storiesOf('Integration tests|Asynchronous validation', module)
+storiesOf('Basics|Asynchronous validation', module)
   .add('Field.props.asyncRule', addComponent(<FieldPropsAsyncRule />))
 
 storiesOf('Advanced|Field grouping', module)

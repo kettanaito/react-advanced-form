@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map } from 'immutable';
+import { Record } from 'immutable';
 import { expect } from 'chai';
 import { mount } from 'cypress-react-unit-test';
 import Scenario from '@examples/components/createField';
@@ -13,9 +13,9 @@ describe('createField', function () {
         const { fields } = this.form.state;
         const fieldProps = fields.get('fieldOne');
 
-        expect(fieldProps).to.be.an.instanceOf(Map);
-        expect(fieldProps.get('name')).to.equal('fieldOne');
-        expect(fieldProps.get('fieldPath')).to.deep.equal(['fieldOne']);
+        expect(Record.isRecord(fieldProps));
+        expect(fieldProps.name).to.equal('fieldOne');
+        expect(fieldProps.fieldPath).to.deep.equal(['fieldOne']);
       }, 100);
     });
   });

@@ -19,7 +19,7 @@ const validationTypes: TValidationTypes = {
     name: 'sync',
     validator: validateSync,
     shouldValidate(fieldRecord, schema) {
-      console.groupCollapsed('SYNC SHOULD VALIDATE', fieldRecord.name);
+      console.groupCollapsed('validateSync @ shouldValidate @ `%s`', fieldRecord.name);
       console.log('fieldRecord:', fieldRecord && fieldRecord.toJS());
 
       if (fieldRecord.validSync) {
@@ -38,7 +38,7 @@ const validationTypes: TValidationTypes = {
         fieldRecord.required
       );
 
-      console.log('should validate:', res);
+      console.warn('should validate?', res);
       console.groupEnd();
 
       return res;
@@ -48,7 +48,14 @@ const validationTypes: TValidationTypes = {
     name: 'async',
     validator: validateAsync,
     shouldValidate(fieldRecord) {
-      return (fieldRecord.validSync && fieldRecord.asyncRule && !fieldRecord.validAsync);
+      const shouldValidate = (fieldRecord.validSync && fieldRecord.asyncRule && !fieldRecord.validAsync);
+
+      console.groupCollapsed('validateAsync @ shouldValidate @ `%s`', fieldRecord.name);
+      console.log('field record', fieldRecord && fieldRecord.toJS());
+      console.warn('should validate?', shouldValidate);
+      console.groupEnd();
+
+      return shouldValidate;
     }
   }
 };

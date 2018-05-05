@@ -133,15 +133,18 @@ export default class Form extends React.Component {
     const { fieldPath } = initialFieldProps;
     const isAlreadyExist = fields.hasIn(fieldPath);
 
-    console.groupCollapsed(fieldPath, '@ registerField');
-    console.log('initialFieldProps', initialFieldProps.toJS());
-    console.log('already exists:', isAlreadyExist);
-    console.groupEnd();
+    console.groupCollapsed(`${fieldPath.join('.')} @ registerField`);
+    console.log('field options received:', fieldOptions);
+    console.log('received field record:', initialFieldProps.toJS());
+    console.log('field already exists:', isAlreadyExist);
 
     /* Warn on field duplicates */
     invariant(!(isAlreadyExist && !fieldOptions.allowMultiple), 'Cannot register field `%s`, the field with ' +
       'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
       'or `Field.Group` have unique names.', fieldPath);
+
+    console.log('calling "beforeRegister" hook to alter field record...');
+    console.log('"beforeRegister" method:', fieldOptions.beforeRegister);
 
     /* Perform custom field props transformations upon registration */
     const fieldProps = fieldOptions.beforeRegister({
@@ -149,12 +152,19 @@ export default class Form extends React.Component {
       fields
     });
 
+    console.log('"beforeRegister" hook called successfully!');
+    console.log('fieldProps after "beforeRegister":', fieldProps && fieldProps.toJS());
+
     if (!fieldProps) {
+      console.log('no field props, return');
+      console.groupEnd();
       return;
     }
 
     const nextFields = fields.setIn(fieldPath, fieldProps);
     const { eventEmitter } = this;
+
+    console.log('next fields:', nextFields && nextFields.toJS());
 
     /**
      * Synchronize the field record with the field props.
@@ -179,6 +189,8 @@ export default class Form extends React.Component {
       });
     });
 
+    console.log('props observers created!');
+
     /**
      * Analyze the rules relevant to the registered field and create reactive subscriptions to
      * resolve them once their dependencies update. Returns the Map of the recorded formatted rules.
@@ -190,12 +202,17 @@ export default class Form extends React.Component {
       form: this
     });
 
+    console.log('next rx rules composed!');
+    console.groupEnd();
+
     this.setState({ fields: nextFields, rxRules: nextRxRules }, () => {
       /* Emit the field registered event */
       const fieldRegisteredEvent = camelize(...fieldPath, 'registered');
       eventEmitter.emit(fieldRegisteredEvent, fieldProps);
 
       if (fieldOptions.shouldValidateOnMount) {
+        console.warn('should validate on mount!');
+
         this.validateField({
           fieldProps,
 
@@ -247,7 +264,7 @@ export default class Form extends React.Component {
     const nextFieldProps = update(fieldProps);
     const nextFields = fields.setIn(fieldPath, nextFieldProps);
 
-    console.groupCollapsed(fieldPath, '@ updateField');
+    console.groupCollapsed(`${fieldPath.join('.')} @ updateField`);
     console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
     console.log('fields before update:', Object.assign({}, fields.toJS()));
     console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
@@ -275,7 +292,7 @@ export default class Form extends React.Component {
   updateFieldsWith = (fieldRecord) => {
     const nextFields = recordUtils.updateCollectionWith(fieldRecord, this.state.fields);
 
-    console.groupCollapsed('updateFieldsWith', fieldRecord.name);
+    console.groupCollapsed('updateFieldsWith', fieldRecord.fieldPath.join('.'));
     console.log('fieldRecord:', fieldRecord.toJS());
     console.log('nextFields:', nextFields.toJS());
     console.groupEnd(' ');
@@ -335,7 +352,7 @@ export default class Form extends React.Component {
       return;
     }
 
-    console.groupCollapsed(fieldProps.fieldPath, '@ handleFieldFocus');
+    console.groupCollapsed(`${fieldProps.fieldPath.join('.')} @ handleFieldFocus`);
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.groupEnd();
 
@@ -369,7 +386,7 @@ export default class Form extends React.Component {
       return;
     }
 
-    console.groupCollapsed(fieldProps.fieldPath, '@ handleFieldChange');
+    console.groupCollapsed(`${fieldProps.fieldPath.join('.')} @ handleFieldChange`);
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     console.log('nextValue', nextValue);
     console.groupEnd();
@@ -414,6 +431,10 @@ export default class Form extends React.Component {
      * Once the field's value has changed, the previously dispatched async validation
      * is no longer relevant, since it validates the previous value.
      */
+    //
+    // TODO
+    // A reference to the pending async validation (request) is not yet set in the validateAsync.
+    //
     const pendingAsyncValidation = updatedFieldProps.get('pendingAsyncValidation');
     if (pendingAsyncValidation) {
       pendingAsyncValidation.get('cancel')();
@@ -430,14 +451,22 @@ export default class Form extends React.Component {
     //
     // Should this be encapsulated into Form.validateField, or be an independent function?
     //
-    const validationResult = await appropriateValidation({
+    const validatedFieldProps = await appropriateValidation({
       types: types => [types.sync],
       fieldProps: updatedFieldProps,
-      fields: this.state.fields,
+
+      //
+      // NOTE
+      // When passed explicitly here, the state of the fields may be outdated for some reason.
+      // I think it has to do with the debounce nature of this function call.
+      // Internally, "validateField" referenced to the very same fields, but at that moment
+      // their entries are up-to-date.
+      //
+      // fields: this.state.fields,
       form: this
     });
 
-    console.warn({ validationResult })
+    console.warn({ validatedFieldProps })
 
     /**
      * Perform appropriate field validation on value change.
@@ -468,16 +497,16 @@ export default class Form extends React.Component {
      * Controlled fields dispatch "onChange" handler at the beginning of this method.
      * There is no need to dispatch the handler method once more.
      */
-    // if (!isControlled && customChangeHandler) {
-    //   dispatch(customChangeHandler, {
-    //     event,
-    //     nextValue,
-    //     prevValue,
-    //     fieldProps: validatedFieldProps,
-    //     fields: nextFields,
-    //     form: this
-    //   }, this.context);
-    // }
+    if (!isControlled && customChangeHandler) {
+      dispatch(customChangeHandler, {
+        event,
+        nextValue,
+        prevValue,
+        fieldProps: validatedFieldProps,
+        fields: this.state.fields,
+        form: this
+      }, this.context);
+    }
 
     /* Mark form as dirty if it's not already */
     if (!this.state.dirty) {
@@ -498,7 +527,6 @@ export default class Form extends React.Component {
 
     console.warn('Handle field blur');
 
-    const { fieldPath } = fieldProps;
     let nextFieldProps = fieldProps;
     let nextFields = this.state.fields;
 
@@ -520,7 +548,7 @@ export default class Form extends React.Component {
     //
     // const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
 
-    console.groupCollapsed(fieldPath, '@ handleFieldBlur');
+    console.groupCollapsed(`${fieldProps.fieldPath.join('.')} @ handleFieldBlur`);
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
     // console.log('should validate', shouldValidate);
     console.groupEnd();
@@ -588,10 +616,13 @@ export default class Form extends React.Component {
     //   formRules
     // );
 
-    console.groupCollapsed(fieldProps.fieldPath, '@ validateField');
+    console.groupCollapsed(`XXX ${fieldProps.fieldPath.join('.')} @ validateField`);
+    console.warn('stack trace');
     console.log('validation types', types);
     console.log('value', fieldProps.get(fieldProps.get('valuePropName')));
-    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
+    console.log('fieldProps', fieldProps.toJS());
+    console.log('explicit fields:', explicitFields && explicitFields.toJS());
+    console.log('force props?', forceProps);
     console.groupEnd();
 
     /* Bypass the validation when none is needed */
@@ -612,7 +643,11 @@ export default class Form extends React.Component {
       form: this
     });
 
-    console.log('validationResult:', validationResult);
+    console.log(`validationResult for "${fieldProps.name}":`, validationResult);
+
+    if (!validationResult) {
+      return fieldProps;
+    }
 
     const { expected } = validationResult;
 
@@ -695,10 +730,18 @@ export default class Form extends React.Component {
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
+    //
+    // TODO .clear() which is done by reseting the field record RESETS NAME,TYPE, etc.
+    //
     const nextFields = this.state.fields.map(fieldProps => recordUtils.reset(fieldProps));
 
+    // console.groupCollapsed('reset @ Form');
+    // console.log('prev fields:', this.state.fields.toJS());
+    // console.log('next fields:', nextFields && nextFields.toJS());
+    // console.groupEnd();
+
     this.setState({ fields: nextFields }, () => {
-      /* Validate only non-empty fields, since empty required fields should not be unexpected on reset */
+      /* Validate only non-empty fields, since empty required fields should not be unexpected after reset */
       this.validate(entry => Record.isRecord(entry) && (entry.value !== ''));
 
       /* Call custom callback methods to be able to reset controlled fields */

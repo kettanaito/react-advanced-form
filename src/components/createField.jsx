@@ -88,7 +88,7 @@ export default function connectField(options) {
         const value = directProps[valuePropName];
         const contextValue = fields.getIn([...fieldPath, valuePropName]);
 
-        console.groupCollapsed(fieldPath, '@ register');
+        console.groupCollapsed(`${fieldPath.join('.')} @ register`);
         console.log('directProps:', Object.assign({}, directProps));
         console.log('value:', value);
         console.log('initial value:', initialValue);
@@ -98,6 +98,8 @@ export default function connectField(options) {
         const registeredValue = isset(contextValue)
           ? contextValue
           : (value || initialValue || hocOptions.initialValue);
+
+        console.log('registered value:', registeredValue);
 
         const initialFieldProps = {
           ref: this,
@@ -153,15 +155,14 @@ export default function connectField(options) {
         //   });
         // }
 
+        console.log('should create field record from:', mappedFieldProps);
+
         const fieldRecord = recordUtils.createField(mappedFieldProps);
-        console.log('after deleting', fieldRecord.delete('required').toJS());
 
         console.warn('fieldRecord', fieldRecord && fieldRecord.toJS())
         console.log('fieldPath:', fieldRecord.fieldPath);
-        console.log('fieldPath:', fieldRecord.get('fieldPath'));
         console.log('valuePropName:', fieldRecord[valuePropName]);
         console.log('value:', fieldRecord.value);
-        console.log(fieldRecord.set('value', 'foo').toJS());
         console.log(' ')
 
         console.groupEnd();
@@ -173,7 +174,7 @@ export default function connectField(options) {
             allowMultiple: hocOptions.allowMultiple,
             beforeRegister: hocOptions.beforeRegister,
             shouldValidateOnMount: hocOptions.shouldValidateOnMount({
-              fieldRecord: mappedFieldProps,
+              fieldRecord,
               props: directProps,
               context: this.context,
               valuePropName
