@@ -16,6 +16,12 @@ import camelize from './camelize';
 function generateFieldClass(initialProps) {
   const { valuePropName } = initialProps;
 
+  //
+  // TODO
+  // Field record must contain ALL the initial data specific to the field.
+  // For example, type: "radio" for "radio" fields, proper initialValue, rule, asyncRule,
+  // reactiveProps, etc.
+  //
   const FieldRecord = new Record({
     ref: null,
     type: 'text',
@@ -25,6 +31,9 @@ function generateFieldClass(initialProps) {
     initialValue: null,
     [valuePropName]: initialProps.value,
     valuePropName: 'value',
+
+    // TODO "radio" field cannot propagate "checked" prop, not in the record
+    checked: null,
 
     debounceValidate: null,
     rule: null,
@@ -45,22 +54,16 @@ function generateFieldClass(initialProps) {
     reactiveProps: null,
     onFocus: null,
     onChange: null,
-    onBlur: null
-  }, 'FieldRecord');
+    onBlur: null,
 
-  console.log({ valuePropName })
-  // const hasCustomValueProp = (valuePropName !== 'value');
-  // const customValueGetter = hasCustomValueProp && 'value';
+    ...initialProps
+  }, 'FieldRecord');
 
   return class Field extends FieldRecord {
     get fieldPath() {
       const fieldGroup = this.fieldGroup || [];
       return fieldGroup.concat(this.name);
     }
-
-    // get [customValueGetter]() {
-    //   return this[this.valuePropName];
-    // }
   }
 }
 
@@ -76,7 +79,9 @@ export function createField(initialProps) {
     'to be a string, but got: %s', initialProps.name);
 
   const Field = generateFieldClass(initialProps);
-  return new Field(initialProps);
+  const instance = new Field(initialProps);
+  console.warn('created field record:', instance);
+  return instance;
 }
 
 /**
@@ -183,8 +188,14 @@ export function resetValidationState(fieldRecord) {
  * @returns {Map}
  */
 export function reset(fieldRecord) {
-  const clearRecord = fieldRecord.clear();
-  return setValue(clearRecord, fieldRecord.get('initialValue'));
+  const resetRecord = fieldRecord.clear();
+
+  console.groupCollapsed('recordUtils @ reset @', fieldRecord.name);
+  console.log('initial record:', fieldRecord && fieldRecord.toJS());
+  console.warn('reset record:', resetRecord && resetRecord.toJS());
+  console.groupEnd();
+
+  return resetRecord;
 
   // return resetValidationState(
   //   resetValidityState(
