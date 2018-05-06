@@ -1,9 +1,9 @@
 // @flow
-import type { TSeq } from '../creators';
+import type { TSeq } from '../createSeq';
 import type { TValidatorArgs } from './getRules';
 import type { TValidationResult } from './createValidationResult';
 
-import { createSeq } from '../creators';
+import createSeq from '../createSeq';
 import mapToSingleResult from './mapToSingleResult';
 import validationTypes from './validationTypes';
 import getApplicableValidations from './getApplicableValidations';

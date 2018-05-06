@@ -12,10 +12,14 @@ export default function flushFieldRefs(method, methodArgs) {
   const refs = [];
   const fieldPropGetter = createPropGetter(fields, propRefPath => refs.push(propRefPath));
 
-  const initialValue = dispatch(method, {
-    ...methodArgs,
-    get: fieldPropGetter
-  }, form.context);
+  const initialValue = dispatch(
+    method,
+    {
+      ...methodArgs,
+      get: fieldPropGetter
+    },
+    form.context
+  );
 
   return { refs, initialValue };
 }

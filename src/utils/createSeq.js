@@ -7,7 +7,7 @@ export type TSeq<F, A, R> = (predicate: TSeqPredicate<R>) => (...funcs: F[]) => 
  * Generates a sequence that executes the list of the given functions while
  * the predicate for each function result returns true.
  */
-export const createSeq: TSeq<Function, string, any> = (predicate) => {
+const createSeq: TSeq<Function, string, any> = (predicate: TSeqPredicate<*> = () => true) => {
   return (...funcs) => {
     return (...args) => {
       let funcIndex = 0;
@@ -24,3 +24,5 @@ export const createSeq: TSeq<Function, string, any> = (predicate) => {
     };
   };
 }
+
+export default createSeq

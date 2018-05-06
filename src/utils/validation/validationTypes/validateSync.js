@@ -1,4 +1,4 @@
-// import type { TSeq } from '../creators';
+// import type { TSeq } from '../createSeq';
 // import type { TValidatorFunc, TValidationResult } from '.';
 // import type { TValidatorArgs } from './getRules';
 
