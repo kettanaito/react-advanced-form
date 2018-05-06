@@ -1,6 +1,3 @@
-/* Classes */
-require('./classes');
-
 /* Components */
 require('./components');
 
