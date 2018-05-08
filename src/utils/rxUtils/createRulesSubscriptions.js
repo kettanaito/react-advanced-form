@@ -52,6 +52,7 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   const schemaRuleGroups = getFieldRules({
     fieldProps,
     schema: form.formRules,
+    rxRules,
     transformRule(ruleParams) {
       const { refs } = flushFieldRefs(ruleParams.resolver, resolverArgs);
 

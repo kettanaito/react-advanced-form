@@ -14,7 +14,7 @@ function defaultRuleTransformer(rule) {
   return rule;
 }
 
-function generateValueTransformer(ruleFormatter) {
+function createValueTransformer(ruleFormatter) {
   return (value, ruleKeyPath) => {
     const selector = ruleKeyPath[0];
 
@@ -46,8 +46,17 @@ function generateValueTransformer(ruleFormatter) {
  * @param {Map} fieldProps
  * @returns {Function}
  */
-function generatePredicate(fieldProps) {
+function createPredicate(fieldProps, rxRules) {
   return (value, deepKeyPath) => {
+    console.groupCollapsed('CREATE PREDICATE');
+    console.log({ value });
+    console.log({ deepKeyPath });
+    console.groupEnd();
+
+    if (rxRules.has(deepKeyPath.join('.'))) {
+      return false;
+    }
+
     return ruleSelectors.some((ruleSelector) => {
       const ruleKeyPath = ruleSelector(fieldProps);
       return ruleKeyPath.every((key, index) => (deepKeyPath[index] === key));
@@ -62,6 +71,7 @@ function generatePredicate(fieldProps) {
 export default function getFieldRules({
   fieldProps,
   schema,
+  rxRules,
   flattenKeys = true,
   transformRule = null,
   transformKey = null
@@ -70,9 +80,9 @@ export default function getFieldRules({
 
   return flattenDeep(
     schema,
-    generatePredicate(fieldProps),
+    createPredicate(fieldProps, rxRules),
     flattenKeys,
-    generateValueTransformer(ruleTransformer),
+    createValueTransformer(ruleTransformer),
     transformKey
   );
 }
