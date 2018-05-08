@@ -1,15 +1,15 @@
 // @flow
-import type { TRejectedRule } from './createRejectedRule';
+import type { TRejectedRule } from './createRejectedRule'
 
-import enforceArray from '../enforceArray';
+import enforceArray from '../enforceArray'
 
-export type TValidationType = 'sync' | 'async' | 'both';
-export type TValidationResultExtra = Object;
+export type TValidationType = 'sync' | 'async' | 'both'
+export type TValidationResultExtra = Object
 export type TValidationResult = {
   expected: boolean,
   rejectedRules?: TRejectedRule[],
-  extra?: TValidationResultExtra
-};
+  extra?: TValidationResultExtra,
+}
 
 /**
  * Returns the unified entity of the validation result.
@@ -20,11 +20,11 @@ export type TValidationResult = {
 export default function createValidationResult(
   expected: boolean,
   rejectedRules?: TRejectedRule[] | TRejectedRule = [],
-  extra?: TValidationResultExtra
+  extra?: TValidationResultExtra,
 ): TValidationResult {
   return {
     expected,
     rejectedRules: enforceArray(rejectedRules),
-    extra
-  };
+    extra,
+  }
 }

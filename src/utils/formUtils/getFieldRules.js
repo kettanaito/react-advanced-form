@@ -1,4 +1,4 @@
-import flattenDeep from '../flattenDeep';
+import flattenDeep from '../flattenDeep'
 
 /**
  * Collection of rule selectors listed in the strict order.
@@ -6,26 +6,26 @@ import flattenDeep from '../flattenDeep';
  * validation rules schema.
  */
 export const ruleSelectors = [
-  fieldProps => ['name', fieldProps.get('name')],
-  fieldProps => ['type', fieldProps.get('type')]
-];
+  (fieldProps) => ['name', fieldProps.get('name')],
+  (fieldProps) => ['type', fieldProps.get('type')],
+]
 
 function defaultRuleTransformer(rule) {
-  return rule;
+  return rule
 }
 
 function createValueTransformer(ruleFormatter) {
   return (value, ruleKeyPath) => {
-    const selector = ruleKeyPath[0];
+    const selector = ruleKeyPath[0]
 
     if (typeof value === 'function') {
       const formattedRule = ruleFormatter({
         selector,
         resolver: value,
-        ruleKeyPath
-      });
+        ruleKeyPath,
+      })
 
-      return [formattedRule];
+      return [formattedRule]
     }
 
     return value.reduce((list, resolver, name) => {
@@ -33,12 +33,12 @@ function createValueTransformer(ruleFormatter) {
         name,
         selector,
         resolver,
-        ruleKeyPath: [...ruleKeyPath, name]
-      });
+        ruleKeyPath: [...ruleKeyPath, name],
+      })
 
-      return list.concat(formattedRule);
-    }, []);
-  };
+      return list.concat(formattedRule)
+    }, [])
+  }
 }
 
 /**
@@ -48,20 +48,20 @@ function createValueTransformer(ruleFormatter) {
  */
 function createPredicate(fieldProps, rxRules) {
   return (value, deepKeyPath) => {
-    console.groupCollapsed('CREATE PREDICATE');
-    console.log({ value });
-    console.log({ deepKeyPath });
-    console.groupEnd();
+    console.groupCollapsed('CREATE PREDICATE')
+    console.log({ value })
+    console.log({ deepKeyPath })
+    console.groupEnd()
 
     if (rxRules.has(deepKeyPath.join('.'))) {
-      return false;
+      return false
     }
 
     return ruleSelectors.some((ruleSelector) => {
-      const ruleKeyPath = ruleSelector(fieldProps);
-      return ruleKeyPath.every((key, index) => (deepKeyPath[index] === key));
-    });
-  };
+      const ruleKeyPath = ruleSelector(fieldProps)
+      return ruleKeyPath.every((key, index) => deepKeyPath[index] === key)
+    })
+  }
 }
 
 /**
@@ -74,15 +74,15 @@ export default function getFieldRules({
   rxRules,
   flattenKeys = true,
   transformRule = null,
-  transformKey = null
+  transformKey = null,
 }) {
-  const ruleTransformer = transformRule || defaultRuleTransformer;
+  const ruleTransformer = transformRule || defaultRuleTransformer
 
   return flattenDeep(
     schema,
     createPredicate(fieldProps, rxRules),
     flattenKeys,
     createValueTransformer(ruleTransformer),
-    transformKey
-  );
+    transformKey,
+  )
 }

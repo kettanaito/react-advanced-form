@@ -1,20 +1,21 @@
 /**
  * Record utils.
- * A collection of pure helper functions which do field record updates.
- * Each helper function takes a field record and additional parameters
- * and returns the next state of the field record.
+ * A collection of pure helper functions which perform field record updates.
+ * Each function takes a field record and additional parameters and returns
+ * the next state of the field record.
  */
-import invariant from 'invariant';
-import { Record } from 'immutable';
-import camelize from './camelize';
+import invariant from 'invariant'
+import { Record } from 'immutable'
+import camelize from './camelize'
 
 /**
- * Generates a Field class actual to the given initial props.
- * Abstraction over a simple usage of Record to insert a dynamic
- * [valuePropName] property to the Record.
+ * Generates a Field class relative to the given initial props.
+ * Abstraction over a simple Record in order to insert field-specific
+ * properties to it (i.e. "valuePropName", "checked", etc.).
  */
 function generateFieldClass(initialProps) {
-  const { valuePropName } = initialProps;
+  const { valuePropName } = initialProps
+  const value = initialProps[valuePropName]
 
   //
   // TODO
@@ -22,47 +23,55 @@ function generateFieldClass(initialProps) {
   // For example, type: "radio" for "radio" fields, proper initialValue, rule, asyncRule,
   // reactiveProps, etc.
   //
-  const FieldRecord = new Record({
-    ref: null,
-    type: 'text',
-    name: '',
-    fieldGroup: null,
-    focused: false,
-    initialValue: null,
-    [valuePropName]: initialProps.value,
-    valuePropName: 'value',
+  const FieldRecord = new Record(
+    {
+      /* Internal */
+      ref: null,
+      fieldGroup: null,
 
-    // TODO "radio" field cannot propagate "checked" prop, not in the record
-    checked: null,
+      /* Basic */
+      type: 'text',
+      initialValue: null, // TODO Should this be set on the class level?
+      [valuePropName]: value,
+      valuePropName: 'value',
 
-    debounceValidate: null,
-    rule: null,
-    asyncRule: null,
-    errors: null,
-    expected: true,
-    valid: false,
-    invalid: false,
-    validating: false,
-    validated: false,
-    validatedSync: false,
-    validSync: false,
-    validatedAsync: false,
-    validAsync: false,
-    required: false,
-    skip: false,
+      // TODO "radio" field cannot propagate "checked" prop, not in the record
+      focused: false,
+      checked: null,
+      skip: false,
 
-    reactiveProps: null,
-    onFocus: null,
-    onChange: null,
-    onBlur: null,
+      /* Validation */
+      rule: null,
+      asyncRule: null,
+      debounceValidate: null,
+      errors: null,
+      expected: true,
+      valid: false,
+      invalid: false,
+      validating: false,
+      validated: false,
+      validatedSync: false,
+      validSync: false,
+      validatedAsync: false,
+      validAsync: false,
+      required: false,
 
-    ...initialProps
-  }, 'FieldRecord');
+      reactiveProps: null,
+
+      /* Event callbacks/handlers */
+      onFocus: null,
+      onChange: null,
+      onBlur: null,
+
+      ...initialProps,
+    },
+    'FieldRecord',
+  )
 
   return class Field extends FieldRecord {
     get fieldPath() {
-      const fieldGroup = this.fieldGroup || [];
-      return fieldGroup.concat(this.name);
+      const fieldGroup = this.fieldGroup || []
+      return fieldGroup.concat(this.name)
     }
   }
 }
@@ -73,15 +82,22 @@ function generateFieldClass(initialProps) {
  * @returns {Field}
  */
 export function createField(initialProps) {
-  invariant(initialProps, 'Cannot create a Field record: expected initial props, ' +
-    'but got: %s', initialProps);
-  invariant(initialProps.name, 'Cannot create a Field record: expected a `name` ' +
-    'to be a string, but got: %s', initialProps.name);
+  invariant(
+    initialProps,
+    'Cannot create a Field record: expected initial props, but got: %s',
+    initialProps,
+  )
+  invariant(
+    initialProps.name,
+    'Cannot create a Field record: expected a `name` to be a string, but got: %s',
+    initialProps.name,
+  )
 
-  const Field = generateFieldClass(initialProps);
-  const instance = new Field(initialProps);
-  console.warn('created field record:', instance);
-  return instance;
+  const FieldRecord = generateFieldClass(initialProps)
+  const instance = new FieldRecord(initialProps)
+  console.warn('created field record:', instance)
+
+  return instance
 }
 
 /**
@@ -90,7 +106,7 @@ export function createField(initialProps) {
  * @param {Map} collection
  */
 export function updateCollectionWith(fieldRecord, collection) {
-  return collection.setIn(fieldRecord.fieldPath, fieldRecord);
+  return collection.setIn(fieldRecord.fieldPath, fieldRecord)
 }
 
 /**
@@ -99,7 +115,7 @@ export function updateCollectionWith(fieldRecord, collection) {
  * @returns {any}
  */
 export function getValue(fieldRecord) {
-  return fieldRecord.get(fieldRecord.get('valuePropName'));
+  return fieldRecord.get(fieldRecord.get('valuePropName'))
 }
 
 /**
@@ -108,7 +124,7 @@ export function getValue(fieldRecord) {
  * @param {any} nextValue
  */
 export function setValue(fieldRecord, nextValue) {
-  return fieldRecord.set(fieldRecord.get('valuePropName'), nextValue);
+  return fieldRecord.set(fieldRecord.get('valuePropName'), nextValue)
 }
 
 /**
@@ -119,9 +135,7 @@ export function setValue(fieldRecord, nextValue) {
  */
 export function setErrors(fieldRecord, errors = undefined) {
   /* Allow "null" as explicit empty "errors" value */
-  return (typeof errors !== 'undefined')
-    ? fieldRecord.set('errors', errors)
-    : fieldRecord;
+  return typeof errors !== 'undefined' ? fieldRecord.set('errors', errors) : fieldRecord
 }
 
 /**
@@ -130,9 +144,7 @@ export function setErrors(fieldRecord, errors = undefined) {
  * @returns {Map}
  */
 export function resetValidityState(fieldRecord) {
-  return fieldRecord
-    .set('valid', false)
-    .set('invalid', false);
+  return fieldRecord.set('valid', false).set('invalid', false)
 }
 
 /**
@@ -143,28 +155,24 @@ export function resetValidityState(fieldRecord) {
  */
 export function setValidityState(fieldRecord, shouldValidate = true) {
   if (!shouldValidate) {
-    return resetValidityState(fieldRecord);
+    return resetValidityState(fieldRecord)
   }
 
-  const value = getValue(fieldRecord);
-  const validated = fieldRecord.get('validated');
-  const expected = fieldRecord.get('expected');
-  const valid = !!value && validated && expected;
-  const invalid = validated && !expected;
+  const value = getValue(fieldRecord)
+  const validated = fieldRecord.get('validated')
+  const expected = fieldRecord.get('expected')
+  const valid = !!value && validated && expected
+  const invalid = validated && !expected
 
-  return fieldRecord
-    .set('valid', valid)
-    .set('invalid', invalid);
+  return fieldRecord.set('valid', valid).set('invalid', invalid)
 }
 
 export function beginValidation(fieldRecord) {
-  return resetValidityState(setErrors(fieldRecord, null));
+  return resetValidityState(setErrors(fieldRecord, null))
 }
 
 export function endValidation(fieldRecord) {
-  return fieldRecord
-    .set('focused', false)
-    .set('validating', false);
+  return fieldRecord.set('focused', false).set('validating', false)
 }
 
 /**
@@ -179,7 +187,7 @@ export function resetValidationState(fieldRecord) {
     .set('validatedSync', false)
     .set('validatedAsync', false)
     .set('validSync', false)
-    .set('validAsync', false);
+    .set('validAsync', false)
 }
 
 /**
@@ -188,14 +196,14 @@ export function resetValidationState(fieldRecord) {
  * @returns {Map}
  */
 export function reset(fieldRecord) {
-  const resetRecord = fieldRecord.clear();
+  const resetRecord = fieldRecord.clear()
 
-  console.groupCollapsed('recordUtils @ reset @', fieldRecord.name);
-  console.log('initial record:', fieldRecord && fieldRecord.toJS());
-  console.warn('reset record:', resetRecord && resetRecord.toJS());
-  console.groupEnd();
+  // console.groupCollapsed('recordUtils @ reset @', fieldRecord.name);
+  // console.log('initial record:', fieldRecord && fieldRecord.toJS());
+  // console.warn('reset record:', resetRecord && resetRecord.toJS());
+  // console.groupEnd();
 
-  return resetRecord;
+  return resetRecord
 
   // return resetValidationState(
   //   resetValidityState(
@@ -217,7 +225,7 @@ export function reset(fieldRecord) {
  * @returns {Map}
  */
 export function setFocus(fieldRecord, isFocused = true) {
-  return fieldRecord.set('focused', isFocused);
+  return fieldRecord.set('focused', isFocused)
 }
 
 //
@@ -238,33 +246,33 @@ export function setFocus(fieldRecord, isFocused = true) {
  * @returns {Map}
  */
 export function reflectValidation({ fieldProps, validationResult, shouldValidate }) {
-  console.groupCollapsed('recordUtils.reflectValidation', fieldProps.name);
-  console.log('fieldProps:', fieldProps && fieldProps.toJS());
-  console.log('validation result:', validationResult);
-  console.log('shouldValidate:', shouldValidate);
+  console.groupCollapsed('recordUtils.reflectValidation', fieldProps.name)
+  console.log('fieldProps:', fieldProps && fieldProps.toJS())
+  console.log('validation result:', validationResult)
+  console.log('shouldValidate:', shouldValidate)
 
-  const { expected } = validationResult;
-  console.log('expected:', expected);
+  const { expected } = validationResult
+  console.log('expected:', expected)
 
   const validProps = validationResult.types.reduce((props, validationType) => {
-    const validPropName = camelize('valid', validationType.name);
-    const validatedPropName = camelize('validated', validationType.name);
-    props[validPropName] = expected;
-    props[validatedPropName] = true;
-    return props;
-  }, {});
+    const validPropName = camelize('valid', validationType.name)
+    const validatedPropName = camelize('validated', validationType.name)
+    props[validPropName] = expected
+    props[validatedPropName] = true
+    return props
+  }, {})
 
-  console.log({ validProps });
+  console.log({ validProps })
 
   const validatedField = fieldProps
     .set('validated', true)
     .set('expected', expected)
     .merge(validProps)
 
-  const nextFieldProps = setValidityState(validatedField, shouldValidate);
+  const nextFieldProps = setValidityState(validatedField, shouldValidate)
 
-  console.log('nextFieldProps:', nextFieldProps && nextFieldProps.toJS());
-  console.groupEnd();
+  console.log('nextFieldProps:', nextFieldProps && nextFieldProps.toJS())
+  console.groupEnd()
 
-  return nextFieldProps;
+  return nextFieldProps
 }

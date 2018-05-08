@@ -1,6 +1,6 @@
 /* Validation */
-export getErrorMessages from './getErrorMessages';
+export getErrorMessages from './getErrorMessages'
 
 /* Other */
-export serializeFields from './serializeFields';
-export createPropGetter from './createPropGetter';
+export serializeFields from './serializeFields'
+export createPropGetter from './createPropGetter'

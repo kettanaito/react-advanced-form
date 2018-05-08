@@ -1,7 +1,7 @@
-const path = require('path');
-const webpack = require('webpack');
-const webpackPreprocessor = require('@cypress/webpack-preprocessor');
-const storybookWebpackConfig = require('../../.storybook/webpack.config');
+const path = require('path')
+const webpack = require('webpack')
+const webpackPreprocessor = require('@cypress/webpack-preprocessor')
+const storybookWebpackConfig = require('../../.storybook/webpack.config')
 
 const webpackOptions = {
   module: {
@@ -11,31 +11,31 @@ const webpackOptions = {
         loader: 'babel-loader',
         options: {
           presets: ['env', 'react', 'flow'],
-          plugins: ['transform-class-properties']
-        }
+          plugins: ['transform-class-properties'],
+        },
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', 'raw-loader']
-      }
-    ]
+        use: ['style-loader', 'raw-loader'],
+      },
+    ],
   },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-    })
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    }),
   ],
   resolve: {
     alias: storybookWebpackConfig.resolve.alias,
-    extensions: ['.spec.jsx', '.spec.js', '.jsx', '.js']
-  }
+    extensions: ['.spec.jsx', '.spec.js', '.jsx', '.js'],
+  },
 }
 
 const options = {
   webpackOptions,
-  watchOptions: {}
-};
+  watchOptions: {},
+}
 
-module.exports = (on) => {
-  on('file:preprocessor', webpackPreprocessor(options));
-};
+module.exports = on => {
+  on('file:preprocessor', webpackPreprocessor(options))
+}

@@ -5,56 +5,48 @@ import flushFieldRefs from './flushFieldRefs'
 
 const fieldOne = recordUtils.createField({
   name: 'fieldOne',
-  value: 'foo'
+  value: 'foo',
 })
 
 const fieldTwo = recordUtils.createField({
   name: 'fieldTwo',
   fieldGroup: ['groupTwo'],
-  value: 'bar'
+  value: 'bar',
 })
 
 const fields = recordUtils.updateCollectionWith(
   fieldOne,
-  recordUtils.updateCollectionWith(
-    fieldTwo,
-    Map()
-  )
+  recordUtils.updateCollectionWith(fieldTwo, Map()),
 )
 
 const method = ({ a, get }) => {
   expect(a).to.equal('value')
-  expect(get).to.be.an.instanceOf(Function);
+  expect(get).to.be.an.instanceOf(Function)
 
   const valueOne = get(['fieldOne', 'value'])
   const valueTwo = get(['groupTwo', 'fieldTwo', 'value'])
 
-  return valueOne + valueTwo;
+  return valueOne + valueTwo
 }
 
 const methodArgs = {
   a: 'value',
   fields,
   form: {
-    context: {}
-  }
+    context: {},
+  },
 }
 
-describe('flushFieldRefs', () => {
-  it('Returns proper collection of field refs', () => {
-    const { refs } = flushFieldRefs(method, methodArgs)
+test('Returns proper collection of field refs', () => {
+  const { refs } = flushFieldRefs(method, methodArgs)
 
-    expect(refs)
-      .to.be.an.instanceOf(Array)
-      .with.lengthOf(2)
-      .that.deep.equals([
-        ['fieldOne', 'value'],
-        ['groupTwo', 'fieldTwo', 'value']
-      ])
-  })
+  expect(refs)
+    .to.be.an.instanceOf(Array)
+    .with.lengthOf(2)
+    .that.deep.equals([['fieldOne', 'value'], ['groupTwo', 'fieldTwo', 'value']])
+})
 
-  it('Returns proper initial value', () => {
-    const { initialValue } = flushFieldRefs(method, methodArgs)
-    expect(initialValue).to.equal('foobar')
-  })
+test('Returns proper initial value', () => {
+  const { initialValue } = flushFieldRefs(method, methodArgs)
+  expect(initialValue).to.equal('foobar')
 })

@@ -1,8 +1,8 @@
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/filter';
-import camelize from '../camelize';
-import enforceArray from '../enforceArray';
+import { Observable } from 'rxjs/Observable'
+import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/filter'
+import camelize from '../camelize'
+import enforceArray from '../enforceArray'
 
 /**
  * @param {string} propName
@@ -13,8 +13,8 @@ import enforceArray from '../enforceArray';
  * @returns {boolean}
  */
 const defaultPredicate = ({ propName, prevProps, nextProps }) => {
-  return (prevProps[propName] !== nextProps[propName]);
-};
+  return prevProps[propName] !== nextProps[propName]
+}
 
 /**
  * Creates an observer listening to the props changes of the provided field.
@@ -26,32 +26,40 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
  * @param {EventEmitter} eventEmitter
  * @return {Observable}
  */
-export default function createPropsObserver({ fieldPath, props, predicate, getNextValue, eventEmitter }) {
-  const propsChangeEvent = camelize(...fieldPath, 'props', 'change');
-  const appropriatePredicate = predicate || defaultPredicate;
-  const propsList = enforceArray(props);
+export default function createPropsObserver({
+  fieldPath,
+  props,
+  predicate,
+  getNextValue,
+  eventEmitter,
+}) {
+  const propsChangeEvent = camelize(...fieldPath, 'props', 'change')
+  const appropriatePredicate = predicate || defaultPredicate
+  const propsList = enforceArray(props)
 
-  return Observable.fromEvent(eventEmitter, propsChangeEvent)
-    .map((eventData) => {
-      const changedProps = propsList.reduce((acc, propName) => {
-        const hasPropsChanged = appropriatePredicate({ ...eventData, propName });
+  return (
+    Observable.fromEvent(eventEmitter, propsChangeEvent)
+      .map((eventData) => {
+        const changedProps = propsList.reduce((acc, propName) => {
+          const hasPropsChanged = appropriatePredicate({ ...eventData, propName })
 
-        if (hasPropsChanged) {
-          acc[propName] = getNextValue
-            ? getNextValue({ ...eventData, propName })
-            : eventData.nextProps[propName];
+          if (hasPropsChanged) {
+            acc[propName] = getNextValue
+              ? getNextValue({ ...eventData, propName })
+              : eventData.nextProps[propName]
+          }
+
+          return acc
+        }, {})
+
+        return {
+          ...eventData,
+          changedProps,
         }
-
-        return acc;
-      }, {});
-
-      return {
-        ...eventData,
-        changedProps
-      };
-    })
-    /* Emit the caught events with changed props only */
-    .filter(({ changedProps }) => {
-      return (Object.keys(changedProps).length > 0);
-    });
+      })
+      /* Emit the caught events with changed props only */
+      .filter(({ changedProps }) => {
+        return Object.keys(changedProps).length > 0
+      })
+  )
 }

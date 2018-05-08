@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map } from 'immutable'
 
 /**
  * Dispatches the provided function after applying conditional transformations to its params
@@ -9,20 +9,20 @@ import { Map } from 'immutable';
  * @param {Object} overrides
  */
 export default function dispatch(func, args, context = {}, overrides = {}) {
-  const { withImmutable } = context;
+  const { withImmutable } = context
 
   /* When Immutable args allowed, bypass any transformation */
   const resolvedArgs = withImmutable
     ? args
     : Object.keys(args).reduce((nextArgs, argName) => {
-      const argValue = args[argName];
-      nextArgs[argName] = Map.isMap(argValue) ? argValue.toJS() : argValue;
+        const argValue = args[argName]
+        nextArgs[argName] = Map.isMap(argValue) ? argValue.toJS() : argValue
 
-      return nextArgs;
-    }, {});
+        return nextArgs
+      }, {})
 
   return func({
     ...resolvedArgs,
-    ...overrides
-  });
+    ...overrides,
+  })
 }

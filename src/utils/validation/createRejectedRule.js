@@ -1,17 +1,17 @@
 // @flow
-export type TFieldSelector = 'name' | 'type';
+export type TFieldSelector = 'name' | 'type'
 
 type TCreateRejectedRuleArgs = {
   name: string,
   selector?: TFieldSelector,
-  isCustom?: boolean
-};
+  isCustom?: boolean,
+}
 
 export type TRejectedRule = {
   name: string,
   selector?: TFieldSelector,
-  isCustom?: boolean
-};
+  isCustom?: boolean,
+}
 
 /**
  * Creates a rejected rule with the standardized shape.
@@ -19,11 +19,11 @@ export type TRejectedRule = {
 export default function createRejectedRule({
   name,
   selector,
-  isCustom = false
+  isCustom = false,
 }: TCreateRejectedRuleArgs): TRejectedRule {
   return {
     name,
     selector,
-    isCustom
-  };
+    isCustom,
+  }
 }

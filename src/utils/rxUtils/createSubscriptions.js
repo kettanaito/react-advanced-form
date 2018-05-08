@@ -1,5 +1,6 @@
-import makeObservable from './makeObservable';
-import createPropGetter from '../fieldUtils/createPropGetter';
+import dispatch from '../dispatch'
+import createResolverArgs from '../validation/createResolverArgs'
+import makeObservable from './makeObservable'
 
 /**
  * @param {Record} fieldProps
@@ -7,47 +8,71 @@ import createPropGetter from '../fieldUtils/createPropGetter';
  * @param {ReactElement} form
  */
 export default function createSubscriptions({ fieldProps, fields, form }) {
-  const rxProps = fieldProps.get('reactiveProps');
+  const rxProps = fieldProps.get('reactiveProps')
   if (!rxProps) {
-    return;
+    return
   }
 
-  const subscriberFieldPath = fieldProps.fieldPath;
-  const resolverArgs = { fieldProps, fields, form };
+  const { fieldPath: subscriberFieldPath } = fieldProps
+  const resolverArgs = { fieldProps, fields, form }
 
-  rxProps.forEach((resolver, rxPropName) => {
+  Object.keys(rxProps).forEach((rxPropName) => {
+    const resolver = rxProps[rxPropName]
+
+    console.log({ rxPropName })
+    console.log({ resolver })
+
     makeObservable(resolver, resolverArgs, {
       initialCall: true,
       subscribe({ nextContextProps, shouldValidate = true }) {
-        const refFieldPath = nextContextProps.fieldPath;
-        const nextFields = form.state.fields.set(refFieldPath, nextContextProps);
+        const { fieldPath: refFieldPath } = nextContextProps
+        const nextFields = form.state.fields.set(refFieldPath, nextContextProps)
+        const nextResolverArgs = createResolverArgs({
+          fieldProps,
+          fields: nextFields,
+          form,
+        })
 
-        const nextPropValue = resolver({
-          fieldProps: fieldProps.toJS(),
-          fields: nextFields.toJS(),
-          get: createPropGetter(nextFields),
-          form
-        }, form.context);
+        /* Get the next reactive prop value by invoking the same resolver with the next args */
+        const nextPropValue = dispatch(resolver, nextResolverArgs, form.context)
 
-        // console.warn('Should update `%s` of `%s` to `%s', rxPropName, subscriberFieldPath.join('.'), nextPropValue);
+        console.warn(
+          'Should update `%s` of `%s` to `%s',
+          rxPropName,
+          subscriberFieldPath.join('.'),
+          nextPropValue,
+        )
+        // const fieldUpdated = form.updateField({
+        //   fieldPath: subscriberFieldPath,
+        //   update: fieldProps => fieldProps.set(rxPropName, nextPropValue)
+        // });
 
-        const fieldUpdated = form.updateField({
-          fieldPath: subscriberFieldPath,
-          update: fieldProps => fieldProps.set(rxPropName, nextPropValue)
-        });
+        /* Set the next value of reactive prop on the respective field record */
+        const nextFieldProps = fieldProps.set(rxPropName, nextPropValue)
 
         if (shouldValidate) {
-          fieldUpdated.then(({ nextFieldProps: updatedFieldProps }) => {
-            form.validateField({
-              force: true,
-              fieldPath: subscriberFieldPath,
-              fieldProps: updatedFieldProps,
-              forceProps: true,
-              fields: nextFields
-            });
-          });
+          //
+          // TODO
+          // Test. Probably this is not finished.
+          //
+          return form.validateField({
+            force: true,
+            fieldProps: nextFieldProps,
+            fields: nextFields,
+            form,
+          })
+
+          // form.validateField({
+          //   force: true, // TODO This must force validation even if "shouldValidate" rejects
+          //   fieldPath: subscriberFieldPath,
+          //   fieldProps: nextFieldProps,
+          //   forceProps: true,
+          //   fields: nextFields
+          // });
         }
-      }
-    });
-  });
+
+        return form.updateFieldsWith(nextFieldProps)
+      },
+    })
+  })
 }

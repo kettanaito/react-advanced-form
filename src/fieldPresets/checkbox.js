@@ -6,15 +6,15 @@ export default {
       ...fieldRecord,
       type: 'checkbox',
       checked: !!checked,
-      initialValue: checked
-    };
+      initialValue: checked,
+    }
   },
   enforceProps({ contextProps }) {
     return {
-      checked: contextProps.get('checked')
-    };
+      checked: contextProps.get('checked'),
+    }
   },
   shouldValidateOnMount() {
-    return false;
-  }
-};
+    return false
+  },
+}

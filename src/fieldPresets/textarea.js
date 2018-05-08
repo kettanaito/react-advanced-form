@@ -5,7 +5,7 @@ export default {
       rows: props.rows,
       maxLength: props.maxLength,
       placeholder: props.placeholder,
-      wrap: props.wrap
-    };
-  }
-};
+      wrap: props.wrap,
+    }
+  },
+}

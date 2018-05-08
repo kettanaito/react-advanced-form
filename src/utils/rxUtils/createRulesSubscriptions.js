@@ -1,6 +1,6 @@
-import makeObservable from './makeObservable';
-import flushFieldRefs from '../flushFieldRefs';
-import getFieldRules from '../formUtils/getFieldRules';
+import makeObservable from './makeObservable'
+import flushFieldRefs from '../flushFieldRefs'
+import getFieldRules from '../formUtils/getFieldRules'
 
 /**
  * Appends the "Field.props.rule" resolver function to the provided
@@ -11,18 +11,20 @@ import getFieldRules from '../formUtils/getFieldRules';
  * @returns {Map}
  */
 function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
-  const resolver = fieldProps.get('rule');
+  const resolver = fieldProps.get('rule')
 
   if (typeof resolver !== 'function') {
-    return ruleGroups;
+    return ruleGroups
   }
 
-  const { refs } = flushFieldRefs(resolver, resolverArgs);
+  const { refs } = flushFieldRefs(resolver, resolverArgs)
 
-  return ruleGroups.set('rule', [{
-    refs,
-    resolver
-  }]);
+  return ruleGroups.set('rule', [
+    {
+      refs,
+      resolver,
+    },
+  ])
 }
 
 /**
@@ -35,15 +37,15 @@ function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
  * @returns {Map}
  */
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {
-  const { rxRules } = form.state;
-  const value = fieldProps.get(fieldProps.get('valuePropName'));
+  const { rxRules } = form.state
+  const value = fieldProps.get(fieldProps.get('valuePropName'))
 
   const resolverArgs = {
     value,
     fieldProps,
     fields,
-    form
-  };
+    form,
+  }
 
   /**
    * Get the collection of reactive rules from the form validation schema
@@ -54,22 +56,22 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     schema: form.formRules,
     rxRules,
     transformRule(ruleParams) {
-      const { refs } = flushFieldRefs(ruleParams.resolver, resolverArgs);
+      const { refs } = flushFieldRefs(ruleParams.resolver, resolverArgs)
 
       return {
         ...ruleParams,
-        refs
-      };
-    }
-  });
+        refs,
+      }
+    },
+  })
 
   /**
    * Add "Field.props.rule" in case the latter has field references.
    */
-  const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs);
+  const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs)
 
   if (ruleGroups.size === 0) {
-    return rxRules;
+    return rxRules
   }
 
   /**
@@ -81,19 +83,19 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     ruleGroup.forEach(({ refs, resolver }) => {
       /* Bypass rule resolvers without field references */
       if (refs.length === 0) {
-        return;
+        return
       }
 
       makeObservable(resolver, resolverArgs, {
         subscribe() {
           form.eventEmitter.emit('validateField', {
             fieldProps,
-            force: true
-          });
-        }
-      });
-    });
-  });
+            force: true,
+          })
+        },
+      })
+    })
+  })
 
-  return rxRules.mergeDeep(ruleGroups);
+  return rxRules.mergeDeep(ruleGroups)
 }

@@ -1,5 +1,5 @@
 export default {
   invalid: 'invalid',
   missing: 'missing',
-  async: 'async'
-};
+  async: 'async',
+}

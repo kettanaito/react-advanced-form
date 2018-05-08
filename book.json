@@ -1,8 +1,8 @@
 {
-    "root": "./",
-    "title": "React Advanced Form",
-    "plugins": ["custom-favicon", "prism", "-highlight"],
-    "pluginsConfig": {
-        "favicon": "./favicon.ico"
-    }
+  "root": "./",
+  "title": "React Advanced Form",
+  "plugins": ["custom-favicon", "prism", "-highlight"],
+  "pluginsConfig": {
+    "favicon": "./favicon.ico"
+  }
 }

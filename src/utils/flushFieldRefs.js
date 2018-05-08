@@ -1,5 +1,5 @@
-import dispatch from './dispatch';
-import createPropGetter from './fieldUtils/createPropGetter';
+import dispatch from './dispatch'
+import createPropGetter from './fieldUtils/createPropGetter'
 
 /**
  * Returns the map of flushed field props paths referenced within the provided
@@ -8,18 +8,18 @@ import createPropGetter from './fieldUtils/createPropGetter';
  * @param {CallbackHandlerArgs} methodArgs
  */
 export default function flushFieldRefs(method, methodArgs) {
-  const { fields, form } = methodArgs;
-  const refs = [];
-  const fieldPropGetter = createPropGetter(fields, propRefPath => refs.push(propRefPath));
+  const { fields, form } = methodArgs
+  const refs = []
+  const fieldPropGetter = createPropGetter(fields, (propRefPath) => refs.push(propRefPath))
 
   const initialValue = dispatch(
     method,
     {
       ...methodArgs,
-      get: fieldPropGetter
+      get: fieldPropGetter,
     },
-    form.context
-  );
+    form.context,
+  )
 
-  return { refs, initialValue };
+  return { refs, initialValue }
 }

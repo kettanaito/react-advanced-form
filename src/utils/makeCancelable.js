@@ -4,23 +4,23 @@
  * @flow
  */
 export interface ICancelablePromise<R> {
-  itself: Promise<R>,
-  cancel: () => void
+  itself: Promise<R>;
+  cancel: () => void;
 }
 
 export default function makeCancelable<R>(promise: Promise<R>): ICancelablePromise<R> {
-  let isCanceled = false;
+  let isCanceled = false
 
   const wrappedPromise: Promise<R> = new Promise((resolve, reject) => {
     promise
-      .then(payload => isCanceled || resolve(payload))
-      .catch((error: Error) => isCanceled || reject(error));
-  });
+      .then((payload) => isCanceled || resolve(payload))
+      .catch((error: Error) => isCanceled || reject(error))
+  })
 
   return {
     itself: wrappedPromise,
     cancel: () => {
-      isCanceled = true;
-    }
-  };
+      isCanceled = true
+    },
+  }
 }

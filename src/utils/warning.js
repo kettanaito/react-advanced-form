@@ -7,7 +7,7 @@
  */
 export default function warning(condition: mixed, message: string, ...params: any[]) {
   if (!condition) {
-    let paramIndex = 0;
-    console.warn(message.replace(/%s/g, () => params[paramIndex++]));
+    let paramIndex = 0
+    console.warn(message.replace(/%s/g, () => params[paramIndex++]))
   }
 }

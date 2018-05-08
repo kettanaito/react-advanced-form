@@ -1,31 +1,29 @@
 import { expect } from 'chai'
 import debounce from './debounce'
 
-describe('debounce', () => {
-  it('Debounces multiple function calls within given timeout period', () => {
-    let num = 0
-    const increment = () => num++
-    const debouncedFunc = debounce(increment, 100)
+test('Debounces multiple function calls within given timeout period', () => {
+  let num = 0
+  const increment = () => num++
+  const debouncedFunc = debounce(increment, 100)
 
-    debouncedFunc()
-    setTimeout(debouncedFunc, 50)
-    setTimeout(debouncedFunc, 100)
+  debouncedFunc()
+  setTimeout(debouncedFunc, 50)
+  setTimeout(debouncedFunc, 100)
 
-    setTimeout(() => {
-      expect(num).to.equal(1)
-    }, 200)
-  })
+  setTimeout(() => {
+    expect(num).to.equal(1)
+  }, 200)
+})
 
-  it('Allows multiple function calls when outside of timeout period', () => {
-    let num = 0
-    const increment = () => num++
-    const debouncedFunc = debounce(increment, 100)
+test('Allows multiple function calls when outside of timeout period', () => {
+  let num = 0
+  const increment = () => num++
+  const debouncedFunc = debounce(increment, 100)
 
-    debouncedFunc()
-    setTimeout(debouncedFunc, 100)
+  debouncedFunc()
+  setTimeout(debouncedFunc, 100)
 
-    setTimeout(() => {
-      expect(num).to.equal(2)
-    }, 200)
-  })
+  setTimeout(() => {
+    expect(num).to.equal(2)
+  }, 200)
 })

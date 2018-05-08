@@ -6,7 +6,7 @@ export default {
       maxLength: props.maxLength,
       autoComplete: props.autoComplete,
       multiple: props.multiple,
-      step: props.step
-    };
-  }
-};
+      step: props.step,
+    }
+  },
+}

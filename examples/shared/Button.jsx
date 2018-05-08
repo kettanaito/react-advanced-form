@@ -1,7 +1,5 @@
-import React from 'react';
+import React from 'react'
 
-const Button = ({ children }) => (
-  <button className="btn btn-primary">{ children }</button>
-);
+const Button = ({ children }) => <button className="btn btn-primary">{children}</button>
 
-export default Button;
+export default Button

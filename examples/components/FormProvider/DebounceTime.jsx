@@ -1,6 +1,6 @@
-import React from 'react';
-import { FormProvider, Form } from '@lib';
-import { Input } from '@fields';
+import React from 'react'
+import { FormProvider, Form } from '@lib'
+import { Input } from '@fields'
 
 export default class DebounceTime extends React.Component {
   render() {
@@ -14,12 +14,12 @@ export default class DebounceTime extends React.Component {
         </FormProvider>
 
         <div>Custom debounce time</div>
-        <FormProvider debounceTime={ 0 }>
+        <FormProvider debounceTime={0}>
           <Form>
             <Input id="fieldTwo" name="foo" rule={/foo/} />
           </Form>
         </FormProvider>
       </div>
-    );
+    )
   }
 }

@@ -7,30 +7,33 @@ module.exports = {
     ecmaFeatures: {
       classes: true,
       jsx: true,
-      modules: true
-    }
+      modules: true,
+    },
   },
   env: {
     browser: true,
     mocha: true,
-    es6: true
+    es6: true,
   },
   settings: {
     'import/resolver': {
       webpack: {
-        config: './webpack.config.js'
-      }
-    }
+        config: './webpack.config.js',
+      },
+    },
   },
   rules: {
-    'strict': [2, 'never'],
+    indent: 0,
+    strict: [2, 'never'],
     'no-console': 0,
     'max-len': [1, 120],
     'consistent-return': 0,
-    'semi': 0,
+    semi: [1, 'never'],
     'comma-dangle': 0,
     'array-callback-return': 0,
+    'arrow-parens': [2, 'always'],
     'arrow-body-style': 0,
+    'space-before-function-paren': 0,
     'object-curly-newline': 0,
     'no-mixed-operators': 0,
     'no-plusplus': 0,
@@ -58,6 +61,6 @@ module.exports = {
     'react/react-in-jsx-scope': 2,
 
     /* Mocha */
-    'mocha/no-exclusive-tests': 'error'
-  }
-};
+    'mocha/no-exclusive-tests': 'error',
+  },
+}

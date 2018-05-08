@@ -7,26 +7,26 @@
  * @flow
  */
 export default function debounce(func: Function, duration: number, immediate: boolean = false) {
-  let timeout;
+  let timeout
 
-  return function (...args: mixed[]) {
-    const context = this;
+  return function(...args: mixed[]) {
+    const context = this
 
     return new Promise((resolve) => {
-      const later = function () {
-        timeout = null;
+      const later = function() {
+        timeout = null
 
         if (!immediate) {
-          resolve(func.apply(context, args));
+          resolve(func.apply(context, args))
         }
-      };
+      }
 
-      clearTimeout(timeout);
-      timeout = setTimeout(later, duration);
+      clearTimeout(timeout)
+      timeout = setTimeout(later, duration)
 
       if (immediate && !timeout) {
-        resolve(func.apply(context, args));
+        resolve(func.apply(context, args))
       }
-    });
-  };
+    })
+  }
 }

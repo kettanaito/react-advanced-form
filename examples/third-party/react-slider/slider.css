@@ -10,7 +10,7 @@
 
 .handle {
   position: relative;
-  font-size: .8em;
+  font-size: 0.8em;
   font-weight: bold;
   text-align: center;
   background-color: rgb(39, 170, 231);
@@ -21,7 +21,7 @@
 
 .handle:nth-child(2n) .label {
   top: -90%;
-  margin-bottom: -.5rem;
+  margin-bottom: -0.5rem;
 }
 
 .handle.active {

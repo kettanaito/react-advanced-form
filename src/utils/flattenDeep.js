@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map } from 'immutable'
 
 /**
  * Flattens the given Iterable. Returns entries which satisfy the predicate function and
@@ -18,23 +18,23 @@ export default function flattenDeep(
   transformValue = null,
   transformKey = null,
   nextKeyPath = [],
-  nextAcc = Map()
+  nextAcc = Map(),
 ) {
   return iter.reduce((acc, value, key) => {
-    const deepKeyPath = nextKeyPath.concat(key);
-    const satisfiesPredicate = predicate ? predicate(value, deepKeyPath) : true;
+    const deepKeyPath = nextKeyPath.concat(key)
+    const satisfiesPredicate = predicate ? predicate(value, deepKeyPath, acc) : true
 
     if (satisfiesPredicate) {
-      const transformedKeyPath = transformKey ? [transformKey(deepKeyPath)] : deepKeyPath;
-      const resolvedKeyPath = flattenKeys ? [transformedKeyPath.join('.')] : transformedKeyPath;
-      const resolvedValue = transformValue ? transformValue(value, deepKeyPath) : value;
+      const transformedKeyPath = transformKey ? [transformKey(deepKeyPath)] : deepKeyPath
+      const resolvedKeyPath = flattenKeys ? [transformedKeyPath.join('.')] : transformedKeyPath
+      const resolvedValue = transformValue ? transformValue(value, deepKeyPath) : value
 
-      return acc.setIn(resolvedKeyPath, resolvedValue);
+      return acc.setIn(resolvedKeyPath, resolvedValue)
     }
 
     /* Do not call flatten recursively in case the current value is not an instance of Iterable */
     if (!Map.isMap(value)) {
-      return acc;
+      return acc
     }
 
     return flattenDeep(
@@ -44,7 +44,7 @@ export default function flattenDeep(
       transformValue,
       transformKey,
       deepKeyPath,
-      acc
-    );
-  }, nextAcc);
+      acc,
+    )
+  }, nextAcc)
 }
