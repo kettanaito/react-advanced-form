@@ -2,6 +2,7 @@ export default function mapToSingleResult(name, funcs) {
   return (...args) => {
     console.groupCollapsed('mapToSingleResult', name)
     console.log({ funcs })
+
     const funcsArr = Array.isArray(funcs) ? funcs : [funcs]
 
     const res = funcsArr.reduce(

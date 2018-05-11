@@ -9,7 +9,7 @@ import enforceArray from '../../enforceArray'
 export default function createValidationResult(expected, rejectedRules, extra) {
   return {
     expected,
-    rejectedRules: enforceArray(rejectedRules),
+    rejectedRules: rejectedRules && enforceArray(rejectedRules),
     extra,
   }
 }

@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import { reduceWhileExpected } from '../reduceWhile'
+import { returnsExpected, reduceResultsWhile } from '../reduceWhile'
 import mapToSingleResult from '../mapToSingleResult'
 import shouldValidateSync from './shouldValidateSync'
 import applyFieldRule from './applyFieldRule'
@@ -10,10 +10,7 @@ export default function validateSync(resolverArgs) {
 
   const validator = R.when(
     needsValidation,
-    mapToSingleResult(
-      'validateSync',
-      reduceWhileExpected([applyFieldRule, applyFormRules]),
-    ),
+    reduceResultsWhile(returnsExpected, [applyFieldRule, applyFormRules]),
   )
 
   const result = validator(resolverArgs)

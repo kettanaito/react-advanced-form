@@ -1,10 +1,15 @@
-import { reduceWhileExpected } from '../reduceWhile'
+import { always, returnsExpected, reduceResultsWhile } from '../reduceWhile'
 import mapToSingleResult from '../mapToSingleResult'
 import getFieldRules from '../getFieldRules'
 import applyRule from '../applyRule'
 
-function reduceRules(rules) {
-  return rules.map((rule) => (resolverArgs) => applyRule(rule, resolverArgs))
+function reduceRulesGroup(rules) {
+  return (resolverArgs) => {
+    return reduceResultsWhile(
+      always,
+      rules.map((rule) => (args) => applyRule(rule, args)),
+    )(resolverArgs)
+  }
 }
 
 export default function applyFormRules(resolverArgs) {
@@ -17,22 +22,10 @@ export default function applyFormRules(resolverArgs) {
 
   console.log({ rules })
 
-  // TODO that doesn't apply rules :/
-  const applyNamedRules = (args) =>
-    mapToSingleResult('namedRules', reduceRules(rules.name))(args)
-
-  const applyTypeRules = (args) =>
-    mapToSingleResult('typeRules', reduceRules(rules.type))(args)
-
-  console.log('reducing the sequence...')
-
-  //
-  // TODO Return data type here is messed up. Must be Object.
-  //
-  const result = mapToSingleResult(
-    'applyFormRules',
-    reduceWhileExpected([applyNamedRules, applyTypeRules]),
-  )(resolverArgs)
+  const result = reduceResultsWhile(returnsExpected, [
+    reduceRulesGroup(rules.name),
+    reduceRulesGroup(rules.type),
+  ])(resolverArgs)
 
   console.warn('applyFormRules result:', result)
   console.groupEnd()

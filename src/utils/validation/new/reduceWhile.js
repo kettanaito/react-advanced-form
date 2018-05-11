@@ -1,21 +1,37 @@
-const reduceWhile = (predicate, funcs) => {
-  return (...args) => {
-    let isPredicateSatisfied = true
+import * as R from 'ramda'
 
-    return funcs.reduce((acc, func) => {
-      if (!isPredicateSatisfied) {
-        return acc
-      }
+export const always = () => true
 
-      const funcResult = func(...args)
-      isPredicateSatisfied = predicate(funcResult, acc)
-
-      return isPredicateSatisfied ? acc.concat(funcResult) : acc
-    }, [])
-  }
+export const returnsExpected = (reducedResult) => {
+  return reducedResult.expected
 }
 
-export const reduceWhileExpected = (funcs) =>
-  reduceWhile((validatorResult) => validatorResult.expected, funcs)
+export const reduceResultsWhile = (predicate, funcs) => (...args) => {
+  return R.reduceWhile(
+    predicate,
+    (acc, func) => {
+      const { rejectedRules: prevRejectedRules } = acc
+      console.groupCollapsed('reduceWhileExpected')
+      console.log({ acc })
 
-export default reduceWhile
+      const validatorResult = func(...args)
+      console.log({ validatorResult })
+
+      acc.expected = validatorResult.expected
+      const nextRejectedRules = validatorResult.rejectedRules
+        ? prevRejectedRules.concat(validatorResult.rejectedRules)
+        : prevRejectedRules
+
+      console.groupEnd()
+
+      acc.rejectedRules = nextRejectedRules
+
+      return acc
+    },
+    {
+      expected: true,
+      rejectedRules: [],
+    },
+    funcs,
+  )
+}

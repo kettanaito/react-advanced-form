@@ -1,9 +1,7 @@
 import createResolverArgs from './createResolverArgs'
 import validateSync from './validateSync'
 import validateAsync from './validateAsync'
-import { reduceWhileExpected } from './reduceWhile'
-
-export const returnsExpected = (validatorResult) => validatorResult.expected
+import { returnsExpected, reduceResultsWhile } from './reduceWhile'
 
 export default function validate(args) {
   const resolverArgs = createResolverArgs(args)
@@ -13,9 +11,10 @@ export default function validate(args) {
   console.log('reducing validators...')
   console.log({ resolverArgs })
 
-  const validationResult = reduceWhileExpected([validateSync, validateAsync])(
-    resolverArgs,
-  )
+  const validationResult = reduceResultsWhile(returnsExpected, [
+    validateSync,
+    validateAsync,
+  ])(resolverArgs)
 
   console.warn({ validationResult })
   console.groupEnd()
