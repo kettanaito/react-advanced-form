@@ -1,3 +1,4 @@
+import invariant from 'invariant'
 import createPropGetter from '../fieldUtils/createPropGetter'
 
 /**
@@ -6,6 +7,15 @@ import createPropGetter from '../fieldUtils/createPropGetter'
  */
 export default function createResolverArgs(args) {
   const { fieldProps, fields, form } = args
+
+  invariant(
+    fieldProps && fields && form,
+    'Failed to create resolver args. Expected `fieldProps`, `fields` and `form` to be passed, but got: %s, %s, %s (respectively).',
+    fieldProps,
+    fields,
+    form,
+  )
+
   const valuePropName = fieldProps.get('valuePropName')
   const value = fieldProps.get(valuePropName)
 

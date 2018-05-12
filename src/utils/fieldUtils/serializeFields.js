@@ -31,6 +31,9 @@ function predicate(fieldRecord) {
  * @param {Function} transformValue
  * @returns {Map}
  */
-export default function serializeFields(fields, transformValue = recordUtils.getValue) {
+export default function serializeFields(
+  fields,
+  transformValue = recordUtils.getValue,
+) {
   return flattenDeep(fields, predicate, false, transformValue)
 }

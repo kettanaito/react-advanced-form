@@ -73,6 +73,10 @@ function generateFieldClass(initialProps) {
       const fieldGroup = this.fieldGroup || []
       return fieldGroup.concat(this.name)
     }
+
+    get displayFieldPath() {
+      return this.fieldPath.join('.')
+    }
   }
 }
 

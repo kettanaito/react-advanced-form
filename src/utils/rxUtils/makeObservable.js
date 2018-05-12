@@ -1,8 +1,8 @@
 import { Map } from 'immutable'
 import { Observable } from 'rxjs/Observable'
-import createPropsObserver from './createPropsObserver'
-import flushFieldRefs from '../flushFieldRefs'
 import camelize from '../camelize'
+import flushFieldRefs from '../flushFieldRefs'
+import createPropsObserver from './createPropsObserver'
 
 /**
  * Returns the formatted references in a { [fieldPath]: props } format.
@@ -20,7 +20,9 @@ function formatRefs(refs) {
     const propName = ref.slice(ref.length - 1)
 
     if (formatted.hasIn(ref)) {
-      return formatted.update(fieldPath.join('.'), (propsList) => propsList.concat(propName))
+      return formatted.update(fieldPath.join('.'), (propsList) =>
+        propsList.concat(propName),
+      )
     }
 
     return formatted.set(fieldPath.join('.'), propName)
@@ -37,7 +39,13 @@ function formatRefs(refs) {
  * @param {Object} observerOptions
  * @returns {Subscription}
  */
-function createObserver({ fieldPath, props, form, subscribe, observerOptions }) {
+function createObserver({
+  fieldPath,
+  props,
+  form,
+  subscribe,
+  observerOptions,
+}) {
   return createPropsObserver({
     fieldPath,
     props,

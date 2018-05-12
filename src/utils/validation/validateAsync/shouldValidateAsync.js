@@ -3,7 +3,7 @@ export default function shouldValidateAsync({ fieldProps }) {
     fieldProps.validSync && fieldProps.asyncRule && !fieldProps.validAsync
 
   console.groupCollapsed(
-    `validateAsync @ shouldValidate @ ${fieldProps.fieldPath.join('.')}`,
+    `validateAsync @ shouldValidate @ ${fieldProps.displayFieldPath}`,
   )
   console.log('field props:', fieldProps && fieldProps.toJS())
   console.warn('should validate?', shouldValidate)

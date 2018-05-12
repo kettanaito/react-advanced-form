@@ -4,7 +4,7 @@
  */
 export const getRulesBySelector = (selector, fieldRecord, schema) => {
   console.groupCollapsed(
-    `getRulesBySelector "${selector}" for "${fieldRecord.fieldPath.join('.')}"`,
+    `getRulesBySelector "${selector}" for "${fieldRecord.displayFieldPath}"`,
   )
 
   const keyPath = [selector, fieldRecord.get(selector)]

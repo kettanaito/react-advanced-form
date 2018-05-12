@@ -148,7 +148,9 @@ export default class Form extends React.Component {
     const { fieldPath } = initialFieldProps
     const isAlreadyExist = fields.hasIn(fieldPath)
 
-    console.groupCollapsed(`Form @ registerField @ ${fieldPath.join('.')}`)
+    console.groupCollapsed(
+      `Form @ registerField @ ${initialFieldProps.displayFieldPath}`,
+    )
     console.log('field options:', fieldOptions)
     console.log('initial field record:', initialFieldProps.toJS())
     console.log('field already exists?', isAlreadyExist)
@@ -280,7 +282,7 @@ export default class Form extends React.Component {
     )
 
     console.groupCollapsed(
-      `Form @ updateFieldsWith @ ${fieldRecord.fieldPath.join('.')}`,
+      `Form @ updateFieldsWith @ ${fieldRecord.displayFieldPath}`,
     )
     console.log('fieldRecord:', fieldRecord.toJS())
     console.log('nextFields:', nextFields.toJS())
@@ -346,7 +348,7 @@ export default class Form extends React.Component {
     }
 
     console.groupCollapsed(
-      `Form @ handleFieldFocus @ ${fieldProps.fieldPath.join('.')}`,
+      `Form @ handleFieldFocus @ ${fieldProps.displayFieldPath}`,
     )
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
     console.groupEnd()
@@ -386,7 +388,7 @@ export default class Form extends React.Component {
     }
 
     console.groupCollapsed(
-      `Form @ handleFieldChange @ ${fieldProps.fieldPath.join('.')}`,
+      `Form @ handleFieldChange @ ${fieldProps.displayFieldPath}`,
     )
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
     console.log('nextValue', nextValue)
@@ -567,7 +569,7 @@ export default class Form extends React.Component {
     // const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
 
     console.groupCollapsed(
-      `Form @ handleFieldBlur @ ${fieldProps.fieldPath.join('.')}`,
+      `Form @ handleFieldBlur @ ${fieldProps.displayFieldPath}`,
     )
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
     // console.log('should validate', shouldValidate);
@@ -632,7 +634,7 @@ export default class Form extends React.Component {
     fieldProps = fieldProps || explicitFieldProps
 
     console.groupCollapsed(
-      `Form @ validateField @ ${fieldProps.fieldPath.join('.')}`,
+      `Form @ validateField @ ${fieldProps.displayFieldPath}`,
     )
     console.warn('stack trace')
     console.log('validation types', types)
