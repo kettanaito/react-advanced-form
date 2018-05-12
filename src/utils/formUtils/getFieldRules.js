@@ -21,8 +21,8 @@ function createValueTransformer(ruleFormatter) {
     if (typeof value === 'function') {
       const formattedRule = ruleFormatter({
         selector,
-        resolver: value,
         ruleKeyPath,
+        resolver: value,
       })
 
       return [formattedRule]
@@ -31,6 +31,7 @@ function createValueTransformer(ruleFormatter) {
     return value.reduce((list, resolver, name) => {
       const formattedRule = ruleFormatter({
         name,
+        ruleKeyPath,
         selector,
         resolver,
         ruleKeyPath: [...ruleKeyPath, name],

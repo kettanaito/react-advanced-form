@@ -2,13 +2,13 @@
  * Creates a rejected rule with the standardized shape.
  */
 export default function createRejectedRule({
-  name,
-  selector,
+  errorType,
+  ruleKeyPath,
   isCustom = false,
 }) {
   return {
-    name,
-    selector,
+    errorType,
+    ruleKeyPath,
     isCustom,
   }
 }

@@ -20,7 +20,7 @@ export default async function applyFieldAsyncRule(resolverArgs) {
   const rejectedRules = valid
     ? undefined
     : createRejectedRule({
-        name: errorTypes.async,
+        errorType: errorTypes.async,
         isCustom: true,
       })
 

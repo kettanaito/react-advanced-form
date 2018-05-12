@@ -19,7 +19,7 @@ export default function applyFieldRule(resolverArgs) {
   const rejectedRule = expected
     ? undefined
     : createRejectedRule({
-        name: errorTypes.invalid,
+        errorType: errorTypes.invalid,
       })
 
   return createValidationResult(expected, rejectedRule)
