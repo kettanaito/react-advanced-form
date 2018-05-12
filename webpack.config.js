@@ -1,7 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin')
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 /* Environment */
 const nodeEnv = process.env.NODE_ENV || 'development'
@@ -9,7 +9,10 @@ const DEVELOPMENT = nodeEnv === 'development'
 const PRODUCTION = nodeEnv === 'production'
 
 module.exports = {
-  entry: ['regenerator-runtime/runtime', path.resolve(__dirname, 'src/index.js')],
+  entry: [
+    'regenerator-runtime/runtime',
+    path.resolve(__dirname, 'src/index.js'),
+  ],
   externals: {
     react: 'umd react',
     immutable: 'umd immutable',

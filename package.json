@@ -70,6 +70,7 @@
     "babel-eslint": "^8.2.3",
     "babel-loader": "^7.1.4",
     "babel-minify-webpack-plugin": "^0.3.1",
+    "babel-plugin-ramda": "^1.6.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -119,6 +120,7 @@
     "create-prop-types": "^1.0.0",
     "hoist-non-react-statics": "^2.5.0",
     "invariant": "^2.2.3",
+    "ramda": "^0.25.0",
     "rxjs": "^5.5.6"
   }
 }

@@ -1,30 +1,30 @@
 {
-    "presets": [
-        "env",
-        "react",
-        "flow"
-    ],
-    "plugins": [
+  "presets": ["env", "react", "flow"],
+  "plugins": [
+    "transform-export-extensions",
+    "transform-class-properties",
+    "transform-object-rest-spread"
+  ],
+  "env": {
+    "production": {
+      "presets": [
+        [
+          "env",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": "last 2 versions"
+            }
+          }
+        ],
+        "react"
+      ],
+      "plugins": [
         "transform-export-extensions",
         "transform-class-properties",
-        "transform-object-rest-spread"
-    ],
-    "env": {
-        "production": {
-            "presets": [
-                ["env", {
-                    "modules": false,
-                    "targets": {
-                        "browsers": "last 2 versions"
-                    }
-                }],
-                "react"
-            ],
-            "plugins": [
-                "transform-export-extensions",
-                "transform-class-properties",
-                "transform-object-rest-spread"
-            ]
-        }
+        "transform-object-rest-spread",
+        "ramda"
+      ]
     }
+  }
 }
