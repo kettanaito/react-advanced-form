@@ -261,23 +261,26 @@ export function reflectValidation({
   console.log('validation result:', validationResult)
   console.log('shouldValidate:', shouldValidate)
 
-  const { expected } = validationResult
+  const { validators, expected } = validationResult
   console.log('expected:', expected)
 
-  const validProps = validationResult.types.reduce((props, validationType) => {
-    const validPropName = camelize('valid', validationType.name)
-    const validatedPropName = camelize('validated', validationType.name)
-    props[validPropName] = expected
-    props[validatedPropName] = true
-    return props
-  }, {})
+  const validationProps = validators.reduce(
+    (validationState, validatorName) => {
+      const validPropName = camelize('valid', validatorName)
+      const validatedPropName = camelize('validated', validatorName)
+      validationState[validPropName] = expected
+      validationState[validatedPropName] = true
+      return validationState
+    },
+    {},
+  )
 
-  console.log({ validProps })
+  console.log({ validationProps })
 
   const validatedField = fieldProps
     .set('validated', true)
     .set('expected', expected)
-    .merge(validProps)
+    .merge(validationProps)
 
   const nextFieldProps = setValidityState(validatedField, shouldValidate)
 

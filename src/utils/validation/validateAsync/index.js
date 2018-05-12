@@ -1,4 +1,5 @@
 import { when } from 'ramda'
+import createValidatorResult from '../createValidatorResult'
 import shouldValidateAsync from './shouldValidateAsync'
 import applyFieldAsyncRule from './applyFieldAsyncRule'
 
@@ -12,5 +13,5 @@ export default function validateAsync(resolverArgs, force) {
 
   console.warn('result:', result)
 
-  return result
+  return createValidatorResult('async', result)
 }

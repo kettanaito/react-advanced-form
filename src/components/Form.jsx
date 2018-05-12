@@ -25,7 +25,8 @@ import {
   rxUtils,
 } from '../utils'
 
-import validate from '../utils/validation'
+import validateSync from '../utils/validation/validateSync'
+import validate from '../utils/validation/validateAndReflect'
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls
@@ -468,7 +469,7 @@ export default class Form extends React.Component {
     // Should this be encapsulated into Form.validateField, or be an independent function?
     //
     const validatedFieldProps = await appropriateValidation({
-      chain: (validators) => [validators.sync],
+      chain: [validateSync],
       fieldProps: updatedFieldProps,
 
       //
