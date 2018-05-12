@@ -8,7 +8,9 @@ export interface ICancelablePromise<R> {
   cancel: () => void;
 }
 
-export default function makeCancelable<R>(promise: Promise<R>): ICancelablePromise<R> {
+export default function makeCancelable<R>(
+  promise: Promise<R>,
+): ICancelablePromise<R> {
   let isCanceled = false
 
   const wrappedPromise: Promise<R> = new Promise((resolve, reject) => {

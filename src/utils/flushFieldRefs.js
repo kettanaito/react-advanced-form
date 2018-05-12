@@ -10,7 +10,9 @@ import createPropGetter from './fieldUtils/createPropGetter'
 export default function flushFieldRefs(method, methodArgs) {
   const { fields, form } = methodArgs
   const refs = []
-  const fieldPropGetter = createPropGetter(fields, (propRefPath) => refs.push(propRefPath))
+  const fieldPropGetter = createPropGetter(fields, (propRefPath) =>
+    refs.push(propRefPath),
+  )
 
   const initialValue = dispatch(
     method,

@@ -15,7 +15,15 @@ class Checkbox extends React.Component {
   }
 
   render() {
-    const { fieldProps, fieldState, id, name, className, label, hint } = this.props
+    const {
+      fieldProps,
+      fieldState,
+      id,
+      name,
+      className,
+      label,
+      hint,
+    } = this.props
     const { valid, invalid, errors } = fieldState
 
     const inputClassNames = [

@@ -6,6 +6,8 @@ import type { Component } from 'react'
  * @return {string}
  * @flow
  */
-export default function getComponentName(component: Component<any, any, any>): string {
+export default function getComponentName(
+  component: Component<any, any, any>,
+): string {
   return component.displayName || component.name || 'Component'
 }

@@ -47,7 +47,11 @@ export default class AjaxPrefilling extends React.Component {
           required
         />
 
-        <button id="ajax" disabled={isFetching} onClick={this.handleFetchStreet}>
+        <button
+          id="ajax"
+          disabled={isFetching}
+          onClick={this.handleFetchStreet}
+        >
           Fetch street
         </button>
 

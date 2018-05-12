@@ -35,7 +35,11 @@ class Textarea extends React.Component {
           </label>
         )}
 
-        <textarea id={id || name} className={textareaClassNames} {...fieldProps} />
+        <textarea
+          id={id || name}
+          className={textareaClassNames}
+          {...fieldProps}
+        />
 
         {errors &&
           errors.map((error, index) => (

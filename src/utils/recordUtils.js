@@ -135,7 +135,9 @@ export function setValue(fieldRecord, nextValue) {
  */
 export function setErrors(fieldRecord, errors = undefined) {
   /* Allow "null" as explicit empty "errors" value */
-  return typeof errors !== 'undefined' ? fieldRecord.set('errors', errors) : fieldRecord
+  return typeof errors !== 'undefined'
+    ? fieldRecord.set('errors', errors)
+    : fieldRecord
 }
 
 /**
@@ -245,7 +247,11 @@ export function setFocus(fieldRecord, isFocused = true) {
  * @param {Boolean} shouldValidate
  * @returns {Map}
  */
-export function reflectValidation({ fieldProps, validationResult, shouldValidate }) {
+export function reflectValidation({
+  fieldProps,
+  validationResult,
+  shouldValidate,
+}) {
   console.groupCollapsed('recordUtils.reflectValidation', fieldProps.name)
   console.log('fieldProps:', fieldProps && fieldProps.toJS())
   console.log('validation result:', validationResult)

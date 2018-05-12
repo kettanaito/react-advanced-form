@@ -9,19 +9,49 @@ export default class UncontrolledFields extends React.Component {
       <React.Fragment>
         <h1>Uncontrolled fields</h1>
 
-        <Form id="form" ref={this.props.getRef} onSubmitStart={this.props.onSubmitStart}>
+        <Form
+          id="form"
+          ref={this.props.getRef}
+          onSubmitStart={this.props.onSubmitStart}
+        >
           {/* Inputs */}
           <Input id="inputOne" name="inputOne" label="Field one" />
-          <Input id="inputTwo" name="inputTwo" label="Field two" initialValue="foo" />
+          <Input
+            id="inputTwo"
+            name="inputTwo"
+            label="Field two"
+            initialValue="foo"
+          />
 
           {/* Radio */}
           <Radio id="radio1" name="radio" label="Radio one" value="cheese" />
-          <Radio id="radio2" name="radio" label="Radio two" value="potato" checked />
-          <Radio id="radio3" name="radio" label="Radio three" value="cucumber" />
+          <Radio
+            id="radio2"
+            name="radio"
+            label="Radio two"
+            value="potato"
+            checked
+          />
+          <Radio
+            id="radio3"
+            name="radio"
+            label="Radio three"
+            value="cucumber"
+          />
 
           {/* Checkboxes */}
-          <Checkbox id="checkbox1" name="checkbox1" label="Checkbox one" checked={false} />
-          <Checkbox id="checkbox2" name="checkbox2" label="Checkbox two" checked />
+          <Checkbox
+            id="checkbox1"
+            name="checkbox1"
+            label="Checkbox one"
+            checked={false}
+          />
+          <Checkbox
+            id="checkbox2"
+            name="checkbox2"
+            label="Checkbox two"
+            checked
+          />
 
           {/* Select */}
           <Select id="select" name="select" label="Select" initialValue="two">

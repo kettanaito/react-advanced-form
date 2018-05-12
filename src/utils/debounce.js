@@ -6,7 +6,11 @@
  * @return {func}
  * @flow
  */
-export default function debounce(func: Function, duration: number, immediate: boolean = false) {
+export default function debounce(
+  func: Function,
+  duration: number,
+  immediate: boolean = false,
+) {
   let timeout
 
   return function(...args: mixed[]) {

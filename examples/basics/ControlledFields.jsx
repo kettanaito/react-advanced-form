@@ -35,7 +35,11 @@ export default class ControlledFields extends React.Component {
       <React.Fragment>
         <h1>Controlled fields</h1>
 
-        <Form id="form" ref={this.props.getRef} onSubmitStart={this.props.onSubmitStart}>
+        <Form
+          id="form"
+          ref={this.props.getRef}
+          onSubmitStart={this.props.onSubmitStart}
+        >
           {/* Inputs */}
           <Input
             id="inputOne"

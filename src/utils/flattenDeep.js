@@ -22,12 +22,20 @@ export default function flattenDeep(
 ) {
   return iter.reduce((acc, value, key) => {
     const deepKeyPath = nextKeyPath.concat(key)
-    const satisfiesPredicate = predicate ? predicate(value, deepKeyPath, acc) : true
+    const satisfiesPredicate = predicate
+      ? predicate(value, deepKeyPath, acc)
+      : true
 
     if (satisfiesPredicate) {
-      const transformedKeyPath = transformKey ? [transformKey(deepKeyPath)] : deepKeyPath
-      const resolvedKeyPath = flattenKeys ? [transformedKeyPath.join('.')] : transformedKeyPath
-      const resolvedValue = transformValue ? transformValue(value, deepKeyPath) : value
+      const transformedKeyPath = transformKey
+        ? [transformKey(deepKeyPath)]
+        : deepKeyPath
+      const resolvedKeyPath = flattenKeys
+        ? [transformedKeyPath.join('.')]
+        : transformedKeyPath
+      const resolvedValue = transformValue
+        ? transformValue(value, deepKeyPath)
+        : value
 
       return acc.setIn(resolvedKeyPath, resolvedValue)
     }

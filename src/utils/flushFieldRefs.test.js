@@ -43,7 +43,10 @@ test('Returns proper collection of field refs', () => {
   expect(refs)
     .to.be.an.instanceOf(Array)
     .with.lengthOf(2)
-    .that.deep.equals([['fieldOne', 'value'], ['groupTwo', 'fieldTwo', 'value']])
+    .that.deep.equals([
+      ['fieldOne', 'value'],
+      ['groupTwo', 'fieldTwo', 'value'],
+    ])
 })
 
 test('Returns proper initial value', () => {

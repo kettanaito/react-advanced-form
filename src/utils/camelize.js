@@ -5,5 +5,7 @@
  * @flow
  */
 export default function camelize(...args: string[]): string {
-  return args.join('-').replace(/-(.)/g, (_, char: string) => char.toUpperCase())
+  return args
+    .join('-')
+    .replace(/-(.)/g, (_, char: string) => char.toUpperCase())
 }

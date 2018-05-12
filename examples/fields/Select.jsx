@@ -16,9 +16,19 @@ class Select extends React.Component {
   }
 
   render() {
-    const { fieldProps, fieldState, id, className, name, multiple, label } = this.props
+    const {
+      fieldProps,
+      fieldState,
+      id,
+      className,
+      name,
+      multiple,
+      label,
+    } = this.props
 
-    const selectClassNames = ['form-control', className].filter(Boolean).join(' ')
+    const selectClassNames = ['form-control', className]
+      .filter(Boolean)
+      .join(' ')
 
     return (
       <div className="form-group">
@@ -28,7 +38,12 @@ class Select extends React.Component {
           </label>
         )}
 
-        <select id={id || name} multiple={multiple} className={selectClassNames} {...fieldProps}>
+        <select
+          id={id || name}
+          multiple={multiple}
+          className={selectClassNames}
+          {...fieldProps}
+        >
           {this.props.children}
         </select>
       </div>

@@ -12,31 +12,65 @@ export default class SplitGroups extends React.Component {
         <Form ref={this.props.getRef} onSubmitStart={this.props.onSubmitStart}>
           <div className="row">
             <div className="col-6">
-              <Input name="email" type="email" label="E-mail" initialValue="john@maverick.com" />
+              <Input
+                name="email"
+                type="email"
+                label="E-mail"
+                initialValue="john@maverick.com"
+              />
 
-              <Input name="password" type="password" label="Password" initialValue="super-secret" />
+              <Input
+                name="password"
+                type="password"
+                label="Password"
+                initialValue="super-secret"
+              />
 
               <Field.Group name="primaryInfo">
-                <Input name="firstName" label="First name" initialValue="John" />
-                <Input name="lastName" label="Last name" initialValue="Maverick" />
+                <Input
+                  name="firstName"
+                  label="First name"
+                  initialValue="John"
+                />
+                <Input
+                  name="lastName"
+                  label="Last name"
+                  initialValue="Maverick"
+                />
 
                 <Field.Group name="billingAddress">
-                  <Input name="street" label="Street" initialValue="Sunwell ave." />
+                  <Input
+                    name="street"
+                    label="Street"
+                    initialValue="Sunwell ave."
+                  />
                 </Field.Group>
               </Field.Group>
             </div>
 
             <div className="col-6">
               <Field.Group name="primaryInfo">
-                <Checkbox name="newsletter" label="Subscribe to newsletter" checked />
+                <Checkbox
+                  name="newsletter"
+                  label="Subscribe to newsletter"
+                  checked
+                />
 
                 <Field.Group name="billingAddress">
-                  <Input name="houseNumber" label="House number" initialValue="3" />
+                  <Input
+                    name="houseNumber"
+                    label="House number"
+                    initialValue="3"
+                  />
                 </Field.Group>
               </Field.Group>
 
               <Field.Group name="billingAddress">
-                <Checkbox name="noCollision" label="Nesting is important" checked />
+                <Checkbox
+                  name="noCollision"
+                  label="Nesting is important"
+                  checked
+                />
               </Field.Group>
             </div>
           </div>
