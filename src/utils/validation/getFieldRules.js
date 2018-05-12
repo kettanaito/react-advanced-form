@@ -2,7 +2,7 @@
  * Returns the collection of validation rules of the given selector
  * applicabale to the given field.
  */
-export function getRulesBySelector(selector, fieldRecord, schema) {
+export const getRulesBySelector = (selector, fieldRecord, schema) => {
   console.groupCollapsed(
     `getRulesBySelector "${selector}" for "${fieldRecord.fieldPath.join('.')}"`,
   )

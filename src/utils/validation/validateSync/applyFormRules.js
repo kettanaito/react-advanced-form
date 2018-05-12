@@ -1,5 +1,4 @@
 import { always, returnsExpected, reduceResultsWhile } from '../reduceWhile'
-import mapToSingleResult from '../mapToSingleResult'
 import getFieldRules from '../getFieldRules'
 import applyRule from '../applyRule'
 

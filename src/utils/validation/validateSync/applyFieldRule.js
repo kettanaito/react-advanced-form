@@ -1,7 +1,7 @@
-import errorTypes from '../../errorTypes'
+import errorTypes from '../errorTypes'
 import applyResolver from '../applyResolver'
-import createValidationResult from '../../createValidationResult'
-import createRejectedRule from '../../createRejectedRule'
+import createValidationResult from '../createValidationResult'
+import createRejectedRule from '../createRejectedRule'
 
 export default function applyFieldRule(resolverArgs) {
   const { value, fieldProps } = resolverArgs

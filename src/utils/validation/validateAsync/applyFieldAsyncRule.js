@@ -1,8 +1,8 @@
-import dispatch from '../../../dispatch'
-import createValidationResult from '../../createValidationResult'
-import makeCancelable from '../../../makeCancelable'
-import createRejectedRule from '../../createRejectedRule'
-import errorTypes from '../../errorTypes'
+import dispatch from '../../dispatch'
+import makeCancelable from '../../makeCancelable'
+import createValidationResult from '../createValidationResult'
+import createRejectedRule from '../createRejectedRule'
+import errorTypes from '../errorTypes'
 
 export default async function applyFieldAsyncRule(resolverArgs) {
   const { fieldProps } = resolverArgs

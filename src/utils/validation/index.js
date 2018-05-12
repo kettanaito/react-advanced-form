@@ -1,65 +1,23 @@
-// @flow
-import type { TSeq } from '../createSeq';
-import type { TValidatorArgs } from './getRules';
-import type { TValidationResult } from './createValidationResult';
+import createResolverArgs from './createResolverArgs'
+import validateSync from './validateSync'
+import validateAsync from './validateAsync'
+import { returnsExpected, reduceResultsWhile } from './reduceWhile'
 
-import createSeq from '../createSeq';
-import mapToSingleResult from './mapToSingleResult';
-import validationTypes from './validationTypes';
-import getApplicableValidations from './getApplicableValidations';
-// import createValidationResult from './createValidationResult';
+export default function validate(args) {
+  const resolverArgs = createResolverArgs(args)
 
-export type TValidatorFunc = (args: TValidatorArgs) => TValidationResult;
+  console.groupCollapsed('validate @ ', args.fieldProps.name)
+  console.log({ args })
+  console.log('reducing validators...')
+  console.log({ resolverArgs })
 
-/**
- * Create a sequence which continues while each of its functions
- * returns "expected" property equal to "true".
- */
-export const seq: TSeq<TValidatorFunc, TValidatorArgs, TValidationResult> = createSeq(
-  (result: TValidationResult) => result.expected
-);
+  const validationResult = reduceResultsWhile(returnsExpected, [
+    validateSync,
+    validateAsync,
+  ])(resolverArgs)
 
-export default function validate(args): TValidationResult | void {
-  const { types, fieldProps, form } = args;
+  console.warn({ validationResult })
+  console.groupEnd()
 
-  if (types) {
-    console.log('has explicitly requested types', types);
-  }
-
-  const explicitValidationTypes = types && types(validationTypes);
-  const relevantValidationTypes = getApplicableValidations(fieldProps, form, explicitValidationTypes);
-
-  /* Treat a field with no necessary validation types as expected */
-  if (relevantValidationTypes.length === 0) {
-    console.log('no validation types applicable, field `%s` needs no validation', fieldProps.name);
-    return;
-
-    // return {
-    //   ...createValidationResult(true),
-    //   types: relevantValidationTypes
-    // };
-  }
-
-  /**
-   * Create a validation sequence consisting of validators determined by the
-   * necessary validation types ("sync", "async", or both).
-   */
-  const validatorsSeq = relevantValidationTypes.map(validationType => validationType.validator);
-
-  console.groupCollapsed('validateByType');
-  console.log('fieldProps:', fieldProps && fieldProps.toJS());
-  console.log('relevantValidationTypes:', relevantValidationTypes);
-  console.log('validatorsSeq:', validatorsSeq);
-  console.groupEnd();
-
-  const res = mapToSingleResult(
-    seq(...validatorsSeq)
-  )(args);
-
-  console.warn('validation result:', res);
-
-  return {
-    ...res,
-    types: relevantValidationTypes
-  };
+  return validationResult
 }

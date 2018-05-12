@@ -1,4 +1,4 @@
-import * as R from 'ramda'
+import { reduceWhile } from 'ramda'
 
 export const always = () => true
 
@@ -7,7 +7,7 @@ export const returnsExpected = (reducedResult) => {
 }
 
 export const reduceResultsWhile = (predicate, funcs) => (...args) => {
-  return R.reduceWhile(
+  return reduceWhile(
     predicate,
     (acc, func) => {
       const { rejectedRules: prevRejectedRules } = acc
