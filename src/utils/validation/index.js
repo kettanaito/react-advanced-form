@@ -3,18 +3,28 @@ import validateSync from './validateSync'
 import validateAsync from './validateAsync'
 import { returnsExpected, reduceResultsWhile } from './reduceWhile'
 
-export default function validate(args) {
-  const resolverArgs = createResolverArgs(args)
+const defaultValidatorsChain = {
+  sync: validateSync,
+  async: validateAsync,
+}
 
-  console.groupCollapsed('validate @ ', args.fieldProps.name)
+export default function validate(args) {
+  const { chain, force } = args
+  const resolverArgs = createResolverArgs(args)
+  const validatorsChain = chain
+    ? chain(defaultValidatorsChain)
+    : defaultValidatorsChain
+
+  console.groupCollapsed(`validate @ ${args.fieldProps.displayFieldPath}`)
   console.log({ args })
+  console.log('validators chain:', validatorsChain)
   console.log('reducing validators...')
   console.log({ resolverArgs })
 
-  const validationResult = reduceResultsWhile(returnsExpected, [
-    validateSync,
-    validateAsync,
-  ])(resolverArgs)
+  const validationResult = reduceResultsWhile(returnsExpected, validatorsChain)(
+    resolverArgs,
+    force,
+  )
 
   console.warn({ validationResult })
   console.groupEnd()

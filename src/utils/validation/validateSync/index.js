@@ -4,8 +4,8 @@ import shouldValidateSync from './shouldValidateSync'
 import applyFieldRule from './applyFieldRule'
 import applyFormRules from './applyFormRules'
 
-export default function validateSync(resolverArgs) {
-  const needsValidation = () => shouldValidateSync(resolverArgs)
+export default function validateSync(resolverArgs, force) {
+  const needsValidation = () => force || shouldValidateSync(resolverArgs)
 
   const validator = when(
     needsValidation,

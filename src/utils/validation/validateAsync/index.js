@@ -2,11 +2,11 @@ import { when } from 'ramda'
 import shouldValidateAsync from './shouldValidateAsync'
 import applyFieldAsyncRule from './applyFieldAsyncRule'
 
-export default function validateAsync(resolverArgs) {
+export default function validateAsync(resolverArgs, force) {
   console.groupCollapsed('validateAsync', resolverArgs.fieldProps.name)
   console.log({ resolverArgs })
 
-  const needsValidation = () => shouldValidateAsync(resolverArgs)
+  const needsValidation = () => force || shouldValidateAsync(resolverArgs)
   const validator = when(needsValidation, applyFieldAsyncRule)
   const result = validator(resolverArgs)
 

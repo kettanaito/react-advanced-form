@@ -468,7 +468,7 @@ export default class Form extends React.Component {
     // Should this be encapsulated into Form.validateField, or be an independent function?
     //
     const validatedFieldProps = await appropriateValidation({
-      types: (types) => [types.sync],
+      chain: (validators) => [validators.sync],
       fieldProps: updatedFieldProps,
 
       //
@@ -610,15 +610,10 @@ export default class Form extends React.Component {
 
   /**
    * Validates the provided field.
-   * @param {Record} fieldProps
-   * @param {ValidationType} type
-   * @param {boolean?} forceProps Use the field props from the arguments instead of form's state.
-   * @param {Map?} fields Explicit fields state to prevent validation concurrency.
-   * @param {boolean?} force Force validation. Bypass "shouldValidate" logic.
    */
   validateField = async (args) => {
     const {
-      types,
+      chain,
       force = false,
       fieldProps: explicitFieldProps,
       fields: explicitFields,
@@ -637,7 +632,7 @@ export default class Form extends React.Component {
       `Form @ validateField @ ${fieldProps.displayFieldPath}`,
     )
     console.warn('stack trace')
-    console.log('validation types', types)
+    console.log('validation chain', chain)
     console.log('value', fieldProps.get(fieldProps.get('valuePropName')))
     console.log('fieldProps', fieldProps.toJS())
     console.log('explicit fields:', explicitFields && explicitFields.toJS())
@@ -647,7 +642,7 @@ export default class Form extends React.Component {
     /* Perform the validation */
     // This "validate" should validate AND reflect
     const validatedField = await validate({
-      types,
+      chain,
       force,
       fieldProps,
       fields: this.state.fields,
