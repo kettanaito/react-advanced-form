@@ -31,7 +31,7 @@ function generateFieldClass(initialProps) {
 
       /* Basic */
       type: 'text',
-      initialValue: null, // TODO Should this be set on the class level?
+      initialValue: value, // TODO Shouldn't this be set here?
       [valuePropName]: value,
       valuePropName: 'value',
 
@@ -67,6 +67,8 @@ function generateFieldClass(initialProps) {
     },
     'FieldRecord',
   )
+
+  // console.log('composed class:', new FieldRecord().toJS())
 
   return class Field extends FieldRecord {
     get fieldPath() {

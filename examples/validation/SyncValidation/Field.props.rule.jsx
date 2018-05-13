@@ -8,7 +8,8 @@ const formMessages = {
       invalid: ({ value }) => `Does "${value}" look like a number to you?`,
     },
     fieldTwo: {
-      invalid: ({ value }) => `Does "${value}" look like it has only lower case letters?`,
+      invalid: ({ value }) =>
+        `Does "${value}" look like it has only lower case letters?`,
     },
   },
 }

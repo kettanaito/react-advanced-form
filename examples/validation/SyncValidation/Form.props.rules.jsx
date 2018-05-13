@@ -6,7 +6,7 @@ export const fieldSelector = '[name="fieldOne"]'
 
 const rules = {
   type: {
-    text: ({ value }) => value.length > 3,
+    text: ({ value }) => value.length > 2,
   },
   name: {
     fieldOne: ({ value, fieldProps }) => {
@@ -29,9 +29,13 @@ export default class FormPropsRules extends React.Component {
           {...this.props}
           name="fieldOne"
           label="Field one"
-          hint="Must be more than 3 characters and not equal to `foo`"
+          hint="Must be more than 4 characters and not equal to `foo`"
         />
-        {/* <Input name="fieldTwo" label="Field two" hint="Valid when equals to `fieldOne` value" /> */}
+        <Input
+          name="fieldTwo"
+          label="Field two"
+          hint="Valid when equals to `fieldOne` value"
+        />
       </Form>
     )
   }
