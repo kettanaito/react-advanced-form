@@ -1,13 +1,11 @@
-export default function shouldValidateAsync({ fieldProps }) {
-  const shouldValidate =
-    fieldProps.validSync && fieldProps.asyncRule && !fieldProps.validAsync
+import { anyPass, allPass } from 'ramda'
 
-  console.groupCollapsed(
-    `validateAsync @ shouldValidate @ ${fieldProps.displayFieldPath}`,
-  )
-  console.log('field props:', fieldProps && fieldProps.toJS())
-  console.warn('should validate?', shouldValidate)
-  console.groupEnd()
+const isForced = (resolverArgs, force) => force
+const isValidSync = ({ fieldProps }) => fieldProps.validSync
+const hasAsyncRule = ({ fieldProps }) => fieldProps.asyncRule
+const notValidAsync = ({ fieldProps }) => !fieldProps.validAsync
 
-  return shouldValidate
-}
+export default anyPass([
+  isForced,
+  allPass([isValidSync, hasAsyncRule, notValidAsync]),
+])
