@@ -1,3 +1,4 @@
+import { when } from 'ramda'
 import validate from '.'
 import * as recordUtils from '../recordUtils'
 
@@ -6,12 +7,13 @@ export default function validateAndReflect(args) {
   console.log({ args })
 
   const validationResult = validate(args)
+  const hasResult = () => !!validationResult
+
   console.log({ validationResult })
 
-  const nextFieldRecord = recordUtils.reflectValidation({
-    ...args,
-    validationResult,
-  })
+  const nextFieldRecord = when(hasResult, () =>
+    recordUtils.reflectValidation({ ...args, validationResult }),
+  )(args.fieldProps)
 
   console.warn('nextFieldRecord:', nextFieldRecord && nextFieldRecord.toJS())
   console.groupEnd()

@@ -1,43 +1,38 @@
-import { when } from 'ramda'
+import { ifElse } from 'ramda'
 import { returnsExpected, reduceResultsWhile } from '../reduceWhile'
+import getFieldRules from '../getFieldRules'
 import createValidatorResult from '../createValidatorResult'
 import createValidationResult from '../createValidationResult'
-import createRejectedRule from '../createRejectedRule'
-import errorTypes from '../errorTypes'
 import shouldValidateSync from './shouldValidateSync'
-import checkEmptyRequired from './checkEmptyRequired'
+import ensureValue from './ensureValue'
 import applyFieldRule from './applyFieldRule'
 import applyFormRules from './applyFormRules'
 
 export default function validateSync(resolverArgs, force) {
-  const needsValidation = () => force || shouldValidateSync(resolverArgs)
+  console.group('validateSync', resolverArgs.fieldProps.displayFieldPath)
 
-  const { fieldProps } = resolverArgs
-  const { value, required } = fieldProps
+  const { fieldProps, form } = resolverArgs
+  const { rxRules } = form.state
+  const relevantRules = getFieldRules(fieldProps, rxRules)
 
-  //
-  // TODO Can this logic be the part of "shouldValidateSync"?
-  // This means that "force" will skip this logic.
-  //
-  if (!value && !required) {
-    return createValidatorResult('sync', createValidationResult(true))
-  }
+  console.log('running validators sequence...')
 
-  const validator = when(
-    needsValidation,
+  const result = ifElse(
+    shouldValidateSync,
     reduceResultsWhile(returnsExpected, [
-      checkEmptyRequired,
+      ensureValue,
       applyFieldRule,
       applyFormRules,
     ]),
-  )
 
-  //
-  // TODO What does "validator" return when "needsValidation" is false?
-  //
+    // When no validation is needed
+    () => {
+      return createValidationResult(true)
+    },
+  )(resolverArgs, relevantRules, force)
 
-  const result = validator(resolverArgs)
   console.warn('validateSync result:', result)
+  console.groupEnd()
 
   return createValidatorResult('sync', result)
 }

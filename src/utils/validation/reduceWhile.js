@@ -13,6 +13,7 @@ export const reduceResultsWhile = (predicate, funcs) => (...args) => {
       const prevRejectedRules = acc.rejectedRules
 
       console.groupCollapsed('reduceWhileExpected')
+      console.log({ func })
       console.log({ acc })
 
       const funcResult = func(...args)

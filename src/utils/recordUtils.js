@@ -99,7 +99,7 @@ export function createField(initialProps) {
 
   const FieldRecord = generateFieldClass(initialProps)
   const instance = new FieldRecord(initialProps)
-  console.warn('created field record:', instance)
+  // console.warn('created field record:', instance)
 
   return instance
 }

@@ -31,7 +31,6 @@ function createValueTransformer(ruleFormatter) {
     return value.reduce((list, resolver, name) => {
       const formattedRule = ruleFormatter({
         name,
-        ruleKeyPath,
         selector,
         resolver,
         ruleKeyPath: [...ruleKeyPath, name],
@@ -49,7 +48,7 @@ function createValueTransformer(ruleFormatter) {
  */
 function createPredicate(fieldProps, rxRules) {
   return (value, deepKeyPath) => {
-    console.groupCollapsed('CREATE PREDICATE')
+    console.groupCollapsed('createPredicate')
     console.log({ value })
     console.log({ deepKeyPath })
     console.groupEnd()
