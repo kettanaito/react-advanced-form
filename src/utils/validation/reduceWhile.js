@@ -1,4 +1,4 @@
-import { reduceWhile } from 'ramda'
+import reduceWhile from 'ramda/src/reduceWhile'
 
 export const always = () => true
 

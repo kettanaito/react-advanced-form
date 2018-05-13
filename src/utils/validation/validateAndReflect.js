@@ -1,7 +1,12 @@
-import { when } from 'ramda'
+import when from 'ramda/src/when'
 import validate from '.'
 import * as recordUtils from '../recordUtils'
 
+/**
+ * Composite function that performs the requested validation and
+ * reflects its results on the given field record. In case no
+ * validation has occurred, field record is returned as is.
+ */
 export default function validateAndReflect(args) {
   console.groupCollapsed('compositeValidate', args.fieldProps.name)
   console.log({ args })

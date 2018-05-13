@@ -10,7 +10,8 @@ export default function createResolverArgs(args) {
 
   invariant(
     fieldProps && fields && form,
-    'Failed to create resolver args. Expected `fieldProps`, `fields` and `form` to be passed, but got: %s, %s, %s (respectively).',
+    'Failed to create resolver args. Expected `fieldProps`, `fields` and `form` to be passed, ' +
+      'but got: %s, %s, %s (respectively).',
     fieldProps,
     fields,
     form,

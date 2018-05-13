@@ -1,4 +1,5 @@
-import { anyPass, allPass } from 'ramda'
+import anyPass from 'ramda/src/anyPass'
+import allPass from 'ramda/src/allPass'
 
 const isForced = (resolverArgs, force) => force
 const isValidSync = ({ fieldProps }) => fieldProps.validSync

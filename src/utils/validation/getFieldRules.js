@@ -22,11 +22,6 @@ export const getRulesBySelector = (selector, fieldRecord, schema) => {
   console.warn('rules:', rules)
   console.groupEnd()
 
-  // console.groupCollapsed('getRulesBySelector', selector, fieldRecord.name);
-  // console.log({ keyPath });
-  // console.log({ rules });
-  // console.groupEnd();
-
   return rules
 }
 

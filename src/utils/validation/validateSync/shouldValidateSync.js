@@ -1,4 +1,5 @@
-import { allPass, anyPass } from 'ramda'
+import allPass from 'ramda/src/allPass'
+import anyPass from 'ramda/src/anyPass'
 
 const isForced = (resolverArgs, rules, force) => force
 const hasValue = ({ fieldProps }) => !!fieldProps[fieldProps.valuePropName]

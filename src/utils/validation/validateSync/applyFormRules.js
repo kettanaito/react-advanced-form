@@ -1,4 +1,4 @@
-import { ifElse } from 'ramda'
+import ifElse from 'ramda/src/ifElse'
 import { always, returnsExpected, reduceResultsWhile } from '../reduceWhile'
 import getFieldRules from '../getFieldRules'
 import createValidationResult from '../createValidationResult'
@@ -30,15 +30,19 @@ export default function applyFormRules(validatorArgs) {
   console.log({ rules })
 
   const hasAnyRules = () => rules.name || rules.type
+  let foo = []
 
-  // TODO Handle when some/all rules are missing
+  if (rules.name) {
+    foo = foo.concat(reduceRules(rules.name))
+  }
+
+  if (rules.type) {
+    foo = foo.concat(reduceRules(rules.type))
+  }
+
   const validator = ifElse(
     hasAnyRules,
-    reduceResultsWhile(returnsExpected, [
-      reduceRules(rules.name),
-      reduceRules(rules.type),
-    ]),
-    // When no relevant rules found
+    reduceResultsWhile(returnsExpected, foo),
     () => createValidationResult(true),
   )
 

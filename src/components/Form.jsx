@@ -546,8 +546,6 @@ export default class Form extends React.Component {
       return
     }
 
-    return
-
     let nextFieldProps = fieldProps
     let nextFields = this.state.fields
 
@@ -816,18 +814,21 @@ export default class Form extends React.Component {
 
     return dispatchedAction
       .then((res) => {
-        if (onSubmitted)
+        if (onSubmitted) {
           dispatch(onSubmitted, { ...callbackArgs, res }, this.context)
+        }
         return res
       })
       .catch((res) => {
-        if (onSubmitFailed)
+        if (onSubmitFailed) {
           dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context)
+        }
         return res
       })
       .then((res) => {
-        if (onSubmitEnd)
+        if (onSubmitEnd) {
           dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context)
+        }
       })
   }
 

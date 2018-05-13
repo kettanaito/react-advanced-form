@@ -1,4 +1,4 @@
-import { ifElse } from 'ramda'
+import ifElse from 'ramda/src/ifElse'
 import { returnsExpected, reduceResultsWhile } from '../reduceWhile'
 import getFieldRules from '../getFieldRules'
 import createValidatorResult from '../createValidatorResult'

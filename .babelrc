@@ -22,8 +22,7 @@
       "plugins": [
         "transform-export-extensions",
         "transform-class-properties",
-        "transform-object-rest-spread",
-        "ramda"
+        "transform-object-rest-spread"
       ]
     }
   }
