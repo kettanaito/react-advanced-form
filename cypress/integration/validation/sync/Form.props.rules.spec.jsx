@@ -2,7 +2,7 @@ import React from 'react'
 import { mount } from 'cypress-react-unit-test'
 import Scenario, {
   fieldSelector,
-} from '@examples/validation/SyncValidation/Form.props.rules'
+} from '@examples/validation/sync/Form.props.rules'
 
 describe('Form.props.rules', function() {
   before(() => mount(<Scenario />))

@@ -14,7 +14,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
   }
 
   const { fieldPath: subscriberFieldPath } = fieldProps
-  const resolverArgs = { fieldProps, fields, form }
+  const resolverArgs = createResolverArgs({ fieldProps, fields, form })
 
   Object.keys(rxProps).forEach((rxPropName) => {
     const resolver = rxProps[rxPropName]
@@ -42,26 +42,27 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
           subscriberFieldPath.join('.'),
           nextPropValue,
         )
+
         // const fieldUpdated = form.updateField({
         //   fieldPath: subscriberFieldPath,
         //   update: fieldProps => fieldProps.set(rxPropName, nextPropValue)
         // });
 
         /* Set the next value of reactive prop on the respective field record */
-        const nextFieldProps = fieldProps.set(rxPropName, nextPropValue)
+        // const nextFieldProps = fieldProps.set(rxPropName, nextPropValue)
 
         if (shouldValidate) {
           //
           // TODO
-          // Test. Probably this is not finished.
+          // Validate the field when its reactive prop changes.
           //
-          return form.validateField({
-            force: true,
-            fieldProps: nextFieldProps,
-            fields: nextFields,
-            form,
-          })
-
+          // return form.validateField({
+          //   chain: (validators) => [validators.sync, types.async],
+          //   force: true,
+          //   fieldProps: nextFieldProps,
+          //   fields: nextFields,
+          //   form,
+          // })
           // form.validateField({
           //   force: true, // TODO This must force validation even if "shouldValidate" rejects
           //   fieldPath: subscriberFieldPath,
@@ -71,7 +72,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
           // });
         }
 
-        return form.updateFieldsWith(nextFieldProps)
+        // return form.updateFieldsWith(nextFieldProps)
       },
     })
   })
