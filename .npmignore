@@ -14,8 +14,10 @@ book.json
 cypress.json
 npm-*
 webpack*
+jest*
 
 # Misc
 .storybook
 internal
 examples
+favicon.ico
