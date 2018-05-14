@@ -24,11 +24,7 @@ export default function validateSync(resolverArgs, force) {
       applyFieldRule,
       applyFormRules,
     ]),
-
-    // When no validation is needed
-    () => {
-      return createValidationResult(true)
-    },
+    () => createValidationResult(true),
   )(resolverArgs, relevantRules, force)
 
   console.warn('validateSync result:', result)
