@@ -8,7 +8,9 @@ function logSerialized({ serialized }) {
 }
 
 function addComponent(Component) {
-  return () => <Component.type {...Component.props} onSubmitStart={logSerialized} />
+  return () => (
+    <Component.type {...Component.props} onSubmitStart={logSerialized} />
+  )
 }
 
 /* Basics */
@@ -21,9 +23,9 @@ import NestedGroups from './field-grouping/NestedGroups'
 import SplitGroups from './field-grouping/SplitGroups'
 
 /* Validation */
-import FieldPropsRule from './validation/SyncValidation/Field.props.rule'
-import FormPropsRules from './validation/SyncValidation/Form.props.rules'
-import FieldPropsAsyncRule from './validation/AsyncValidation/Field.props.asyncRule'
+import FieldPropsRule from './validation/sync/Field.props.rule'
+import FormPropsRules from './validation/sync/Form.props.rules'
+import FieldPropsAsyncRule from './validation/async/Field.props.asyncRule'
 
 /* Reactive props */
 import RxPropsDynamicRequired from './reactive-props/DynamicRequired'
