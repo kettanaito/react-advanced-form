@@ -1,24 +1,32 @@
+import reduceWhile from 'ramda/src/reduceWhile'
+import dispatch from '../../dispatch'
 import getResolvePaths from './getResolvePaths'
+import createMessageResolverArgs from './createMessageResolverArgs'
+import resolveMessage from './resolveMessage'
 
-function createResolveIterator(resolverArgs, schema) {
-  const { fieldProps } = resolverArgs
+function createResolveIterator(resolverArgs, messagesSchema) {
+  const { fieldProps, form } = resolverArgs
+  const messageResolverArgs = createMessageResolverArgs(resolverArgs)
 
   return ([rule, keyPathGetters]) =>
-    keyPathGetters.reduce((message, keyPathGetter) => {
-      if (message) {
-        return message
-      }
+    reduceWhile(
+      (message) => !message,
+      (message, keyPathGetter) => {
+        if (message) {
+          return message
+        }
 
-      const keyPath = keyPathGetter(rule, fieldProps)
-      return schema.getIn(keyPath)
-    }, null)
+        const keyPath = keyPathGetter(rule, fieldProps)
+        const resolver = messagesSchema.getIn(keyPath)
+
+        return resolveMessage(resolver, resolverArgs)
+      },
+      null,
+      keyPathGetters,
+    )
 }
 
-export default function getErrorMessages(rules, resolverArgs, schema) {
+export default function getErrorMessages(rules, resolverArgs, messagesSchema) {
   const resolvePaths = rules.map(getResolvePaths)
-  const resolvedMessages = resolvePaths.map(
-    createResolveIterator(resolverArgs, schema),
-  )
-
-  return resolvedMessages
+  return resolvePaths.map(createResolveIterator(resolverArgs, messagesSchema))
 }
