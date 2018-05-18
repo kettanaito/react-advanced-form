@@ -1,13 +1,20 @@
+// @flow
 import dispatch from './dispatch'
 import createPropGetter from './fieldUtils/createPropGetter'
 
+type TFieldRefsResult = {
+  refs: [string][],
+  initialValue: mixed,
+}
+
 /**
- * Returns the map of flushed field props paths referenced within the provided
- * method, and its initial value.
- * @param {Function} method
- * @param {CallbackHandlerArgs} methodArgs
+ * Returns the map of flushed field props paths referenced within
+ * the provided method, and its initial value.
  */
-export default function flushFieldRefs(method, methodArgs) {
+export default function flushFieldRefs(
+  method: Function,
+  methodArgs: mixed,
+): TFieldRefsResult {
   const { fields, form } = methodArgs
   const refs = []
   const fieldPropGetter = createPropGetter(fields, (propRefPath) =>

@@ -26,7 +26,15 @@ function createResolveIterator(resolverArgs, messagesSchema) {
     )
 }
 
-export default function getErrorMessages(rules, resolverArgs, messagesSchema) {
-  const resolvePaths = rules.map(getResolvePaths)
+/**
+ * Returns the list of error messages relevant to the given rejected rules
+ * and messages schema. Abides by the resolving algorithm.
+ */
+export default function getErrorMessages(
+  rejectedRules,
+  resolverArgs,
+  messagesSchema,
+) {
+  const resolvePaths = rejectedRules.map(getResolvePaths)
   return resolvePaths.map(createResolveIterator(resolverArgs, messagesSchema))
 }

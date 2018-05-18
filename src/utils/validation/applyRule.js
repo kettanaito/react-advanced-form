@@ -12,7 +12,7 @@ export default function applyRule(rule, resolverArgs) {
     rule,
   )
 
-  const { name, ruleKeyPath, resolver, errorType } = rule
+  const { name, selector, resolver, errorType } = rule
 
   /* Execute the resolver function */
   const expected = applyResolver(resolver, resolverArgs)
@@ -21,9 +21,9 @@ export default function applyRule(rule, resolverArgs) {
   const rejectedRules = expected
     ? undefined
     : createRejectedRule({
-        errorType: errorType || name || errorTypes.invalid,
-        ruleKeyPath,
-        isCustom: !!name,
+        errorType: errorType || errorTypes.invalid,
+        ruleName: name,
+        selector,
       })
 
   return createValidationResult(expected, rejectedRules)

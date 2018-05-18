@@ -1,10 +1,10 @@
+// @flow
 /**
  * Returns a debounced wrapper function over the provided function.
  * @param {function} func
  * @param {number} duration
  * @param {boolean} immediate
  * @return {func}
- * @flow
  */
 export default function debounce(
   func: Function,

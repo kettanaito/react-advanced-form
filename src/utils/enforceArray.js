@@ -1,5 +1,5 @@
+// @flow
 /**
- * @flow
  * Returns an Array of the given variable, bypassing the
  * scenario when the latter is already an Array.
  */

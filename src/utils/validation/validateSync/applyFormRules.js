@@ -37,9 +37,11 @@ export default function applyFormRules(validatorArgs) {
   //
   // TODO Re-write this please.
   //
-  const resolversSeq = [rules.name, rules.type].reduce((acc, rules) => {
-    return rules ? acc.concat(reduceRules(rules)) : acc
-  })
+  const resolversSeq = [rules.name, rules.type].reduce((acc, rulesGroup) => {
+    return rulesGroup ? acc.concat(reduceRules(rulesGroup)) : acc
+  }, [])
+
+  console.log({ resolversSeq })
 
   const result = ifElse(
     hasAnyRules,

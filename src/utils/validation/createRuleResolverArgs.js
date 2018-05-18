@@ -5,7 +5,7 @@ import createPropGetter from '../fieldUtils/createPropGetter'
  * Returns the unified interface of each validation rule resolver
  * arguments Object based on the passed arguments.
  */
-export default function createResolverArgs(args) {
+export default function createRuleResolverArgs(args) {
   const { fieldProps, fields, form } = args
 
   invariant(

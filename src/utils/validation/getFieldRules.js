@@ -26,8 +26,8 @@ export const getRulesBySelector = (selector, fieldRecord, schema) => {
 }
 
 /**
- * Returns the groupped collection of the validation rules
- * applicable to the given field.
+ * Returns the collection of the validation rules relevant to the given
+ * field groupped based on "type" and "name" keys.
  */
 export default function getFieldRules(fieldRecord, schema) {
   return ['type', 'name'].reduce((rules, selector) => {

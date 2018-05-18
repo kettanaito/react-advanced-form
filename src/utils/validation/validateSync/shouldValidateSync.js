@@ -9,6 +9,9 @@ const hasFieldRule = ({ fieldProps }) => fieldProps.rule
 const hasFormRules = (resolverArgs, rules) =>
   rules && (rules.type || rules.name)
 
+/**
+ * Determines the necessity of the synchronous validation.
+ */
 export default anyPass([
   isForced,
   isRequiredField,

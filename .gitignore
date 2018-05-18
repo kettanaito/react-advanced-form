@@ -11,6 +11,7 @@ lib
 # Reserved
 internal
 deprecated
+__*
 
 # Logs
 *.log

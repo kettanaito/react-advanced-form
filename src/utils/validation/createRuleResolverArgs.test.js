@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import { Map } from 'immutable'
 import * as recordUtils from '../recordUtils'
-import createResolverArgs from './createResolverArgs'
+import createRuleResolverArgs from './createRuleResolverArgs'
 
 const fieldProps = recordUtils.createField({ name: 'fieldOne' })
 const checkbox = recordUtils.createField({
@@ -14,19 +14,19 @@ const fields = Map({ fieldOne: fieldProps })
 const form = {}
 
 test('Cannot be called without "fieldProps", "fields" and "form"', () => {
-  expect(createResolverArgs).to.throw()
-  expect(createResolverArgs.bind(this, {})).to.throw()
+  expect(createRuleResolverArgs).to.throw()
+  expect(createRuleResolverArgs.bind(this, {})).to.throw()
 })
 
 test('Adds property based on the field "valuePropName"', () => {
-  expect(createResolverArgs({ fieldProps: checkbox, fields, form }))
+  expect(createRuleResolverArgs({ fieldProps: checkbox, fields, form }))
     .to.be.an('object')
     .that.has.all.keys('get', 'checked', 'fieldProps', 'fields', 'form')
     .which.has.property('checked', true)
 })
 
 test('Adds "get" field props getter automatically', () => {
-  expect(createResolverArgs({ fieldProps, fields, form }))
+  expect(createRuleResolverArgs({ fieldProps, fields, form }))
     .to.be.an('object')
     .that.has.all.keys('get', 'value', 'fieldProps', 'fields', 'form')
     .which.property('get')
@@ -34,7 +34,7 @@ test('Adds "get" field props getter automatically', () => {
 })
 
 test('Omits unknown properties', () => {
-  expect(createResolverArgs({ foo: 'bar', fieldProps, fields, form }))
+  expect(createRuleResolverArgs({ foo: 'bar', fieldProps, fields, form }))
     .to.be.an('object')
     .that.has.all.keys('get', 'value', 'fieldProps', 'fields', 'form')
 })

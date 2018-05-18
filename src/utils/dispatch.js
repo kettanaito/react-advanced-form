@@ -1,14 +1,24 @@
+// @flow
 import { Map } from 'immutable'
 
+type TDispatchContext = {
+  withImmutable: boolean,
+}
+
 /**
- * Dispatches the provided function after applying conditional transformations to its params
- * based on the passed context options.
+ * Dispatches the provided function after applying conditional transformations
+ * to its params based on the passed context options.
  * @param {Function} func
  * @param {Object} args
  * @param {Object} context
  * @param {Object} overrides
  */
-export default function dispatch(func, args, context = {}, overrides = {}) {
+export default function dispatch(
+  func: Function,
+  args: any,
+  context: TDispatchContext = {},
+  overrides: Object = {},
+) {
   const { withImmutable } = context
 
   /* When Immutable args allowed, bypass any transformation */

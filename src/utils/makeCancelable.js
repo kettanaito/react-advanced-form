@@ -1,7 +1,7 @@
+// @flow
 /**
  * Wraps the Promise into another Promise to allow to cancel the original.
  * @param {Promise} promise
- * @flow
  */
 export interface ICancelablePromise<R> {
   itself: Promise<R>;

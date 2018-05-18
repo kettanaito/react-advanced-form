@@ -4,6 +4,8 @@ import createValidationResult from '../createValidationResult'
 import createRejectedRule from '../createRejectedRule'
 
 export default function applyFieldRule(resolverArgs) {
+  console.log('apply field rules...')
+
   const { value, fieldProps } = resolverArgs
   const { rule } = fieldProps
 

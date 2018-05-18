@@ -1,35 +1,43 @@
+// @flow
+import type { TRejectedRule } from '../createRejectedRule'
 import compose from 'ramda/src/compose'
 import prepend from 'ramda/src/prepend'
 
-const namedRuleResolver = (rule, field) => [
-  rule.selector,
-  field[rule.selector],
+type TKeyPathGetter = (rejectedRule: TRejectedRule, field) => string[]
+type TResolvePath = [TRejectedRule, TKeyPathGetter[]]
+
+const namedRuleResolver = (rejectedRule, field) => [
+  rejectedRule.selector,
+  field[rejectedRule.selector],
   'rule',
-  rule.ruleName,
+  rejectedRule.ruleName,
 ]
 
-const resolvingPaths = [
-  function nameResolver(rule, field) {
-    return ['name', field.name, rule.errorType]
+const commonKeyPathGetters: TKeyPathGetter[] = [
+  function nameResolver(rejectedRule, field) {
+    return ['name', field.name, rejectedRule.errorType]
   },
-  function typeResolver(rule, field) {
-    return ['type', field.type, rule.errorType]
+  function typeResolver(rejectedRule, field) {
+    return ['type', field.type, rejectedRule.errorType]
   },
-  function generalResolver(rule, field) {
-    return ['general', rule.errorType]
+  function generalResolver(rejectedRule, field) {
+    return ['general', rejectedRule.errorType]
   },
 ]
 
-const isNamedRule = (rule) => rule.ruleName
-const getStartPos = (rule) => (rule.selector === 'name' ? 0 : 1)
-const getRelevantPaths = (startPos) => resolvingPaths.slice(startPos)
-const getPathsForRule = (rule) => compose(getRelevantPaths, getStartPos)(rule)
+const isNamedRule = (rejectedRule) => rejectedRule.ruleName
+const getStartPos = (rejectedRule) => (rejectedRule.selector === 'name' ? 0 : 1)
+const getRelevantPaths = (startPos) => commonKeyPathGetters.slice(startPos)
+const getPathsForRule = (rejectedRule) =>
+  compose(getRelevantPaths, getStartPos)(rejectedRule)
 
-export default function getResolvePaths(rule) {
-  const originPaths = getPathsForRule(rule)
-  const resolvePaths = isNamedRule(rule)
+export default function getResolvePaths(
+  rejectedRule: TRejectedRule,
+): TResolvePath[] {
+  const originPaths = getPathsForRule(rejectedRule)
+  const keyPathGetters = isNamedRule(rejectedRule)
     ? prepend(namedRuleResolver, originPaths)
     : originPaths
 
-  return [rule, resolvePaths]
+  return [rejectedRule, keyPathGetters]
 }
