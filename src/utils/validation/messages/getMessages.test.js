@@ -4,7 +4,7 @@ import * as recordUtils from '../../recordUtils'
 import createRejectedRule from '../createRejectedRule'
 import getMessages from './getMessages'
 
-const messages = fromJS({
+const messagesSchema = fromJS({
   general: {
     missing: 'General missing',
     invalid: 'General invalid',
@@ -38,7 +38,9 @@ const resolverArgs = {
   fieldProps: fieldOne,
 }
 
-test('Has proper resolving sequence for type-specific named rules', () => {
+// ===========================================================================
+
+test('Resolvers type-specific named rejected rules', () => {
   const rejectedRules = [
     createRejectedRule({
       selector: 'type',
@@ -47,33 +49,63 @@ test('Has proper resolving sequence for type-specific named rules', () => {
     }),
   ]
 
-  const namedRuleMessage = getMessages(rejectedRules, resolverArgs, messages)
+  const namedRuleMessage = getMessages(
+    rejectedRules,
+    resolverArgs,
+    messagesSchema,
+  )
   expect(namedRuleMessage).to.deep.equal([
-    messages.getIn(['type', 'email', 'rule', 'customRule']),
+    messagesSchema.getIn(['type', 'email', 'rule', 'customRule']),
   ])
 
   const typeFallbackMessage = getMessages(
     rejectedRules,
     resolverArgs,
-    messages.deleteIn(['type', 'email', 'rule']),
+    messagesSchema.deleteIn(['type', 'email', 'rule']),
   )
   expect(typeFallbackMessage).to.deep.equal([
-    messages.getIn(['type', 'email', 'invalid']),
+    messagesSchema.getIn(['type', 'email', 'invalid']),
   ])
 
   const generalFallbackMessage = getMessages(
     rejectedRules,
     resolverArgs,
-    messages.deleteIn(['type']),
+    messagesSchema.deleteIn(['type']),
   )
   expect(generalFallbackMessage).to.deep.equal([
-    messages.getIn(['general', 'invalid']),
+    messagesSchema.getIn(['general', 'invalid']),
   ])
 })
 
-// ========================================================================
+// ===========================================================================
 
-test('Has proper resolving sequence for name-specific named rules', () => {
+test('Multiple rejected rules of different resolvers length', () => {
+  const multipleRejectedRules = [
+    createRejectedRule({
+      errorType: 'invalid',
+      selector: 'name',
+      ruleName: 'customRule',
+    }),
+    createRejectedRule({
+      errorType: 'invalid',
+      selector: 'name',
+    }),
+  ]
+
+  const messages = getMessages(
+    multipleRejectedRules,
+    resolverArgs,
+    messagesSchema,
+  )
+
+  expect(messages).to.deep.equal([
+    messagesSchema.getIn(['name', 'fieldOne', 'rule', 'customRule']),
+  ])
+})
+
+// ===========================================================================
+
+test('Resolvers name-specific named rejected rules', () => {
   const rejectedRules = [
     createRejectedRule({
       selector: 'name',
@@ -82,37 +114,41 @@ test('Has proper resolving sequence for name-specific named rules', () => {
     }),
   ]
 
-  const namedRuleMessage = getMessages(rejectedRules, resolverArgs, messages)
+  const namedRuleMessage = getMessages(
+    rejectedRules,
+    resolverArgs,
+    messagesSchema,
+  )
   expect(namedRuleMessage).to.deep.equal([
-    messages.getIn(['name', 'fieldOne', 'rule', 'customRule']),
+    messagesSchema.getIn(['name', 'fieldOne', 'rule', 'customRule']),
   ])
 
   const nameFallbackMessage = getMessages(
     rejectedRules,
     resolverArgs,
-    messages.deleteIn(['name', 'fieldOne', 'rule']),
+    messagesSchema.deleteIn(['name', 'fieldOne', 'rule']),
   )
   expect(nameFallbackMessage).to.deep.equal([
-    messages.getIn(['name', 'fieldOne', 'invalid']),
+    messagesSchema.getIn(['name', 'fieldOne', 'invalid']),
   ])
 
   const typeFallbackMessage = getMessages(
     rejectedRules,
     resolverArgs,
-    messages.deleteIn(['name', 'fieldOne']),
+    messagesSchema.deleteIn(['name', 'fieldOne']),
   )
   expect(typeFallbackMessage).to.deep.equal([
-    messages.getIn(['type', 'email', 'invalid']),
+    messagesSchema.getIn(['type', 'email', 'invalid']),
   ])
 
   const generalFallbackMessage = getMessages(
     rejectedRules,
     resolverArgs,
-    messages.deleteIn(['name', 'fieldOne']).deleteIn(['type', 'email']),
+    messagesSchema.deleteIn(['name', 'fieldOne']).deleteIn(['type', 'email']),
   )
   expect(generalFallbackMessage).to.deep.equal([
-    messages.getIn(['general', 'invalid']),
+    messagesSchema.getIn(['general', 'invalid']),
   ])
 })
 
-test('Fallbacks to the general message when no specific ones found', () => {})
+// test('Fallbacks to the general message when no specific ones found', () => {})

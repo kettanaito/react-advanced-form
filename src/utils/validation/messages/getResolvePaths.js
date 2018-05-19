@@ -1,43 +1,65 @@
 // @flow
 import type { TRejectedRule } from '../createRejectedRule'
+
+import when from 'ramda/src/when'
 import compose from 'ramda/src/compose'
 import prepend from 'ramda/src/prepend'
+import ensureLength from '../../ensureLength'
 
-type TKeyPathGetter = (rejectedRule: TRejectedRule, field) => string[]
-type TResolvePath = [TRejectedRule, TKeyPathGetter[]]
+type TKeyResolver = (rejectedRule: TRejectedRule, field) => string[]
+type TResolvePath = [TRejectedRule, TKeyResolver[]]
 
-const namedRuleResolver = (rejectedRule, field) => [
+const namedRuleResolver = (rejectedRule: TRejectedRule, field) => [
   rejectedRule.selector,
   field[rejectedRule.selector],
   'rule',
   rejectedRule.ruleName,
 ]
 
-const commonKeyPathGetters: TKeyPathGetter[] = [
-  function nameResolver(rejectedRule, field) {
+const commonKeyPathGetters: TKeyResolver[] = [
+  function nameResolver(rejectedRule: TRejectedRule, field) {
     return ['name', field.name, rejectedRule.errorType]
   },
-  function typeResolver(rejectedRule, field) {
+  function typeResolver(rejectedRule: TRejectedRule, field) {
     return ['type', field.type, rejectedRule.errorType]
   },
-  function generalResolver(rejectedRule, field) {
+  function generalResolver(rejectedRule: TRejectedRule, field) {
     return ['general', rejectedRule.errorType]
   },
 ]
 
-const isNamedRule = (rejectedRule) => rejectedRule.ruleName
-const getStartPos = (rejectedRule) => (rejectedRule.selector === 'name' ? 0 : 1)
-const getRelevantPaths = (startPos) => commonKeyPathGetters.slice(startPos)
-const getPathsForRule = (rejectedRule) =>
-  compose(getRelevantPaths, getStartPos)(rejectedRule)
+const isNamedRule = (rejectedRule: TRejectedRule) => {
+  return () => !!rejectedRule.ruleName
+}
+
+/**
+ * Returns the starting position of the key getters relevant
+ * to the given rejected rule. Depending on the rule's selector,
+ * resolving sequence may start at "name" resolver, or the "type" one.
+ */
+const getStartPos = (rejectedRule: TRejectedRule): number => {
+  return rejectedRule.selector === 'name' ? 0 : 1
+}
+
+/**
+ * Returns the list of key getters starting from the given position
+ * in the list of common key getters.
+ */
+const getKeyResolvers = (startPos: number): TKeyResolver[] => {
+  return commonKeyPathGetters.slice(startPos)
+}
+
+const getPathsForRule = (rejectedRule: TRejectedRule) => {
+  return compose(
+    ensureLength(4),
+    when(isNamedRule(rejectedRule), prepend(namedRuleResolver)),
+    getKeyResolvers,
+    getStartPos,
+  )(rejectedRule)
+}
 
 export default function getResolvePaths(
   rejectedRule: TRejectedRule,
 ): TResolvePath[] {
-  const originPaths = getPathsForRule(rejectedRule)
-  const keyPathGetters = isNamedRule(rejectedRule)
-    ? prepend(namedRuleResolver, originPaths)
-    : originPaths
-
-  return [rejectedRule, keyPathGetters]
+  return [rejectedRule, getPathsForRule(rejectedRule)]
 }

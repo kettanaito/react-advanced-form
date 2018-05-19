@@ -1,34 +1,30 @@
-import reduceWhile from 'ramda/src/reduceWhile'
-import dispatch from '../../dispatch'
+import map from 'ramda/src/map'
+import compose from 'ramda/src/compose'
+
 import getResolvePaths from './getResolvePaths'
 import createMessageResolverArgs from './createMessageResolverArgs'
 import resolveMessage from './resolveMessage'
+import pruneMessages from './pruneMessages'
 
-function createResolveIterator(resolverArgs, messagesSchema) {
-  const { fieldProps, form } = resolverArgs
+const createResolveIterator = (resolverArgs, messagesSchema) => {
+  const { fieldProps } = resolverArgs
   const messageResolverArgs = createMessageResolverArgs(resolverArgs)
 
   return ([rule, keyPathGetters]) =>
-    reduceWhile(
-      (message) => !message,
-      (message, keyPathGetter) => {
-        if (message) {
-          return message
-        }
+    map((keyPathGetter) => {
+      if (keyPathGetter === null) {
+        return keyPathGetter
+      }
 
-        const keyPath = keyPathGetter(rule, fieldProps)
-        const resolver = messagesSchema.getIn(keyPath)
-
-        return resolveMessage(resolver, resolverArgs)
-      },
-      null,
-      keyPathGetters,
-    )
+      const keyPath = keyPathGetter(rule, fieldProps)
+      const resolver = messagesSchema.getIn(keyPath)
+      return resolveMessage(resolver, resolverArgs)
+    })(keyPathGetters)
 }
 
 /**
  * Returns the list of error messages relevant to the given rejected rules
- * and messages schema. Abides by the resolving algorithm.
+ * found in the given messages schema. Abides by the resolving algorithm.
  */
 export default function getErrorMessages(
   rejectedRules,
@@ -36,5 +32,10 @@ export default function getErrorMessages(
   messagesSchema,
 ) {
   const resolvePaths = rejectedRules.map(getResolvePaths)
-  return resolvePaths.map(createResolveIterator(resolverArgs, messagesSchema))
+  const messages = compose(
+    pruneMessages,
+    map(createResolveIterator(resolverArgs, messagesSchema)),
+  )(resolvePaths)
+
+  return messages
 }
