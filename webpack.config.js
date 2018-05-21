@@ -41,7 +41,6 @@ module.exports = {
             FormProvider: true,
             Form: true,
             Field: true,
-            Condition: true,
           },
         },
       }),
