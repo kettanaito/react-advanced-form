@@ -6,7 +6,7 @@ import compose from 'ramda/src/compose'
 import prepend from 'ramda/src/prepend'
 import ensureLength from '../../ensureLength'
 
-type TKeyResolver = (rejectedRule: TRejectedRule, field) => string[]
+type TKeyResolver = (rejectedRule: TRejectedRule, field: any) => string[]
 type TResolvePath = [TRejectedRule, TKeyResolver[]]
 
 const namedRuleResolver = (rejectedRule: TRejectedRule, field) => [
@@ -23,7 +23,7 @@ const commonKeyPathGetters: TKeyResolver[] = [
   function typeResolver(rejectedRule: TRejectedRule, field) {
     return ['type', field.type, rejectedRule.errorType]
   },
-  function generalResolver(rejectedRule: TRejectedRule, field) {
+  function generalResolver(rejectedRule: TRejectedRule) {
     return ['general', rejectedRule.errorType]
   },
 ]
