@@ -11,10 +11,7 @@
         [
           "env",
           {
-            "modules": false,
-            "targets": {
-              "browsers": "last 2 versions"
-            }
+            "modules": false
           }
         ],
         "react"
@@ -22,7 +19,8 @@
       "plugins": [
         "transform-export-extensions",
         "transform-class-properties",
-        "transform-object-rest-spread"
+        "transform-object-rest-spread",
+        "transform-flow-strip-types"
       ]
     }
   }
