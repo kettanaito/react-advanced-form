@@ -6,7 +6,6 @@
  */
 import invariant from 'invariant'
 import { Record } from 'immutable'
-import camelize from './camelize'
 
 /**
  * Generates a Field class relative to the given initial props.
@@ -161,18 +160,17 @@ export function resetValidityState(fieldRecord) {
  * @param {Boolean} shouldValidate
  * @returns {Map}
  */
-export function setValidityState(fieldRecord, shouldValidate = true) {
+export function updateValidityState(fieldRecord, shouldValidate = true) {
   if (!shouldValidate) {
     return resetValidityState(fieldRecord)
   }
 
+  const { validated, expected } = fieldRecord
   const value = getValue(fieldRecord)
-  const validated = fieldRecord.get('validated')
-  const expected = fieldRecord.get('expected')
-  const valid = !!value && validated && expected
-  const invalid = validated && !expected
+  const nextValid = !!value && validated && expected
+  const nextInvalid = validated && !expected
 
-  return fieldRecord.set('valid', valid).set('invalid', invalid)
+  return fieldRecord.set('valid', nextValid).set('invalid', nextInvalid)
 }
 
 export function beginValidation(fieldRecord) {
@@ -234,60 +232,4 @@ export function reset(fieldRecord) {
  */
 export function setFocus(fieldRecord, isFocused = true) {
   return fieldRecord.set('focused', isFocused)
-}
-
-//
-//
-//
-
-// 1. validates, returns "expected" and rejected rules
-// 2. updates field Map according to validation result
-// 3. gets error messages according to validation result
-// 4. updates field with error messages
-
-/**
- * Reflects the result of validation to the provided field.
- * @param {ValidationType} type
- * @param {Map} fieldProps
- * @param {ValidationResult} validationResult
- * @param {Boolean} shouldValidate
- * @returns {Map}
- */
-export function reflectValidation({
-  fieldProps,
-  validationResult,
-  shouldValidate,
-}) {
-  console.groupCollapsed('recordUtils.reflectValidation', fieldProps.name)
-  console.log('fieldProps:', fieldProps && fieldProps.toJS())
-  console.log('validation result:', validationResult)
-  console.log('shouldValidate:', shouldValidate)
-
-  const { validators, expected } = validationResult
-  console.log('expected:', expected)
-
-  const validationProps = validators.reduce(
-    (validationState, validatorName) => {
-      const validPropName = camelize('valid', validatorName)
-      const validatedPropName = camelize('validated', validatorName)
-      validationState[validPropName] = expected
-      validationState[validatedPropName] = true
-      return validationState
-    },
-    {},
-  )
-
-  console.log({ validationProps })
-
-  const validatedField = fieldProps
-    .set('validated', true)
-    .set('expected', expected)
-    .merge(validationProps)
-
-  const nextFieldProps = setValidityState(validatedField, shouldValidate)
-
-  console.log('nextFieldProps:', nextFieldProps && nextFieldProps.toJS())
-  console.groupEnd()
-
-  return nextFieldProps
 }
