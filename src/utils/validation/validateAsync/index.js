@@ -8,9 +8,10 @@ export default function validateAsync(resolverArgs, force) {
   console.groupCollapsed('validateAsync', resolverArgs.fieldProps.name)
   console.log({ resolverArgs })
 
-  const result = ifElse(shouldValidateAsync, applyFieldAsyncRule, () =>
-    createValidationResult(true),
-  )(resolverArgs, force)
+  const result = ifElse(shouldValidateAsync, applyFieldAsyncRule, () => null)(
+    resolverArgs,
+    force,
+  )
 
   console.warn('result:', result)
 

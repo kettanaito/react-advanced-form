@@ -36,11 +36,14 @@ import validate from '../utils/validation/validateAndReflect'
  */
 function getInnerRef(element, callback) {
   this.innerRef = element
-  if (callback) callback(element)
+
+  if (callback) {
+    callback(element)
+  }
 }
 
-function filterFields(entry) {
-  return entry.has('fieldPath')
+function filterFields(entity) {
+  return entity.has('fieldPath')
 }
 
 export default class Form extends React.Component {
@@ -106,9 +109,9 @@ export default class Form extends React.Component {
     this.formRules = formUtils.mergeRules(explicitRules, rules)
 
     /**
-     * Define validation messages once, since those should be converted to immutable, which is
-     * an expensive procedure. Moreover, messages are unlikely to change during the component's
-     * lifecycle. It should be safe to store them.
+     * Define validation messages once, since those should be converted to immutable, which
+     * is an expensive procedure. Moreover, messages are unlikely to change during the
+     * component's lifecycle. It should be safe to store them.
      * Note: Messages passed from FormProvider (context messages) are already immutable.
      */
     this.messages = explicitMessages ? fromJS(explicitMessages) : messages
@@ -140,8 +143,9 @@ export default class Form extends React.Component {
 
   /**
    * Maps the field to the state/context.
-   * Passing fields in context gives a benefit of removing an explicit traversing of children
-   * tree, deconstructing and constructing each appropriate child with the attached handler props.
+   * Passing fields in context gives a benefit of removing an explicit traversing of
+   * children tree, deconstructing and constructing each appropriate child with the
+   * attached handler props.
    * @param {Record} fieldProps
    */
   registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
@@ -397,11 +401,11 @@ export default class Form extends React.Component {
 
     /**
      * Handle "onChange" events dispatched by the controlled field.
-     * Controlled field must execute its custom "CustomField.props.onChange" handler since that
-     * is the updater for the source (i.e. state) controlling its value. Internal RAF change handling
-     * must be omitted in that scenario, as it will be bubbled to eventually via
-     * "createField.Field.componentReceiveProps()", when comparing previous and next values of
-     * controlled fields.
+     * Controlled field must execute its custom "CustomField.props.onChange" handler since
+     * that is the updater for the source (i.e. state) controlling its value. Internal
+     * RAF change handling must be omitted in that scenario, as it will be bubbled to
+     * eventually via "createField.Field.componentReceiveProps()", when comparing previous
+     * and next values of controlled fields.
      */
     const isForcedUpdate = event && !(event.nativeEvent || event).isForcedUpdate
     const isControlled = fieldProps.get('controlled')
@@ -412,7 +416,7 @@ export default class Form extends React.Component {
         customChangeHandler,
         'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
           'but got: %s.',
-        fieldProps.get('name'),
+        fieldProps.name,
         customChangeHandler,
       )
 
@@ -432,9 +436,13 @@ export default class Form extends React.Component {
 
     /* Reset the validation state and update the field's value prop */
     const updatedFieldProps = recordUtils.setValue(
-      recordUtils.resetValidationState(fieldProps),
+      recordUtils.updateValidityState(
+        recordUtils.resetValidationState(fieldProps),
+      ),
       nextValue,
     )
+
+    console.log('field record with reset val. state:', updatedFieldProps)
 
     /* Update fields to reflect the updated field value */
     await this.updateFieldsWith(updatedFieldProps)
@@ -474,7 +482,8 @@ export default class Form extends React.Component {
 
       //
       // NOTE
-      // When passed explicitly here, the state of the fields may be outdated for some reason.
+      // When passed explicitly here, the state of the fields may be outdated for
+      // some reason.
       // I think it has to do with the debounce nature of this function call.
       // Internally, "validateField" referenced to the very same fields, but at that moment
       // their entries are up-to-date.
@@ -509,10 +518,11 @@ export default class Form extends React.Component {
 
     /**
      * Call custom "onChange" handler for uncontrolled fields only.
-     * "onChange" callback method acts as an updated function for controlled fields, and as a callback
-     * function for uncontrolled fields. The value update of uncontrolled fields is handled by the Form.
-     * Controlled fields dispatch "onChange" handler at the beginning of this method.
-     * There is no need to dispatch the handler method once more.
+     * "onChange" callback method acts as an updated function for controlled fields,
+     * and as a callback function for uncontrolled fields. The value update of
+     * uncontrolled fields is handled by the Form. Controlled fields dispatch
+     * "onChange" handler at the beginning of this method. There is no need to
+     * dispatch the handler method once more.
      */
     if (!isControlled && customChangeHandler) {
       dispatch(
@@ -571,10 +581,8 @@ export default class Form extends React.Component {
       `Form @ handleFieldBlur @ ${fieldProps.displayFieldPath}`,
     )
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
-    // console.log('should validate', shouldValidate);
     console.groupEnd()
 
-    // if (shouldValidate) {
     /* Indicate that the validation is running */
     const validatingField = recordUtils.beginValidation(fieldProps)
 
@@ -587,7 +595,6 @@ export default class Form extends React.Component {
     /* Reflect the end of the validation */
     nextFieldProps = recordUtils.endValidation(validatedField)
     nextFields = await this.updateFieldsWith(nextFieldProps)
-    // }
 
     /* Call custom onBlur handler */
     const customBlurHandler = nextFieldProps.get('onBlur')
@@ -608,7 +615,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Validates the provided field.
+   * Validates the provided field with the additional options.
    */
   validateField = async (args) => {
     const {
@@ -639,7 +646,6 @@ export default class Form extends React.Component {
     console.groupEnd()
 
     /* Perform the validation */
-    // This "validate" should validate AND reflect
     const validatedField = await validate({
       chain,
       force,
@@ -677,7 +683,6 @@ export default class Form extends React.Component {
 
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(validationSequence)
-
     const isFormValid = validatedFields.every((validatedFieldRecord) => {
       return validatedFieldRecord.expected
     })
@@ -711,9 +716,6 @@ export default class Form extends React.Component {
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
-    //
-    // TODO .clear() which is done by reseting the field record RESETS NAME,TYPE, etc.
-    //
     const nextFields = this.state.fields.map((fieldProps) =>
       recordUtils.reset(fieldProps),
     )
@@ -748,7 +750,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Serializes the fields' values into a plain Object.
+   * Returns an Object of the serialized fields.
    * @returns {Map|Object}
    */
   serialize = () => {
@@ -761,21 +763,25 @@ export default class Form extends React.Component {
    * @param {Event} event
    */
   submit = async (event) => {
-    if (event) event.preventDefault()
+    if (event) {
+      event.preventDefault()
+    }
 
     /* Throw on submit attempt without the "action" prop */
     const { action } = this.props
 
     invariant(
       action,
-      'Cannot submit the form without `action` prop specified explicitly. Expected a function ' +
-        'which returns Promise, but received: %s.',
+      'Cannot submit the form without `action` prop specified explicitly. ' +
+        'Expected a function which returns Promise, but received: %s.',
       action,
     )
 
     /* Ensure form has no unexpected fields and, therefore, should be submitted */
     const shouldSubmit = await this.validate()
-    if (!shouldSubmit) return
+    if (!shouldSubmit) {
+      return
+    }
 
     const { fields } = this.state
     const {
@@ -798,17 +804,18 @@ export default class Form extends React.Component {
     /**
      * Event: Submit has started.
      * The submit is consideres started immediately when the submit button is pressed.
-     * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
-    if (onSubmitStart) dispatch(onSubmitStart, callbackArgs, this.context)
+    if (onSubmitStart) {
+      dispatch(onSubmitStart, callbackArgs, this.context)
+    }
 
     const dispatchedAction = dispatch(action, callbackArgs, this.context)
 
     invariant(
       dispatchedAction && typeof dispatchedAction.then === 'function',
-      'Cannot submit the form. ' +
-        'Expected `action` prop of the Form to return an instance of Promise, but got: %s. Make sure you return a ' +
-        'Promise from your action handler.',
+      'Cannot submit the form. Expected `action` prop of the Form to return ' +
+        'an instance of Promise, but got: %s. Make sure you return a Promise ' +
+        'from your action handler.',
       dispatchedAction,
     )
 

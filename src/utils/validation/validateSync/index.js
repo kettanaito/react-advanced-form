@@ -27,7 +27,7 @@ export default function validateSync(resolverArgs, force) {
   const result = ifElse(
     shouldValidateSync,
     reduceResultsWhile(returnsExpected, rulesChain),
-    () => createValidationResult(true),
+    () => null,
   )(resolverArgs, relevantRules, force)
 
   console.warn('validateSync result:', result)

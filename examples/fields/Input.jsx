@@ -37,7 +37,12 @@ class Input extends React.Component {
           </label>
         )}
 
-        <input id={id || name} className={inputClassNames} {...fieldProps} />
+        <input
+          id={id || name}
+          className={inputClassNames}
+          {...fieldProps}
+          autoComplete="off"
+        />
 
         {hint && <small className="form-text text-muted">{hint}</small>}
 

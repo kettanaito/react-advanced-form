@@ -55,7 +55,6 @@ export default function connectField(options) {
         type: 'text',
         disabled: false,
         required: false,
-        skip: false,
       }
 
       static contextTypes = {
@@ -73,9 +72,10 @@ export default function connectField(options) {
         this.fieldPath = fieldGroup ? [...fieldGroup, name] : [name]
 
         /**
-         * Register the field in the parent Form's state and store its internal record reference (contextProps).
-         * Also, assume the field's contextProps, since they are composed at this moment. There is no need
-         * to wait for the next re-rendering to access them.
+         * Register the field in the parent Form's state and store its internal record
+         * reference (contextProps). Also, assume the field's contextProps, since they
+         * are composed at this moment. There is no need to wait for the next re-rendering
+         * to access them.
          */
         this.contextProps = this.register()
       }
@@ -88,7 +88,9 @@ export default function connectField(options) {
         const value = directProps[valuePropName]
         const contextValue = fields.getIn([...fieldPath, valuePropName])
 
-        console.groupCollapsed(`createField @ register @ ${fieldPath.join('.')}`)
+        console.groupCollapsed(
+          `createField @ register @ ${fieldPath.join('.')}`,
+        )
         console.log('directProps:', Object.assign({}, directProps))
         console.log('value:', value)
         console.log('initial value:', initialValue)
@@ -111,7 +113,9 @@ export default function connectField(options) {
           type: prunedProps.type,
           valuePropName,
           [valuePropName]: registeredValue,
-          initialValue: prunedProps.hasOwnProperty('initialValue') ? initialValue : registeredValue,
+          initialValue: prunedProps.hasOwnProperty('initialValue')
+            ? initialValue
+            : registeredValue,
           controlled: prunedProps.hasOwnProperty('value'), // TODO Checkboxes are always uncontrolled
           required: prunedProps.required,
 
@@ -267,7 +271,11 @@ export default function connectField(options) {
         const { props: prevProps, contextProps: prevContextProps } = this
         this.contextProps = nextContextProps
 
-        const fieldPropsChange = camelize(...nextContextProps.fieldPath, 'props', 'change')
+        const fieldPropsChange = camelize(
+          ...nextContextProps.fieldPath,
+          'props',
+          'change',
+        )
 
         this.context.form.eventEmitter.emit(fieldPropsChange, {
           prevProps,
@@ -281,7 +289,10 @@ export default function connectField(options) {
        * Deletes the field's record upon unmounting.
        */
       componentWillUnmount() {
-        this.context.form.eventEmitter.emit('fieldUnregister', this.contextProps)
+        this.context.form.eventEmitter.emit(
+          'fieldUnregister',
+          this.contextProps,
+        )
       }
 
       /**
@@ -334,7 +345,11 @@ export default function connectField(options) {
        * @param {any} prevValue
        */
       handleChange = (args) => {
-        const { event, nextValue: customNextValue, prevValue: customPrevValue } = args
+        const {
+          event,
+          nextValue: customNextValue,
+          prevValue: customPrevValue,
+        } = args
         const { contextProps } = this
 
         const nextValue = args.hasOwnProperty('nextValue')
@@ -345,7 +360,9 @@ export default function connectField(options) {
           ? customPrevValue
           : contextProps.get(valuePropName)
 
-        console.groupCollapsed(`createField @ handleChange @ ${contextProps.fieldPath.join('.')}`)
+        console.groupCollapsed(
+          `createField @ handleChange @ ${contextProps.fieldPath.join('.')}`,
+        )
         console.log('event', event)
         console.log('valuePropName', valuePropName)
         console.log('contextProps', Object.assign({}, contextProps.toJS()))
@@ -377,18 +394,17 @@ export default function connectField(options) {
 
         /* Reference to the enforced props from the HOC options */
         const enforcedProps = hocOptions.enforceProps({ props, contextProps })
-
-        /* A mirror reference to "contextProps", an internal field record stored in Form's state */
         const fieldState = contextProps.toJS()
         const { valuePropName } = fieldState
+        const value = fieldState.controlled
+          ? props[valuePropName] || ''
+          : fieldState[valuePropName]
 
         /* Props to assign to the field component directly (input, select, etc.) */
         const fieldProps = {
           name: fieldState.name,
           type: fieldState.type,
-          [valuePropName]: fieldState.controlled
-            ? props[valuePropName] || ''
-            : fieldState[valuePropName],
+          [valuePropName]: value,
           required: fieldState.required,
           disabled: this.props.disabled,
 
