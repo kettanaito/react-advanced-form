@@ -2,14 +2,14 @@
 import type { TRejectedRule } from './createRejectedRule'
 import enforceArray from '../enforceArray'
 
-type TExtraProps = {
-  [propName: string]: any,
+type TExtraParams = {
+  [paramName: string]: any,
 }
 
 export type TValidationResult = {
   expected: boolean,
   rejectedRules: TRejectedRule[],
-  extra?: TExtraProps,
+  extra?: TExtraParams,
 }
 
 /**
@@ -21,7 +21,7 @@ export type TValidationResult = {
 export default function createValidationResult(
   expected: boolean,
   rejectedRules: TRejectedRule[],
-  extra: TExtraProps,
+  extra: TExtraParams,
 ): TValidationResult {
   return {
     expected,

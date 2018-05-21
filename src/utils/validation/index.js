@@ -10,15 +10,15 @@ const defaultValidatorsChain = [validateSync, validateAsync]
  * Returns the validation result.
  */
 export default function validate(args) {
-  const { chain, force } = args
+  const { force, chain } = args
   const resolverArgs = createRuleResolverArgs(args)
   const validatorsChain = chain || defaultValidatorsChain
 
   console.groupCollapsed(`validate @ ${args.fieldProps.displayFieldPath}`)
-  console.log({ args })
+  console.log('validate args:', args)
+  console.log('resolverArgs:', resolverArgs)
   console.log('validators chain:', validatorsChain)
   console.log('reducing validators...')
-  console.log({ resolverArgs })
 
   const validationResult = reduceResultsWhile(returnsExpected, validatorsChain)(
     resolverArgs,

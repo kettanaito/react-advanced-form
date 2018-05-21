@@ -1,15 +1,14 @@
 // @flow
-
 export type TRuleSelector = 'type' | 'name'
 export type TRuleName = string | void
 
-type TCreateRejectedRuleArgs = {
+export type TRejectedRule = {
   errorType: string,
   selector: TRuleSelector,
   ruleName: TRuleName,
 }
 
-export type TRejectedRule = {
+type TCreateRejectedRuleArgs = {
   errorType: string,
   selector: TRuleSelector,
   ruleName: TRuleName,

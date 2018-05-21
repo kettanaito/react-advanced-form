@@ -5,28 +5,26 @@ import createValidationResult from '../createValidationResult'
 import applyRule from '../applyRule'
 
 /**
- * Reduces the array of rules into the array of functions
- * that return respective rule's resolver functions.
+ * Reduces the array of rules declarations into the array
+ * of functions that return their respective resolver.
  */
 function reduceRules(rules) {
-  return (resolverArgs) => {
-    return reduceResultsWhile(
-      always,
-      rules.map((rule) => {
-        return (args) => applyRule(rule, args)
-      }),
-    )(resolverArgs)
-  }
+  return reduceResultsWhile(
+    always,
+    rules.map((rule) => {
+      return (args) => applyRule(rule, args)
+    }),
+  )
 }
 
-export default function applyFormRules(validatorArgs) {
-  console.log('applyFormRules', { validatorArgs })
+export default function applyFormRules(resolverArgs) {
+  console.log('applyFormRules', { resolverArgs })
   console.groupCollapsed(
-    `applyFormRules @ ${validatorArgs.fieldProps.displayFieldPath}`,
+    `applyFormRules @ ${resolverArgs.fieldProps.displayFieldPath}`,
   )
-  console.log({ validatorArgs })
+  console.log({ resolverArgs })
 
-  const { fieldProps, form } = validatorArgs
+  const { fieldProps, form } = resolverArgs
   const { rxRules } = form.state
   const rules = getFieldRules(fieldProps, rxRules)
 
@@ -47,7 +45,7 @@ export default function applyFormRules(validatorArgs) {
     hasAnyRules,
     reduceResultsWhile(returnsExpected, resolversSeq),
     () => createValidationResult(true),
-  )(validatorArgs)
+  )(resolverArgs)
 
   console.warn('applyFormRules result:', result)
   console.groupEnd()

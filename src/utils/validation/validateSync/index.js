@@ -8,6 +8,9 @@ import ensureValue from './ensureValue'
 import applyFieldRule from './applyFieldRule'
 import applyFormRules from './applyFormRules'
 
+/* Synchronous validation rules chain */
+const rulesChain = [ensureValue, applyFieldRule, applyFormRules]
+
 export default function validateSync(resolverArgs, force) {
   console.group('validateSync', resolverArgs.fieldProps.displayFieldPath)
 
@@ -16,14 +19,14 @@ export default function validateSync(resolverArgs, force) {
   const relevantRules = getFieldRules(fieldProps, rxRules)
 
   console.log('running validators sequence...')
+  console.warn(
+    'should validate?',
+    shouldValidateSync(resolverArgs, relevantRules, force),
+  )
 
   const result = ifElse(
     shouldValidateSync,
-    reduceResultsWhile(returnsExpected, [
-      ensureValue,
-      applyFieldRule,
-      applyFormRules,
-    ]),
+    reduceResultsWhile(returnsExpected, rulesChain),
     () => createValidationResult(true),
   )(resolverArgs, relevantRules, force)
 

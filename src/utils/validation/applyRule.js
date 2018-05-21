@@ -4,6 +4,9 @@ import applyResolver from './applyResolver'
 import createRejectedRule from './createRejectedRule'
 import createValidationResult from './createValidationResult'
 
+/**
+ * Executes the given resolver function and returns the validation result.
+ */
 export default function applyRule(rule, resolverArgs) {
   invariant(
     rule && typeof rule === 'object',
@@ -13,8 +16,6 @@ export default function applyRule(rule, resolverArgs) {
   )
 
   const { name, selector, resolver, errorType } = rule
-
-  /* Execute the resolver function */
   const expected = applyResolver(resolver, resolverArgs)
 
   /* Create rejected rules */
