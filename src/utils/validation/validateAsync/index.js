@@ -1,5 +1,4 @@
 import ifElse from 'ramda/src/ifElse'
-import createValidationResult from '../createValidationResult'
 import createValidatorResult from '../createValidatorResult'
 import shouldValidateAsync from './shouldValidateAsync'
 import applyFieldAsyncRule from './applyFieldAsyncRule'
