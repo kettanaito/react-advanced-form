@@ -21,21 +21,32 @@ const rules = {
   },
 }
 
+const messages = {
+  general: {
+    invalid: 'General invalid',
+  },
+  name: {
+    fieldOne: {
+      invalid: 'Must not equal to "foo"!',
+    },
+  },
+}
+
 export default class FormPropsRules extends React.Component {
   render() {
     return (
-      <Form rules={rules}>
+      <Form rules={rules} messages={messages}>
         <Input
           {...this.props}
           name="fieldOne"
           label="Field one"
           hint="Must be more than 4 characters and not equal to `foo`"
         />
-        <Input
+        {/* <Input
           name="fieldTwo"
           label="Field two"
           hint="Valid when equals to `fieldOne` value"
-        />
+        /> */}
       </Form>
     )
   }
