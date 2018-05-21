@@ -13,6 +13,7 @@ export default function validateAsync(resolverArgs, force) {
   )
 
   console.warn('result:', result)
+  console.groupEnd()
 
   return createValidatorResult('async', result)
 }
