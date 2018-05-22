@@ -1,28 +1,16 @@
-import errorTypes from '../errorTypes'
-import applyResolver from '../applyResolver'
-import createValidationResult from '../createValidationResult'
-import createRejectedRule from '../createRejectedRule'
+import * as recordUtils from '../../recordUtils'
+import applyRule from '../applyRule'
 
-export default function applyFieldRule(resolverArgs) {
-  console.log('apply field rules...')
+export default function applyFieldRule(fieldRule) {
+  return (resolverArgs) => {
+    console.log('apply field rules...')
 
-  const { value, fieldProps } = resolverArgs
-  const { rule } = fieldProps
+    const fieldValue = recordUtils.getValue(resolverArgs.fieldProps)
+    const resolver =
+      typeof fieldRule === 'function'
+        ? fieldRule
+        : () => fieldRule.test(fieldValue)
 
-  if (!rule) {
-    return createValidationResult(true)
+    return applyRule({ resolver }, resolverArgs)
   }
-
-  const expected =
-    typeof rule === 'function'
-      ? applyResolver(rule, resolverArgs)
-      : rule.test(value)
-
-  const rejectedRule = expected
-    ? undefined
-    : createRejectedRule({
-        errorType: errorTypes.invalid,
-      })
-
-  return createValidationResult(expected, rejectedRule)
 }

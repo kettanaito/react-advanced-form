@@ -436,7 +436,7 @@ export default class Form extends React.Component {
 
     /* Reset the validation state and update the field's value prop */
     const updatedFieldProps = recordUtils.setValue(
-      recordUtils.updateValidityState(
+      recordUtils.resetValidityState(
         recordUtils.resetValidationState(fieldProps),
       ),
       nextValue,

@@ -1,12 +1,11 @@
-import ifElse from 'ramda/src/ifElse'
+import listOf from '../../listOf'
+import addWhen from '../../addWhen'
 import { always, returnsExpected, reduceResultsWhile } from '../reduceWhile'
-import getFieldRules from '../getFieldRules'
-import createValidationResult from '../createValidationResult'
 import applyRule from '../applyRule'
 
 /**
  * Reduces the array of rules declarations into the array
- * of functions that return their respective resolver.
+ * of functions that return their respective resolvers.
  */
 function reduceRules(rules) {
   return reduceResultsWhile(
@@ -17,38 +16,27 @@ function reduceRules(rules) {
   )
 }
 
-export default function applyFormRules(resolverArgs) {
-  console.log('applyFormRules', { resolverArgs })
-  console.groupCollapsed(
-    `applyFormRules @ ${resolverArgs.fieldProps.displayFieldPath}`,
-  )
-  console.log({ resolverArgs })
+export default function applyFormRules(rules) {
+  return (resolverArgs) => {
+    console.log('applyFormRules', { resolverArgs })
+    console.groupCollapsed(
+      `applyFormRules @ ${resolverArgs.fieldProps.displayFieldPath}`,
+    )
+    console.log({ resolverArgs })
 
-  const { fieldProps, form } = resolverArgs
-  const { rxRules } = form.state
-  const rules = getFieldRules(fieldProps, rxRules)
+    const hasNameRules = () => rules.name
+    const hasTypeRules = () => rules.type
 
-  console.log({ rules })
+    const rulesList = listOf(
+      addWhen(hasNameRules, reduceRules),
+      addWhen(hasTypeRules, reduceRules),
+    )(resolverArgs)
 
-  const hasAnyRules = () => rules.name || rules.type
+    const result = reduceResultsWhile(returnsExpected, rulesList)(resolverArgs)
 
-  //
-  // TODO Re-write this please.
-  //
-  const resolversSeq = [rules.name, rules.type].reduce((acc, rulesGroup) => {
-    return rulesGroup ? acc.concat(reduceRules(rulesGroup)) : acc
-  }, [])
+    console.warn('applyFormRules result:', result)
+    console.groupEnd()
 
-  console.log({ resolversSeq })
-
-  const result = ifElse(
-    hasAnyRules,
-    reduceResultsWhile(returnsExpected, resolversSeq),
-    () => createValidationResult(true),
-  )(resolverArgs)
-
-  console.warn('applyFormRules result:', result)
-  console.groupEnd()
-
-  return result
+    return result
+  }
 }

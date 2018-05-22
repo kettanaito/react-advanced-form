@@ -1,20 +1,13 @@
-import invariant from 'invariant'
 import errorTypes from './errorTypes'
 import applyResolver from './applyResolver'
 import createRejectedRule from './createRejectedRule'
 import createValidationResult from './createValidationResult'
 
 /**
- * Executes the given resolver function and returns the validation result.
+ * Executes the given resolver function with the given arguments
+ * and returns the validation result.
  */
 export default function applyRule(rule, resolverArgs) {
-  invariant(
-    rule && typeof rule === 'object',
-    'Failed to apply the rule to `%s` field. Expected the rule to be a rule Object, but got: %s.',
-    resolverArgs.fieldProps.displayFieldPath,
-    rule,
-  )
-
   const { name, selector, resolver, errorType } = rule
   const expected = applyResolver(resolver, resolverArgs)
 

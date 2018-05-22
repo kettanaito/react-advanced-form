@@ -12,7 +12,7 @@ import { Record } from 'immutable'
  * Abstraction over a simple Record in order to insert field-specific
  * properties to it (i.e. "valuePropName", "checked", etc.).
  */
-function generateFieldClass(initialProps) {
+const generateFieldClass = (initialProps) => {
   const { valuePropName } = initialProps
   const value = initialProps[valuePropName]
 
@@ -67,8 +67,6 @@ function generateFieldClass(initialProps) {
     'FieldRecord',
   )
 
-  // console.log('composed class:', new FieldRecord().toJS())
-
   return class Field extends FieldRecord {
     get fieldPath() {
       const fieldGroup = this.fieldGroup || []
@@ -86,7 +84,7 @@ function generateFieldClass(initialProps) {
  * @param {Object} initialProps
  * @returns {Field}
  */
-export function createField(initialProps) {
+export const createField = (initialProps) => {
   invariant(
     initialProps,
     'Cannot create a Field record: expected initial props, but got: %s',
@@ -100,7 +98,6 @@ export function createField(initialProps) {
 
   const FieldRecord = generateFieldClass(initialProps)
   const instance = new FieldRecord(initialProps)
-  // console.warn('created field record:', instance)
 
   return instance
 }
@@ -110,7 +107,7 @@ export function createField(initialProps) {
  * @param {Field} fieldRecord
  * @param {Map} collection
  */
-export function updateCollectionWith(fieldRecord, collection) {
+export const updateCollectionWith = (fieldRecord, collection) => {
   return collection.setIn(fieldRecord.fieldPath, fieldRecord)
 }
 
@@ -119,7 +116,7 @@ export function updateCollectionWith(fieldRecord, collection) {
  * @param {Field} fieldRecord
  * @returns {any}
  */
-export function getValue(fieldRecord) {
+export const getValue = (fieldRecord) => {
   return fieldRecord.get(fieldRecord.get('valuePropName'))
 }
 
@@ -138,7 +135,7 @@ export function setValue(fieldRecord, nextValue) {
  * @param {Map} fieldRecord
  * @param {???} errors
  */
-export function setErrors(fieldRecord, errors = undefined) {
+export const setErrors = (fieldRecord, errors = undefined) => {
   /* Allow "null" as explicit empty "errors" value */
   return typeof errors !== 'undefined'
     ? fieldRecord.set('errors', errors)
@@ -150,7 +147,7 @@ export function setErrors(fieldRecord, errors = undefined) {
  * @param {Map} fieldRecord
  * @returns {Map}
  */
-export function resetValidityState(fieldRecord) {
+export const resetValidityState = (fieldRecord) => {
   return fieldRecord.set('valid', false).set('invalid', false)
 }
 
@@ -160,7 +157,7 @@ export function resetValidityState(fieldRecord) {
  * @param {Boolean} shouldValidate
  * @returns {Map}
  */
-export function updateValidityState(fieldRecord, shouldValidate = true) {
+export const updateValidityState = (fieldRecord, shouldValidate = true) => {
   if (!shouldValidate) {
     return resetValidityState(fieldRecord)
   }
@@ -173,11 +170,11 @@ export function updateValidityState(fieldRecord, shouldValidate = true) {
   return fieldRecord.set('valid', nextValid).set('invalid', nextInvalid)
 }
 
-export function beginValidation(fieldRecord) {
+export const beginValidation = (fieldRecord) => {
   return resetValidityState(setErrors(fieldRecord, null))
 }
 
-export function endValidation(fieldRecord) {
+export const endValidation = (fieldRecord) => {
   return fieldRecord.set('focused', false).set('validating', false)
 }
 
@@ -186,7 +183,7 @@ export function endValidation(fieldRecord) {
  * @param {Map} fieldRecord
  * @returns {Map}
  */
-export function resetValidationState(fieldRecord) {
+export const resetValidationState = (fieldRecord) => {
   return fieldRecord
     .set('validating', false)
     .set('validated', false)
@@ -201,15 +198,8 @@ export function resetValidationState(fieldRecord) {
  * @param {Map} fieldRecord
  * @returns {Map}
  */
-export function reset(fieldRecord) {
-  const resetRecord = fieldRecord.clear()
-
-  // console.groupCollapsed('recordUtils @ reset @', fieldRecord.name);
-  // console.log('initial record:', fieldRecord && fieldRecord.toJS());
-  // console.warn('reset record:', resetRecord && resetRecord.toJS());
-  // console.groupEnd();
-
-  return resetRecord
+export const reset = (fieldRecord) => {
+  return fieldRecord.clear()
 
   // return resetValidationState(
   //   resetValidityState(
@@ -230,6 +220,6 @@ export function reset(fieldRecord) {
  * @param {Boolean} isFocused
  * @returns {Map}
  */
-export function setFocus(fieldRecord, isFocused = true) {
+export const setFocus = (fieldRecord, isFocused = true) => {
   return fieldRecord.set('focused', isFocused)
 }
