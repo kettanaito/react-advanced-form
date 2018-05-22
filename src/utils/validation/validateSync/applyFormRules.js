@@ -1,6 +1,10 @@
 import listOf from '../../listOf'
 import addWhen from '../../addWhen'
-import { always, returnsExpected, reduceResultsWhile } from '../reduceWhile'
+import {
+  returnsExpected,
+  reduceResults,
+  reduceResultsWhile,
+} from '../../reduceWhile'
 import applyRule from '../applyRule'
 
 /**
@@ -8,8 +12,7 @@ import applyRule from '../applyRule'
  * of functions that return their respective resolvers.
  */
 function reduceRules(rules) {
-  return reduceResultsWhile(
-    always,
+  return reduceResults(
     rules.map((rule) => {
       return (args) => applyRule(rule, args)
     }),

@@ -1,4 +1,4 @@
-import { returnsExpected, reduceResultsWhile } from '../reduceWhile'
+import { returnsExpected, reduceResultsWhile } from '../../reduceWhile'
 import getFieldRules from '../getFieldRules'
 import createValidatorResult from '../createValidatorResult'
 import shouldValidateSync from './shouldValidateSync'
