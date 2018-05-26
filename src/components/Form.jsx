@@ -76,7 +76,7 @@ export default class Form extends React.Component {
     dirty: false,
   }
 
-  /* Context which is accepted by Form */
+  /* Context accepted by the Form */
   static contextTypes = {
     rules: CustomPropTypes.Map,
     messages: CustomPropTypes.Map,
@@ -84,7 +84,7 @@ export default class Form extends React.Component {
     withImmutable: PropTypes.bool,
   }
 
-  /* Context which Form passes to Fields */
+  /* Context propagated to the fields */
   static childContextTypes = {
     fields: CustomPropTypes.Map.isRequired,
     form: PropTypes.object.isRequired,
@@ -109,9 +109,10 @@ export default class Form extends React.Component {
     this.formRules = formUtils.mergeRules(explicitRules, rules)
 
     /**
-     * Define validation messages once, since those should be converted to immutable, which
-     * is an expensive procedure. Moreover, messages are unlikely to change during the
-     * component's lifecycle. It should be safe to store them.
+     * Define validation messages once, since those should be converted
+     * to immutable, which is an expensive procedure. Moreover, messages
+     * are unlikely to change during the component's lifecycle. It should
+     * be safe to store them.
      * Note: Messages passed from FormProvider (context messages) are already immutable.
      */
     this.messages = explicitMessages ? fromJS(explicitMessages) : messages
@@ -197,9 +198,9 @@ export default class Form extends React.Component {
 
     /**
      * Synchronize the field record with the field props.
-     * Create a props change observer to keep field's record in sync with the props changes
-     * of the respective field component. Only the changes in the props relative to the record
-     * should be observed and synchronized.
+     * Create a props change observer to keep field's record in sync with
+     * the props changes of the respective field component. Only the changes
+     * in the props relative to the record should be observed and synchronized.
      */
     rxUtils
       .createPropsObserver({
@@ -226,9 +227,10 @@ export default class Form extends React.Component {
     console.log('props observers created!')
 
     /**
-     * Analyze the rules relevant to the registered field and create reactive subscriptions
-     * to resolve them once their dependencies update. Returns the Map of the recorded
-     * formatted rules. That Map is later used during the sync validation as the rules source.
+     * Analyze the rules relevant to the registered field and create
+     * reactive subscriptions to resolve them once their dependencies
+     * update. Returns the Map of the recorded formatted rules.
+     * That Map is later used during the sync validation as the rules source.
      */
     const nextRxRules = rxUtils.createRulesSubscriptions({
       fieldProps,
@@ -362,13 +364,13 @@ export default class Form extends React.Component {
     const nextFields = await this.updateFieldsWith(nextFieldProps)
 
     /* Call custom onFocus handler */
-    const customFocusHandler = fieldProps.get('onFocus')
-    if (!customFocusHandler) {
+    const onFocusCallback = fieldProps.get('onFocus')
+    if (!onFocusCallback) {
       return
     }
 
     dispatch(
-      customFocusHandler,
+      onFocusCallback,
       {
         event,
         fieldProps: nextFieldProps,
@@ -561,13 +563,14 @@ export default class Form extends React.Component {
 
     /**
      * Determine whether the validation is needed.
-     * Also, determine a type of the validation. In case the field has been validated sync
-     * and is valid sync, it's ready to be validated async (if any async validation is present).
-     * However, if the field hasn't been validated sync yet (hasn't been touched), first require
-     * sync validation. When the latter fails, user will be prompted to change the value of the
-     * field. Changing the value resets the "async" validation state as well. Hence, when the
-     * user will pass sync validation, upon blurring out the field, the validation type will
-     * be "async".
+     * Also, determine a type of the validation. In case the field has been
+     * validated sync and is valid sync, it's ready to be validated async
+     * (if any async validation is present). However, if the field hasn't
+     * been validated sync yet (hasn't been touched), first require sync
+     * validation. When the latter fails, user will be prompted to change the
+     * value of the field. Changing the value resets the "async" validation
+     * state as well. Hence, when the user will pass sync validation, upon
+     * blurring out the field, the validation type will be "async".
      */
     //
     //
@@ -583,7 +586,7 @@ export default class Form extends React.Component {
     console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
     console.groupEnd()
 
-    /* Indicate that the validation is running */
+    /* Indicate the beginning of the validation */
     const validatingField = recordUtils.beginValidation(fieldProps)
 
     /* Validate the field */
@@ -597,13 +600,13 @@ export default class Form extends React.Component {
     nextFields = await this.updateFieldsWith(nextFieldProps)
 
     /* Call custom onBlur handler */
-    const customBlurHandler = nextFieldProps.get('onBlur')
-    if (!customBlurHandler) {
+    const onBlurCallback = nextFieldProps.get('onBlur')
+    if (!onBlurCallback) {
       return
     }
 
     dispatch(
-      customBlurHandler,
+      onBlurCallback,
       {
         event,
         fieldProps: nextFieldProps,
