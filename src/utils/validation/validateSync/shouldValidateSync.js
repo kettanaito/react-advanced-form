@@ -1,5 +1,6 @@
 import allPass from 'ramda/src/allPass'
 import anyPass from 'ramda/src/anyPass'
+import * as recordUtils from '../../recordUtils'
 
 const isForced = (resolverArgs, rules, force) => {
   console.log('shouldValidate, isForced?', force)
@@ -7,11 +8,8 @@ const isForced = (resolverArgs, rules, force) => {
 }
 
 const hasValue = ({ fieldProps }) => {
-  console.log(
-    'shouldValidate, has value?',
-    !!fieldProps[fieldProps.valuePropName],
-  )
-  return !!fieldProps[fieldProps.valuePropName]
+  console.log('shouldValidate, has value?', !!recordUtils.getValue(fieldProps))
+  return !!recordUtils.getValue(fieldProps)
 }
 
 const notValidated = ({ fieldProps }) => {
