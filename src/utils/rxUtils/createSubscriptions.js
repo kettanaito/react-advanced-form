@@ -25,8 +25,10 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
     makeObservable(resolver, resolverArgs, {
       initialCall: true,
       subscribe({ nextContextProps, shouldValidate = true }) {
+        const { fields } = form.state
         const { fieldPath: refFieldPath } = nextContextProps
-        const nextFields = form.state.fields.set(refFieldPath, nextContextProps)
+        const nextFieldProps = fields.getIn(subscriberFieldPath)
+        const nextFields = fields.set(refFieldPath, nextContextProps)
         const nextResolverArgs = createRuleResolverArgs({
           fieldProps,
           fields: nextFields,
@@ -40,36 +42,38 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
         const nextPropValue = dispatch(resolver, nextResolverArgs, form.context)
 
         console.warn(
-          'Should update `%s` of `%s` to `%s',
+          'Should update `%s` of `%s` to `%s`',
           rxPropName,
           subscriberFieldPath.join('.'),
           nextPropValue,
         )
-        console.log('shouldvalidate?', shouldValidate)
+        console.log('shouldValidate?', shouldValidate)
 
         /* Set the next value of reactive prop on the respective field record */
-        const nextFieldProps = fieldProps.set(rxPropName, nextPropValue)
+        const updatedFieldProps = nextFieldProps.set(rxPropName, nextPropValue)
+        const updatedFields = nextFields.setIn(
+          subscriberFieldPath,
+          updatedFieldProps,
+        )
 
-        console.log('nextFieldProps', nextFieldProps && nextFieldProps.toJS())
+        console.log(
+          'updatedFieldProps',
+          updatedFieldProps && updatedFieldProps.toJS(),
+        )
 
         if (shouldValidate) {
           return form.validateField({
             force: true,
-            fieldProps: nextFieldProps,
-            fields: nextFields,
+            forceProps: true,
+            fieldProps: updatedFieldProps
+              .set('valid', false)
+              .set('invalid', false),
+            fields: updatedFields,
             form,
           })
-
-          // form.validateField({
-          //   force: true, // TODO This must force validation even if "shouldValidate" rejects
-          //   fieldPath: subscriberFieldPath,
-          //   fieldProps: nextFieldProps,
-          //   forceProps: true,
-          //   fields: nextFields
-          // });
         }
 
-        return form.updateFieldsWith(nextFieldProps)
+        return form.updateFieldsWith(updatedFieldProps)
       },
     })
   })

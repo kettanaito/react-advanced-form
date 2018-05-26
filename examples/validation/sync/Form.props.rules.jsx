@@ -40,7 +40,7 @@ export default class FormPropsRules extends React.Component {
           {...this.props}
           name="fieldOne"
           label="Field one"
-          hint="Must be more than 4 characters and not equal to `foo`"
+          hint="Must be more than 2 characters and not equal to `foo`"
         />
         <Input
           name="fieldTwo"
