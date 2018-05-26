@@ -1,11 +1,13 @@
 import errorTypes from '../errorTypes'
 import applyRule from '../applyRule'
 
-export default function ensureValue(resolverArgs) {
-  const rule = {
-    errorType: errorTypes.missing,
-    resolver: ({ fieldProps }) => !!fieldProps.value,
-  }
+export default function ensureValue() {
+  return (resolverArgs) => {
+    const rule = {
+      errorType: errorTypes.missing,
+      resolver: ({ fieldProps }) => !!fieldProps.value,
+    }
 
-  return applyRule(rule, resolverArgs)
+    return applyRule(rule, resolverArgs)
+  }
 }

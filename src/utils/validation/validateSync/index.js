@@ -22,7 +22,6 @@ export default function validateSync(resolverArgs, force) {
   //
   const should = shouldValidateSync(resolverArgs, relevantFormRules, force)
 
-  console.log('running validators sequence...')
   console.warn('should validate?', should)
 
   const isRequired = ({ fieldProps }) => fieldProps.required
