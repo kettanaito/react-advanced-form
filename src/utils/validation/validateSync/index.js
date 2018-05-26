@@ -1,13 +1,15 @@
+import listOf from '../../listOf'
+import addWhen from '../../addWhen'
+import isset from '../../isset'
 import { returnsExpected, reduceResultsWhile } from '../../reduceWhile'
 import getFieldRules from '../getFieldRules'
 import createValidatorResult from '../createValidatorResult'
 import shouldValidateSync from './shouldValidateSync'
-
-import listOf from '../../listOf'
-import addWhen from '../../addWhen'
 import ensureValue from './ensureValue'
 import applyFieldRule from './applyFieldRule'
 import applyFormRules from './applyFormRules'
+
+const hasFormRules = (rules) => rules && Object.keys(rules).length > 0
 
 export default function validateSync(resolverArgs, force) {
   console.group('validateSync', resolverArgs.fieldProps.displayFieldPath)
@@ -22,21 +24,19 @@ export default function validateSync(resolverArgs, force) {
   //
   const should = shouldValidateSync(resolverArgs, relevantFormRules, force)
 
+  console.log('relevantFormRules:', relevantFormRules)
   console.warn('should validate?', should)
 
-  const isRequired = ({ fieldProps }) => fieldProps.required
-  const hasFieldRule = ({ fieldProps }) => fieldProps.rule
-  const hasFormRules = () => relevantFormRules
-
   const rulesList = listOf(
-    addWhen(isRequired, ensureValue),
-    addWhen(hasFieldRule, applyFieldRule),
-    addWhen(hasFormRules, applyFormRules),
+    addWhen(fieldProps.required, isset, ensureValue),
+    addWhen(fieldProps.rule, isset, applyFieldRule),
+    addWhen(relevantFormRules, hasFormRules, applyFormRules),
   )(resolverArgs)
 
-  const result = should
-    ? reduceResultsWhile(returnsExpected, rulesList)(resolverArgs)
-    : null
+  const result =
+    should && rulesList.length > 0
+      ? reduceResultsWhile(returnsExpected, rulesList)(resolverArgs)
+      : null
 
   console.warn('validateSync result:', result)
   console.groupEnd()

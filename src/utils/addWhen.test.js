@@ -1,24 +1,21 @@
 import { expect } from 'chai'
+import isset from './isset'
 import addWhen from './addWhen'
 
-const predicate = (num) => num
-
-test('Propagates the return from "predicate" when it is satisfied', () => {
-  const func = addWhen(predicate, (num) => {
+test('Propagates the given source to the function when predicate resolves', () => {
+  const func = addWhen(5, isset, (num) => {
     expect(num).to.equal(5)
     return num * 2
   })
 
-  const res = func(5)
+  const res = func()
   expect(res).to.equal(10)
 })
 
-test('Omits function when "predicate" is unsatisfied', () => {
-  const func = addWhen(predicate, (num) => {
-    expect(num).to.be.false
-    return num * 2
+test('Omits function call when predicate is rejected', () => {
+  const func = addWhen(null, isset, (num) => {
+    throw new Error('I should not be called!')
   })
 
-  const res = func(false)
-  expect(res).to.be.false
+  func()
 })

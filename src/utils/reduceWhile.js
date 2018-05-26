@@ -1,11 +1,7 @@
 import reduceWhile from 'ramda/src/reduceWhile'
 
-export const returnsExpected = (reducedResult, foo) => {
-  const { expected } = reducedResult
-  console.warn('returnsExpected:', reducedResult, foo)
-  console.log('expected:', expected)
-
-  return expected
+export const returnsExpected = (reducedResult) => {
+  return reducedResult.expected
 }
 
 const getInitialState = () => ({
@@ -40,14 +36,10 @@ const createReducer = (...args) => {
       : prevRejectedRules
 
     const nextAcc = {
-      validators: nextValidators,
       expected: nextExpected,
       rejectedRules: nextRejectedRules,
+      validators: nextValidators,
     }
-
-    // acc.validators = nextValidators
-    // acc.expected = nextExpected
-    // acc.rejectedRules = nextRejectedRules
 
     console.log('returning "nextAcc":', nextAcc)
 
@@ -72,8 +64,6 @@ export const reduceResults = (funcs) => {
  */
 export const reduceResultsWhile = (predicate, funcs) => {
   return (...args) => {
-    console.log('creating reducerWhile for funcs:', funcs)
-
     return reduceWhile(
       predicate,
       createReducer(...args),

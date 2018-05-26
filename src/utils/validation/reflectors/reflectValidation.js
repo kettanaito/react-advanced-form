@@ -1,4 +1,3 @@
-import { Map } from 'immutable'
 import camelize from '../../camelize'
 import * as recordUtils from '../../recordUtils'
 import getMessages from '../messages/getMessages'
@@ -12,7 +11,7 @@ export default function reflectValidation(
   console.log('validationResult', validationResult)
 
   const { fieldProps, form } = resolverArgs
-  const { validators, expected, rejectedRules } = validationResult
+  const { validators, expected } = validationResult
   const errorMessages = getMessages(
     validationResult,
     resolverArgs,
@@ -24,16 +23,19 @@ export default function reflectValidation(
   const validationProps = validators.reduce((props, validatorName) => {
     const validPropName = camelize('valid', validatorName)
     const validatedPropName = camelize('validated', validatorName)
-    return props.set(validPropName, expected).set(validatedPropName, true)
-  }, Map())
+    return Object.assign({}, props, {
+      [validatedPropName]: true,
+      [validPropName]: expected,
+    })
+  }, {})
 
   const validatedField = fieldProps
     .set('validated', true)
     .set('expected', expected)
     .merge(validationProps)
 
-  const f = recordUtils.updateValidityState(validatedField, shouldValidate)
-  const n = recordUtils.setErrors(f, errorMessages)
-
-  return n
+  return recordUtils.setErrors(
+    recordUtils.updateValidityState(validatedField, shouldValidate),
+    errorMessages,
+  )
 }

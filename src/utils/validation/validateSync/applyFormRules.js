@@ -1,5 +1,6 @@
 import listOf from '../../listOf'
 import addWhen from '../../addWhen'
+import isset from '../../isset'
 import {
   returnsExpected,
   reduceResults,
@@ -21,18 +22,15 @@ function reduceRules(rules) {
 
 export default function applyFormRules(rules) {
   return (resolverArgs) => {
-    console.log('applyFormRules', { resolverArgs })
     console.groupCollapsed(
       `applyFormRules @ ${resolverArgs.fieldProps.displayFieldPath}`,
     )
+    console.log('rules:', rules)
     console.log({ resolverArgs })
 
-    const hasNameRules = () => rules.name
-    const hasTypeRules = () => rules.type
-
     const rulesList = listOf(
-      addWhen(hasNameRules, reduceRules),
-      addWhen(hasTypeRules, reduceRules),
+      addWhen(rules.name, isset, reduceRules),
+      addWhen(rules.type, isset, reduceRules),
     )(resolverArgs)
 
     const result = reduceResultsWhile(returnsExpected, rulesList)(resolverArgs)
