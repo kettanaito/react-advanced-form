@@ -13,7 +13,11 @@ export default function reflectValidation(
 
   const { fieldProps, form } = resolverArgs
   const { validators, expected, rejectedRules } = validationResult
-  const errorMessages = getMessages(rejectedRules, resolverArgs, form.messages)
+  const errorMessages = getMessages(
+    validationResult,
+    resolverArgs,
+    form.messages,
+  )
 
   console.log('errorMessages', errorMessages)
 

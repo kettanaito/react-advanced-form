@@ -3,9 +3,16 @@ import createMessageResolverArgs from './createMessageResolverArgs'
 import resolveMessage from './resolveMessage'
 import pruneMessages from './pruneMessages'
 
-const createResolveIterator = (resolverArgs, messagesSchema) => {
+const createResolveIterator = (
+  validationResult,
+  resolverArgs,
+  messagesSchema,
+) => {
   const { fieldProps } = resolverArgs
-  const messageResolverArgs = createMessageResolverArgs(resolverArgs)
+  const messageResolverArgs = createMessageResolverArgs(
+    resolverArgs,
+    validationResult,
+  )
 
   return ([rule, keyPathGetters]) =>
     keyPathGetters.map((keyPathGetter) => {
@@ -24,38 +31,24 @@ const createResolveIterator = (resolverArgs, messagesSchema) => {
  * found in the given messages schema. Follows the resolving algorithm.
  */
 export default function getErrorMessages(
-  rejectedRules,
+  validationResult,
   resolverArgs,
   messagesSchema,
 ) {
-  console.groupCollapsed(
-    'getErrorMessages',
-    resolverArgs.fieldProps.displayFieldPath,
-  )
-  console.log({ rejectedRules })
-  console.log({ resolverArgs })
-  console.log({ messagesSchema })
-
   if (!messagesSchema) {
-    console.log('no messages in schema, bypassing...')
-    console.groupEnd()
     return
   }
 
-  const resolvePaths = rejectedRules.map(getResolvePaths)
-  console.log('resolvePaths:', resolvePaths)
+  const resolvePaths = validationResult.rejectedRules.map(getResolvePaths)
 
   /**
    * Iterates over the list of message resolvering paths and resolves
    * each path at its place. Then prunes the results, filtering out
    * only the relevant message(s) based on the rejected rule(s) priority.
    */
-  const messages = pruneMessages(
-    resolvePaths.map(createResolveIterator(resolverArgs, messagesSchema)),
+  return pruneMessages(
+    resolvePaths.map(
+      createResolveIterator(validationResult, resolverArgs, messagesSchema),
+    ),
   )
-
-  console.log('messages:', messages)
-  console.groupEnd()
-
-  return messages
 }

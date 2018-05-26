@@ -1,10 +1,12 @@
-//
-// TODO
-// Is this really needed? Consider removing.
-//
-export default function createMessageResolverArgs(params, extra) {
+// @flow
+import type { TValidationResult } from '../createValidationResult'
+
+export default function createMessageResolverArgs(
+  originArgs: Object,
+  validationResult: TValidationResult,
+) {
   return {
-    ...extra,
-    ...params,
+    ...validationResult.extra,
+    ...originArgs,
   }
 }

@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import { fromJS } from 'immutable'
 import * as recordUtils from '../../recordUtils'
+import createValidationResult from '../createValidationResult'
 import createRejectedRule from '../createRejectedRule'
 import getMessages from './getMessages'
 
@@ -50,7 +51,7 @@ test('Resolvers type-specific named rejected rules', () => {
   ]
 
   const namedRuleMessage = getMessages(
-    rejectedRules,
+    createValidationResult(false, rejectedRules),
     resolverArgs,
     messagesSchema,
   )
@@ -59,7 +60,7 @@ test('Resolvers type-specific named rejected rules', () => {
   ])
 
   const typeFallbackMessage = getMessages(
-    rejectedRules,
+    createValidationResult(false, rejectedRules),
     resolverArgs,
     messagesSchema.deleteIn(['type', 'email', 'rule']),
   )
@@ -68,7 +69,7 @@ test('Resolvers type-specific named rejected rules', () => {
   ])
 
   const generalFallbackMessage = getMessages(
-    rejectedRules,
+    createValidationResult(false, rejectedRules),
     resolverArgs,
     messagesSchema.deleteIn(['type']),
   )
@@ -93,7 +94,7 @@ test('Multiple rejected rules of different resolvers length', () => {
   ]
 
   const messages = getMessages(
-    multipleRejectedRules,
+    createValidationResult(false, multipleRejectedRules),
     resolverArgs,
     messagesSchema,
   )
@@ -115,7 +116,7 @@ test('Resolvers name-specific named rejected rules', () => {
   ]
 
   const namedRuleMessage = getMessages(
-    rejectedRules,
+    createValidationResult(false, rejectedRules),
     resolverArgs,
     messagesSchema,
   )
@@ -124,7 +125,7 @@ test('Resolvers name-specific named rejected rules', () => {
   ])
 
   const nameFallbackMessage = getMessages(
-    rejectedRules,
+    createValidationResult(false, rejectedRules),
     resolverArgs,
     messagesSchema.deleteIn(['name', 'fieldOne', 'rule']),
   )
@@ -133,7 +134,7 @@ test('Resolvers name-specific named rejected rules', () => {
   ])
 
   const typeFallbackMessage = getMessages(
-    rejectedRules,
+    createValidationResult(false, rejectedRules),
     resolverArgs,
     messagesSchema.deleteIn(['name', 'fieldOne']),
   )
@@ -142,7 +143,7 @@ test('Resolvers name-specific named rejected rules', () => {
   ])
 
   const generalFallbackMessage = getMessages(
-    rejectedRules,
+    createValidationResult(false, rejectedRules),
     resolverArgs,
     messagesSchema.deleteIn(['name', 'fieldOne']).deleteIn(['type', 'email']),
   )
