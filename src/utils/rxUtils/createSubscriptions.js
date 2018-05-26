@@ -50,7 +50,11 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
         console.log('shouldValidate?', shouldValidate)
 
         /* Set the next value of reactive prop on the respective field record */
-        const updatedFieldProps = nextFieldProps.set(rxPropName, nextPropValue)
+        const updatedFieldProps = nextFieldProps
+          .set(rxPropName, nextPropValue)
+          .set('valid', false)
+          .set('invalid', false)
+
         const updatedFields = nextFields.setIn(
           subscriberFieldPath,
           updatedFieldProps,
@@ -65,9 +69,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
           return form.validateField({
             force: true,
             forceProps: true,
-            fieldProps: updatedFieldProps
-              .set('valid', false)
-              .set('invalid', false),
+            fieldProps: updatedFieldProps,
             fields: updatedFields,
             form,
           })
