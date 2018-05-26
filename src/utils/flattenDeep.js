@@ -40,7 +40,10 @@ export default function flattenDeep(
       return acc.setIn(resolvedKeyPath, resolvedValue)
     }
 
-    /* Do not call flatten recursively in case the current value is not an instance of Iterable */
+    /**
+     * Do not call flatten recursively in case the current value
+     * is not an instance of Iterable.
+     */
     if (!Map.isMap(value)) {
       return acc
     }

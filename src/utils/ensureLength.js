@@ -5,13 +5,11 @@ import subtract from 'ramda/src/subtract'
 import length from 'ramda/src/length'
 
 /**
- * Ensures the given array is at least of the minimum length.
- * Prepends "null" until the length matches.
+ * Prepends "null" until the length of the given array matches
+ * the requested minimal length.
  */
-const ensureLength = (minLength: number) => {
+export default function ensureLength(minLength: number) {
   return (arr: any[]) => {
     return concat(repeat(null, subtract(minLength, length(arr))))(arr)
   }
 }
-
-export default ensureLength

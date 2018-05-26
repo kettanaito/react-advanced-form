@@ -2,20 +2,16 @@
 import { Map } from 'immutable'
 
 type TDispatchContext = {
-  withImmutable: boolean,
+  withImmutable?: boolean,
 }
 
 /**
  * Dispatches the provided function after applying conditional transformations
  * to its params based on the passed context options.
- * @param {Function} func
- * @param {Object} args
- * @param {Object} context
- * @param {Object} overrides
  */
 export default function dispatch(
   func: Function,
-  args: any,
+  args: Object,
   context: TDispatchContext = {},
   overrides: Object = {},
 ) {
@@ -25,7 +21,7 @@ export default function dispatch(
   const resolvedArgs = withImmutable
     ? args
     : Object.keys(args).reduce((nextArgs, argName) => {
-        const argValue = args[argName]
+        const argValue: Map<string, mixed> | Object = args[argName]
         nextArgs[argName] = Map.isMap(argValue) ? argValue.toJS() : argValue
 
         return nextArgs

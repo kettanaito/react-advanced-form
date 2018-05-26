@@ -4,7 +4,6 @@
  * Each function takes a field record and additional parameters and returns
  * the next state of the field record.
  */
-import invariant from 'invariant'
 import { Record } from 'immutable'
 
 /**
@@ -85,21 +84,8 @@ const generateFieldClass = (initialProps) => {
  * @returns {Field}
  */
 export const createField = (initialProps) => {
-  invariant(
-    initialProps,
-    'Cannot create a Field record: expected initial props, but got: %s',
-    initialProps,
-  )
-  invariant(
-    initialProps.name,
-    'Cannot create a Field record: expected a `name` to be a string, but got: %s',
-    initialProps.name,
-  )
-
   const FieldRecord = generateFieldClass(initialProps)
-  const instance = new FieldRecord(initialProps)
-
-  return instance
+  return new FieldRecord(initialProps)
 }
 
 /**

@@ -1,9 +1,9 @@
+// @flow
 /**
  * Calls `console.warn` with the provided message when the condition rejects.
  * @param {boolean} condition
  * @param {string} message
  * @param {any[]} optionalParams
- * @flow
  */
 export default function warning(
   condition: mixed,
