@@ -1,10 +1,11 @@
 import React from 'react'
 import { expect } from 'chai'
-import { mount } from 'cypress-react-unit-test'
 import Scenario from '@examples/field-grouping/SplitGroups'
 
 describe('Split groups', function() {
-  before(() => mount(<Scenario getRef={(form) => (this.form = form)} />))
+  before(() => {
+    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+  })
 
   it('Fields in split groups register properly', async () => {
     await cy.wait(100)

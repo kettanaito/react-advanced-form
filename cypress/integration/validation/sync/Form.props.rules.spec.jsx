@@ -1,11 +1,12 @@
 import React from 'react'
-import { mount } from 'cypress-react-unit-test'
 import Scenario, {
   fieldSelector,
 } from '@examples/validation/sync/Form.props.rules'
 
 describe('Form.props.rules', function() {
-  before(() => mount(<Scenario />))
+  before(() => {
+    cy.loadStory(<Scenario />)
+  })
 
   it('Empty optional field with Form.props.rules resolves', () => {
     cy
@@ -29,7 +30,7 @@ describe('Form.props.rules', function() {
   })
 
   it('Clearing required unexpected field retains validation status', () => {
-    mount(<Scenario required />)
+    cy.loadStory(<Scenario required />)
 
     cy
       .get(fieldSelector)
@@ -83,7 +84,7 @@ describe('Form.props.rules', function() {
   })
 
   it('Required field with name-specific matching value resolves', () => {
-    mount(<Scenario required />)
+    cy.loadStory(<Scenario required />)
 
     cy
       .get(fieldSelector)
@@ -95,7 +96,7 @@ describe('Form.props.rules', function() {
   })
 
   it('Required field with name-specific unmatching value rejects', () => {
-    mount(<Scenario required />)
+    cy.loadStory(<Scenario required />)
 
     cy
       .get(fieldSelector)

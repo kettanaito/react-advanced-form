@@ -1,12 +1,13 @@
 import React from 'react'
 import { expect } from 'chai'
-import { mount } from 'cypress-react-unit-test'
 import Scenario from '@examples/basics/ControlledFields'
 
 console.log({ Scenario })
 
 describe('Controlled fields interactions', function() {
-  before(() => mount(<Scenario getRef={(form) => (this.form = form)} />))
+  before(() => {
+    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+  })
   afterEach(() => this.form.reset())
 
   it('Form rendered with proper initial state.fields values', () => {
@@ -35,15 +36,15 @@ describe('Controlled fields interactions', function() {
       .should('have.value', 'second value')
     cy
       .get('#radio3')
-      .check()
+      .check({ force: true })
       .should('be.checked')
     cy
       .get('#checkbox1')
-      .check()
+      .check({ force: true })
       .should('be.checked')
     cy
       .get('#checkbox2')
-      .uncheck()
+      .uncheck({ force: true })
       .should('not.be.checked')
     cy.get('#select').select('three')
     cy
@@ -58,7 +59,6 @@ describe('Controlled fields interactions', function() {
       .should('have.value', 'another')
     cy.then(() => {
       const serialized = this.form.serialize()
-      console.log({ serialized })
 
       return expect(serialized).to.deep.equal({
         inputOne: 'first value',

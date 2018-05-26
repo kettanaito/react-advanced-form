@@ -1,9 +1,10 @@
 import React from 'react'
-import { mount } from 'cypress-react-unit-test'
 import Scenario from '@examples/components/FormProvider/DebounceTime'
 
 describe('FormProvider', function() {
-  before(() => mount(<Scenario />))
+  before(() => {
+    cy.loadStory(<Scenario />)
+  })
 
   it('Propagates the default value of "debounceTime"', () => {
     cy

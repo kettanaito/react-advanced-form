@@ -1,11 +1,10 @@
 import React from 'react'
 import { expect } from 'chai'
-import { mount } from 'cypress-react-unit-test'
 import Scenario from '@examples/basics/UncontrolledFields'
 
 describe('Uncontrolled fields interactions', function() {
   before(() => {
-    mount(<Scenario getRef={(form) => (this.form = form)} />)
+    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
 
   afterEach(() => {
@@ -32,14 +31,14 @@ describe('Uncontrolled fields interactions', function() {
       .get('#inputTwo')
       .clear()
       .type('second value')
-    cy.get('#radio3').check()
+    cy.get('#radio3').check({ force: true })
     cy
       .get('#checkbox1')
-      .check()
+      .check({ force: true })
       .should('be.checked')
     cy
       .get('#checkbox2')
-      .uncheck()
+      .uncheck({ force: true })
       .should('not.be.checked')
     cy.get('#select').select('three')
     cy

@@ -1,11 +1,12 @@
 import React from 'react'
 import { Record } from 'immutable'
 import { expect } from 'chai'
-import { mount } from 'cypress-react-unit-test'
 import Scenario from '@examples/components/createField'
 
 describe('createField', function() {
-  before(() => mount(<Scenario getRef={(form) => (this.form = form)} />))
+  before(() => {
+    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+  })
 
   it('Enhanced field registers properly', () => {
     cy.get('[name="fieldOne"]').then(() => {

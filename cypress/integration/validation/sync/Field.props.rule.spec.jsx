@@ -1,9 +1,10 @@
 import React from 'react'
-import { mount } from 'cypress-react-unit-test'
 import Scenario from '@examples/validation/sync/Field.props.rule'
 
 describe('Field.props.rule', function() {
-  before(() => mount(<Scenario getRef={(form) => (this.form = form)} />))
+  before(() => {
+    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+  })
   afterEach(() => this.form.reset())
 
   it('Empty optional field with sync rule resolves', () => {
