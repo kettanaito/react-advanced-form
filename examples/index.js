@@ -28,6 +28,7 @@ import FormPropsRules from './validation/sync/Form.props.rules'
 import FieldPropsAsyncRule from './validation/async/Field.props.asyncRule'
 
 /* Reactive props */
+import RxPropsFieldReactiveRule from './reactive-props/FieldReactiveRule'
 import RxPropsDynamicRequired from './reactive-props/DynamicRequired'
 import RxPropsSingleTarget from './reactive-props/SingleTarget'
 import RxPropsInterdependent from './reactive-props/Interdependent'
@@ -60,6 +61,7 @@ storiesOf('Advanced|Field grouping', module)
   .add('Split groups', addComponent(<SplitGroups />))
 
 storiesOf('Advanced|Reactive props', module)
+  .add('Reactive field rule', addComponent(<RxPropsFieldReactiveRule />))
   .add('Dynamic require', addComponent(<RxPropsDynamicRequired />))
   .add('Single field target', addComponent(<RxPropsSingleTarget />))
   .add('Interdependent fields', addComponent(<RxPropsInterdependent />))
