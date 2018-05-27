@@ -17,7 +17,7 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
 }
 
 /**
- * Creates an observer listening to the props changes of the provided field.
+ * Creates an observer listening to the props change of the provided field.
  * Then emits on each prop change which satisfies the given predicate function.
  * @param {string} fieldPath Field path of the subscribed target field.
  * @param {string[]|string} props
@@ -41,12 +41,17 @@ export default function createPropsObserver({
     Observable.fromEvent(eventEmitter, propsChangeEvent)
       .map((eventData) => {
         const changedProps = propsList.reduce((acc, propName) => {
-          const hasPropsChanged = appropriatePredicate({ ...eventData, propName })
+          const hasPropsChanged = appropriatePredicate({
+            ...eventData,
+            propName,
+          })
 
           if (hasPropsChanged) {
-            acc[propName] = getNextValue
-              ? getNextValue({ ...eventData, propName })
-              : eventData.nextProps[propName]
+            return Object.assign({}, acc, {
+              [propName]: getNextValue
+                ? getNextValue({ ...eventData, propName })
+                : eventData.nextProps[propName],
+            })
           }
 
           return acc

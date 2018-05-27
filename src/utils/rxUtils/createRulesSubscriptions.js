@@ -1,6 +1,7 @@
-import makeObservable from './makeObservable'
 import flushFieldRefs from '../flushFieldRefs'
 import getFieldRules from '../formUtils/getFieldRules'
+import createRuleResolverArgs from '../validation/createRuleResolverArgs'
+import makeObservable from './makeObservable'
 
 /**
  * Appends the "Field.props.rule" resolver function to the provided
@@ -28,9 +29,10 @@ function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
 }
 
 /**
- * Creates an observable for each validation rule which references other fields' props.
- * Flattens deep the validation schema, finding the rules relevant to the currently
- * registering field, and creates observables for those rules which reference another fields.
+ * Creates an observable for each validation rule which references
+ * other fields' props. Flattens deep the validation schema, finding
+ * the rules relevant to the currently registering field, and creates
+ * observables for those rules which reference another fields.
  * @param {Map} fieldProps
  * @param {Map} fields
  * @param {Object} form
@@ -38,18 +40,16 @@ function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
  */
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   const { rxRules } = form.state
-  const value = fieldProps.get(fieldProps.get('valuePropName'))
 
-  const resolverArgs = {
-    value,
+  const resolverArgs = createRuleResolverArgs({
     fieldProps,
     fields,
     form,
-  }
+  })
 
   /**
-   * Get the collection of reactive rules from the form validation schema
-   * relative to the registered field.
+   * Get the collection of reactive rules from the form
+   * validation schema relative to the registered field.
    */
   const schemaRuleGroups = getFieldRules({
     fieldProps,
@@ -65,19 +65,21 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     },
   })
 
-  /**
-   * Add "Field.props.rule" in case the latter has field references.
-   */
-  const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs)
+  /* Add "Field.props.rule" in case the latter has field references */
+  const ruleGroups = addFieldPropsRule(
+    schemaRuleGroups,
+    fieldProps,
+    resolverArgs,
+  )
 
   if (ruleGroups.size === 0) {
     return rxRules
   }
 
   /**
-   * Create observable for each rule where another field(s) is referenced.
-   * The observable will listen for the referenced props change event and re-evaluate
-   * the validation rule(s) where that prop is referenced.
+   * Create observable for each rule in which another field(s) is referenced.
+   * The observable will listen for the referenced props change and re-evaluate
+   * the validation rule(s) in which that prop is referenced.
    */
   ruleGroups.forEach((ruleGroup) => {
     ruleGroup.forEach(({ refs, resolver }) => {
@@ -90,6 +92,12 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
         subscribe() {
           form.eventEmitter.emit('validateField', {
             fieldProps,
+
+            //
+            // TODO
+            // This forces empty OPTIONAL rx subscriber fields
+            // to be validated when that must never happen.
+            //
             force: true,
           })
         },

@@ -258,8 +258,8 @@ export default class Form extends React.Component {
         })
       }
 
-      /* Create subscriptions for reactive props */
-      rxUtils.createSubscriptions({
+      /* Create reactive props subscriptions */
+      rxUtils.createPropsSubscriptions({
         fieldProps,
         fields: nextFields,
         form: this,

@@ -3,7 +3,7 @@ import DynamicRequired from '@examples/reactive-props/DynamicRequired'
 import DelegatedScenario from '@examples/reactive-props/DelegatedSubscription'
 import InterdependentScenario from '@examples/reactive-props/Interdependent'
 import SingleTargetScenario from '@examples/reactive-props/SingleTarget'
-import FieldPropsRule from '@examples/reactive-props/Field.props.rule'
+import FieldReactiveField from '@examples/reactive-props/FieldReactiveRule'
 
 describe('Reactive props', function() {
   it('Direct field subscription', () => {
@@ -124,7 +124,7 @@ describe('Reactive props', function() {
   })
 
   it('Field.props.rule behaves as a reactive prop', () => {
-    cy.loadStory(<FieldPropsRule />)
+    cy.loadStory(<FieldReactiveField />)
 
     /**
      * Properly validates the reactive field when its value changes.

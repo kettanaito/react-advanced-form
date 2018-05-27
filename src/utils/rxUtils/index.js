@@ -1,4 +1,4 @@
 export getRxProps from './getRxProps'
 export createPropsObserver from './createPropsObserver'
-export createSubscriptions from './createSubscriptions'
+export createPropsSubscriptions from './createPropsSubscriptions'
 export createRulesSubscriptions from './createRulesSubscriptions'

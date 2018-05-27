@@ -7,7 +7,7 @@ import makeObservable from './makeObservable'
  * @param {Map} fields
  * @param {ReactElement} form
  */
-export default function createSubscriptions({ fieldProps, fields, form }) {
+export default function createPropsSubscriptions({ fieldProps, fields, form }) {
   const rxProps = fieldProps.get('reactiveProps')
   if (!rxProps) {
     return
@@ -29,6 +29,7 @@ export default function createSubscriptions({ fieldProps, fields, form }) {
         const { fieldPath: refFieldPath } = nextContextProps
         const nextFieldProps = fields.getIn(subscriberFieldPath)
         const nextFields = fields.set(refFieldPath, nextContextProps)
+
         const nextResolverArgs = createRuleResolverArgs({
           fieldProps,
           fields: nextFields,

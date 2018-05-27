@@ -13,12 +13,15 @@ export default function getRxProps(props) {
   return Object.keys(props).reduce(
     (res, propName) => {
       const propValue = props[propName]
-      const isReactive = supportedRxProps.includes(propName) && typeof propValue === 'function'
-      const destProp = isReactive ? 'reactiveProps' : 'prunedProps'
+      const isReactive =
+        supportedRxProps.includes(propName) && typeof propValue === 'function'
+      const propDest = isReactive ? 'reactiveProps' : 'prunedProps'
 
-      res[destProp][propName] = propValue
-
-      return res
+      return Object.assign({}, res, {
+        [propDest]: Object.assign({}, res[propDest], {
+          [propName]: propValue,
+        }),
+      })
     },
     { reactiveProps: {}, prunedProps: {} },
   )
