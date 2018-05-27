@@ -6,20 +6,20 @@ import enforceArray from '../enforceArray'
 
 /**
  * @param {string} propName
- * @param {Object} prevProps
- * @param {Object} nextProps
- * @param {Map} prevContextProps
- * @param {Map} nextContextProps
+ * @param {Object} prevTargetProps
+ * @param {Object} nextTargetProps
+ * @param {Map} prevTargetRecord
+ * @param {Map} nextTargetRecord
  * @returns {boolean}
  */
-const defaultPredicate = ({ propName, prevProps, nextProps }) => {
-  return prevProps[propName] !== nextProps[propName]
+const defaultPredicate = ({ propName, prevTargetProps, nextTargetProps }) => {
+  return prevTargetProps[propName] !== nextTargetProps[propName]
 }
 
 /**
  * Creates an observer listening to the props change of the provided field.
  * Then emits on each prop change which satisfies the given predicate function.
- * @param {string} fieldPath Field path of the subscribed target field.
+ * @param {string} targetFieldPath Field path of the subscribed target field.
  * @param {string[]|string} props
  * @param {(eventData: EventData) => boolean} predicate
  * @param {(eventData: EventData) => any} getNextValue
@@ -27,13 +27,13 @@ const defaultPredicate = ({ propName, prevProps, nextProps }) => {
  * @return {Observable}
  */
 export default function createPropsObserver({
-  fieldPath,
+  targetFieldPath,
   props,
   predicate,
   getNextValue,
   eventEmitter,
 }) {
-  const propsChangeEvent = camelize(...fieldPath, 'props', 'change')
+  const propsChangeEvent = camelize(...targetFieldPath, 'props', 'change')
   const appropriatePredicate = predicate || defaultPredicate
   const propsList = enforceArray(props)
 
@@ -50,7 +50,7 @@ export default function createPropsObserver({
             return Object.assign({}, acc, {
               [propName]: getNextValue
                 ? getNextValue({ ...eventData, propName })
-                : eventData.nextProps[propName],
+                : eventData.nextTargetProps[propName],
             })
           }
 

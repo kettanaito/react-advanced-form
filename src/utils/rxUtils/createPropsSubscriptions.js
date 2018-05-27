@@ -3,6 +3,7 @@ import createRuleResolverArgs from '../validation/createRuleResolverArgs'
 import makeObservable from './makeObservable'
 
 /**
+ * Creates Observable for the reactive props of the given field.
  * @param {Record} fieldProps
  * @param {Map} fields
  * @param {ReactElement} form
@@ -24,11 +25,12 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
 
     makeObservable(resolver, resolverArgs, {
       initialCall: true,
-      subscribe({ nextContextProps, shouldValidate = true }) {
+      subscribe({ nextTargetRecord, shouldValidate = true }) {
         const { fields } = form.state
-        const { fieldPath: refFieldPath } = nextContextProps
-        const nextFieldProps = fields.getIn(subscriberFieldPath)
-        const nextFields = fields.set(refFieldPath, nextContextProps)
+        const { fieldPath: targetFieldPath } = nextTargetRecord
+
+        const currentSubscriberRecord = fields.getIn(subscriberFieldPath)
+        const nextFields = fields.set(targetFieldPath, nextTargetRecord)
 
         const nextResolverArgs = createRuleResolverArgs({
           fieldProps,
@@ -48,35 +50,35 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
           subscriberFieldPath.join('.'),
           nextPropValue,
         )
-        console.log('shouldValidate?', shouldValidate)
+        console.log('propsSub shouldValidate?', shouldValidate)
 
         /* Set the next value of reactive prop on the respective field record */
-        const updatedFieldProps = nextFieldProps
+        const nextSubscriberRecord = currentSubscriberRecord
           .set(rxPropName, nextPropValue)
           .set('valid', false)
           .set('invalid', false)
 
         const updatedFields = nextFields.setIn(
           subscriberFieldPath,
-          updatedFieldProps,
+          nextSubscriberRecord,
         )
 
         console.log(
-          'updatedFieldProps',
-          updatedFieldProps && updatedFieldProps.toJS(),
+          'nextSubscriberRecord',
+          nextSubscriberRecord && nextSubscriberRecord.toJS(),
         )
 
         if (shouldValidate) {
           return form.validateField({
             force: true,
             forceProps: true,
-            fieldProps: updatedFieldProps,
+            fieldProps: nextSubscriberRecord,
             fields: updatedFields,
             form,
           })
         }
 
-        return form.updateFieldsWith(updatedFieldProps)
+        return form.updateFieldsWith(nextSubscriberRecord)
       },
     })
   })

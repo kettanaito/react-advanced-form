@@ -204,15 +204,15 @@ export default class Form extends React.Component {
      */
     rxUtils
       .createPropsObserver({
-        fieldPath,
+        targetFieldPath: fieldPath,
         props: ['type'],
         eventEmitter,
       })
-      .subscribe(({ nextContextProps, changedProps }) => {
+      .subscribe(({ nextTargetRecord, changedProps }) => {
         //
         // TODO Test if this replaces the previous logic.
         //
-        const nextFieldProps = nextContextProps.merge(changedProps)
+        const nextFieldProps = nextTargetRecord.merge(changedProps)
         this.updateFieldsWith(nextFieldProps)
 
         // this.updateField({

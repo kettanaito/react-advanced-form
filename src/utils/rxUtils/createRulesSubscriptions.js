@@ -99,6 +99,10 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
             // to be validated when that must never happen.
             //
             force: true,
+            // force: ({ fieldProps }) => {
+            //   console.warn('rulesSubscriptions force?', fieldProps)
+            //   return !!recordUtils.getValue(fieldProps)
+            // },
           })
         },
       })

@@ -41,20 +41,20 @@ function formatRefs(refs) {
  * @returns {Subscription}
  */
 function createObserver({
-  fieldPath,
+  targetFieldPath,
   props,
   form,
   subscribe,
   observerOptions,
 }) {
   return createPropsObserver({
-    fieldPath,
+    targetFieldPath,
     props,
-    predicate({ propName, prevContextProps, nextContextProps }) {
-      return prevContextProps.get(propName) !== nextContextProps.get(propName)
+    predicate({ propName, prevTargetRecord, nextTargetRecord }) {
+      return prevTargetRecord.get(propName) !== nextTargetRecord.get(propName)
     },
-    getNextValue({ propName, nextContextProps }) {
-      return nextContextProps.get(propName)
+    getNextValue({ propName, nextTargetRecord }) {
+      return nextTargetRecord.get(propName)
     },
     eventEmitter: form.eventEmitter,
     ...observerOptions,
@@ -90,7 +90,7 @@ export default function makeObservable(
 
     if (fields.hasIn(targetFieldPath)) {
       const subscription = createObserver({
-        fieldPath: targetFieldPath,
+        targetFieldPath,
         props,
         form,
         subscribe,
@@ -99,7 +99,7 @@ export default function makeObservable(
 
       if (initialCall) {
         subscription.next({
-          nextContextProps: subscriberProps,
+          nextTargetRecord: subscriberProps,
           shouldValidate,
         })
       }
@@ -123,7 +123,7 @@ export default function makeObservable(
       delegatedSubscription.unsubscribe()
 
       const subscription = createObserver({
-        fieldPath: targetFieldPath,
+        targetFieldPath,
         props,
         form,
         subscribe,
@@ -131,8 +131,8 @@ export default function makeObservable(
       })
 
       return subscription.next({
-        nextContextProps: delegatedFieldProps,
-        shouldValidate,
+        nextTargetRecord: delegatedFieldProps,
+        // shouldValidate,
       })
     })
   })
