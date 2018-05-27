@@ -28,7 +28,7 @@ export default function validateSync(resolverArgs, force) {
   console.warn('should validate?', should)
 
   const rulesList = listOf(
-    addWhen(fieldProps.required, isset, ensureValue),
+    addWhen(fieldProps.required, (required) => required, ensureValue),
     addWhen(fieldProps.rule, isset, applyFieldRule),
     addWhen(relevantFormRules, hasFormRules, applyFormRules),
   )(resolverArgs)
