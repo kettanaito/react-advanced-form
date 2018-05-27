@@ -1,5 +1,6 @@
 import flushFieldRefs from '../flushFieldRefs'
 import getFieldRules from '../formUtils/getFieldRules'
+import * as recordUtils from '../recordUtils'
 import createRuleResolverArgs from '../validation/createRuleResolverArgs'
 import makeObservable from './makeObservable'
 
@@ -90,19 +91,19 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
 
       makeObservable(resolver, resolverArgs, {
         subscribe() {
+          const currentFieldProps = form.state.fields.getIn(
+            fieldProps.fieldPath,
+          )
+
           form.eventEmitter.emit('validateField', {
             fieldProps,
 
-            //
-            // TODO
-            // This forces empty OPTIONAL rx subscriber fields
-            // to be validated when that must never happen.
-            //
-            force: true,
-            // force: ({ fieldProps }) => {
-            //   console.warn('rulesSubscriptions force?', fieldProps)
-            //   return !!recordUtils.getValue(fieldProps)
-            // },
+            /**
+             * Cannot hard-code "true" since that would validate
+             * empty optional fields as unexpected. That is because
+             * "force" is not the part of "shouldValidate" chain.
+             */
+            force: !!recordUtils.getValue(currentFieldProps),
           })
         },
       })

@@ -119,7 +119,7 @@ export default function makeObservable(
       form.eventEmitter,
       fieldRegisteredEvent,
     ).subscribe((delegatedFieldProps) => {
-      /* Get rid of delegated subscription since it's no longer relevant */
+      /* Get rid of the delegated subscription since it's no longer relevant */
       delegatedSubscription.unsubscribe()
 
       const subscription = createObserver({
@@ -132,7 +132,7 @@ export default function makeObservable(
 
       return subscription.next({
         nextTargetRecord: delegatedFieldProps,
-        // shouldValidate,
+        shouldValidate,
       })
     })
   })
