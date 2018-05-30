@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form } from '@lib'
-import { Input, Radio, Checkbox } from '@fields'
+import { Input, Checkbox } from '@fields'
 import Button from '@shared/Button'
 
 export default class Submit extends React.Component {
