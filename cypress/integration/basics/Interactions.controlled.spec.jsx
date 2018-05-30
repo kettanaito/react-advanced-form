@@ -2,8 +2,6 @@ import React from 'react'
 import { expect } from 'chai'
 import Scenario from '@examples/basics/ControlledFields'
 
-console.log({ Scenario })
-
 describe('Controlled fields interactions', function() {
   before(() => {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)

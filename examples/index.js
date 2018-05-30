@@ -16,6 +16,9 @@ function addComponent(Component) {
 /* Basics */
 import UncontrolledFields from './basics/UncontrolledFields'
 import ControlledFields from './basics/ControlledFields'
+import Submit from './basics/Submit'
+import CreateField from './components/createField'
+import FormProvider from './components/FormProvider/DebounceTime'
 
 /* Field grouping */
 import SimpleGroup from './field-grouping/SimpleGroup'
@@ -45,6 +48,11 @@ import ReactDatepicker from './third-party/react-datepicker'
 storiesOf('Basics|Interaction', module)
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
   .add('Controlled fields', addComponent(<ControlledFields />))
+  .add('Submit', addComponent(<Submit />))
+
+storiesOf('Basics|Components', module)
+  .add('createField', addComponent(<CreateField />))
+  .add('FormProvider', addComponent(<FormProvider />))
 
 storiesOf('Basics|Synchronous validation', module)
   .add('Field.props.rule', addComponent(<FieldPropsRule />))

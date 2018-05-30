@@ -43,7 +43,7 @@ function getInnerRef(element, callback) {
 }
 
 function filterFields(entity) {
-  return entity.has('fieldPath')
+  return !!entity.fieldPath
 }
 
 export default class Form extends React.Component {
@@ -723,11 +723,6 @@ export default class Form extends React.Component {
       recordUtils.reset(fieldProps),
     )
 
-    // console.groupCollapsed('reset @ Form');
-    // console.log('prev fields:', this.state.fields.toJS());
-    // console.log('next fields:', nextFields && nextFields.toJS());
-    // console.groupEnd();
-
     this.setState({ fields: nextFields }, () => {
       /**
        * Validate only non-empty fields, since empty required fields
@@ -770,6 +765,8 @@ export default class Form extends React.Component {
       event.preventDefault()
     }
 
+    console.warn('SUBMIT INVOKED!')
+
     /* Throw on submit attempt without the "action" prop */
     const { action } = this.props
 
@@ -782,6 +779,8 @@ export default class Form extends React.Component {
 
     /* Ensure form has no unexpected fields and, therefore, should be submitted */
     const shouldSubmit = await this.validate()
+    console.log('shouldSubmit?', shouldSubmit)
+
     if (!shouldSubmit) {
       return
     }

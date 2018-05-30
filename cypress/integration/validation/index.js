@@ -3,6 +3,6 @@
  */
 describe('Validation', function() {
   require('./sync')
-  require('./async')
+  // require('./async')
   require('./misc')
 })
