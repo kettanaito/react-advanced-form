@@ -134,7 +134,10 @@ export const setErrors = (fieldRecord, errors = undefined) => {
  * @returns {Map}
  */
 export const resetValidityState = (fieldRecord) => {
-  return fieldRecord.set('valid', false).set('invalid', false)
+  return fieldRecord.merge({
+    valid: false,
+    invalid: false,
+  })
 }
 
 /**
@@ -153,7 +156,10 @@ export const updateValidityState = (fieldRecord, shouldValidate = true) => {
   const nextValid = !!value && validated && expected
   const nextInvalid = validated && !expected
 
-  return fieldRecord.set('valid', nextValid).set('invalid', nextInvalid)
+  return fieldRecord.merge({
+    valid: nextValid,
+    invalid: nextInvalid,
+  })
 }
 
 export const beginValidation = (fieldRecord) => {
@@ -161,7 +167,10 @@ export const beginValidation = (fieldRecord) => {
 }
 
 export const endValidation = (fieldRecord) => {
-  return fieldRecord.set('focused', false).set('validating', false)
+  return fieldRecord.merge({
+    focused: false,
+    validating: false,
+  })
 }
 
 /**
@@ -170,13 +179,14 @@ export const endValidation = (fieldRecord) => {
  * @returns {Map}
  */
 export const resetValidationState = (fieldRecord) => {
-  return fieldRecord
-    .set('validating', false)
-    .set('validated', false)
-    .set('validatedSync', false)
-    .set('validatedAsync', false)
-    .set('validSync', false)
-    .set('validAsync', false)
+  return fieldRecord.merge({
+    validating: false,
+    validated: false,
+    validatedSync: false,
+    validatedAsync: false,
+    validSync: false,
+    validAsync: false,
+  })
 }
 
 /**

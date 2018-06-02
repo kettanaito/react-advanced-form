@@ -1,12 +1,12 @@
 import React from 'react'
 import { expect } from 'chai'
-import SubmitScenario from '@examples/basics/Submit'
+import Scenario from '@examples/basics/Submit'
 
 describe('Submit', function() {
   let submitCount = 0
 
   before(() => {
-    cy.loadStory(<SubmitScenario onSubmitStart={() => submitCount++} />)
+    cy.loadStory(<Scenario onSubmitStart={() => submitCount++} />)
   })
 
   it('Prevents form submit until all fields are expected', () => {

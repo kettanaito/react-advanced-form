@@ -24,9 +24,9 @@ import {
   formUtils,
   rxUtils,
 } from '../utils'
+import * as composites from '../utils/composites'
 
-import validateSync from '../utils/validation/validateSync'
-import validate from '../utils/validation/validateAndReflect'
+import validate from '../utils/composites/validateField'
 
 /**
  * Shorthand: Binds the component's reference to the function's context and calls
@@ -140,6 +140,14 @@ export default class Form extends React.Component {
     Observable.fromEvent(eventEmitter, 'validateField').subscribe(
       this.validateField,
     )
+  }
+
+  ensafeHandler = (handlerFunc) => {
+    return (args) => {
+      const { fieldProps } = args
+      const hasField = this.state.fields.hasIn(fieldProps.fieldPath)
+      return hasField && handlerFunc(args)
+    }
   }
 
   /**
@@ -269,29 +277,29 @@ export default class Form extends React.Component {
 
   /**
    * Determines if the provided field has its record within the state.
-   * @param {Record} fieldRecord
+   * @param {Record} fieldProps
    * @return {boolean}
    */
-  hasField = (fieldRecord) => {
-    return this.state.fields.hasIn(fieldRecord.fieldPath)
+  hasField = (fieldProps) => {
+    return this.state.fields.hasIn(fieldProps.fieldPath)
   }
 
   /**
    * Updates the fields with the given instance of the field and returns
    * the updated state of the fields.
-   * @param {Record} fieldRecord
+   * @param {Record} fieldProps
    * @returns {Promise}
    */
-  updateFieldsWith = (fieldRecord) => {
+  updateFieldsWith = (fieldProps) => {
     const nextFields = recordUtils.updateCollectionWith(
-      fieldRecord,
+      fieldProps,
       this.state.fields,
     )
 
     console.groupCollapsed(
-      `Form @ updateFieldsWith @ ${fieldRecord.displayFieldPath}`,
+      `Form @ updateFieldsWith @ ${fieldProps.displayFieldPath}`,
     )
-    console.log('fieldRecord:', fieldRecord.toJS())
+    console.log('fieldProps:', fieldProps.toJS())
     console.log('nextFields:', nextFields.toJS())
     console.groupEnd(' ')
 
@@ -306,11 +314,11 @@ export default class Form extends React.Component {
 
   /**
    * Deletes the field record from the state.
-   * @param {Record} fieldRecord
+   * @param {Record} fieldProps
    */
-  unregisterField = (fieldRecord) => {
+  unregisterField = (fieldProps) => {
     this.setState((prevState) => ({
-      fields: prevState.fields.deleteIn(fieldRecord.fieldPath),
+      fields: prevState.fields.deleteIn(fieldProps.fieldPath),
     }))
   }
 
@@ -348,38 +356,11 @@ export default class Form extends React.Component {
    * @param {Event} event
    * @param {Record} fieldProps
    */
-  handleFieldFocus = async ({ event, fieldProps }) => {
-    /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) {
-      return
-    }
-
-    console.groupCollapsed(
-      `Form @ handleFieldFocus @ ${fieldProps.displayFieldPath}`,
-    )
-    console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
-    console.groupEnd()
-
-    const nextFieldProps = recordUtils.setFocus(fieldProps)
-    const nextFields = await this.updateFieldsWith(nextFieldProps)
-
-    /* Call custom onFocus handler */
-    const onFocusCallback = fieldProps.get('onFocus')
-    if (!onFocusCallback) {
-      return
-    }
-
-    dispatch(
-      onFocusCallback,
-      {
-        event,
-        fieldProps: nextFieldProps,
-        fields: nextFields,
-        form: this,
-      },
-      this.context,
-    )
-  }
+  handleFieldFocus = this.ensafeHandler((args) => {
+    const { fields } = this.state
+    const { nextFields } = composites.handleFieldFocus(args, fields, this)
+    this.setState({ fields: nextFields })
+  })
 
   /**
    * Handles field change.
@@ -388,234 +369,35 @@ export default class Form extends React.Component {
    * @param {mixed} prevValue
    * @param {mixed} nextValue
    */
-  handleFieldChange = async ({ event, prevValue, nextValue, fieldProps }) => {
-    /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) {
-      return
-    }
-
-    console.groupCollapsed(
-      `Form @ handleFieldChange @ ${fieldProps.displayFieldPath}`,
-    )
-    console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
-    console.log('nextValue', nextValue)
-    console.groupEnd()
-
-    /**
-     * Handle "onChange" events dispatched by the controlled field.
-     * Controlled field must execute its custom "CustomField.props.onChange" handler since
-     * that is the updater for the source (i.e. state) controlling its value. Internal
-     * RAF change handling must be omitted in that scenario, as it will be bubbled to
-     * eventually via "createField.Field.componentReceiveProps()", when comparing previous
-     * and next values of controlled fields.
-     */
-    const isForcedUpdate = event && !(event.nativeEvent || event).isForcedUpdate
-    const isControlled = fieldProps.get('controlled')
-    const customChangeHandler = fieldProps.get('onChange')
-
-    if (isForcedUpdate && isControlled) {
-      invariant(
-        customChangeHandler,
-        'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
-          'but got: %s.',
-        fieldProps.name,
-        customChangeHandler,
-      )
-
-      return dispatch(
-        customChangeHandler,
-        {
-          event,
-          nextValue,
-          prevValue,
-          fieldProps,
-          fields: this.state.fields,
-          form: this,
-        },
-        this.context,
-      )
-    }
-
-    /* Reset the validation state and update the field's value prop */
-    const updatedFieldProps = recordUtils.setValue(
-      recordUtils.resetValidityState(
-        recordUtils.resetValidationState(fieldProps),
-      ),
-      nextValue,
+  handleFieldChange = this.ensafeHandler(async (args) => {
+    const { fields, dirty } = this.state
+    const { nextFields } = await composites.handleFieldChange(
+      args,
+      fields,
+      this,
+      {
+        onUpdateValue: this.updateFieldsWith,
+      },
     )
 
-    console.log('field record with reset val. state:', updatedFieldProps)
-
-    /* Update fields to reflect the updated field value */
-    await this.updateFieldsWith(updatedFieldProps)
-
-    /**
-     * Cancel any pending async validation.
-     * Once the field's value has changed, the previously dispatched async validation
-     * is no longer relevant, since it validates the previous value.
-     */
-    //
-    // TODO
-    // A reference to the pending async validation (request) is not yet set in the validateAsync.
-    //
-    const pendingAsyncValidation = updatedFieldProps.get(
-      'pendingAsyncValidation',
-    )
-    if (pendingAsyncValidation) {
-      pendingAsyncValidation.get('cancel')()
-    }
-
-    /**
-     * Determine whether to debounce the validation.
-     * For example, for immediate clearing of field value the validation must be
-     * performed immediately, while for typing the value it must be debounced.
-     */
-    const shouldDebounce = !!prevValue && !!nextValue
-    const appropriateValidation = shouldDebounce
-      ? fieldProps.debounceValidate
-      : this.validateField
-
-    //
-    // Should this be encapsulated into Form.validateField, or be an independent function?
-    //
-    const validatedFieldProps = await appropriateValidation({
-      chain: [validateSync],
-      fieldProps: updatedFieldProps,
-
-      //
-      // NOTE
-      // When passed explicitly here, the state of the fields may be outdated for
-      // some reason.
-      // I think it has to do with the debounce nature of this function call.
-      // Internally, "validateField" referenced to the very same fields, but at that moment
-      // their entries are up-to-date.
-      //
-      // fields: this.state.fields,
-      form: this,
-    })
-
-    console.warn({ validatedFieldProps })
-
-    /**
-     * Perform appropriate field validation on value change.
-     * When field has a value set, perform debounced sync validation. For the cases
-     * when the user clears the field instantly, perform instant sync validation.
-     *
-     * The presence of "value" alone is not enough to determine the necessity for debounced
-     * validation. For instance, it is only when the previous and next value exist we can
-     * assume that the user is typing in the field. Change from "undefined" to some value
-     * most likely means the value update of the controlled field, which must be validated
-     * instantly.
-     */
-    // const shouldDebounce = !!prevValue && !!nextValue;
-    // const appropriateValidation = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
-
-    //
-    // TODO NEEDS TO BE HANDLED FUNCTIONALLY
-    // const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({
-    //   type: SyncValidationType,
-    //   fieldProps: updatedFieldProps,
-    //   forceProps: !shouldDebounce
-    // });
-
-    /**
-     * Call custom "onChange" handler for uncontrolled fields only.
-     * "onChange" callback method acts as an updated function for controlled fields,
-     * and as a callback function for uncontrolled fields. The value update of
-     * uncontrolled fields is handled by the Form. Controlled fields dispatch
-     * "onChange" handler at the beginning of this method. There is no need to
-     * dispatch the handler method once more.
-     */
-    if (!isControlled && customChangeHandler) {
-      dispatch(
-        customChangeHandler,
-        {
-          event,
-          nextValue,
-          prevValue,
-          fieldProps: validatedFieldProps,
-          fields: this.state.fields,
-          form: this,
-        },
-        this.context,
-      )
-    }
+    this.setState({ fields: nextFields })
 
     /* Mark form as dirty if it's not already */
-    if (!this.state.dirty) {
-      this.handleFirstChange({ event, prevValue, nextValue, fieldProps })
+    if (!dirty) {
+      this.handleFirstChange(args)
     }
-  }
+  })
 
   /**
    * Handles field blur.
    * @param {Event} event
    * @param {Record} fieldProps
    */
-  handleFieldBlur = async ({ event, fieldProps }) => {
-    /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) {
-      return
-    }
-
-    let nextFieldProps = fieldProps
-    let nextFields = this.state.fields
-
-    /**
-     * Determine whether the validation is needed.
-     * Also, determine a type of the validation. In case the field has been
-     * validated sync and is valid sync, it's ready to be validated async
-     * (if any async validation is present). However, if the field hasn't
-     * been validated sync yet (hasn't been touched), first require sync
-     * validation. When the latter fails, user will be prompted to change the
-     * value of the field. Changing the value resets the "async" validation
-     * state as well. Hence, when the user will pass sync validation, upon
-     * blurring out the field, the validation type will be "async".
-     */
-    //
-    //
-    // TODO Review if this is really needed. Why not just "ValidationType.shouldValidate()"?
-    // Or even better - get rid of classes and determine validation necessity via a pure function?
-    //
-    //
-    // const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
-
-    console.groupCollapsed(
-      `Form @ handleFieldBlur @ ${fieldProps.displayFieldPath}`,
-    )
-    console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
-    console.groupEnd()
-
-    /* Indicate the beginning of the validation */
-    const validatingField = recordUtils.beginValidation(fieldProps)
-
-    /* Validate the field */
-    const validatedField = await this.validateField({
-      fieldProps: validatingField,
-      shouldUpdateFields: false,
-    })
-
-    /* Reflect the end of the validation */
-    nextFieldProps = recordUtils.endValidation(validatedField)
-    nextFields = await this.updateFieldsWith(nextFieldProps)
-
-    /* Call custom onBlur handler */
-    const onBlurCallback = nextFieldProps.get('onBlur')
-    if (!onBlurCallback) {
-      return
-    }
-
-    dispatch(
-      onBlurCallback,
-      {
-        event,
-        fieldProps: nextFieldProps,
-        fields: nextFields,
-        form: this,
-      },
-      this.context,
-    )
-  }
+  handleFieldBlur = this.ensafeHandler(async (args) => {
+    const { fields } = this.state
+    const { nextFields } = await composites.handleFieldBlur(args, fields, this)
+    this.setState({ fields: nextFields })
+  })
 
   /**
    * Validates the provided field with the additional options.
@@ -686,8 +468,8 @@ export default class Form extends React.Component {
 
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(validationSequence)
-    const isFormValid = validatedFields.every((validatedFieldRecord) => {
-      return validatedFieldRecord.expected
+    const isFormValid = validatedFields.every((validatedFieldProps) => {
+      return validatedFieldProps.expected
     })
 
     const { onInvalid } = this.props
@@ -697,7 +479,7 @@ export default class Form extends React.Component {
 
       /* Reduce the invalid fields to the ordered Array */
       const invalidFields = List(
-        nextFields.filterNot((fieldProps) => fieldProps.get('expected')),
+        nextFields.filterNot((fieldProps) => fieldProps.expected),
       )
 
       /* Call custom callback */
