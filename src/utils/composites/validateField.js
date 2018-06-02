@@ -1,4 +1,3 @@
-import when from 'ramda/src/when'
 import validate from '../validation'
 import reflectValidation from '../validation/reflectors/reflectValidation'
 
@@ -9,24 +8,20 @@ import reflectValidation from '../validation/reflectors/reflectValidation'
  */
 export default function validateField(resolverArgs) {
   console.groupCollapsed(
-    `compositeValidate @ ${resolverArgs.fieldProps.displayFieldPath}`,
+    `validateField @ ${resolverArgs.fieldProps.displayFieldPath}`,
   )
   console.log({ resolverArgs })
 
   const { fieldProps } = resolverArgs
   const validationResult = validate(resolverArgs)
-  const wasValidated = () => typeof validationResult.expected !== 'undefined'
+  const wasValidated = typeof validationResult.expected !== 'undefined'
 
   console.log('validated!', validationResult)
 
-  const updateFieldProps = when(wasValidated, () =>
-    reflectValidation(resolverArgs, validationResult),
-  )
-  const nextFieldProps = updateFieldProps(fieldProps)
+  if (!wasValidated) {
+    console.warn('No validation conducted, bypassing...', fieldProps.toJS())
+    return fieldProps
+  }
 
-  console.log('nextFieldProps', nextFieldProps)
-  console.warn('nextFieldProps:', nextFieldProps && nextFieldProps.toJS())
-  console.groupEnd()
-
-  return nextFieldProps
+  return reflectValidation(resolverArgs, validationResult)
 }

@@ -9,12 +9,12 @@ import { fromJS } from 'immutable'
 
 export const defaultDebounceTime = 250
 
-export const TValidationRules = PropTypes.shape({
+export const ValidationRulesPropType = PropTypes.shape({
   type: PropTypes.object, // type-specific field validation rules
   name: PropTypes.object, // name-specific field validation rules
 })
 
-export const TValidationMessages = PropTypes.shape({
+export const ValidationMessagesPropType = PropTypes.shape({
   general: PropTypes.object, // general validation messages
   type: PropTypes.object, // type-specific validation messages
   name: PropTypes.object, // name-specific validation messages
@@ -22,8 +22,8 @@ export const TValidationMessages = PropTypes.shape({
 
 export default class FormProvider extends React.Component {
   static propTypes = {
-    rules: TValidationRules,
-    messages: TValidationMessages,
+    rules: ValidationRulesPropType,
+    messages: ValidationMessagesPropType,
     withImmutable: PropTypes.bool,
     debounceTime: PropTypes.number,
   }
@@ -35,8 +35,8 @@ export default class FormProvider extends React.Component {
   }
 
   static childContextTypes = {
-    rules: TValidationRules,
-    messages: TValidationMessages,
+    rules: ValidationRulesPropType,
+    messages: ValidationMessagesPropType,
     withImmutable: PropTypes.bool,
     debounceTime: PropTypes.number,
   }

@@ -10,8 +10,8 @@ import 'rxjs/add/observable/fromEvent'
 /* Internal modules */
 import {
   defaultDebounceTime,
-  TValidationRules,
-  TValidationMessages,
+  ValidationRulesPropType,
+  ValidationMessagesPropType,
 } from './FormProvider'
 import {
   CustomPropTypes,
@@ -25,11 +25,10 @@ import {
   rxUtils,
 } from '../utils'
 import * as composites from '../utils/composites'
-
 import validate from '../utils/composites/validateField'
 
 /**
- * Shorthand: Binds the component's reference to the function's context and calls
+ * Binds the component's reference to the function's context and calls
  * an optional callback function to access that reference.
  * @param {HTMLElement} element
  * @param {Function} callback
@@ -53,8 +52,8 @@ export default class Form extends React.Component {
     action: PropTypes.func.isRequired, // form submit action
 
     /* Validation */
-    rules: TValidationRules,
-    messages: TValidationMessages,
+    rules: ValidationRulesPropType,
+    messages: ValidationMessagesPropType,
 
     /* Events */
     onFirstChange: PropTypes.func,
@@ -113,7 +112,8 @@ export default class Form extends React.Component {
      * to immutable, which is an expensive procedure. Moreover, messages
      * are unlikely to change during the component's lifecycle. It should
      * be safe to store them.
-     * Note: Messages passed from FormProvider (context messages) are already immutable.
+     * Note: Messages passed from FormProvider (context messages) are
+     * already immutable.
      */
     this.messages = explicitMessages ? fromJS(explicitMessages) : messages
 
@@ -145,8 +145,7 @@ export default class Form extends React.Component {
   ensafeHandler = (handlerFunc) => {
     return (args) => {
       const { fieldProps } = args
-      const hasField = this.state.fields.hasIn(fieldProps.fieldPath)
-      return hasField && handlerFunc(args)
+      return this.state.fields.hasIn(fieldProps.fieldPath) && handlerFunc(args)
     }
   }
 
@@ -160,18 +159,18 @@ export default class Form extends React.Component {
   registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
     const { fields } = this.state
     const { fieldPath } = initialFieldProps
-    const isAlreadyExist = fields.hasIn(fieldPath)
+    const fieldAlreadyExists = fields.hasIn(fieldPath)
 
     console.groupCollapsed(
       `Form @ registerField @ ${initialFieldProps.displayFieldPath}`,
     )
     console.log('field options:', fieldOptions)
     console.log('initial field record:', initialFieldProps.toJS())
-    console.log('field already exists?', isAlreadyExist)
+    console.log('field already exists?', fieldAlreadyExists)
 
     /* Warn on field duplicates */
     invariant(
-      !(isAlreadyExist && !fieldOptions.allowMultiple),
+      !(fieldAlreadyExists && !fieldOptions.allowMultiple),
       'Cannot register field `%s`, the field with ' +
         'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
         'or `Field.Group` have unique names.',
@@ -187,7 +186,7 @@ export default class Form extends React.Component {
       fields,
     })
 
-    console.log('"beforeRegister" hook called successfully!')
+    console.log('`beforeRegister` hook called successfully!')
     console.log(
       'fieldProps after "beforeRegister":',
       fieldProps && fieldProps.toJS(),
@@ -205,7 +204,7 @@ export default class Form extends React.Component {
     console.log('next fields:', nextFields && nextFields.toJS())
 
     /**
-     * Synchronize the field record with the field props.
+     * Synchronize the field record with the field component's props.
      * Create a props change observer to keep field's record in sync with
      * the props changes of the respective field component. Only the changes
      * in the props relative to the record should be observed and synchronized.
@@ -249,39 +248,37 @@ export default class Form extends React.Component {
     console.log('next rx rules composed:', nextRxRules && nextRxRules.toJS())
     console.groupEnd()
 
-    this.setState({ fields: nextFields, rxRules: nextRxRules }, () => {
-      const fieldRegisteredEvent = camelize(...fieldPath, 'registered')
-      eventEmitter.emit(fieldRegisteredEvent, fieldProps)
-
-      if (fieldOptions.shouldValidateOnMount) {
-        this.validateField({
-          fieldProps,
-
-          /**
-           * Enforce the validation function to use the "fieldProps" provided directly.
-           * By default, it will try to grab the field record from the state, which is
-           * missing at this point of execution.
-           */
-          forceProps: true,
-        })
-      }
-
-      /* Create reactive props subscriptions */
-      rxUtils.createPropsSubscriptions({
-        fieldProps,
+    this.setState(
+      {
         fields: nextFields,
-        form: this,
-      })
-    })
-  }
+        rxRules: nextRxRules,
+      },
+      () => {
+        const fieldRegisteredEvent = camelize(...fieldPath, 'registered')
+        eventEmitter.emit(fieldRegisteredEvent, fieldProps)
 
-  /**
-   * Determines if the provided field has its record within the state.
-   * @param {Record} fieldProps
-   * @return {boolean}
-   */
-  hasField = (fieldProps) => {
-    return this.state.fields.hasIn(fieldProps.fieldPath)
+        if (fieldOptions.shouldValidateOnMount) {
+          this.validateField({
+            fieldProps,
+
+            /**
+             * Enforce the validation function to use the "fieldProps"
+             * provided directly. By default, it will try to grab the
+             * field record from the state, which is missing at this
+             * point of execution.
+             */
+            forceProps: true,
+          })
+        }
+
+        /* Create reactive props subscriptions */
+        rxUtils.createPropsSubscriptions({
+          fieldProps,
+          fields: nextFields,
+          form: this,
+        })
+      },
+    )
   }
 
   /**
@@ -530,12 +527,14 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Returns an Object of the serialized fields.
+   * Returns a collection of serialized fields.
    * @returns {Map|Object}
    */
   serialize = () => {
-    const serialized = fieldUtils.serializeFields(this.state.fields)
-    return this.context.withImmutable ? serialized : serialized.toJS()
+    return fieldUtils.serializeFields(
+      this.state.fields,
+      this.context.withImmutable,
+    )
   }
 
   /**

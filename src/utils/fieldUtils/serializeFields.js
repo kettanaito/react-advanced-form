@@ -28,12 +28,15 @@ function predicate(fieldProps) {
 /**
  * Serializes the provided fields into immutable map.
  * @param {Map} fields
+ * @param {Boolean} withImmutable
  * @param {Function} transformValue
  * @returns {Map}
  */
 export default function serializeFields(
   fields,
+  withImmutable = true,
   transformValue = recordUtils.getValue,
 ) {
-  return flattenDeep(fields, predicate, false, transformValue)
+  const serialized = flattenDeep(fields, predicate, false, transformValue)
+  return withImmutable ? serialized : serialized.toJS()
 }
