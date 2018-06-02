@@ -2,12 +2,12 @@
  * Returns the collection of validation rules of the given selector
  * applicable to the given field.
  */
-export const getRulesBySelector = (selector, fieldRecord, schema) => {
+export const getRulesBySelector = (selector, fieldProps, schema) => {
   console.groupCollapsed(
-    `getRulesBySelector "${selector}" for "${fieldRecord.displayFieldPath}"`,
+    `getRulesBySelector "${selector}" for "${fieldProps.displayFieldPath}"`,
   )
 
-  const keyPath = [selector, fieldRecord.get(selector)]
+  const keyPath = [selector, fieldProps.get(selector)]
 
   console.log('schema:', schema && schema.toJS())
   console.log('keyPath:', keyPath)
@@ -29,9 +29,9 @@ export const getRulesBySelector = (selector, fieldRecord, schema) => {
  * Returns "type" and "name" groups of validation rules
  * relevant to the given field.
  */
-export default function getFieldRules(fieldRecord, schema) {
+export default function getFieldRules(fieldProps, schema) {
   return ['type', 'name'].reduce((rules, selector) => {
-    const rulesGroup = getRulesBySelector(selector, fieldRecord, schema)
+    const rulesGroup = getRulesBySelector(selector, fieldProps, schema)
 
     if (rulesGroup) {
       rules[selector] = rulesGroup

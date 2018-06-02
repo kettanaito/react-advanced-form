@@ -53,7 +53,7 @@ export default async function handleFieldChange(
   }
 
   /* Update field's value */
-  const updatedFieldRecord = recordUtils.setValue(
+  const updatedFieldProps = recordUtils.setValue(
     recordUtils.resetValidityState(
       recordUtils.resetValidationState(fieldProps),
     ),
@@ -61,13 +61,13 @@ export default async function handleFieldChange(
   )
 
   /* Cancel any pending async validation */
-  const { pendingAsyncValidation } = updatedFieldRecord
+  const { pendingAsyncValidation } = updatedFieldProps
   if (pendingAsyncValidation) {
     pendingAsyncValidation.cancel()
   }
 
   if (onUpdateValue) {
-    await onUpdateValue(updatedFieldRecord)
+    await onUpdateValue(updatedFieldProps)
   }
 
   /**
@@ -82,7 +82,7 @@ export default async function handleFieldChange(
 
   const nextFieldProps = await appropriateValidation({
     chain: [validateSync],
-    fieldProps: updatedFieldRecord,
+    fieldProps: updatedFieldProps,
 
     //
     // NOTE

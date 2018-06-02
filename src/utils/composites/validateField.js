@@ -17,17 +17,16 @@ export default function validateField(resolverArgs) {
   const validationResult = validate(resolverArgs)
   const wasValidated = () => typeof validationResult.expected !== 'undefined'
 
-  console.log('validated!')
-  console.log({ validationResult })
+  console.log('validated!', validationResult)
 
-  const updateFieldRecord = when(wasValidated, () =>
+  const updateFieldProps = when(wasValidated, () =>
     reflectValidation(resolverArgs, validationResult),
   )
-  const nextFieldRecord = updateFieldRecord(fieldProps)
+  const nextFieldProps = updateFieldProps(fieldProps)
 
-  console.log('nextFieldRecord', nextFieldRecord)
-  console.warn('nextFieldRecord:', nextFieldRecord && nextFieldRecord.toJS())
+  console.log('nextFieldProps', nextFieldProps)
+  console.warn('nextFieldProps:', nextFieldProps && nextFieldProps.toJS())
   console.groupEnd()
 
-  return nextFieldRecord
+  return nextFieldProps
 }

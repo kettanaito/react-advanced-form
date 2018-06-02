@@ -93,39 +93,39 @@ export const createField = (initialProps) => {
  * @param {Field} fieldRecord
  * @param {Map} collection
  */
-export const updateCollectionWith = (fieldRecord, collection) => {
-  return collection.setIn(fieldRecord.fieldPath, fieldRecord)
+export const updateCollectionWith = (fieldProps, collection) => {
+  return collection.setIn(fieldProps.fieldPath, fieldProps)
 }
 
 /**
  * Returns the value of the given field.
- * @param {Field} fieldRecord
+ * @param {Field} fieldProps
  * @returns {any}
  */
-export const getValue = (fieldRecord) => {
-  return fieldRecord.get(fieldRecord.get('valuePropName'))
+export const getValue = (fieldProps) => {
+  return fieldProps.get(fieldProps.get('valuePropName'))
 }
 
 /**
  * Updates the value prop of the given field with the given next value.
- * @param {Map} fieldRecord
+ * @param {Map} fieldProps
  * @param {any} nextValue
  */
-export function setValue(fieldRecord, nextValue) {
-  return fieldRecord.set(fieldRecord.get('valuePropName'), nextValue)
+export function setValue(fieldProps, nextValue) {
+  return fieldProps.set(fieldProps.get('valuePropName'), nextValue)
 }
 
 /**
  * Sets the given error messages to the given field.
  * When no errors are provided, returns field props intact.
- * @param {Map} fieldRecord
+ * @param {Map} fieldProps
  * @param {???} errors
  */
-export const setErrors = (fieldRecord, errors = undefined) => {
+export const setErrors = (fieldProps, errors = undefined) => {
   /* Allow "null" as explicit empty "errors" value */
   return typeof errors !== 'undefined'
-    ? fieldRecord.set('errors', errors)
-    : fieldRecord
+    ? fieldProps.set('errors', errors)
+    : fieldProps
 }
 
 /**
@@ -133,8 +133,8 @@ export const setErrors = (fieldRecord, errors = undefined) => {
  * @param {Map} fieldRecord
  * @returns {Map}
  */
-export const resetValidityState = (fieldRecord) => {
-  return fieldRecord.merge({
+export const resetValidityState = (fieldProps) => {
+  return fieldProps.merge({
     valid: false,
     invalid: false,
   })
@@ -142,32 +142,32 @@ export const resetValidityState = (fieldRecord) => {
 
 /**
  * Sets the validity state props (valid/invalid) on the given field.
- * @param {Map} fieldRecord
+ * @param {Map} fieldProps
  * @param {Boolean} shouldValidate
  * @returns {Map}
  */
-export const updateValidityState = (fieldRecord, shouldValidate = true) => {
+export const updateValidityState = (fieldProps, shouldValidate = true) => {
   if (!shouldValidate) {
-    return resetValidityState(fieldRecord)
+    return resetValidityState(fieldProps)
   }
 
-  const { validated, expected } = fieldRecord
-  const value = getValue(fieldRecord)
+  const { validated, expected } = fieldProps
+  const value = getValue(fieldProps)
   const nextValid = !!value && validated && expected
   const nextInvalid = validated && !expected
 
-  return fieldRecord.merge({
+  return fieldProps.merge({
     valid: nextValid,
     invalid: nextInvalid,
   })
 }
 
-export const beginValidation = (fieldRecord) => {
-  return resetValidityState(setErrors(fieldRecord, null))
+export const beginValidation = (fieldProps) => {
+  return resetValidityState(setErrors(fieldProps, null))
 }
 
-export const endValidation = (fieldRecord) => {
-  return fieldRecord.merge({
+export const endValidation = (fieldProps) => {
+  return fieldProps.merge({
     focused: false,
     validating: false,
   })
@@ -175,11 +175,11 @@ export const endValidation = (fieldRecord) => {
 
 /**
  * Resets the validation state of the given field.
- * @param {Map} fieldRecord
+ * @param {Map} fieldProps
  * @returns {Map}
  */
-export const resetValidationState = (fieldRecord) => {
-  return fieldRecord.merge({
+export const resetValidationState = (fieldProps) => {
+  return fieldProps.merge({
     validating: false,
     validated: false,
     validatedSync: false,
@@ -191,31 +191,19 @@ export const resetValidationState = (fieldRecord) => {
 
 /**
  * Resets the given field to its initial state.
- * @param {Map} fieldRecord
+ * @param {Map} fieldProps
  * @returns {Map}
  */
-export const reset = (fieldRecord) => {
-  return fieldRecord.clear()
-
-  // return resetValidationState(
-  //   resetValidityState(
-  //     setValue(
-  //       setErrors(
-  //         fieldRecord.set('expected', true),
-  //         null
-  //       ),
-  //       initialValue
-  //     )
-  //   )
-  // );
+export const reset = (fieldProps) => {
+  return fieldProps.clear()
 }
 
 /**
  * Sets the given field's focus.
- * @param {Map} fieldRecord
+ * @param {Map} fieldProps
  * @param {Boolean} isFocused
  * @returns {Map}
  */
-export const setFocus = (fieldRecord, isFocused = true) => {
-  return fieldRecord.set('focused', isFocused)
+export const setFocus = (fieldProps, isFocused = true) => {
+  return fieldProps.set('focused', isFocused)
 }
