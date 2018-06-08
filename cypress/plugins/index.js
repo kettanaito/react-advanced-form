@@ -1,4 +1,3 @@
-const path = require('path')
 const webpack = require('webpack')
 const webpackPreprocessor = require('@cypress/webpack-preprocessor')
 const storybookWebpackConfig = require('../../.storybook/webpack.config')
