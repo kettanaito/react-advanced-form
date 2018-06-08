@@ -1,3 +1,4 @@
-describe('Misc', function () {
-  require('./AjaxPrefilling');
-});
+describe('Misc', function() {
+  require('./UI')
+  require('./AjaxPrefilling')
+})
