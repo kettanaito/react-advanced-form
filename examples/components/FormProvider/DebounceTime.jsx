@@ -9,14 +9,14 @@ export default class DebounceTime extends React.Component {
         <h3>Default debounce time</h3>
         <FormProvider>
           <Form>
-            <Input id="fieldOne" name="foo" rule={/foo/} />
+            <Input name="fieldOne" rule={/foo/} />
           </Form>
         </FormProvider>
 
         <div>Custom debounce time</div>
         <FormProvider debounceTime={0}>
           <Form>
-            <Input id="fieldTwo" name="foo" rule={/foo/} />
+            <Input name="fieldTwo" rule={/foo/} />
           </Form>
         </FormProvider>
       </div>

@@ -75,7 +75,7 @@ export default async function handleFieldChange(
    * For example, for immediate clearing of field value the validation must be
    * performed immediately, while for typing the value it must be debounced.
    */
-  const shouldDebounce = !!prevValue && !!nextValue
+  const shouldDebounce = !!nextValue
   const appropriateValidation = shouldDebounce
     ? fieldProps.debounceValidate
     : validateField
