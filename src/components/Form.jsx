@@ -193,8 +193,6 @@ export default class Form extends React.Component {
     )
 
     if (!fieldProps) {
-      console.log('no field props, return')
-      console.groupEnd()
       return
     }
 

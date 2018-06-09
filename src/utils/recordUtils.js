@@ -153,24 +153,22 @@ export const updateValidityState = (fieldProps, shouldValidate = true) => {
 
   const { validated, expected } = fieldProps
   const value = getValue(fieldProps)
-  const nextValid = !!value && validated && expected
-  const nextInvalid = validated && !expected
 
   return fieldProps.merge({
-    valid: nextValid,
-    invalid: nextInvalid,
+    valid: !!value && validated && expected,
+    invalid: validated && !expected,
   })
 }
 
 export const beginValidation = (fieldProps) => {
-  return resetValidityState(setErrors(fieldProps, null))
+  // TODO
+  // This is still wrong. If you fire this method after the field has been
+  // validated onChange (and had some errors), it will reset the errors :/
+  return setErrors(fieldProps.set('validating', true), null)
 }
 
 export const endValidation = (fieldProps) => {
-  return fieldProps.merge({
-    focused: false,
-    validating: false,
-  })
+  return fieldProps.set('validating', false)
 }
 
 /**

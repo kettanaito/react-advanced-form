@@ -74,8 +74,8 @@ export default function connectField(options) {
         /**
          * Register the field in the parent Form's state and store its internal record
          * reference (contextProps). Also, assume the field's contextProps, since they
-         * are composed at this moment. There is no need to wait for the next re-rendering
-         * to access them.
+         * are composed at this moment. There is no need to wait for the next
+         * re-rendering to access them.
          */
         this.contextProps = this.register()
       }
@@ -126,10 +126,11 @@ export default function connectField(options) {
           // Debounce an isolate validateField method to handle formless fields
           //
           /**
-           * When the validate method is debounced on the form level, different calls to it
-           * from different fields are going to overlap and conflict with each other.
-           * Wrapping the validate method for each field means that each re-occuring call to that method is
-           * going to be debounced relatively to the field, regardless of the other fields being validated.
+           * When the validate method is debounced on the form level, different
+           * calls to it from different fields are going to overlap and conflict
+           * with each other. Wrapping the validate method for each field means
+           * that each re-occuring call to that method is going to be debounced
+           * relatively to the field, regardless of the other fields being validated.
            */
           debounceValidate: debounce(form.validateField, form.debounceTime),
           skip: prunedProps.skip,
@@ -178,44 +179,6 @@ export default function connectField(options) {
         })
 
         return fieldRecord
-
-        //
-        //
-        //
-        //
-        //
-        //
-
-        // const defaultFieldRecord = {
-        //   /* Internals */
-        //   ref: this,
-        //   fieldPath,
-
-        //   /* General */
-        //   name: directProps.name,
-        //   type: directProps.type,
-        //   valuePropName,
-        //   [valuePropName]: registeredValue,
-        //   initialValue: directProps.hasOwnProperty('initialValue') ? initialValue : registeredValue,
-
-        //   /* States */
-        //   controlled: directProps.hasOwnProperty('value'), // FIXME checkboxes are never controlled
-        //   focused: false,
-
-        //   /* Validation */
-        //   errors: null,
-        //   required: directProps.required,
-        //   expected: true,
-        //   skip: directProps.skip,
-        //   valid: false,
-        //   invalid: false,
-        //   validating: false,
-        //   validated: false,
-        //   validatedSync: false,
-        //   validatedAsync: false,
-        //   validSync: false,
-        //   validAsync: false
-        // };
       }
 
       componentWillReceiveProps(nextProps) {
@@ -226,9 +189,10 @@ export default function connectField(options) {
 
         /**
          * Handle value change of controlled fields.
-         * The responsibility of value update of controlled fields is delegated to the end developer.
-         * However, that still means that the new value should be propagated to the Form's state to guarantee
-         * the field's internal record is updated respectively.
+         * The responsibility of value update of controlled fields is delegated
+         * to the end developer. However, that still means that the new value
+         * should be propagated to the Form's state to guarantee the field's
+         * internal record is updated respectively.
          */
         const controlled = contextProps.get('controlled')
         const nextValue = nextProps[valuePropName]

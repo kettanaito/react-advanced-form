@@ -3,17 +3,20 @@ import * as recordUtils from '../recordUtils'
 import validateField from './validateField'
 
 export default function handleFieldBlur({ event, fieldProps }, fields, form) {
+  // TODO
+  // Unclear how to reflect the validation start with the "shouldValidate"
+  // logic being called deeply within the validation algorithm.
   const updatedFieldProps = recordUtils.beginValidation(
     recordUtils.setFocus(fieldProps, false),
   )
 
-  const validatedField = validateField({
+  const validatedFieldProps = validateField({
     fieldProps: updatedFieldProps,
     fields,
     form,
   })
 
-  const nextFieldProps = recordUtils.endValidation(validatedField)
+  const nextFieldProps = recordUtils.endValidation(validatedFieldProps)
   const nextFields = recordUtils.updateCollectionWith(nextFieldProps, fields)
 
   const { onBlur } = fieldProps

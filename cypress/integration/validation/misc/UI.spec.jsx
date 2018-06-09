@@ -8,6 +8,7 @@ describe('UI behavior', function() {
   })
   afterEach(() => {
     cy.get('[name="fieldOne"]').clear()
+    cy.get('[name="fieldTwo"]').clear()
   })
 
   it('Reflects and persists valid field state', () => {
@@ -30,5 +31,38 @@ describe('UI behavior', function() {
       .should('have.class', 'is-invalid')
       .blur()
       .should('have.class', 'is-invalid')
+  })
+
+  it('Transitions from invalid to valid state', () => {
+    cy
+      .get('[name="fieldTwo"]')
+      .type('foo')
+      .wait(defaultDebounceTime)
+      .should('have.class', 'is-invalid')
+      .type('o')
+      .wait(defaultDebounceTime)
+      .should('have.class', 'is-valid')
+      .should('not.have.class', 'is-invalid')
+  })
+
+  it('Transitions from valid to invalid state', () => {
+    cy
+      .get('[name="fieldTwo"]')
+      .type('fooo')
+      .wait(defaultDebounceTime)
+      .should('have.class', 'is-valid')
+      .type('{backspace}')
+      .wait(defaultDebounceTime)
+      .should('have.class', 'is-invalid')
+      .should('not.have.class', 'is-valid')
+  })
+
+  it('Handles "validating" property', () => {
+    cy
+      .get('[name="fieldOne"]')
+      .type('123')
+      .should('have.class', 'is-validating')
+      .wait(defaultDebounceTime)
+      .should('not.have.class', 'is-validating')
   })
 })
