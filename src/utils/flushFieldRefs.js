@@ -2,8 +2,8 @@
 import dispatch from './dispatch'
 import createPropGetter from './fieldUtils/createPropGetter'
 
-type TFieldRefsResult = {
-  refs: [string][],
+type TFieldRefs = {
+  refs: string[][],
   initialValue: mixed,
 }
 
@@ -14,7 +14,7 @@ type TFieldRefsResult = {
 export default function flushFieldRefs(
   method: Function,
   methodArgs: mixed,
-): TFieldRefsResult {
+): TFieldRefs {
   const { fields, form } = methodArgs
   const refs = []
   const fieldPropGetter = createPropGetter(fields, (propRefPath) =>

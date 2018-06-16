@@ -6,17 +6,16 @@ export default function handleFieldBlur({ event, fieldProps }, fields, form) {
   // TODO
   // Unclear how to reflect the validation start with the "shouldValidate"
   // logic being called deeply within the validation algorithm.
-  const updatedFieldProps = recordUtils.beginValidation(
-    recordUtils.setFocus(fieldProps, false),
-  )
+  const updatedFieldProps = recordUtils.setFocus(fieldProps, false)
 
-  const validatedFieldProps = validateField({
+  const nextFieldProps = validateField({
+    __SOURCE__: 'onFieldBlur',
     fieldProps: updatedFieldProps,
     fields,
     form,
   })
 
-  const nextFieldProps = recordUtils.endValidation(validatedFieldProps)
+  // const nextFieldProps = recordUtils.endValidation(validatedFieldProps)
   const nextFields = recordUtils.updateCollectionWith(nextFieldProps, fields)
 
   const { onBlur } = fieldProps
@@ -36,6 +35,7 @@ export default function handleFieldBlur({ event, fieldProps }, fields, form) {
   console.groupCollapsed(`handleFieldBlur @ ${fieldProps.displayFieldPath}`)
   console.log('-> fieldProps', fieldProps.toJS())
   console.log('<- fieldProps:', nextFieldProps.toJS())
+  console.log('next fields:', nextFields && nextFields.toJS())
   console.groupEnd()
 
   return { nextFieldProps, nextFields }

@@ -67,6 +67,10 @@ export default async function handleFieldChange(
   }
 
   if (onUpdateValue) {
+    // TODO
+    // Is this even needed?
+    // Maybe, instead return the field props at this point and handle
+    // callback call as a separate logic on top of each handler method.
     await onUpdateValue(updatedFieldProps)
   }
 
@@ -81,6 +85,7 @@ export default async function handleFieldChange(
     : validateField
 
   const nextFieldProps = await appropriateValidation({
+    __SOURCE__: 'onFieldChange',
     chain: [validateSync],
     fieldProps: updatedFieldProps,
 
@@ -96,7 +101,13 @@ export default async function handleFieldChange(
     form,
   })
 
-  const nextFields = recordUtils.updateCollectionWith(nextFieldProps, fields)
+  /**
+   * Composition of the next field is irrelevant here.
+   * Because "onUpdateValue" hook creates a side-effect fields update,
+   * making the "fields" instance passed to "handleFieldChange" function
+   * outdated.
+   */
+  // const nextFields = recordUtils.updateCollectionWith(nextFieldProps, fields)
 
   /**
    * Call custom "onChange" handler for uncontrolled fields only.
@@ -121,5 +132,5 @@ export default async function handleFieldChange(
     )
   }
 
-  return { nextFieldProps, nextFields }
+  return { nextFieldProps }
 }

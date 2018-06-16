@@ -19,10 +19,10 @@ export default function handleFieldFocus({ event, fieldProps }, fields, form) {
     )
   }
 
-  console.groupCollapsed(`handleFieldFocus @ ${fieldProps.displayFieldPath}`)
-  console.log('-> fieldProps:', fieldProps.toJS())
-  console.log('<- fieldProps:', nextFieldProps.toJS())
-  console.groupEnd()
+  // console.groupCollapsed(`handleFieldFocus @ ${fieldProps.displayFieldPath}`)
+  // console.log('-> fieldProps:', fieldProps.toJS())
+  // console.log('<- fieldProps:', nextFieldProps.toJS())
+  // console.groupEnd()
 
   return { nextFieldProps, nextFields }
 }

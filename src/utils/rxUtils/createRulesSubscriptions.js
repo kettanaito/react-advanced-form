@@ -95,15 +95,26 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
             fieldProps.fieldPath,
           )
 
-          form.eventEmitter.emit('validateField', {
-            fieldProps,
+          console.log('\n\n\n\n')
+          console.groupCollapsed(
+            `rule subscription for "${currentFieldProps.displayFieldPath}"`,
+          )
+          console.log(
+            'currentFieldProps:',
+            currentFieldProps && currentFieldProps.toJS(),
+          )
+          console.groupEnd()
+          console.log('\n\n\n\n')
 
+          form.eventEmitter.emit('validateField', {
+            __SOURCE__: 'createRulesSubscriptions',
             /**
              * Cannot hard-code "true" since that would validate
              * empty optional fields as unexpected. That is because
              * "force" is not the part of "shouldValidate" chain.
              */
             force: !!recordUtils.getValue(currentFieldProps),
+            fieldProps: currentFieldProps,
           })
         },
       })

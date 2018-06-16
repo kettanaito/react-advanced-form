@@ -8,9 +8,15 @@ import reflectValidation from '../validation/reflectors/reflectValidation'
  */
 export default function validateField(resolverArgs) {
   console.groupCollapsed(
-    `validateField @ ${resolverArgs.fieldProps.displayFieldPath}`,
+    `validateField @ ${resolverArgs.fieldProps.displayFieldPath} @ ${
+      resolverArgs.__SOURCE__
+    }`,
   )
   console.log({ resolverArgs })
+  console.groupCollapsed('resolver args')
+  console.log('fieldProps:', resolverArgs.fieldProps.toJS())
+  console.log('fields:', resolverArgs.fields.toJS())
+  console.groupEnd()
 
   const { fieldProps } = resolverArgs
   const validationResult = validate(resolverArgs)
@@ -22,6 +28,8 @@ export default function validateField(resolverArgs) {
     console.warn('No validation conducted, bypassing...', fieldProps.toJS())
     return fieldProps
   }
+
+  console.groupEnd()
 
   return reflectValidation(resolverArgs, validationResult)
 }

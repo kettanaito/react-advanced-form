@@ -257,6 +257,7 @@ export default class Form extends React.Component {
 
         if (fieldOptions.shouldValidateOnMount) {
           this.validateField({
+            __SOURCE__: 'validateOnMount',
             fieldProps,
 
             /**
@@ -294,8 +295,8 @@ export default class Form extends React.Component {
     console.groupCollapsed(
       `Form @ updateFieldsWith @ ${fieldProps.displayFieldPath}`,
     )
-    console.log('fieldProps:', fieldProps.toJS())
-    console.log('nextFields:', nextFields.toJS())
+    console.log('field props:', fieldProps.toJS())
+    console.log('next fields:', nextFields.toJS())
     console.groupEnd(' ')
 
     return new Promise((resolve, reject) => {
@@ -366,7 +367,7 @@ export default class Form extends React.Component {
    */
   handleFieldChange = this.ensafeHandler(async (args) => {
     const { fields, dirty } = this.state
-    const { nextFields } = await composites.handleFieldChange(
+    const { nextFieldProps } = await composites.handleFieldChange(
       args,
       fields,
       this,
@@ -375,7 +376,7 @@ export default class Form extends React.Component {
       },
     )
 
-    this.setState({ fields: nextFields })
+    this.updateFieldsWith(nextFieldProps)
 
     /* Mark form as dirty if it's not already */
     if (!dirty) {
@@ -399,6 +400,7 @@ export default class Form extends React.Component {
    */
   validateField = async (args) => {
     const {
+      __SOURCE__,
       chain,
       force = false,
       fieldProps: explicitFieldProps,
@@ -415,22 +417,25 @@ export default class Form extends React.Component {
     fieldProps = fieldProps || explicitFieldProps
 
     console.groupCollapsed(
-      `Form @ validateField @ ${fieldProps.displayFieldPath}`,
+      `Form @ validateField @ ${fieldProps.displayFieldPath} @ ${__SOURCE__}`,
     )
     console.warn('stack trace')
-    console.log('validation chain', chain)
-    console.log('value', fieldProps.get(fieldProps.get('valuePropName')))
+    console.log('validation chain:', chain)
+    console.log('value:', fieldProps.get(fieldProps.get('valuePropName')))
     console.log('fieldProps', fieldProps.toJS())
+    console.log('fields:', fields && fields.toJS())
     console.log('explicit fields:', explicitFields && explicitFields.toJS())
-    console.log('force props?', forceProps)
+    console.log('should force props?', forceProps)
+    console.log('should update fields?', shouldUpdateFields)
     console.groupEnd()
 
     /* Perform the validation */
     const validatedField = await validate({
+      __SOURCE__,
       chain,
       force,
       fieldProps,
-      fields: this.state.fields,
+      fields,
       form: this,
     })
 
@@ -456,7 +461,12 @@ export default class Form extends React.Component {
     /* Validate only the fields matching the optional selection */
     const validationSequence = flattenedFields.reduce(
       (validations, fieldProps) => {
-        return validations.concat(this.validateField({ fieldProps }))
+        return validations.concat(
+          this.validateField({
+            __SOURCE__: 'Form.validate()',
+            fieldProps,
+          }),
+        )
       },
       [],
     )
