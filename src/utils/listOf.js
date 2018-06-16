@@ -8,7 +8,7 @@ type TFunc = (...args: mixed[]) => mixed
 export default function listOf(...funcs: TFunc[]) {
   return (...args: mixed[]) => {
     return funcs.reduce((nextArr, func) => {
-      const funcRes: mixed = func(...args)
+      const funcRes: ?mixed = func(...args)
       return funcRes ? nextArr.concat(funcRes) : nextArr
     }, [])
   }
