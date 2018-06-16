@@ -10,6 +10,7 @@ describe('Submit', function() {
   })
 
   it('Prevents form submit until all fields are expected', () => {
+    cy.wait(20)
     cy.get('button[type="submit"]').click()
     cy.get('[name="email"]').should('have.class', 'is-invalid')
     cy.get('[name="password"]').should('have.class', 'is-invalid')

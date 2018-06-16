@@ -1,6 +1,4 @@
-import React from 'react';
-
-describe('Synchronous validation', function () {
-  require('./Form.props.rules');
-  require('./Field.props.rule');
-});
+describe('Synchronous validation', () => {
+  require('./Field.props.rule')
+  require('./Form.props.rules')
+})

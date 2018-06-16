@@ -1,4 +1,4 @@
-describe('Misc', function() {
+describe('Misc', () => {
   require('./UI')
   require('./AjaxPrefilling')
 })

@@ -11,7 +11,7 @@ export default class Submit extends React.Component {
         <Input name="password" type="password" label="Password" required />
         <Checkbox
           name="termsAndConditions"
-          labels="I agree to Terms and Conditions"
+          label="I agree to Terms and Conditions"
           required
         />
 

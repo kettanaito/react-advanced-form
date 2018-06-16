@@ -29,5 +29,5 @@ import { mount } from 'cypress-react-unit-test'
 import StoryContainer from './StoryContainer'
 
 Cypress.Commands.add('loadStory', (story) => {
-  return mount(<StoryContainer>{story}</StoryContainer>)
+  mount(<StoryContainer>{story}</StoryContainer>)
 })

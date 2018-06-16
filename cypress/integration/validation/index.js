@@ -1,5 +1,5 @@
-describe('Validation', function() {
+describe('Validation', () => {
   require('./sync')
-  require('./async')
+  // require('./async')
   require('./misc')
 })
