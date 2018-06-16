@@ -34,7 +34,7 @@ function predicate(fieldProps) {
  */
 export default function serializeFields(
   fields,
-  withImmutable = true,
+  withImmutable,
   transformValue = recordUtils.getValue,
 ) {
   const serialized = flattenDeep(fields, predicate, false, transformValue)
