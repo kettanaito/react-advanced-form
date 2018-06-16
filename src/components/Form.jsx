@@ -367,7 +367,7 @@ export default class Form extends React.Component {
    */
   handleFieldChange = this.ensafeHandler(async (args) => {
     const { fields, dirty } = this.state
-    const { nextFieldProps } = await composites.handleFieldChange(
+    const changePayload = await composites.handleFieldChange(
       args,
       fields,
       this,
@@ -376,7 +376,13 @@ export default class Form extends React.Component {
       },
     )
 
-    this.updateFieldsWith(nextFieldProps)
+    /**
+     * Change handler for controlled fields does not return the next field props
+     * record, therefore, need to explicitly ensure the payload was returned.
+     */
+    if (changePayload) {
+      this.updateFieldsWith(changePayload.nextFieldProps)
+    }
 
     /* Mark form as dirty if it's not already */
     if (!dirty) {
