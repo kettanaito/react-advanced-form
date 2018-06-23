@@ -6,13 +6,25 @@ export const fieldSelector = '[name="fieldOne"]'
 
 const rules = {
   type: {
-    text: ({ value }) => value.length > 2,
+    text: ({ value }) => {
+      console.groupCollapsed('type.text rule')
+      console.log({ value })
+      console.warn('passes?', value.length > 2)
+      console.groupEnd()
+      return value.length > 2
+    },
   },
   name: {
     fieldOne: ({ value, fieldProps }) => {
       const {
         ref: { props },
       } = fieldProps
+
+      console.groupCollapsed('name.fieldOne rule')
+      console.log({ value })
+      console.warn('passes?', value !== 'foo')
+      console.groupEnd()
+
       return value !== 'foo'
     },
     fieldTwo: ({ value, get }) => {

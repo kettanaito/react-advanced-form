@@ -126,6 +126,8 @@ describe('Reactive props', function() {
   it('Field.props.rule behaves as a reactive prop', () => {
     cy.loadStory(<FieldReactiveField />)
 
+    // TODO Finish the test scenario!
+
     /**
      * Properly validates the reactive field when its value changes.
      */

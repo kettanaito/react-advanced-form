@@ -1,7 +1,13 @@
-import reduceWhile from 'ramda/src/reduceWhile'
+export const returnsExpected = async (reducedResult) => {
+  const awaitedResult = await reducedResult
+  console.log(' ')
+  console.groupCollapsed('returns expeted?')
+  console.log('reduced result:', awaitedResult)
+  console.warn('expected?', awaitedResult.expected)
+  console.groupEnd()
+  console.log(' ')
 
-export const returnsExpected = (reducedResult) => {
-  return reducedResult.expected
+  return awaitedResult.expected
 }
 
 const getInitialState = () => ({
@@ -10,41 +16,49 @@ const getInitialState = () => ({
   rejectedRules: [],
 })
 
-const createReducer = (...args) => {
-  return (acc, func) => {
-    const { rejectedRules: prevRejectedRules } = acc
+const createReducer = (...args) => async (acc, func) => {
+  const prevAcc = await acc
+  const {
+    rejectedRules: prevRejectedRules,
+    validators: prevValidators,
+  } = prevAcc
 
-    console.groupCollapsed('reduceWhileExpected')
-    console.log('acc:', acc)
-    console.log('current func:', func)
+  console.log(' ')
+  console.groupCollapsed('reduceWhileExpected')
+  console.log('prevAcc:', prevAcc)
+  console.log('current func:', func)
 
-    const funcResult = func(...args)
-    console.log('func result:', funcResult)
+  const funcResult = await func(...args)
+  console.log('func result:', funcResult)
+
+  if (!funcResult) {
+    console.warn('no func res, returning prevAcc!')
     console.groupEnd()
+    console.log(' ')
 
-    if (!funcResult) {
-      return acc
-    }
-
-    const nextValidators = funcResult.name
-      ? acc.validators.concat(funcResult.name)
-      : acc.validators
-
-    const nextExpected = funcResult.expected
-    const nextRejectedRules = funcResult.rejectedRules
-      ? prevRejectedRules.concat(funcResult.rejectedRules)
-      : prevRejectedRules
-
-    const nextAcc = {
-      expected: nextExpected,
-      rejectedRules: nextRejectedRules,
-      validators: nextValidators,
-    }
-
-    console.log('returning "nextAcc":', nextAcc)
-
-    return nextAcc
+    return prevAcc
   }
+
+  const { name, expected, rejectedRules } = funcResult
+
+  const nextValidators = name ? prevValidators.concat(name) : prevValidators
+
+  const nextExpected = expected
+  const nextRejectedRules = rejectedRules
+    ? prevRejectedRules.concat(rejectedRules)
+    : prevRejectedRules
+
+  const nextAcc = {
+    expected: nextExpected,
+    rejectedRules: nextRejectedRules,
+    validators: nextValidators,
+  }
+
+  console.warn('returning "nextAcc":', nextAcc)
+  console.groupEnd()
+  console.log(' ')
+
+  return nextAcc
 }
 
 /**
@@ -64,11 +78,8 @@ export const reduceResults = (funcs) => {
  */
 export const reduceResultsWhile = (predicate, funcs) => {
   return (...args) => {
-    return reduceWhile(
-      predicate,
-      createReducer(...args),
-      getInitialState(),
-      funcs,
-    )
+    return funcs.reduce(async (acc, func) => {
+      return (await predicate(acc)) ? createReducer(...args)(acc, func) : acc
+    }, getInitialState())
   }
 }

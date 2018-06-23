@@ -12,10 +12,10 @@ export default async function validateField(resolverArgs) {
       resolverArgs.__SOURCE__
     }`,
   )
-  console.log({ resolverArgs })
   console.groupCollapsed('resolver args')
+  console.log('resolverArgs:', resolverArgs)
   console.log('fieldProps:', resolverArgs.fieldProps.toJS())
-  console.log('fields:', resolverArgs.fields.toJS())
+  console.log('fields:', resolverArgs.fields && resolverArgs.fields.toJS())
   console.groupEnd()
 
   const { fieldProps } = resolverArgs

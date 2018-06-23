@@ -11,7 +11,7 @@ import applyFormRules from './applyFormRules'
 
 const hasFormRules = (rules) => rules && Object.keys(rules).length > 0
 
-export default function validateSync(resolverArgs, force) {
+export default async function validateSync(resolverArgs, force) {
   console.group('validateSync', resolverArgs.fieldProps.displayFieldPath)
 
   const { fieldProps, form } = resolverArgs
@@ -33,9 +33,11 @@ export default function validateSync(resolverArgs, force) {
     addWhen(relevantFormRules, hasFormRules, applyFormRules),
   )(resolverArgs)
 
+  console.log('rules list:', rulesList)
+
   const result =
     should && rulesList.length > 0
-      ? reduceResultsWhile(returnsExpected, rulesList)(resolverArgs)
+      ? await reduceResultsWhile(returnsExpected, rulesList)(resolverArgs)
       : null
 
   console.warn('validateSync result:', result)

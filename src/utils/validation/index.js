@@ -14,6 +14,7 @@ export default async function validate(args) {
   const resolverArgs = createRuleResolverArgs(args)
   const validatorsSeq = chain || defaultValidatorsSeq
 
+  console.log(' ')
   console.groupCollapsed(`validate @ ${args.fieldProps.displayFieldPath}`)
   console.log('validate args:', args)
   console.log('resolverArgs:', resolverArgs)
@@ -27,6 +28,7 @@ export default async function validate(args) {
 
   console.warn('TOP validationResult:', validationResult)
   console.groupEnd()
+  console.log(' ')
 
   return validationResult
 }

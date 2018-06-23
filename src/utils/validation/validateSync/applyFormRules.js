@@ -21,7 +21,7 @@ function reduceRules(rules) {
 }
 
 export default function applyFormRules(rules) {
-  return (resolverArgs) => {
+  return async (resolverArgs) => {
     console.groupCollapsed(
       `applyFormRules @ ${resolverArgs.fieldProps.displayFieldPath}`,
     )
@@ -33,7 +33,11 @@ export default function applyFormRules(rules) {
       addWhen(rules.type, isset, reduceRules),
     )(resolverArgs)
 
-    const result = reduceResultsWhile(returnsExpected, rulesList)(resolverArgs)
+    console.log('FORM RULES LIST:', rulesList)
+
+    const result = await reduceResultsWhile(returnsExpected, rulesList)(
+      resolverArgs,
+    )
 
     console.warn('applyFormRules result:', result)
     console.groupEnd()

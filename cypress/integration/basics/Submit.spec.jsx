@@ -19,7 +19,7 @@ describe('Submit', function() {
 
     cy
       .get('[name="email"]')
-      .type('foo')
+      .type(' foo') // FIXME Cypress omits the first character due to whatever reason
       .should('have.value', 'foo')
       .should('have.class', 'is-valid')
 
