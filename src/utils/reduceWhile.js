@@ -7,7 +7,12 @@ export const returnsExpected = async (reducedResult) => {
   console.groupEnd()
   console.log(' ')
 
-  return awaitedResult.expected
+  /**
+   * Explicitly forbid "false" because:
+   * - true: field is expected
+   * - undefined: no validation necessary
+   */
+  return awaitedResult.expected !== false
 }
 
 const getInitialState = () => ({
