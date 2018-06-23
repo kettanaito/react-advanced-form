@@ -9,7 +9,7 @@ const defaultValidatorsSeq = [validateSync] /* validateAsync */
  * Performs validation of the given field with the given parameters.
  * Returns the validation result.
  */
-export default function validate(args) {
+export default async function validate(args) {
   const { force, chain } = args
   const resolverArgs = createRuleResolverArgs(args)
   const validatorsSeq = chain || defaultValidatorsSeq
@@ -20,10 +20,10 @@ export default function validate(args) {
   console.log('validators chain:', validatorsSeq)
   console.log('reducing validators...')
 
-  const validationResult = reduceResultsWhile(returnsExpected, validatorsSeq)(
-    resolverArgs,
-    force,
-  )
+  const validationResult = await reduceResultsWhile(
+    returnsExpected,
+    validatorsSeq,
+  )(resolverArgs, force)
 
   console.warn('TOP validationResult:', validationResult)
   console.groupEnd()

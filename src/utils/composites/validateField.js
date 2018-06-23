@@ -6,7 +6,7 @@ import reflectValidation from '../validation/reflectors/reflectValidation'
  * reflects its results on the given field record. In case no
  * validation has occurred, field record is returned as is.
  */
-export default function validateField(resolverArgs) {
+export default async function validateField(resolverArgs) {
   console.groupCollapsed(
     `validateField @ ${resolverArgs.fieldProps.displayFieldPath} @ ${
       resolverArgs.__SOURCE__
@@ -19,7 +19,7 @@ export default function validateField(resolverArgs) {
   console.groupEnd()
 
   const { fieldProps } = resolverArgs
-  const validationResult = validate(resolverArgs)
+  const validationResult = await validate(resolverArgs)
   const wasValidated = typeof validationResult.expected !== 'undefined'
 
   console.log('validated!', validationResult)

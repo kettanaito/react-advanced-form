@@ -2,13 +2,17 @@ import dispatch from '../dispatch'
 import * as recordUtils from '../recordUtils'
 import validateField from './validateField'
 
-export default function handleFieldBlur({ event, fieldProps }, fields, form) {
+export default async function handleFieldBlur(
+  { event, fieldProps },
+  fields,
+  form,
+) {
   // TODO
   // Unclear how to reflect the validation start with the "shouldValidate"
   // logic being called deeply within the validation algorithm.
   const updatedFieldProps = recordUtils.setFocus(fieldProps, false)
 
-  const nextFieldProps = validateField({
+  const nextFieldProps = await validateField({
     __SOURCE__: 'onFieldBlur',
     fieldProps: updatedFieldProps,
     fields,
