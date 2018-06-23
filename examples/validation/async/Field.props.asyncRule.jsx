@@ -2,8 +2,6 @@ import React from 'react'
 import { Form } from '@lib'
 import { Input } from '@fields'
 
-export const fieldSelector = '[name="fieldOne"]'
-
 const messages = {
   type: {
     text: {
@@ -26,7 +24,8 @@ export default class FieldPropsAsyncRule extends React.Component {
     return new Promise((resolve, reject) => {
       setTimeout(resolve, 500)
     }).then(() => ({
-      valid: fieldProps.name === 'fieldThree' ? value !== '123' : value !== 'foo',
+      valid:
+        fieldProps.name === 'fieldThree' ? value !== '123' : value !== 'foo',
       extra: fieldProps.name === 'fieldFour' && 'Data from async response',
     }))
   }
@@ -35,7 +34,6 @@ export default class FieldPropsAsyncRule extends React.Component {
     return (
       <Form ref={this.props.getRef} messages={messages}>
         <Input
-          id="fieldOne"
           name="fieldOne"
           label="Field one"
           hint="Must not equal to `foo`"
@@ -43,7 +41,6 @@ export default class FieldPropsAsyncRule extends React.Component {
         />
 
         <Input
-          id="fieldTwo"
           name="fieldTwo"
           label="Field two"
           hint="Must be provided and not equal to `foo`"
@@ -52,7 +49,6 @@ export default class FieldPropsAsyncRule extends React.Component {
         />
 
         <Input
-          id="fieldThree"
           name="fieldThree"
           rule={/^\d+$/}
           label="Field three"
@@ -62,7 +58,6 @@ export default class FieldPropsAsyncRule extends React.Component {
         />
 
         <Input
-          id="fieldFour"
           name="fieldFour"
           label="Required field with async rule and extra response props"
           hint="Propagates response data to the validation message on fail"

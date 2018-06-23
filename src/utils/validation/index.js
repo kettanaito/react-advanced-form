@@ -1,9 +1,9 @@
 import { returnsExpected, reduceResultsWhile } from '../reduceWhile'
 import createRuleResolverArgs from './createRuleResolverArgs'
 import validateSync from './validateSync'
-// import validateAsync from './validateAsync'
+import validateAsync from './validateAsync'
 
-const defaultValidatorsSeq = [validateSync] /* validateAsync */
+const defaultValidatorsSeq = [validateSync, validateAsync]
 
 /**
  * Performs validation of the given field with the given parameters.

@@ -4,9 +4,9 @@ import allPass from 'ramda/src/allPass'
 const isForced = (resolverArgs, force) => force
 const isValidSync = ({ fieldProps }) => fieldProps.validSync
 const hasAsyncRule = ({ fieldProps }) => !!fieldProps.asyncRule
-const notValidAsync = ({ fieldProps }) => !fieldProps.validAsync
+const notAlreadyValid = ({ fieldProps }) => !fieldProps.validAsync
 
 export default anyPass([
   isForced,
-  allPass([isValidSync, hasAsyncRule, notValidAsync]),
+  allPass([isValidSync, hasAsyncRule, notAlreadyValid]),
 ])

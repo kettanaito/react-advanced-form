@@ -8,4 +8,5 @@ test('Propagates given properties properly', () => {
   })
 
   // TODO Finish the test
+  expect(rejectedRule)
 })
