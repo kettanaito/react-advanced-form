@@ -126,8 +126,6 @@ describe('Reactive props', function() {
   it('Field.props.rule behaves as a reactive prop', () => {
     cy.loadStory(<FieldReactiveField />)
 
-    // TODO Finish the test scenario!
-
     /**
      * Properly validates the reactive field when its value changes.
      */
@@ -139,35 +137,36 @@ describe('Reactive props', function() {
       .get('[name="fieldTwo"]')
       .should('not.have.class', 'is-valid')
       .should('not.have.class', 'is-invalid')
-    // .type('foo')
-    // .should('have.value', 'foo')
-    // .should('have.class', 'is-invalid')
-    // .clear()
-    // .should('not.have.class', 'is-invalid')
-    // .type('bar')
-    // .should('have.value', 'bar')
-    // .should('have.class', 'is-valid')
-    // .should('not.have.class', 'is-invalid')
+      .type('foo')
+      .should('have.value', 'foo')
+      .should('have.class', 'is-invalid')
+      .clear()
+      .should('not.have.class', 'is-valid')
+      .should('not.have.class', 'is-invalid')
+      .type('bar')
+      .should('have.value', 'bar')
+      .should('have.class', 'is-valid')
+      .should('not.have.class', 'is-invalid')
 
     /**
      * Properly vaidated the reactive field when the value of the
      * referenced field changes.
      */
-    // cy
-    //   .get('[name="fieldTwo"]')
-    //   .clear()
-    //   .type('bar')
-    //   .should('have.value', 'bar')
-    //   .should('not.have.class', 'is-valid')
-    //   .should('have.class', 'is-invalid')
-    // cy
-    //   .get('[name="fieldOne"]')
-    //   .clear()
-    //   .type('bar')
-    //   .should('have.value', 'bar')
-    // cy
-    //   .get('[name="fieldTwo"]')
-    //   .should('have.class', 'is-valid')
-    //   .should('not.have.class', 'is-invalid')
+    cy
+      .get('[name="fieldTwo"]')
+      .clear()
+      .type('bars')
+      .should('have.value', 'bars')
+      .should('have.class', 'is-invalid')
+      .should('not.have.class', 'is-valid')
+    cy
+      .get('[name="fieldOne"]')
+      .clear()
+      .type('bars')
+      .should('have.value', 'bars')
+    cy
+      .get('[name="fieldTwo"]')
+      .should('have.class', 'is-valid')
+      .should('not.have.class', 'is-invalid')
   })
 })
