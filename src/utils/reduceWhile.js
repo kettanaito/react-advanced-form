@@ -19,6 +19,7 @@ const getInitialState = () => ({
   validators: [],
   expected: true,
   rejectedRules: [],
+  extra: null,
 })
 
 const createReducer = (...args) => async (acc, func) => {
@@ -44,7 +45,7 @@ const createReducer = (...args) => async (acc, func) => {
     return prevAcc
   }
 
-  const { name, expected, rejectedRules } = funcResult
+  const { name, expected, rejectedRules, extra } = funcResult
 
   const nextValidators = name ? prevValidators.concat(name) : prevValidators
 
@@ -57,6 +58,7 @@ const createReducer = (...args) => async (acc, func) => {
     expected: nextExpected,
     rejectedRules: nextRejectedRules,
     validators: nextValidators,
+    extra,
   }
 
   console.warn('returning "nextAcc":', nextAcc)
