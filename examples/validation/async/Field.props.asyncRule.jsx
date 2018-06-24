@@ -10,7 +10,9 @@ const messages = {
   },
   name: {
     fieldFour: {
-      async: ({ extra }) => extra,
+      rule: {
+        async: ({ extra }) => extra,
+      },
     },
   },
 }
@@ -21,7 +23,7 @@ export default class FieldPropsAsyncRule extends React.Component {
       ref: { props },
     } = fieldProps
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(resolve, 500)
     }).then(() => ({
       valid:

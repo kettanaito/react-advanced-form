@@ -25,6 +25,7 @@ export default async function applyFieldAsyncRule(resolverArgs) {
     : createRejectedRule({
         errorType: errorTypes.invalid,
         ruleName: 'async',
+        selector: 'name',
       })
 
   return createValidationResult(valid, rejectedRules, extra)

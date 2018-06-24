@@ -49,17 +49,16 @@ const getKeyResolvers = (startPos: number): TKeyResolver[] => {
   return commonKeyPathGetters.slice(startPos)
 }
 
-const getPathsForRule = (rejectedRule: TRejectedRule) => {
-  return compose(
+const getResolverPaths = (rejectedRule: TRejectedRule) =>
+  compose(
     ensureLength(4),
     when(isNamedRule(rejectedRule), prepend(namedRuleResolver)),
     getKeyResolvers,
     getStartPos,
   )(rejectedRule)
-}
 
 export default function getResolvePaths(
   rejectedRule: TRejectedRule,
 ): TResolvePath[] {
-  return [rejectedRule, getPathsForRule(rejectedRule)]
+  return [rejectedRule, getResolverPaths(rejectedRule)]
 }

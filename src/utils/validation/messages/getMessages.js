@@ -1,5 +1,4 @@
 import getResolvePaths from './getResolvePaths'
-import createMessageResolverArgs from './createMessageResolverArgs'
 import resolveMessage from './resolveMessage'
 import pruneMessages from './pruneMessages'
 
@@ -8,11 +7,10 @@ const createResolveIterator = (
   resolverArgs,
   messagesSchema,
 ) => {
-  const { fieldProps } = resolverArgs
-  const messageResolverArgs = createMessageResolverArgs(
-    resolverArgs,
-    validationResult,
-  )
+  const messageResolverArgs = {
+    ...resolverArgs,
+    ...validationResult.extra,
+  }
 
   return ([rule, keyPathGetters]) =>
     keyPathGetters.map((keyPathGetter) => {
@@ -20,8 +18,9 @@ const createResolveIterator = (
         return keyPathGetter
       }
 
-      const keyPath = keyPathGetter(rule, fieldProps)
+      const keyPath = keyPathGetter(rule, resolverArgs.fieldProps)
       const resolver = messagesSchema.getIn(keyPath)
+
       return resolveMessage(resolver, messageResolverArgs)
     })
 }
@@ -42,7 +41,7 @@ export default function getErrorMessages(
   const resolvePaths = validationResult.rejectedRules.map(getResolvePaths)
 
   /**
-   * Iterates over the list of message resolvering paths and resolves
+   * Iterates over the list of message resolver paths and resolves
    * each path at its place. Then prunes the results, filtering out
    * only the relevant message(s) based on the rejected rule(s) priority.
    */
