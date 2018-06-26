@@ -7,62 +7,58 @@ describe('UI behavior', function() {
     cy.loadStory(<Scenario />)
   })
   afterEach(() => {
-    cy.get('[name="fieldOne"]').clear()
-    cy.get('[name="fieldTwo"]').clear()
+    cy.getField('fieldOne').clear()
+    cy.getField('fieldTwo').clear()
   })
 
   it('Reflects and persists valid field state', () => {
     cy
-      .get('[name="fieldOne"]')
-      .type('123')
+      .getField('fieldOne')
+      .typeIn('123')
       .wait(defaultDebounceTime)
-      .should('not.have.class', 'is-invalid')
-      .should('have.class', 'is-valid')
+      .validSync()
       .blur()
-      .should('have.class', 'is-valid')
+      .validSync()
   })
 
   it('Reflects and persists invalid field state', () => {
     cy
-      .get('[name="fieldOne"]')
-      .type('foo')
+      .getField('fieldOne')
+      .typeIn('foo')
       .wait(defaultDebounceTime)
-      .should('not.have.class', 'is-valid')
-      .should('have.class', 'is-invalid')
+      .validSync(false)
       .blur()
-      .should('have.class', 'is-invalid')
+      .validSync(false)
   })
 
   it('Transitions from invalid to valid state', () => {
     cy
-      .get('[name="fieldTwo"]')
-      .type('foo')
+      .getField('fieldTwo')
+      .typeIn('foo')
       .wait(defaultDebounceTime)
-      .should('have.class', 'is-invalid')
+      .validSync(false)
       .type('o')
       .wait(defaultDebounceTime)
-      .should('have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .validSync()
   })
 
   it('Transitions from valid to invalid state', () => {
     cy
-      .get('[name="fieldTwo"]')
+      .getField('fieldTwo')
       .type('fooo')
       .wait(defaultDebounceTime)
-      .should('have.class', 'is-valid')
+      .validSync()
       .type('{backspace}')
       .wait(defaultDebounceTime)
-      .should('have.class', 'is-invalid')
-      .should('not.have.class', 'is-valid')
+      .validSync(false)
   })
 
-  it('Handles "validating" property', () => {
+  it('Sets "validating" property during the validation process', () => {
     cy
-      .get('[name="fieldOne"]')
-      .type('123')
-      .should('have.class', 'is-validating')
+      .getField('fieldOne')
+      .typeIn('123')
+      .validating()
       .wait(defaultDebounceTime)
-      .should('not.have.class', 'is-validating')
+      .validating(false)
   })
 })

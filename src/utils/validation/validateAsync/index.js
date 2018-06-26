@@ -7,11 +7,11 @@ export default async function validateAsync(resolverArgs, force) {
   console.groupCollapsed('validateAsync', resolverArgs.fieldProps.name)
   console.log('resolver args:', resolverArgs)
 
-  const result = shouldValidateAsync
+  const result = shouldValidateAsync(resolverArgs, force)
     ? await applyFieldAsyncRule(resolverArgs, force)
     : null
 
-  console.warn('result:', result)
+  console.warn('validateAsync result:', result)
   console.groupEnd()
   console.log(' ')
 

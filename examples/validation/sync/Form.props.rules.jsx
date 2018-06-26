@@ -2,15 +2,9 @@ import React from 'react'
 import { Form } from '@lib'
 import { Input } from '@fields'
 
-export const fieldSelector = '[name="fieldOne"]'
-
 const rules = {
   type: {
     text: ({ value }) => {
-      console.groupCollapsed('type.text rule')
-      console.log({ value })
-      console.warn('passes?', value.length > 2)
-      console.groupEnd()
       return value.length > 2
     },
   },
@@ -19,11 +13,6 @@ const rules = {
       const {
         ref: { props },
       } = fieldProps
-
-      console.groupCollapsed('name.fieldOne rule')
-      console.log({ value })
-      console.warn('passes?', value !== 'foo')
-      console.groupEnd()
 
       return value !== 'foo'
     },

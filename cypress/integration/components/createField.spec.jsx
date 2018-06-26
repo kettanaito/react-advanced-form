@@ -8,7 +8,7 @@ describe('createField', function() {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
 
-  it('Enhanced field registers properly', () => {
+  it('Registers enhanced fields properly', () => {
     cy.get('[name="fieldOne"]').then(() => {
       setTimeout(() => {
         const { fields } = this.form.state
@@ -21,7 +21,7 @@ describe('createField', function() {
     })
   })
 
-  it('Supports custom event handlers', () => {
+  it('Supports custom field event handlers', () => {
     const testWord = 'Text'
 
     cy

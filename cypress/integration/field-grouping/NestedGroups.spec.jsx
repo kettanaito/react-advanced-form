@@ -7,7 +7,7 @@ describe('Nested groups', function() {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
 
-  it('Fields in nested groups register properly', async () => {
+  it('Registers nested field groups properly', async () => {
     await cy.wait(100)
     const { fields } = this.form.state
 
@@ -17,7 +17,7 @@ describe('Nested groups', function() {
     expect(fields.hasIn(['groupName', 'nestedGroup', 'fieldOne'])).to.be.true
   })
 
-  it('Form with nested groups serializes properly', () => {
+  it('Serializes nested field groups properly', () => {
     const serialized = this.form.serialize()
 
     expect(serialized).to.deep.equal({

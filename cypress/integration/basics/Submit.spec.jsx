@@ -9,32 +9,30 @@ describe('Submit', function() {
     cy.loadStory(<Scenario onSubmitStart={() => submitCount++} />)
   })
 
-  it('Prevents form submit until all fields are expected', () => {
+  it('Prevents form submit unless all fields are expected', () => {
     cy.wait(20)
     cy.get('button[type="submit"]').click()
-    cy.get('[name="email"]').should('have.class', 'is-invalid')
-    cy.get('[name="password"]').should('have.class', 'is-invalid')
-    cy.get('[name="termsAndConditions"]').should('have.class', 'is-invalid')
+    cy.get('[name="email"]').valid(false)
+    cy.get('[name="password"]').valid(false)
+    cy.get('[name="termsAndConditions"]').valid(false)
     expect(submitCount).to.equal(0)
 
     cy
       .get('[name="email"]')
       .type(' foo') // FIXME Cypress omits the first character due to whatever reason
-      .should('have.value', 'foo')
-      .should('have.class', 'is-valid')
+      .valid()
 
     cy.get('button[type="submit"]').click()
-    cy.get('[name="password"]').should('have.class', 'is-invalid')
-    cy.get('[name="termsAndConditions"]').should('have.class', 'is-invalid')
+    cy.get('[name="password"]').valid(false)
+    cy.get('[name="termsAndConditions"]').valid(false)
     expect(submitCount).to.equal(0)
 
     cy
       .get('[name="password"]')
-      .type('bar')
-      .should('have.value', 'bar')
-      .should('have.class', 'is-valid')
+      .typeIn('bar')
+      .valid()
     cy.get('button[type="submit"]').click()
-    cy.get('[name="termsAndConditions"]').should('have.class', 'is-invalid')
+    cy.get('[name="termsAndConditions"]').valid(false)
     expect(submitCount).to.equal(0)
 
     cy
@@ -42,7 +40,7 @@ describe('Submit', function() {
       .check({ force: true })
       .should('be.checked')
       .blur()
-      .should('have.class', 'is-valid')
+      .valid()
 
     cy
       .get('button[type="submit"]')

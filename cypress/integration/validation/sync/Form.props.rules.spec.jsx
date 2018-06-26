@@ -1,129 +1,109 @@
 import React from 'react'
-import Scenario, {
-  fieldSelector,
-} from '@examples/validation/sync/Form.props.rules'
+import Scenario from '@examples/validation/sync/Form.props.rules'
 
-describe('Form.props.rules', function() {
+describe('Form rules', function() {
   before(() => {
     cy.loadStory(<Scenario />)
   })
 
-  it('Empty optional field with Form.props.rules resolves', () => {
+  it('Resolves empty optional field with relevant form rules', () => {
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .focus()
-      .blur()
+      .blur({ force: true })
       .should('not.have.class', 'is-valid')
       .should('not.have.class', 'is-invalid')
   })
 
-  it('Clearing optional unexpected field resets validation status', () => {
+  it('Resets validation status after clearing optional unexpected field', () => {
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .clear()
-      .type('foo')
-      .should('have.value', 'foo')
-      .should('have.class', 'is-invalid')
+      .typeIn('foo')
+      .validSync(false)
       .clear()
-      .blur()
+      .blur({ force: true })
       .should('not.have.class', 'is-invalid')
       .should('not.have.class', 'is-valid')
   })
 
-  it('Clearing required unexpected field retains validation status', () => {
+  it('Retains validation status after clearing required unexpected field', () => {
     cy.loadStory(<Scenario required />)
 
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .clear()
-      .type('foo')
-      .should('have.value', 'foo')
-      .should('have.class', 'is-invalid')
+      .typeIn('foo')
+      .validSync(false)
       .clear()
-      .blur()
-      .should('have.class', 'is-invalid')
-      .should('not.have.class', 'is-valid')
+      .blur({ force: true })
+      .validSync(false)
   })
 
-  it('Optional field with name-specific matching value resolves', () => {
+  it('Resolves optional field with name-specific matching value', () => {
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .clear()
-      .type('some')
-      .should('have.value', 'some')
-      .should('have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .typeIn('some')
+      .validSync()
   })
 
-  it('Optional field with name-specific unmatching value rejects', () => {
+  it('Rejects optional field with name-specific unmatching value', () => {
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .clear()
-      .type('foo')
-      .should('have.value', 'foo')
-      .should('have.class', 'is-invalid')
-      .should('not.have.class', 'is-valid')
+      .typeIn('foo')
+      .validSync(false)
   })
 
-  it('Optional field with type-specific matching value resolves', () => {
+  it('Resolves optional field with type-specific matching value', () => {
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .clear()
-      .type('some')
-      .should('have.value', 'some')
-      .should('have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .typeIn('some')
+      .validSync()
   })
 
-  it('Optional field with type-specific unmatching value rejects', () => {
+  it('Rejects optional field with type-specific unmatching value', () => {
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .clear()
-      .type('ba')
-      .should('have.value', 'ba')
-      .should('have.class', 'is-invalid')
-      .should('not.have.class', 'is-valid')
+      .typeIn('ba')
+      .validSync(false)
   })
 
-  it('Required field with name-specific matching value resolves', () => {
+  it('Resolves required field with name-specific matching value', () => {
     cy.loadStory(<Scenario required />)
 
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .clear()
-      .type('some')
-      .should('have.value', 'some')
-      .should('have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .typeIn('some')
+      .validSync()
   })
 
-  it('Required field with name-specific unmatching value rejects', () => {
+  it('Rejects required field with name-specific unmatching value', () => {
     cy.loadStory(<Scenario required />)
 
     cy
-      .get(fieldSelector)
+      .getField('fieldOne')
       .clear()
-      .type('foo')
-      .should('have.value', 'foo')
-      .should('have.class', 'is-invalid')
-      .should('not.have.class', 'is-valid')
+      .typeIn('foo')
+      .validSync(false)
   })
 
   it('Re-evaluates rule when referenced field prop updates', () => {
     cy
-      .get('[name="fieldOne"]')
+      .getField('fieldOne')
       .clear()
-      .type('something')
-      .should('have.value', 'something')
+      .typeIn('something')
 
     cy
-      .get('[name="fieldTwo"]')
-      .type('foo')
-      .should('have.value', 'foo')
-      .should('have.class', 'is-invalid')
+      .getField('fieldTwo')
+      .typeIn('foo')
+      .validSync(false)
       .clear()
-      .type('something')
-      .should('have.value', 'something')
-      .should('have.class', 'is-valid')
+      .typeIn('something')
+      .validSync()
   })
 })

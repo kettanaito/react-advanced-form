@@ -7,7 +7,7 @@ describe('Simple group', function() {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
 
-  it('Grouped fields register properly', async () => {
+  it('Registers grouped fields properly', async () => {
     await cy.wait(100)
     const { fields } = this.form.state
 
@@ -16,7 +16,7 @@ describe('Simple group', function() {
     expect(fields.hasIn(['groupName', 'fieldTwo'])).to.be.true
   })
 
-  it('Form with group fields serializes properly', () => {
+  it('Serializes grouped fields properly', () => {
     const serialized = this.form.serialize()
 
     expect(serialized).to.deep.equal({

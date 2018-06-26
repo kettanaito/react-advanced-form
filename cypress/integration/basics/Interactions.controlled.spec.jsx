@@ -8,7 +8,7 @@ describe('Controlled fields interactions', function() {
   })
   afterEach(() => this.form.reset())
 
-  it('Form rendered with proper initial state.fields values', () => {
+  it('Mounts with proper initial state', () => {
     cy.get('#form').should(() => {
       const serialized = this.form.serialize()
       expect(serialized).to.deep.equal({
@@ -22,16 +22,12 @@ describe('Controlled fields interactions', function() {
     })
   })
 
-  it('Controlled fields interactions change form state properly', () => {
-    cy
-      .get('#inputOne')
-      .type('first value')
-      .should('have.value', 'first value')
+  it('Updates form state on field change', () => {
+    cy.get('#inputOne').typeIn('first value')
     cy
       .get('#inputTwo')
       .clear()
-      .type('second value')
-      .should('have.value', 'second value')
+      .typeIn('second value')
     cy
       .get('#radio3')
       .check({ force: true })
@@ -48,13 +44,12 @@ describe('Controlled fields interactions', function() {
     cy
       .get('#textareaOne')
       .clear()
-      .type('foo')
-      .should('have.value', 'foo')
+      .typeIn('foo')
     cy
       .get('#textareaTwo')
       .clear()
-      .type('another')
-      .should('have.value', 'another')
+      .typeIn('another')
+
     cy.then(() => {
       const serialized = this.form.serialize()
 

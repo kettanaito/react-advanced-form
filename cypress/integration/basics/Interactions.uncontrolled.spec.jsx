@@ -11,7 +11,7 @@ describe('Uncontrolled fields interactions', function() {
     this.form.reset()
   })
 
-  it('Form renders with proper initial state.fields values', () => {
+  it('Mounts with proper initial state', () => {
     cy.get('#form').should(() => {
       const serialized = this.form.serialize()
       expect(serialized).to.deep.equal({
@@ -25,12 +25,12 @@ describe('Uncontrolled fields interactions', function() {
     })
   })
 
-  it('Fields interactions change form state properly', () => {
+  it('Updates form state on field change', () => {
     cy.get('#inputOne').type('first value')
     cy
       .get('#inputTwo')
       .clear()
-      .type('second value')
+      .typeIn('second value')
     cy.get('#radio3').check({ force: true })
     cy
       .get('#checkbox1')
@@ -44,11 +44,12 @@ describe('Uncontrolled fields interactions', function() {
     cy
       .get('#textareaOne')
       .clear()
-      .type('foo')
+      .typeIn('foo')
     cy
       .get('#textareaTwo')
       .clear()
-      .type('another')
+      .typeIn('another')
+
     cy.then(() => {
       const serialized = this.form.serialize()
       expect(serialized).to.deep.equal({

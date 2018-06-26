@@ -1,10 +1,9 @@
 import React from 'react'
-import { mount } from 'cypress-react-unit-test'
 import Scenario from '@examples/validation/async/Field.props.asyncRule'
 
 describe('Asynchronous validation', function() {
   before(() => {
-    mount(<Scenario getRef={(form) => (this.form = form)} />)
+    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
 
   afterEach(() => {
@@ -12,104 +11,61 @@ describe('Asynchronous validation', function() {
   })
 
   describe('Logic', () => {
-    it('Empty optional field with async rule resolves', () => {
+    it('Resolves empty optional field with satisfied async rule', () => {
       cy
-        .get('[name="fieldOne"]')
+        .getField('fieldOne')
         .focus()
-        .blur()
+        .blur({ force: true })
         .should('not.have.class', 'is-valid')
         .should('not.have.class', 'is-invalid')
     })
 
-    it('Empty required field with async rule rejects', () => {
+    it('Rejects empty required field with unsatisfied async rule', () => {
       cy
-        .get('[name="fieldTwo"]')
+        .getField('fieldTwo')
         .focus()
-        .blur()
-        .should('not.have.class', 'is-valid')
-        .should('have.class', 'is-invalid')
+        .blur({ force: true })
+        .valid(false)
     })
 
-    it('Field with rejected sync rule does not call async rule', () => {
+    it('Resolves field with the expected value', () => {
       cy
-        .get('[name="fieldThree"]')
-        .type('foo')
-        .should('have.value', 'foo')
-        .should('have.class', 'is-invalid')
+        .getField('fieldOne')
+        .typeIn('expected value')
         .blur({ force: true })
-        // .should('not.have.class', 'is-validating')
-        .clear()
-        .type('111')
-        .should('have.value', '111')
-        .should('have.class', 'is-valid')
-        .blur({ force: true })
+        .validating()
         .wait(500)
-        .should('have.class', 'is-valid')
-        .clear()
-        .type('123')
-        .blur({ force: true })
-        .wait(500)
-        .should('have.class', 'is-invalid')
+        .validating(false)
+        .valid(false)
     })
 
-    it('Field with expected value resolves', () => {
+    it('Rejects field with the unexpected value', () => {
       cy
-        .get('[name="fieldOne"]')
-        .type('expected value')
-        .should('have.value', 'expected value')
-        .blur()
-        // .should('have.class', 'is-validating')
-        .wait(500)
-        // .should('not.have.class', 'is-validating')
-        .should('have.class', 'is-valid')
-    })
-
-    it('Field with unexpected value rejects', () => {
-      cy
-        .get('[name="fieldOne"]')
-        .type('foo')
-        .should('have.value', 'foo')
-        .blur()
-        // .should('have.class', 'is-validating')
-        .wait(500)
-        // .should('not.have.class', 'is-validating')
-        .should('have.class', 'is-invalid')
-    })
-
-    it('Cancels pending async validation on state reset', () => {
-      cy
-        .get('[name="fieldOne"]')
-        .type('foo')
-        .should('have.value', 'foo')
+        .getField('fieldOne')
+        .typeIn('foo')
         .blur({ force: true })
-        // .should('have.class', 'is-validating')
+        .validating()
+        .wait(500)
+        .validating(false)
+        .valid(false)
+    })
+
+    it('Cancels pending async validation on field change', () => {
+      cy
+        .getField('fieldOne')
+        .typeIn('foo')
+        .blur({ force: true })
+        .validating()
         .wait(200)
         .clear()
-        // .should('not.have.class', 'is-validating')
+        .validating(false)
         .should('not.have.class', 'is-invalid')
-        .type('expected value')
-        .should('have.value', 'expected value')
+        .typeIn('expected value')
         .blur({ force: true })
-        // .should('have.class', 'is-validating')
+        .validating()
         .wait(500)
-        // .should('not.have.class', 'is-validating')
-        .should('have.class', 'is-valid')
-    })
-  })
-
-  describe('Messages', () => {
-    it('Error message can access "extra" received from response', () => {
-      cy
-        .get('[name="fieldFour"]')
-        .type('foo')
-        .should('have.value', 'foo')
-        .blur()
-        // .should('have.class', 'is-validating')
-        .wait(500)
-      // .should('not.have.class', 'is-validating')
-      cy
-        .get('[name="fieldFour"] ~ .invalid-feedback')
-        .should('have.text', 'Data from async response')
+        .validating(false)
+        .valid()
     })
   })
 })

@@ -17,12 +17,26 @@ class Input extends React.Component {
 
   render() {
     const { fieldProps, fieldState, id, name, label, hint } = this.props
-    const { required, validating, valid, invalid, errors } = fieldState
+    const {
+      required,
+      validating,
+      validatedSync,
+      validatedAsync,
+      valid,
+      validSync,
+      validAsync,
+      invalid,
+      errors,
+    } = fieldState
 
     const inputClassNames = [
       'form-control',
       validating && 'is-validating',
+      validatedSync && 'validated-sync',
+      validatedAsync && 'validated-async',
       valid && 'is-valid',
+      validSync && 'valid-sync',
+      validAsync && 'valid-async',
       invalid && 'is-invalid',
     ]
       .filter(Boolean)

@@ -10,23 +10,21 @@ describe('FormProvider', function() {
   it('Propagates the default value of "debounceTime"', () => {
     cy
       .get('[name="fieldOne"]')
-      .type('fo')
+      .typeIn('fo')
       .wait(defaultDebounceTime)
-      .should('have.class', 'is-invalid')
+      .valid(false)
       .type('o')
       .wait(defaultDebounceTime)
-      .should('not.have.class', 'is-invalid')
-      .should('have.class', 'is-valid')
+      .valid()
   })
 
   it('Supports custom value of "debounceTime"', () => {
     cy
       .get('[name="fieldTwo"]')
-      .type('fo')
-      .should('have.class', 'is-invalid')
+      .typeIn('fo')
+      .valid(false)
       .type('o')
       .wait(0)
-      .should('not.have.class', 'is-invalid')
-      .should('have.class', 'is-valid')
+      .valid()
   })
 })

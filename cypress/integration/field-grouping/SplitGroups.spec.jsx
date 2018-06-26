@@ -7,7 +7,7 @@ describe('Split groups', function() {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
 
-  it('Fields in split groups register properly', async () => {
+  it('Registers split field groups properly', async () => {
     await cy.wait(100)
     const { fields } = this.form.state
 
@@ -22,7 +22,7 @@ describe('Split groups', function() {
     expect(fields.hasIn(['billingAddress', 'noCollision'])).to.be.true
   })
 
-  it('Form with split groups serializes properly', () => {
+  it('Serializes split field groups properly', () => {
     const serialized = this.form.serialize()
 
     console.log(JSON.stringify(serialized))

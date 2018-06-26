@@ -1,67 +1,61 @@
 import React from 'react'
 import Scenario from '@examples/validation/sync/Field.props.rule'
 
-describe('Field.props.rule', function() {
+describe('Field rules', function() {
   before(() => {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
-  afterEach(() => this.form.reset())
 
-  it('Empty optional field with sync rule resolves', () => {
+  afterEach(() => {
+    this.form.reset()
+  })
+
+  it('Resolves empty optional field with sync rule', () => {
     cy
-      .get('#fieldOne')
+      .getField('fieldOne')
       .focus()
-      .blur()
+      .blur({ force: true })
       .should('not.have.class', 'is-valid')
       .should('not.have.class', 'is-invalid')
   })
 
-  it('Empty required field with sync rule rejects', () => {
+  it('Rejects empty required field with sync rule', () => {
     cy
-      .get('#fieldTwo')
+      .getField('fieldTwo')
       .focus()
-      .blur()
-      .should('not.have.class', 'is-valid')
-      .should('have.class', 'is-invalid')
+      .blur({ force: true })
+      .validSync(false)
   })
 
-  it('Filled optional field with matching value resolves', () => {
+  it('Reslolves filled optional field with matching value', () => {
     cy
-      .get('#fieldOne')
-      .type('123')
-      .should('have.value', '123')
-      .blur()
-      .should('have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .getField('fieldOne')
+      .typeIn('123')
+      .blur({ force: true })
+      .validSync()
   })
 
-  it('Filled optional field with unmatching value rejects', () => {
+  it('Rejects filled optional field with unmatching value', () => {
     cy
-      .get('#fieldOne')
-      .type('foo')
-      .should('have.value', 'foo')
-      .blur()
-      .should('have.class', 'is-invalid')
-      .should('not.have.class', 'is-valid')
+      .getField('fieldOne')
+      .typeIn('foo')
+      .blur({ force: true })
+      .validSync(false)
   })
 
-  it('Filled required field with matching value resolves', () => {
+  it('Resolves filled required field with matching value', () => {
     cy
-      .get('#fieldTwo')
-      .type('foo')
-      .should('have.value', 'foo')
-      .blur()
-      .should('have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .getField('fieldTwo')
+      .typeIn('foo')
+      .blur({ force: true })
+      .validSync()
   })
 
-  it('Filled required field with unmatching value rejects', () => {
+  it('Rejects filled required field with unmatching value', () => {
     cy
-      .get('#fieldTwo')
-      .type('123')
-      .should('have.value', '123')
-      .blur()
-      .should('have.class', 'is-invalid')
-      .should('not.have.class', 'is-valid')
+      .getField('fieldTwo')
+      .typeIn('123')
+      .blur({ force: true })
+      .validSync(false)
   })
 })

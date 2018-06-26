@@ -19,7 +19,6 @@ export default class FieldPropsRule extends React.Component {
     return (
       <Form ref={this.props.getRef} messages={formMessages}>
         <Input
-          id="fieldOne"
           name="fieldOne"
           label="Field one"
           hint="Only numbers allowed"
@@ -27,7 +26,6 @@ export default class FieldPropsRule extends React.Component {
         />
 
         <Input
-          id="fieldTwo"
           name="fieldTwo"
           label="Field two"
           hint="Only lowercase letters allowed"

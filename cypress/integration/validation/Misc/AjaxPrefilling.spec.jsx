@@ -1,12 +1,11 @@
 import React from 'react'
-import { mount } from 'cypress-react-unit-test'
 import Scenario, {
   timeoutDuration,
 } from '@examples/validation/misc/AjaxPrefilling'
 
 describe('AJAX Pre-filling', function() {
   before(() => {
-    mount(<Scenario />)
+    cy.loadStory(<Scenario />)
     cy
       .get('#ajax')
       .click()
@@ -15,15 +14,15 @@ describe('AJAX Pre-filling', function() {
 
   it('Pre-fills value properly', () => {
     cy
-      .get('[name="street"]')
+      .getField('street')
       .should('have.value', 'Baker')
-      .should('have.class', 'is-valid')
+      .valid()
   })
 
   it('Validates pre-filled value properly', () => {
     cy
-      .get('[name="streetRule"]')
+      .getField('streetRule')
       .should('have.value', 'Baker')
-      .should('have.class', 'is-invalid')
+      .valid(false)
   })
 })
