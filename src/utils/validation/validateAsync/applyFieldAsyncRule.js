@@ -15,7 +15,10 @@ export default async function applyFieldAsyncRule(resolverArgs) {
   const pendingValidation = makeCancelable(dispatch(asyncRule, resolverArgs))
 
   //
-  // TODO Propagate "pendingValidation" to the fieldProps to be cancellable onChange.
+  // TODO
+  // Instantiate intermediate form state update to propagate the pending promise
+  // reference to the field record. This would allow to cancel pending promise
+  // on field change.
   //
   const res = await pendingValidation.itself
 

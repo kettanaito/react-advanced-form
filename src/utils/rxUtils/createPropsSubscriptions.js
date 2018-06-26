@@ -1,4 +1,5 @@
 import dispatch from '../dispatch'
+import * as recordUtils from '../recordUtils'
 import createRuleResolverArgs from '../validation/createRuleResolverArgs'
 import makeObservable from './makeObservable'
 
@@ -53,10 +54,9 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         console.log('propsSub shouldValidate?', shouldValidate)
 
         /* Set the next value of reactive prop on the respective field record */
-        const nextSubscriberRecord = currentSubscriberRecord
-          .set(rxPropName, nextPropValue)
-          .set('valid', false)
-          .set('invalid', false)
+        const nextSubscriberRecord = recordUtils.resetValidityState(
+          currentSubscriberRecord.set(rxPropName, nextPropValue),
+        )
 
         const updatedFields = nextFields.setIn(
           subscriberFieldPath,
@@ -64,11 +64,13 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         )
 
         console.log(
-          'nextSubscriberRecord',
+          'Next subscriber record:',
           nextSubscriberRecord && nextSubscriberRecord.toJS(),
         )
 
         if (shouldValidate) {
+          console.warn('Should validate from createPropsSubscription!')
+
           return form.validateField({
             __SOURCE__: 'createPropsSubscriptions',
             force: true,
