@@ -16,8 +16,8 @@ export const returnsExpected = async (reducedResult) => {
 }
 
 const getInitialState = () => ({
+  expected: null,
   validators: [],
-  expected: true,
   rejectedRules: [],
   extra: null,
 })
@@ -46,10 +46,14 @@ const createReducer = (...args) => async (acc, func) => {
   }
 
   const { name, expected, rejectedRules, extra } = funcResult
-
   const nextValidators = name ? prevValidators.concat(name) : prevValidators
 
-  const nextExpected = expected
+  /**
+   * Inherit previous value when the next "expected" is "null",
+   * which reads "no validation necessary". This handles concurrent
+   * validation results of multiple validators properly.
+   */
+  const nextExpected = expected !== null ? expected : prevAcc.expected
   const nextRejectedRules = rejectedRules
     ? prevRejectedRules.concat(rejectedRules)
     : prevRejectedRules

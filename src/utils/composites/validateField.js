@@ -20,7 +20,7 @@ export default async function validateField(resolverArgs) {
 
   const { fieldProps } = resolverArgs
   const validationResult = await validate(resolverArgs)
-  const wasValidated = typeof validationResult.expected !== 'undefined'
+  const wasValidated = validationResult.expected !== null
 
   console.log('validated!', validationResult)
 

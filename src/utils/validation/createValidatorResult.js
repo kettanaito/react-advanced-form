@@ -4,7 +4,7 @@
 //
 export default function createValidatorResult(name, result) {
   return {
-    ...result,
+    ...(result || { expected: result }),
     name,
   }
 }
