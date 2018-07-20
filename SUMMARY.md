@@ -1,79 +1,84 @@
-# Summary
+# Table of contents
+
+* [Introduction](README.md)
 
 ## General
 
-* [Introduction](./README.md)
-* [Concept](./docs/general/concept.md)
-* [FAQ](./docs/general/faq.md)
+* [Introduction](general/introduction.md)
+* [Concept](general/concept.md)
+* [FAQ](general/faq.md)
 
 ## Getting started
 
-* [Installation](./docs/getting-started/installation.md)
-* [Creating fields](./docs/getting-started/creating-fields.md)
-* [Creating form](./docs/getting-started/creating-form.md)
-* [Validation rules](./docs/getting-started/validation-rules.md)
-* [Validation messages](./docs/getting-started/validation-messages.md)
-* [Applying validation](./docs/getting-started/applying-validation.md)
-* [Handle submit](./docs/getting-started/handle-submit.md)
+* [Installation](getting-started/installation.md)
+* [Creating fields](getting-started/creating-fields.md)
+* [Creating form](getting-started/creating-form.md)
+* [Validation rules](getting-started/validation-rules.md)
+* [Validation messages](getting-started/validation-messages.md)
+* [Applying validation](getting-started/applying-validation.md)
+* [Handle submit](getting-started/handle-submit.md)
 
 ## Architecture
 
-* [Argument properties](./docs/architecture/argument-properties.md)
-* [Referencing](./docs/architecture/referencing.md)
-* [Field lifecycle](./docs/architecture/field-lifecycle.md)
-* [Reactive props](./docs/architecture/reactive-props.md)
+* [Argument properties](architecture/argument-properties.md)
+* [Referencing](architecture/referencing.md)
+* [Field lifecycle](architecture/field-lifecycle.md)
+* [Reactive props](architecture/reactive-props.md)
 
 ## High-order components
 
-* [createField](./docs/hoc/createField.md)
-  * [Options](./docs/hoc/createField/options.md)
-  * [Presets](./docs/hoc/createField/presets.md)
-  * [Exposed props](./docs/hoc/createField/props.md)
+* [createField](high-order-components/createfield/README.md)
+  * [Options](high-order-components/createfield/options.md)
+  * [Presets](high-order-components/createfield/presets.md)
+  * [Exposed props](high-order-components/createfield/exposed-props.md)
 
 ## Components
 
-* [FormProvider](./docs/components/Provider.md)
-* [Form](./docs/components/Form.md)
-  * Props
-    * [innerRef](./docs/components/Form/props/innerRef.md)
-    * [action](./docs/components/Form/props/action.md)
-    * [rules](./docs/components/Form/props/rules.md)
-    * [messages](./docs/components/Form/props/messages.md)
-  * Methods
-    * [validate\(\)](./docs/components/Form/methods/validate.md)
-    * [serialize\(\)](./docs/components/Form/methods/serialize.md)
-    * [submit\(\)](./docs/components/Form/methods/submit.md)
-    * [reset\(\)](./docs/components/Form/methods/reset.md)
-  * Callbacks
-    * [onFirstChange](./docs/components/Form/callbacks/onFirstChange.md)
-    * [onReset](./docs/components/Form/callbacks/onReset.md)
-    * [onInvalid](./docs/components/Form/callbacks/onInvalid.md)
-    * [onSubmitStart](./docs/components/Form/callbacks/onSubmitStart.md)
-    * [onSubmitted](./docs/components/Form/callbacks/onSubmitted.md)
-    * [onSubmitFailed](./docs/components/Form/callbacks/onSubmitFailed.md)
-    * [onSubmitEnd](./docs/components/Form/callbacks/onSubmitEnd.md)
-
-* [Field.Group](./docs/components/Field.Group.md)
-
-* Field
-  * Props
-    * Generic props
-    * [rule](./docs/components/Field/props/rule.md)
-    * [asyncRule](./docs/components/Field/props/asyncRule.md)
-    * [skip](./docs/components/Field/props/skip.md)
-  * Callbacks
-    * [onFocus](./docs/components/Field/callbacks/onFocus.md)
-    * [onChange](./docs/components/Field/callbacks/onChange.md)
-    * [onBlur](./docs/components/Field/callbacks/onBlur.md)
+* [FormProvider](components/formprovider.md)
+* [Form](components/form/README.md)
+  * [Props](components/form/props/README.md)
+    * [innerRef](components/form/props/innerref.md)
+    * [action](components/form/props/action.md)
+    * [rules](components/form/props/rules.md)
+    * [messages](components/form/props/messages.md)
+  * [Methods](components/form/methods/README.md)
+    * [validate\(\)](components/form/methods/validate.md)
+    * [serialize\(\)](components/form/methods/serialize.md)
+    * [submit\(\)](components/form/methods/submit.md)
+    * [reset\(\)](components/form/methods/reset.md)
+  * [Callbacks](components/form/callbacks/README.md)
+    * [onFirstChange](components/form/callbacks/onfirstchange.md)
+    * [onReset](components/form/callbacks/onreset.md)
+    * [onInvalid](components/form/callbacks/oninvalid.md)
+    * [onSubmitStart](components/form/callbacks/onsubmitstart.md)
+    * [onSubmitted](components/form/callbacks/onsubmitted.md)
+    * [onSubmitFailed](components/form/callbacks/onsubmitfailed.md)
+    * [onSubmitEnd](components/form/callbacks/onsubmitend.md)
+* [Field.Group](components/field.group.md)
+* [Field](components/field/README.md)
+  * [Props](components/field/props/README.md)
+    * [Generic props](components/field/props/generic-props.md)
+    * [rule](components/field/props/rule.md)
+    * [asyncRule](components/field/props/asyncrule.md)
+    * [skip](components/field/props/skip.md)
+  * [Callbacks](components/field/callbacks/README.md)
+    * [onFocus](components/field/callbacks/onfocus.md)
+    * [onChange](components/field/callbacks/onchange.md)
+    * [onBlur](components/field/callbacks/onblur.md)
 
 ## Validation
 
-* [Getting started](./docs/validation/getting-started.md)
-* [Logic](./docs/validation/logic.md)
-* [Rules](./docs/validation/rules.md)
-* [Messages](./docs/validation/messages.md)
+* [Getting started](validation/getting-started.md)
+* [Logic](validation/logic.md)
+* [Rules](validation/rules.md)
+* [Messages](validation/messages.md)
 
 ## Developers
 
-* [Contributing](./docs/CONTRIBUTING.md)
-* [Testing](./docs/TESTING.md)
+* [Contributing](developers/contributing.md)
+* [Testing](developers/testing.md)
+
+## Recepies
+
+* [Reducing boilerplate](recepies/reducing-boilerplate.md)
+
