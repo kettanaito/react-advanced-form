@@ -78,7 +78,7 @@
 * [Contributing](developers/contributing.md)
 * [Testing](developers/testing.md)
 
-## Recepies
+## Recipes
 
 * [Reducing boilerplate](recepies/reducing-boilerplate.md)
 

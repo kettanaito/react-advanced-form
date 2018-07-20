@@ -2,7 +2,7 @@
 
 React Advanced Form encourages functional programming paradigm in a form of favoring pure functions and high-order functions. However, you don't have to be a guru in functional programming to use the library.
 
-## Validation rules
+## High-order validator functions
 
 Consider writing a set of pure high-order validator functions that accept any custom parameters and always return a validator function expected by React Advanced Form:
 
@@ -10,7 +10,9 @@ Consider writing a set of pure high-order validator functions that accept any cu
 // validators/minLength.js
 export default function minLength(length) {
     // returns a validator function expected by RAF
-    return ({ value }) => value.length >= length
+    return ({ value, fieldProps, fields, form }) => {
+        return value.length >= length
+    }
 }
 ```
 
@@ -34,5 +36,5 @@ const validationRules = {
 }
 ```
 
-> Use this approach to create high-order validator functions of any kind!
+> Use this approach to create validator functions of any kind!
 
