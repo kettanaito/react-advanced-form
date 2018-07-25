@@ -12,7 +12,7 @@ const hasValue = ({ fieldProps }) => {
   return !!recordUtils.getValue(fieldProps)
 }
 
-const notValidated = ({ fieldProps }) => {
+const notValidatedSync = ({ fieldProps }) => {
   console.log('shouldValidate, not valid already?', !fieldProps.validatedSync)
   return !fieldProps.validatedSync
 }
@@ -41,6 +41,5 @@ const hasFormRules = (resolverArgs, rules) => {
 export default anyPass([
   isForced,
   isRequiredField,
-  allPass([notValidated, hasValue, hasFieldRule]),
-  allPass([notValidated, hasValue, hasFormRules]),
+  allPass([notValidatedSync, hasValue, anyPass([hasFieldRule, hasFormRules])]),
 ])
