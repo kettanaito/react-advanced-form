@@ -2,11 +2,6 @@ import { expect } from 'chai'
 import shouldValidateAsync from './shouldValidateAsync'
 import * as recordUtils from '../../recordUtils'
 
-test('returns "true" when forced', () => {
-  const needsValidation = shouldValidateAsync(null, true)
-  expect(needsValidation).to.be.true
-})
-
 test('returns "true" for sync valid with "asyncRule"', () => {
   const needsValidation = shouldValidateAsync(
     {
