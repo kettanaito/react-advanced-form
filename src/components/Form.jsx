@@ -24,8 +24,8 @@ import {
   formUtils,
   rxUtils,
 } from '../utils'
-import * as composites from '../utils/composites'
-import validate from '../utils/composites/validateField'
+import * as handlers from '../utils/handlers'
+import validate from '../utils/handlers/validateField'
 
 /**
  * Binds the component's reference to the function's context and calls
@@ -101,10 +101,10 @@ export default class Form extends React.Component {
     const { rules: explicitRules, messages: explicitMessages } = props
     const { debounceTime, rules, messages } = context
 
-    /* Provide a fallback value for validation debounce duration */
+    /* Set the validation debounce duration */
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime
 
-    /* Define validation rules */
+    /* Set validation rules */
     this.formRules = formUtils.mergeRules(explicitRules, rules)
 
     /**
@@ -142,10 +142,10 @@ export default class Form extends React.Component {
     )
   }
 
-  ensafeHandler = (handlerFunc) => {
+  ensafeHandler = (func) => {
     return (args) => {
       const { fieldProps } = args
-      return this.state.fields.hasIn(fieldProps.fieldPath) && handlerFunc(args)
+      return this.state.fields.hasIn(fieldProps.fieldPath) && func(args)
     }
   }
 
@@ -161,13 +161,6 @@ export default class Form extends React.Component {
     const { fieldPath } = initialFieldProps
     const fieldAlreadyExists = fields.hasIn(fieldPath)
 
-    console.groupCollapsed(
-      `Form @ registerField @ ${initialFieldProps.displayFieldPath}`,
-    )
-    console.log('field options:', fieldOptions)
-    console.log('initial field record:', initialFieldProps.toJS())
-    console.log('field already exists?', fieldAlreadyExists)
-
     /* Warn on field duplicates */
     invariant(
       !(fieldAlreadyExists && !fieldOptions.allowMultiple),
@@ -177,20 +170,11 @@ export default class Form extends React.Component {
       fieldPath,
     )
 
-    console.log('calling "beforeRegister" hook to alter field record...')
-    console.log('"beforeRegister" method:', fieldOptions.beforeRegister)
-
     /* Perform custom field props transformations upon registration */
     const fieldProps = fieldOptions.beforeRegister({
       fieldProps: initialFieldProps,
       fields,
     })
-
-    console.log('`beforeRegister` hook called successfully!')
-    console.log(
-      'fieldProps after "beforeRegister":',
-      fieldProps && fieldProps.toJS(),
-    )
 
     if (!fieldProps) {
       return
@@ -198,8 +182,6 @@ export default class Form extends React.Component {
 
     const nextFields = fields.setIn(fieldPath, fieldProps)
     const { eventEmitter } = this
-
-    console.log('next fields:', nextFields && nextFields.toJS())
 
     /**
      * Synchronize the field record with the field component's props.
@@ -229,8 +211,6 @@ export default class Form extends React.Component {
         // })
       })
 
-    console.log('props observers created!')
-
     /**
      * Analyze the rules relevant to the registered field and create
      * reactive subscriptions to resolve them once their dependencies
@@ -242,9 +222,6 @@ export default class Form extends React.Component {
       fields,
       form: this,
     })
-
-    console.log('next rx rules composed:', nextRxRules && nextRxRules.toJS())
-    console.groupEnd()
 
     this.setState(
       {
@@ -281,7 +258,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Updates the fields with the given instance of the field and returns
+   * Updates the fields with the given field record and returns
    * the updated state of the fields.
    * @param {Record} fieldProps
    * @returns {Promise}
@@ -291,13 +268,6 @@ export default class Form extends React.Component {
       fieldProps,
       this.state.fields,
     )
-
-    console.groupCollapsed(
-      `Form @ updateFieldsWith @ ${fieldProps.displayFieldPath}`,
-    )
-    console.log('field props:', fieldProps.toJS())
-    console.log('next fields:', nextFields.toJS())
-    console.groupEnd(' ')
 
     return new Promise((resolve, reject) => {
       try {
@@ -319,7 +289,7 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Handles the first field change of the form.
+   * Handles the first change of a field value.
    * @param {Event} event
    * @param {any} nextValue
    * @param {any} prevValue
@@ -354,7 +324,7 @@ export default class Form extends React.Component {
    */
   handleFieldFocus = this.ensafeHandler((args) => {
     const { fields } = this.state
-    const { nextFields } = composites.handleFieldFocus(args, fields, this)
+    const { nextFields } = handlers.handleFieldFocus(args, fields, this)
     this.setState({ fields: nextFields })
   })
 
@@ -367,14 +337,9 @@ export default class Form extends React.Component {
    */
   handleFieldChange = this.ensafeHandler(async (args) => {
     const { fields, dirty } = this.state
-    const changePayload = await composites.handleFieldChange(
-      args,
-      fields,
-      this,
-      {
-        onUpdateValue: this.updateFieldsWith,
-      },
-    )
+    const changePayload = await handlers.handleFieldChange(args, fields, this, {
+      onUpdateValue: this.updateFieldsWith,
+    })
 
     /**
      * Change handler for controlled fields does not return the next field props
@@ -397,7 +362,7 @@ export default class Form extends React.Component {
    */
   handleFieldBlur = this.ensafeHandler(async (args) => {
     const { fields } = this.state
-    const { nextFields } = await composites.handleFieldBlur(args, fields, this)
+    const { nextFields } = await handlers.handleFieldBlur(args, fields, this)
     this.setState({ fields: nextFields })
   })
 
@@ -422,19 +387,6 @@ export default class Form extends React.Component {
       : fields.getIn(explicitFieldProps.fieldPath)
     fieldProps = fieldProps || explicitFieldProps
 
-    console.groupCollapsed(
-      `Form @ validateField @ ${fieldProps.displayFieldPath} @ ${__SOURCE__}`,
-    )
-    console.warn('stack trace')
-    console.log('validation chain:', chain)
-    console.log('value:', fieldProps.get(fieldProps.get('valuePropName')))
-    console.log('fieldProps', fieldProps.toJS())
-    console.log('fields:', fields && fields.toJS())
-    console.log('explicit fields:', explicitFields && explicitFields.toJS())
-    console.log('should force props?', forceProps)
-    console.log('should update fields?', shouldUpdateFields)
-    console.groupEnd()
-
     /* Perform the validation */
     const validatedField = await validate({
       __SOURCE__,
@@ -444,8 +396,6 @@ export default class Form extends React.Component {
       fields,
       form: this,
     })
-
-    console.warn('FORM: validation is done, props:', validatedField)
 
     /* Update the field in the state to reflect the changes */
     if (shouldUpdateFields) {
@@ -560,8 +510,6 @@ export default class Form extends React.Component {
       event.preventDefault()
     }
 
-    console.warn('SUBMIT INVOKED!')
-
     /* Throw on submit attempt without the "action" prop */
     const { action } = this.props
 
@@ -574,7 +522,6 @@ export default class Form extends React.Component {
 
     /* Ensure form has no unexpected fields and, therefore, should be submitted */
     const shouldSubmit = await this.validate()
-    console.log('shouldSubmit?', shouldSubmit)
 
     if (!shouldSubmit) {
       return

@@ -10,9 +10,7 @@ export const ruleSelectors = [
   (fieldProps) => ['type', fieldProps.get('type')],
 ]
 
-function defaultRuleTransformer(rule) {
-  return rule
-}
+const defaultRuleTransformer = (rule) => rule
 
 function createValueTransformer(ruleFormatter) {
   return (value, ruleKeyPath) => {
@@ -48,11 +46,6 @@ function createValueTransformer(ruleFormatter) {
  */
 function createPredicate(fieldProps, rxRules) {
   return (value, deepKeyPath) => {
-    console.groupCollapsed('createPredicate')
-    console.log({ value })
-    console.log({ deepKeyPath })
-    console.groupEnd()
-
     if (rxRules.has(deepKeyPath.join('.'))) {
       return false
     }
@@ -76,13 +69,11 @@ export default function getFieldRules({
   transformRule = null,
   transformKey = null,
 }) {
-  const ruleTransformer = transformRule || defaultRuleTransformer
-
   return flattenDeep(
     schema,
     createPredicate(fieldProps, rxRules),
     flattenKeys,
-    createValueTransformer(ruleTransformer),
+    createValueTransformer(transformRule || defaultRuleTransformer),
     transformKey,
   )
 }

@@ -1,18 +1,12 @@
-export const returnsExpected = async (reducedResult) => {
-  const awaitedResult = await reducedResult
-  console.log(' ')
-  console.groupCollapsed('returns expeted?')
-  console.log('reduced result:', awaitedResult)
-  console.warn('expected?', awaitedResult.expected)
-  console.groupEnd()
-  console.log(' ')
+export const returnsExpected = async (validationResult) => {
+  const resolvedResult = await validationResult
 
   /**
    * Explicitly forbid "false" because:
    * - true: field is expected
    * - undefined: no validation necessary
    */
-  return awaitedResult.expected !== false
+  return resolvedResult.expected !== false
 }
 
 const getInitialState = () => ({
@@ -22,30 +16,19 @@ const getInitialState = () => ({
   extra: null,
 })
 
-const createReducer = (...args) => async (acc, func) => {
-  const prevAcc = await acc
+const createReducer = (...args) => async (pendingResults, func) => {
+  const accResults = await pendingResults
   const {
     rejectedRules: prevRejectedRules,
     validators: prevValidators,
-  } = prevAcc
+  } = accResults
+  const validatorResult = await func(...args)
 
-  console.log(' ')
-  console.groupCollapsed('reduceWhileExpected')
-  console.log('prevAcc:', prevAcc)
-  console.log('current func:', func)
-
-  const funcResult = await func(...args)
-  console.log('func result:', funcResult)
-
-  if (!funcResult) {
-    console.warn('no func res, returning prevAcc!')
-    console.groupEnd()
-    console.log(' ')
-
-    return prevAcc
+  if (!validatorResult) {
+    return accResults
   }
 
-  const { name, expected, rejectedRules, extra } = funcResult
+  const { name, expected, rejectedRules, extra } = validatorResult
   const nextValidators = name ? prevValidators.concat(name) : prevValidators
 
   /**
@@ -53,23 +36,17 @@ const createReducer = (...args) => async (acc, func) => {
    * which reads "no validation necessary". This handles concurrent
    * validation results of multiple validators properly.
    */
-  const nextExpected = expected !== null ? expected : prevAcc.expected
+  const nextExpected = expected !== null ? expected : accResults.expected
   const nextRejectedRules = rejectedRules
     ? prevRejectedRules.concat(rejectedRules)
     : prevRejectedRules
 
-  const nextAcc = {
+  return {
     expected: nextExpected,
     rejectedRules: nextRejectedRules,
     validators: nextValidators,
     extra,
   }
-
-  console.warn('returning "nextAcc":', nextAcc)
-  console.groupEnd()
-  console.log(' ')
-
-  return nextAcc
 }
 
 /**
@@ -87,10 +64,16 @@ export const reduceResults = (funcs) => {
  * into accumulated validation result while each function satisfies
  * the given predicate.
  */
-export const reduceResultsWhile = (predicate, funcs) => {
+export const reduceResultsWhile = (predicate, validatorsList) => {
   return (...args) => {
-    return funcs.reduce(async (acc, func) => {
-      return (await predicate(acc)) ? createReducer(...args)(acc, func) : acc
+    return validatorsList.reduce(async (acc, validatorFunc) => {
+      return (await predicate(acc))
+        ? createReducer(...args)(acc, validatorFunc)
+        : acc
     }, getInitialState())
   }
+}
+
+export const reduceWhileExpected = (validatorsList) => {
+  return reduceResultsWhile(returnsExpected, validatorsList)
 }

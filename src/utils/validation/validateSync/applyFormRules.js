@@ -1,11 +1,7 @@
 import listOf from '../../listOf'
 import addWhen from '../../addWhen'
 import isset from '../../isset'
-import {
-  returnsExpected,
-  reduceResults,
-  reduceResultsWhile,
-} from '../../reduceWhile'
+import { reduceResults, reduceWhileExpected } from '../../reduceWhile'
 import applyRule from '../applyRule'
 
 /**
@@ -15,33 +11,20 @@ import applyRule from '../applyRule'
 function reduceRules(rules) {
   return reduceResults(
     rules.map((rule) => {
-      return (args) => applyRule(rule, args)
+      return (args) => {
+        return applyRule(rule, args)
+      }
     }),
   )
 }
 
 export default function applyFormRules(rules) {
-  return async (resolverArgs) => {
-    console.groupCollapsed(
-      `applyFormRules @ ${resolverArgs.fieldProps.displayFieldPath}`,
-    )
-    console.log('rules:', rules)
-    console.log({ resolverArgs })
-
+  return (resolverArgs) => {
     const rulesList = listOf(
       addWhen(rules.name, isset, reduceRules),
       addWhen(rules.type, isset, reduceRules),
     )(resolverArgs)
 
-    console.log('FORM RULES LIST:', rulesList)
-
-    const result = await reduceResultsWhile(returnsExpected, rulesList)(
-      resolverArgs,
-    )
-
-    console.warn('applyFormRules result:', result)
-    console.groupEnd()
-
-    return result
+    return reduceWhileExpected(rulesList)(resolverArgs)
   }
 }

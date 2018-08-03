@@ -36,7 +36,7 @@ const hasFormRules = (resolverArgs, rules) => {
 }
 
 /**
- * Determines the necessity of the synchronous validation.
+ * Determines if synchronous validation is necessary.
  */
 export default anyPass([
   isForced,

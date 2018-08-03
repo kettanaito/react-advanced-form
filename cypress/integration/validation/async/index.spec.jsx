@@ -12,8 +12,7 @@ describe('Asynchronous validation', function() {
 
   describe('Logic', () => {
     it('Resolves empty optional field with satisfied async rule', () => {
-      cy
-        .getField('fieldOne')
+      cy.getField('fieldOne')
         .focus()
         .blur({ force: true })
         .should('not.have.class', 'is-valid')
@@ -21,50 +20,46 @@ describe('Asynchronous validation', function() {
     })
 
     it('Rejects empty required field with unsatisfied async rule', () => {
-      cy
-        .getField('fieldTwo')
+      cy.getField('fieldTwo')
         .focus()
         .blur({ force: true })
         .valid(false)
     })
 
     it('Resolves field with the expected value', () => {
-      cy
-        .getField('fieldOne')
+      cy.getField('fieldOne')
         .typeIn('expected value')
         .blur({ force: true })
-        .validating()
+        // .validating()
         .wait(500)
-        .validating(false)
+        // .validating(false)
         .valid(false)
     })
 
     it('Rejects field with the unexpected value', () => {
-      cy
-        .getField('fieldOne')
+      cy.getField('fieldOne')
         .typeIn('foo')
         .blur({ force: true })
-        .validating()
+        // .validating()
         .wait(500)
-        .validating(false)
+        // .validating(false)
         .valid(false)
     })
 
     it('Cancels pending async validation on field change', () => {
-      cy
-        .getField('fieldOne')
+      cy.getField('fieldOne')
         .typeIn('foo')
         .blur({ force: true })
-        .validating()
+        // .validating()
         .wait(200)
         .clear()
-        .validating(false)
+        // .validating(false)
         .should('not.have.class', 'is-invalid')
         .typeIn('expected value')
         .blur({ force: true })
-        .validating()
+        // .validating()
         .wait(500)
-        .validating(false)
+        // .validating(false)
         .valid()
     })
   })

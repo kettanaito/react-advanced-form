@@ -88,23 +88,12 @@ export default function connectField(options) {
         const value = directProps[valuePropName]
         const contextValue = fields.getIn([...fieldPath, valuePropName])
 
-        console.groupCollapsed(
-          `createField @ register @ ${fieldPath.join('.')}`,
-        )
-        console.log('directProps:', Object.assign({}, directProps))
-        console.log('value:', value)
-        console.log('initial value:', initialValue)
-        console.log('context value:', contextValue)
-
         /* Get the proper field value */
         const registeredValue = isset(contextValue)
           ? contextValue
           : value || initialValue || hocOptions.initialValue
 
-        console.log('registered value:', registeredValue)
-
         const { reactiveProps, prunedProps } = rxUtils.getRxProps(directProps)
-        console.log({ prunedProps, reactiveProps })
 
         const initialFieldProps = {
           ref: this,
@@ -150,18 +139,7 @@ export default function connectField(options) {
           context,
         })
 
-        console.log('should create field record from:', mappedFieldProps)
-
         const fieldRecord = recordUtils.createField(mappedFieldProps)
-
-        console.warn('fieldRecord', fieldRecord && fieldRecord.toJS())
-        console.log('fieldPath:', fieldRecord.fieldPath)
-        console.log('valuePropName:', fieldRecord[valuePropName])
-        console.log('value:', fieldRecord.value)
-        console.log('rxProps:', fieldRecord.reactiveProps)
-        console.log(' ')
-
-        console.groupEnd()
 
         /* Notify the parent Form that a new field prompts to register */
         form.eventEmitter.emit('fieldRegister', {
@@ -323,16 +301,6 @@ export default function connectField(options) {
         const prevValue = args.hasOwnProperty('prevValue')
           ? customPrevValue
           : contextProps.get(valuePropName)
-
-        console.groupCollapsed(
-          `createField @ handleChange @ ${contextProps.fieldPath.join('.')}`,
-        )
-        console.log('event', event)
-        console.log('valuePropName', valuePropName)
-        console.log('contextProps', Object.assign({}, contextProps.toJS()))
-        console.log('prevValue', prevValue)
-        console.log('nextValue', nextValue)
-        console.groupEnd()
 
         this.context.form.eventEmitter.emit('fieldChange', {
           event,

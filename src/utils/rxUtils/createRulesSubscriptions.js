@@ -95,17 +95,6 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
             fieldProps.fieldPath,
           )
 
-          console.log('\n\n\n\n')
-          console.groupCollapsed(
-            `rule subscription for "${currentFieldProps.displayFieldPath}"`,
-          )
-          console.log(
-            'currentFieldProps:',
-            currentFieldProps && currentFieldProps.toJS(),
-          )
-          console.groupEnd()
-          console.log('\n\n\n\n')
-
           form.eventEmitter.emit('validateField', {
             __SOURCE__: 'createRulesSubscriptions',
             /**

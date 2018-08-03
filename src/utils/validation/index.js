@@ -1,9 +1,9 @@
-import { returnsExpected, reduceResultsWhile } from '../reduceWhile'
+import { reduceWhileExpected } from '../reduceWhile'
 import createRuleResolverArgs from './createRuleResolverArgs'
 import validateSync from './validateSync'
-import validateAsync from './validateAsync'
+// import validateAsync from './validateAsync'
 
-const defaultValidatorsSeq = [validateSync, validateAsync]
+const defaultValidatorsSeq = [validateSync]
 
 /**
  * Performs validation of the given field with the given parameters.
@@ -14,21 +14,10 @@ export default async function validate(args) {
   const resolverArgs = createRuleResolverArgs(args)
   const validatorsSeq = chain || defaultValidatorsSeq
 
-  console.log(' ')
-  console.groupCollapsed(`validate @ ${args.fieldProps.displayFieldPath}`)
-  console.log('validate args:', args)
-  console.log('resolverArgs:', resolverArgs)
-  console.log('validators chain:', validatorsSeq)
-  console.log('reducing validators...')
-
-  const validationResult = await reduceResultsWhile(
-    returnsExpected,
-    validatorsSeq,
-  )(resolverArgs, force)
-
-  console.warn('TOP validationResult:', validationResult)
-  console.groupEnd()
-  console.log(' ')
+  const validationResult = await reduceWhileExpected(validatorsSeq)(
+    resolverArgs,
+    force,
+  )
 
   return validationResult
 }

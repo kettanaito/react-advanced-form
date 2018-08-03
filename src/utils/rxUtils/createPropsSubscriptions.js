@@ -21,9 +21,6 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
   Object.keys(rxProps).forEach((rxPropName) => {
     const resolver = rxProps[rxPropName]
 
-    console.log({ rxPropName })
-    console.log({ resolver })
-
     makeObservable(resolver, resolverArgs, {
       initialCall: true,
       subscribe({ nextTargetRecord, shouldValidate = true }) {
@@ -51,7 +48,6 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
           subscriberFieldPath.join('.'),
           nextPropValue,
         )
-        console.log('propsSub shouldValidate?', shouldValidate)
 
         /* Set the next value of reactive prop on the respective field record */
         const nextSubscriberRecord = recordUtils.resetValidityState(
@@ -63,14 +59,7 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
           nextSubscriberRecord,
         )
 
-        console.log(
-          'Next subscriber record:',
-          nextSubscriberRecord && nextSubscriberRecord.toJS(),
-        )
-
         if (shouldValidate) {
-          console.warn('Should validate from createPropsSubscription!')
-
           return form.validateField({
             __SOURCE__: 'createPropsSubscriptions',
             force: true,

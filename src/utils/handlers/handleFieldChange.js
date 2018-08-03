@@ -10,13 +10,6 @@ export default async function handleFieldChange(
   form,
   { onUpdateValue },
 ) {
-  console.groupCollapsed(
-    `Form @ handleFieldChange @ ${fieldProps.displayFieldPath}`,
-  )
-  console.log('fieldProps', Object.assign({}, fieldProps.toJS()))
-  console.log('nextValue', nextValue)
-  console.groupEnd()
-
   /**
    * Handle "onChange" events dispatched by the controlled field.
    * Controlled field must execute its custom "CustomField.props.onChange" handler since
@@ -25,7 +18,8 @@ export default async function handleFieldChange(
    * eventually via "createField.Field.componentReceiveProps()", when comparing previous
    * and next values of controlled fields.
    */
-  const isForcedUpdate = event && !(event.nativeEvent || event).isForcedUpdate
+  const eventInstance = event.nativeEvent || event
+  const isForcedUpdate = event && !eventInstance.isForcedUpdate
   const isControlled = fieldProps.controlled
   const customChangeHandler = fieldProps.onChange
 
@@ -92,7 +86,7 @@ export default async function handleFieldChange(
     //
     // NOTE
     // When passed explicitly here, the state of the fields
-    // may be outdated for some reason.
+    // may be outdated.
     // I think it has to do with the debounce nature of this function call.
     // Internally, "validateField" referenced to the very same fields,
     // but at that moment their entries are up-to-date.
