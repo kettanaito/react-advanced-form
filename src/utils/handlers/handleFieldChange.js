@@ -56,7 +56,9 @@ export default async function handleFieldChange(
 
   /* Cancel any pending async validation */
   const { pendingAsyncValidation } = updatedFieldProps
+
   if (pendingAsyncValidation) {
+    console.warn('Should cancel', pendingAsyncValidation)
     pendingAsyncValidation.cancel()
   }
 

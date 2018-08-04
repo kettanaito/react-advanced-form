@@ -41,6 +41,7 @@ const generateFieldClass = (initialProps) => {
       /* Validation */
       rule: null,
       asyncRule: null,
+      pendingAsyncValidation: null,
       debounceValidate: null,
       errors: null,
       expected: true,

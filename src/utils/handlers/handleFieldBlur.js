@@ -13,7 +13,7 @@ export default async function handleFieldBlur(
   const updatedFieldProps = recordUtils.setFocus(fieldProps, false)
 
   const nextFieldProps = await validateField({
-    __SOURCE__: 'onFieldBlur',
+    __SOURCE__: 'fieldBlur',
     fieldProps: updatedFieldProps,
     fields,
     form,
