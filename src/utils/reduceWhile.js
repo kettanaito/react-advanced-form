@@ -2,9 +2,10 @@ export const returnsExpected = async (validationResult) => {
   const resolvedResult = await validationResult
 
   /**
-   * Explicitly forbid "false" because:
-   * - true: field is expected
-   * - undefined: no validation necessary
+   * "expected" may obtain the next values:
+   * - true, when the field is expected (valid)
+   * - false, when the field is unexpected (invalid)
+   * - undefined, when no validation is necessary
    */
   return resolvedResult.expected !== false
 }
