@@ -45,24 +45,27 @@ import ReactSelect from './third-party/react-select'
 import ReactSlider from './third-party/react-slider'
 import ReactDatepicker from './third-party/react-datepicker'
 
+/* Basics */
 storiesOf('Basics|Interaction', module)
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
   .add('Controlled fields', addComponent(<ControlledFields />))
-  .add('Submit', addComponent(<Submit />))
+  .add('Form submit', addComponent(<Submit />))
 
 storiesOf('Basics|Components', module)
   .add('createField', addComponent(<CreateField />))
   .add('FormProvider', addComponent(<FormProvider />))
 
-storiesOf('Basics|Synchronous validation', module)
+/* Validation */
+storiesOf('Validation|Synchronous validation', module)
   .add('Field.props.rule', addComponent(<FieldPropsRule />))
   .add('Form.props.rules', addComponent(<FormPropsRules />))
 
-storiesOf('Basics|Asynchronous validation', module).add(
+storiesOf('Validation|Asynchronous validation', module).add(
   'Field.props.asyncRule',
   addComponent(<FieldPropsAsyncRule />),
 )
 
+/* Advanced */
 storiesOf('Advanced|Field grouping', module)
   .add('Simple group', addComponent(<SimpleGroup />))
   .add('Nested groups', addComponent(<NestedGroups />))
@@ -75,6 +78,7 @@ storiesOf('Advanced|Reactive props', module)
   .add('Interdependent fields', addComponent(<RxPropsInterdependent />))
   .add('Delegated subscription', addComponent(<RxPropsDelegatedSubscription />))
 
+/* Other */
 storiesOf('Other|Third-party fields', module)
   .add('react-select', addComponent(<ReactSelect />))
   .add('react-rangeslider', addComponent(<ReactSlider />))

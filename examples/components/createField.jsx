@@ -17,7 +17,7 @@ class CustomField extends React.Component {
     return (
       <div>
         <input {...this.props.fieldProps} onChange={this.handleFieldChange} />
-        <span id="count">{count}</span>
+        <div id="count">{count}</div>
       </div>
     )
   }

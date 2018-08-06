@@ -2,7 +2,7 @@ import React from 'react'
 import { Form } from '@lib'
 import { Input } from '@fields'
 
-export default class ValidationCombination extends React.Component {
+export default class ValidationComposition extends React.Component {
   validateAsync = ({ value }) => {
     return new Promise((resolve) => {
       setTimeout(resolve, 500)

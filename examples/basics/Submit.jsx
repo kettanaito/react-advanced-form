@@ -6,17 +6,20 @@ import Button from '@shared/Button'
 export default class Submit extends React.Component {
   render() {
     return (
-      <Form onSubmitStart={this.props.onSubmitStart}>
-        <Input name="email" type="email" label="E-mail" required />
-        <Input name="password" type="password" label="Password" required />
-        <Checkbox
-          name="termsAndConditions"
-          label="I agree to Terms and Conditions"
-          required
-        />
+      <React.Fragment>
+        <h1>Form submit</h1>
+        <Form onSubmitStart={this.props.onSubmitStart}>
+          <Input name="email" type="email" label="E-mail" required />
+          <Input name="password" type="password" label="Password" required />
+          <Checkbox
+            name="termsAndConditions"
+            label="I agree to Terms and Conditions"
+            required
+          />
 
-        <Button type="submit">Submit</Button>
-      </Form>
+          <Button type="submit">Submit</Button>
+        </Form>
+      </React.Fragment>
     )
   }
 }

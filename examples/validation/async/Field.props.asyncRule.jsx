@@ -34,39 +34,42 @@ export default class FieldPropsAsyncRule extends React.Component {
 
   render() {
     return (
-      <Form ref={this.props.getRef} messages={messages}>
-        <Input
-          name="fieldOne"
-          label="Field one"
-          hint="Must not equal to `foo`"
-          asyncRule={this.validateAsync}
-        />
+      <React.Fragment>
+        <h1>Field async rule</h1>
+        <Form ref={this.props.getRef} messages={messages}>
+          <Input
+            name="fieldOne"
+            label="Field one"
+            hint="Must not equal to `foo` (async)"
+            asyncRule={this.validateAsync}
+          />
 
-        <Input
-          name="fieldTwo"
-          label="Field two"
-          hint="Must be provided and not equal to `foo`"
-          asyncRule={this.validateAsync}
-          required
-        />
+          <Input
+            name="fieldTwo"
+            label="Field two"
+            hint="Must be provided and not equal to `foo` (async)"
+            asyncRule={this.validateAsync}
+            required
+          />
 
-        <Input
-          name="fieldThree"
-          rule={/^\d+$/}
-          label="Field three"
-          hint="Must be provided, contain numbers only and not equal to `123`"
-          asyncRule={this.validateAsync}
-          required
-        />
+          <Input
+            name="fieldThree"
+            rule={/^\d+$/}
+            label="Field three"
+            hint="Must be provided, contain numbers only (sync) and not equal to `123` (async)"
+            asyncRule={this.validateAsync}
+            required
+          />
 
-        <Input
-          name="fieldFour"
-          label="Required field with async rule and extra response props"
-          hint="Propagates response data to the validation message on fail"
-          asyncRule={this.validateAsync}
-          required
-        />
-      </Form>
+          <Input
+            name="fieldFour"
+            label="Required field with async rule and extra response props"
+            hint="Propagates response data to the validation message on fail"
+            asyncRule={this.validateAsync}
+            required
+          />
+        </Form>
+      </React.Fragment>
     )
   }
 }

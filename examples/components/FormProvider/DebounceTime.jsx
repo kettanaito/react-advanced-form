@@ -6,17 +6,24 @@ export default class DebounceTime extends React.Component {
   render() {
     return (
       <div>
-        <h3>Default debounce time</h3>
+        <h1>FormProvider</h1>
         <FormProvider>
           <Form>
-            <Input name="fieldOne" rule={/foo/} />
+            <Input
+              name="fieldOne"
+              label="Field with default debounce time"
+              rule={/foo/}
+            />
           </Form>
         </FormProvider>
 
-        <div>Custom debounce time</div>
         <FormProvider debounceTime={0}>
           <Form>
-            <Input name="fieldTwo" rule={/foo/} />
+            <Input
+              name="fieldTwo"
+              label="Field with custom debounce time"
+              rule={/foo/}
+            />
           </Form>
         </FormProvider>
       </div>
