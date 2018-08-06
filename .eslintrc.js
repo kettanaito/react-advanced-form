@@ -15,6 +15,9 @@ module.exports = {
     mocha: true,
     es6: true,
   },
+  globals: {
+    expect: true,
+  },
   settings: {
     'import/resolver': {
       webpack: {

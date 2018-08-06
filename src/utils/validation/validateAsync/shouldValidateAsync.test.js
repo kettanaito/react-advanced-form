@@ -1,4 +1,3 @@
-import { expect } from 'chai'
 import shouldValidateAsync from './shouldValidateAsync'
 import * as recordUtils from '../../recordUtils'
 
@@ -14,21 +13,7 @@ test('returns "true" for sync valid with "asyncRule"', () => {
     null,
   )
 
-  expect(needsValidation).to.be.true
-})
-
-test('returns "false" for sync invalid field', () => {
-  const needsValidation = shouldValidateAsync(
-    {
-      fieldProps: recordUtils.createField({
-        name: 'fieldOne',
-        asyncRule: () => true,
-      }),
-    },
-    null,
-  )
-
-  expect(needsValidation).to.be.false
+  expect(needsValidation).toEqual(true)
 })
 
 test('returns "false" for sync valid field without "asyncRule"', () => {
@@ -42,7 +27,7 @@ test('returns "false" for sync valid field without "asyncRule"', () => {
     null,
   )
 
-  expect(needsValidation).to.be.false
+  expect(needsValidation).toEqual(false)
 })
 
 test('retuns "false" for async valid field', () => {
@@ -58,5 +43,5 @@ test('retuns "false" for async valid field', () => {
     null,
   )
 
-  expect(needsValidation).to.be.false
+  expect(needsValidation).toEqual(false)
 })
