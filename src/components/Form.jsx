@@ -132,11 +132,6 @@ export default class Form extends React.Component {
     const fieldPath = initialFieldProps.get('fieldPath');
     const isAlreadyExist = fields.hasIn(fieldPath);
 
-    console.groupCollapsed(fieldPath, '@ registerField');
-    console.log('initialFieldProps', initialFieldProps.toJS());
-    console.log('already exists:', isAlreadyExist);
-    console.groupEnd();
-
     /* Warn on field duplicates */
     invariant(!(isAlreadyExist && !fieldOptions.allowMultiple), 'Cannot register field `%s`, the field with ' +
       'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
@@ -242,14 +237,6 @@ export default class Form extends React.Component {
     const nextFieldProps = update(fieldProps);
     const nextFields = fields.setIn(fieldPath, nextFieldProps);
 
-    console.groupCollapsed(fieldPath, '@ updateField');
-    console.log('fieldProps:', Object.assign({}, fieldProps.toJS()));
-    console.log('fields before update:', Object.assign({}, fields.toJS()));
-    console.log('next fieldProps:', Object.assign({}, nextFieldProps.toJS()));
-    console.log('next value:', nextFieldProps.get(nextFieldProps.get('valuePropName')));
-    console.log('nextFields:', Object.assign({}, nextFields.toJS()));
-    console.groupEnd();
-
     return new Promise((resolve, reject) => {
       try {
         this.setState({ fields: nextFields }, () => {
@@ -303,10 +290,6 @@ export default class Form extends React.Component {
     /* Bypass events called from an unregistered Field */
     if (!this.hasField(fieldProps)) return;
 
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldFocus');
-    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    console.groupEnd();
-
     const { nextFieldProps, nextFields } = await this.updateField({
       fieldPath: fieldProps.get('fieldPath'),
       update: fieldProps => fieldProps.set('focused', true)
@@ -334,11 +317,6 @@ export default class Form extends React.Component {
   handleFieldChange = async ({ event, fieldProps, prevValue, nextValue }) => {
     /* Bypass events called from an unregistered Field */
     if (!this.hasField(fieldProps)) return;
-
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldChange');
-    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    console.log('nextValue', nextValue);
-    console.groupEnd();
 
     /**
      * Handle "onChange" events dispatched by the controlled field.
@@ -463,11 +441,6 @@ export default class Form extends React.Component {
     //
     const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
 
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ handleFieldBlur');
-    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    console.log('should validate', shouldValidate);
-    console.groupEnd();
-
     if (shouldValidate) {
       /* Indicate that the validation is running */
       const { nextFieldProps } = await this.updateField({
@@ -531,13 +504,6 @@ export default class Form extends React.Component {
     });
 
     const shouldValidate = force || needsValidation;
-
-    console.groupCollapsed(fieldProps.get('fieldPath'), '@ validateField');
-    console.log('validation type', type);
-    console.log('value', fieldProps.get(fieldProps.get('valuePropName')));
-    console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-    console.log('shouldValidate', shouldValidate);
-    console.groupEnd();
 
     /* Bypass the validation when none is needed */
     if (!shouldValidate) {
