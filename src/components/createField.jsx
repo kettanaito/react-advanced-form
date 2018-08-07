@@ -87,12 +87,6 @@ export default function connectField(options) {
         const value = directProps[valuePropName];
         const contextValue = fields.getIn([...fieldPath, valuePropName]);
 
-        console.groupCollapsed(fieldPath, '@ register');
-        console.log('directProps:', Object.assign({}, directProps));
-        console.log('value:', value);
-        console.log('initial value:', initialValue);
-        console.log('context value:', contextValue);
-
         /* Get the proper field value to register with */
         const registeredValue = isset(contextValue)
           ? contextValue
@@ -137,8 +131,6 @@ export default function connectField(options) {
           }
         });
 
-        console.log('defaultFieldRecord:', Object.assign({}, defaultFieldRecord));
-
         /* (Optional) Alter the field record using HOC options */
         const fieldRecord = hocOptions.mapPropsToField({
           fieldRecord: defaultFieldRecord,
@@ -146,8 +138,6 @@ export default function connectField(options) {
           context: this.context,
           valuePropName
         });
-
-        console.log('fieldRecord:', fieldRecord);
 
         /* Prevent { fieldGroup: undefined } for the fields without a group */
         if (fieldGroup) {
@@ -178,11 +168,6 @@ export default function connectField(options) {
             fieldProps = fieldProps.delete(rxPropName);
           });
         }
-
-        console.log('rxProps:', rxProps && rxProps.toJS());
-        console.log('field record:', Object.assign({}, fieldRecord));
-        console.log('fieldProps:', fieldProps && fieldProps.toJS());
-        console.groupEnd();
 
         /* Notify the parent Form that a new field prompts to register */
         form.eventEmitter.emit('fieldRegister', {
@@ -321,14 +306,6 @@ export default function connectField(options) {
 
         const nextValue = args.hasOwnProperty('nextValue') ? customNextValue : event.currentTarget[valuePropName];
         const prevValue = args.hasOwnProperty('prevValue') ? customPrevValue : contextProps.get(valuePropName);
-
-        console.groupCollapsed(this.fieldPath, '@ Field @ handleChange');
-        console.log('event', event);
-        console.log('valuePropName', valuePropName);
-        console.log('contextProps', Object.assign({}, contextProps.toJS()));
-        console.log('prevValue', prevValue);
-        console.log('nextValue', nextValue);
-        console.groupEnd();
 
         this.context.form.eventEmitter.emit('fieldChange', {
           event,

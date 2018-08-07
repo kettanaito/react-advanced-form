@@ -79,14 +79,6 @@ const sequenceIterator = ({ acc, variables, resolved, isLast, breakIteration }) 
  * @return {boolean}
  */
 export default function validate({ type, fieldProps, fields, form }) {
-  // console.groupCollapsed(`fieldUtils @ validate "${fieldProps.get('fieldPath')}"`);
-  // console.log('type', type);
-  // console.log('fieldProps', Object.assign({}, fieldProps.toJS()));
-  // console.log('fields', fields);
-  // console.log('form', form);
-  // console.log('formRules', formRules.toJS());
-  // console.groupEnd();
-
   /* Create a new validation sequence */
   const validationSeq = new Sequence({
     initialValue: Map(),
