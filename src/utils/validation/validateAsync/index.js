@@ -7,7 +7,5 @@ export default async function validateAsync(resolverArgs, force) {
     ? await applyFieldAsyncRule(resolverArgs, force)
     : null
 
-  // console.log('fieldProps:', resolverArgs.fieldProps.toJS())
-
   return createValidatorResult('async', result)
 }

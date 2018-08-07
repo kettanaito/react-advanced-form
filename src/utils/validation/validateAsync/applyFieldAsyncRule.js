@@ -6,11 +6,11 @@ import errorTypes from '../errorTypes'
 
 export default async function applyFieldAsyncRule(resolverArgs) {
   const { fieldProps, form } = resolverArgs
-  const { value, asyncRule } = fieldProps
+  const { asyncRule } = fieldProps
 
-  if (!asyncRule || !value) {
-    return createValidationResult(true)
-  }
+  // if (!asyncRule || !value) {
+  //   return createValidationResult(true)
+  // }
 
   const pendingRequest = makeCancelable(dispatch(asyncRule, resolverArgs))
 
@@ -22,17 +22,15 @@ export default async function applyFieldAsyncRule(resolverArgs) {
     fieldProps.set('pendingAsyncValidation', pendingRequest),
   )
 
-  const res = await pendingRequest.itself
+  const result = await pendingRequest.itself
 
-  console.log('async validation res:', res)
-
-  const { valid, ...extra } = res
+  const { valid, ...extra } = result
   const rejectedRules = valid
     ? undefined
     : createRejectedRule({
-        errorType: errorTypes.invalid,
-        ruleName: 'async',
         selector: 'name',
+        ruleName: 'async',
+        errorType: errorTypes.invalid,
       })
 
   return createValidationResult(valid, rejectedRules, extra)

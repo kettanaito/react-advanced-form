@@ -33,8 +33,7 @@ Cypress.Commands.add('getField', (fieldName) => {
 })
 
 Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, text) => {
-  cy
-    .wrap(subject)
+  cy.wrap(subject)
     .type(text)
     .should('have.value', text)
 })
@@ -47,8 +46,7 @@ Cypress.Commands.add(
   'valid',
   { prevSubject: true },
   (subject, expected = true) => {
-    cy
-      .wrap(subject)
+    cy.wrap(subject)
       .should('have.class', expected ? 'is-valid' : 'is-invalid')
       .should('not.have.class', expected ? 'is-invalid' : 'is-valid')
   },
@@ -97,8 +95,7 @@ Cypress.Commands.add(
   { prevSubject: true },
   (subject, expected = true) => {
     const prefix = expected ? '' : 'not.'
-    cy
-      .wrap(subject)
+    cy.wrap(subject)
       .should('have.class', 'validated-sync')
       .should(`${prefix}have.class`, 'valid-sync')
   },
@@ -109,9 +106,8 @@ Cypress.Commands.add(
   { prevSubject: true },
   (subject, expected = true) => {
     const prefix = expected ? '' : 'not.'
-    cy
-      .wrap(subject)
-      .should('have.class', 'validated-saync')
+    cy.wrap(subject)
+      .should('have.class', 'validated-async')
       .should(`${prefix}have.class`, 'valid-async')
   },
 )
@@ -120,8 +116,7 @@ Cypress.Commands.add(
   'hasError',
   { prevSubject: true },
   (subject, errorText) => {
-    cy
-      .wrap(subject)
+    cy.wrap(subject)
       .siblings('.invalid-feedback')
       .should('have.text', errorText)
   },
