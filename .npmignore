@@ -7,6 +7,7 @@ cypress
 SUMMARY.md
 
 # Configurations
+.github
 .babelrc
 .eslintrc*
 .circleci
@@ -17,5 +18,7 @@ webpack*
 
 # Misc
 .storybook
+favicon.*
+logo.*
 internal
 examples
