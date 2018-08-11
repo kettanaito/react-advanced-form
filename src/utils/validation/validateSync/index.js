@@ -9,7 +9,9 @@ import ensureValue from './ensureValue'
 import applyFieldRule from './applyFieldRule'
 import applyFormRules from './applyFormRules'
 
-const hasFormRules = (rules) => rules && Object.keys(rules).length > 0
+const hasFormRules = (rules) => {
+  return rules && Object.keys(rules).length > 0
+}
 
 export default async function validateSync(resolverArgs, force) {
   const { fieldProps, form } = resolverArgs

@@ -14,10 +14,5 @@ export default async function validate(args) {
   const resolverArgs = createRuleResolverArgs(args)
   const validatorsChain = chain || defaultValidatorsChain
 
-  const validationResult = await reduceWhileExpected(validatorsChain)(
-    resolverArgs,
-    force,
-  )
-
-  return validationResult
+  return reduceWhileExpected(validatorsChain)(resolverArgs, force)
 }
