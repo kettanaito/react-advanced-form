@@ -30,6 +30,8 @@ import FieldPropsRule from './validation/sync/Field.props.rule'
 import FormPropsRules from './validation/sync/Form.props.rules'
 import FieldPropsAsyncRule from './validation/async/Field.props.asyncRule'
 
+import CombinedValidation from './validation/combined'
+
 /* Reactive props */
 import RxPropsFieldReactiveRule from './reactive-props/FieldReactiveRule'
 import RxPropsDynamicRequired from './reactive-props/DynamicRequired'
@@ -63,6 +65,11 @@ storiesOf('Validation|Synchronous validation', module)
 storiesOf('Validation|Asynchronous validation', module).add(
   'Field.props.asyncRule',
   addComponent(<FieldPropsAsyncRule />),
+)
+
+storiesOf('Validation|Combined validation', module).add(
+  'Combined validation',
+  addComponent(<CombinedValidation />),
 )
 
 /* Advanced */

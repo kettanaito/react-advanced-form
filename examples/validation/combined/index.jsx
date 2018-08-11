@@ -2,13 +2,13 @@ import React from 'react'
 import { Form } from '@lib'
 import { Input } from '@fields'
 
-export default class ValidationComposition extends React.Component {
+export default class CombinedValidation extends React.Component {
   validateAsync = ({ value }) => {
     return new Promise((resolve) => {
       setTimeout(resolve, 500)
     }).then(() => {
       return {
-        valid: value !== 123,
+        valid: value !== '123',
       }
     })
   }
@@ -20,8 +20,8 @@ export default class ValidationComposition extends React.Component {
           name="fieldOne"
           rule={/^\d+$/}
           asyncRule={this.validateAsync}
-          label="Must include numbers only"
-          hint="Validates async to not equal to `123`"
+          label="Field one"
+          hint="Numbers only (sync), not equal to 123 (async)"
         />
       </Form>
     )

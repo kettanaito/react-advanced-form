@@ -1,5 +1,5 @@
 import React from 'react'
-import Scenario from '@examples/validation/composite'
+import Scenario from '@examples/validation/combined'
 
 describe('Composite validation', function() {
   before(() => {
@@ -10,11 +10,10 @@ describe('Composite validation', function() {
     this.form.reset()
   })
 
-  it('Prevents async validation call when sync validation rejects', () => {
-    cy
-      .getField('fieldOne')
+  it('Bypasses async validation when preceding sync validation rejects', () => {
+    cy.getField('fieldOne')
       .focus()
-      .typeIn('foo')
+      .typeIn('letters')
       .validated('sync')
       .valid(false)
       .validSync(false)
@@ -25,9 +24,8 @@ describe('Composite validation', function() {
       .validated('async', false)
   })
 
-  it('Rejects async validation not satisfying the predicate', () => {
-    cy
-      .getField('fieldOne')
+  it('Rejects async validation that does not satisfy the predicate', () => {
+    cy.getField('fieldOne')
       .focus()
       .typeIn('123')
       .validSync()
@@ -39,9 +37,8 @@ describe('Composite validation', function() {
       .validAsync(false)
   })
 
-  it('Resolves async validation satisfying the predicate', () => {
-    cy
-      .getField('fieldOne')
+  it('Resolves async validation that satisfies the predicate', () => {
+    cy.getField('fieldOne')
       .focus()
       .typeIn('456')
       .validSync()
