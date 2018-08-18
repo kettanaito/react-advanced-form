@@ -1,8 +1,12 @@
+import compose from 'ramda/src/compose'
 import camelize from '../../camelize'
 import * as recordUtils from '../../recordUtils'
 import getMessages from '../messages/getMessages'
 
-export default function reflectValidationResult(resolverArgs, shouldValidate) {
+export default function reflectValidationResult(
+  resolverArgs,
+  shouldValidate = true,
+) {
   return (validationResult) => {
     const {
       fieldProps,
@@ -23,15 +27,27 @@ export default function reflectValidationResult(resolverArgs, shouldValidate) {
       }
     }, {})
 
-    return recordUtils.setErrors(
-      recordUtils.updateValidityState(
+    const nextFieldProps = compose(
+      recordUtils.setErrors(errorMessages),
+      recordUtils.updateValidityState(shouldValidate),
+      (fieldProps) =>
         fieldProps
           .merge(validationProps)
           .set('validated', true)
           .set('expected', expected),
-        shouldValidate,
-      ),
-      errorMessages,
-    )
+    )(fieldProps)
+
+    return nextFieldProps
+
+    // return recordUtils.setErrors(
+    //   recordUtils.updateValidityState(
+    //     fieldProps
+    //       .merge(validationProps)
+    //       .set('validated', true)
+    //       .set('expected', expected),
+    //     shouldValidate,
+    //   ),
+    //   errorMessages,
+    // )
   }
 }

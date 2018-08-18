@@ -1,4 +1,5 @@
 import invariant from 'invariant'
+import compose from 'ramda/src/compose'
 import dispatch from '../dispatch'
 import * as recordUtils from '../recordUtils'
 import validateSync from '../validation/validateSync'
@@ -47,12 +48,11 @@ export default async function handleFieldChange(
   }
 
   /* Update field's value */
-  const updatedFieldProps = recordUtils.setValue(
-    recordUtils.resetValidityState(
-      recordUtils.resetValidationState(fieldProps),
-    ),
-    nextValue,
-  )
+  const updatedFieldProps = compose(
+    recordUtils.setValue(nextValue),
+    recordUtils.resetValidityState,
+    recordUtils.resetValidationState,
+  )(fieldProps)
 
   /* Cancel any pending async validation */
   const { pendingAsyncValidation } = updatedFieldProps
@@ -79,7 +79,7 @@ export default async function handleFieldChange(
     ? fieldProps.debounceValidate
     : validateField
 
-  const nextFieldProps = await appropriateValidation({
+  const validatedFieldProps = await appropriateValidation({
     chain: [validateSync],
     fieldProps: updatedFieldProps,
 
@@ -108,7 +108,7 @@ export default async function handleFieldChange(
    * making the "fields" instance passed to "handleFieldChange" function
    * outdated.
    */
-  // const nextFields = recordUtils.updateCollectionWith(nextFieldProps, fields)
+  // const nextFields = recordUtils.updateCollectionWith(nextFieldProps: validatedFieldProps, fields)
 
   /**
    * Call custom "onChange" handler for uncontrolled fields only.
@@ -125,7 +125,7 @@ export default async function handleFieldChange(
         event,
         nextValue,
         prevValue,
-        fieldProps: nextFieldProps,
+        fieldProps: validatedFieldProps,
         fields: form.state.fields,
         form,
       },
@@ -133,5 +133,5 @@ export default async function handleFieldChange(
     )
   }
 
-  return { nextFieldProps }
+  return { nextFieldProps: validatedFieldProps }
 }

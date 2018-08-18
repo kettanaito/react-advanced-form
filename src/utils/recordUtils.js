@@ -4,6 +4,7 @@
  * Each function takes a field record and additional parameters and returns
  * the next state of the field record.
  */
+import curry from 'ramda/src/curry'
 import { Record } from 'immutable'
 
 /**
@@ -94,9 +95,9 @@ export const createField = (initialProps) => {
  * @param {Field} fieldRecord
  * @param {Map} collection
  */
-export const updateCollectionWith = (fieldProps, collection) => {
+export const updateCollectionWith = curry((fieldProps, collection) => {
   return collection.setIn(fieldProps.fieldPath, fieldProps)
-}
+})
 
 /**
  * Returns the value of the given field.
@@ -112,34 +113,34 @@ export const getValue = (fieldProps) => {
  * @param {Map} fieldProps
  * @param {any} nextValue
  */
-export function setValue(fieldProps, nextValue) {
+export const setValue = curry((nextValue, fieldProps) => {
   return fieldProps.set(fieldProps.get('valuePropName'), nextValue)
-}
+})
 
 /**
  * Sets the given error messages to the given field.
  * When no errors are provided, returns field props intact.
- * @param {Map} fieldProps
- * @param {???} errors
+ * @param {FieldRecord} fieldProps
+ * @param {FieldRecord} errors
  */
-export const setErrors = (fieldProps, errors = undefined) => {
+export const setErrors = curry((errors, fieldProps) => {
   /* Allow "null" as explicit empty "errors" value */
   return typeof errors !== 'undefined'
     ? fieldProps.set('errors', errors)
     : fieldProps
-}
+})
 
 /**
  * Resets the validity state (valid/invalid) of the given field.
- * @param {Map} fieldRecord
- * @returns {Map}
+ * @param {FieldRecord} fieldRecord
+ * @returns {FieldRecord}
  */
-export const resetValidityState = (fieldProps) => {
+export const resetValidityState = curry((fieldProps) => {
   return fieldProps.merge({
     valid: false,
     invalid: false,
   })
-}
+})
 
 /**
  * Sets the validity state props (valid/invalid) on the given field.
@@ -147,7 +148,7 @@ export const resetValidityState = (fieldProps) => {
  * @param {Boolean} shouldValidate
  * @returns {Map}
  */
-export const updateValidityState = (fieldProps, shouldValidate = true) => {
+export const updateValidityState = curry((shouldValidate, fieldProps) => {
   if (!shouldValidate) {
     return resetValidityState(fieldProps)
   }
@@ -159,25 +160,14 @@ export const updateValidityState = (fieldProps, shouldValidate = true) => {
     valid: !!value && validated && expected,
     invalid: validated && !expected,
   })
-}
-
-export const beginValidation = (fieldProps) => {
-  // TODO
-  // This is still wrong. If you fire this method after the field has been
-  // validated onChange (and had some errors), it will reset the errors :/
-  return setErrors(fieldProps.set('validating', true), null)
-}
-
-export const endValidation = (fieldProps) => {
-  return fieldProps.set('validating', false)
-}
+})
 
 /**
  * Resets the validation state of the given field.
  * @param {Map} fieldProps
  * @returns {Map}
  */
-export const resetValidationState = (fieldProps) => {
+export const resetValidationState = curry((fieldProps) => {
   return fieldProps.merge({
     validating: false,
     validated: false,
@@ -186,16 +176,16 @@ export const resetValidationState = (fieldProps) => {
     validSync: false,
     validAsync: false,
   })
-}
+})
 
 /**
  * Resets the given field to its initial state.
  * @param {Map} fieldProps
  * @returns {Map}
  */
-export const reset = (fieldProps) => {
+export const reset = curry((fieldProps) => {
   return fieldProps.clear()
-}
+})
 
 /**
  * Sets the given field's focus.
@@ -203,6 +193,7 @@ export const reset = (fieldProps) => {
  * @param {Boolean} isFocused
  * @returns {Map}
  */
-export const setFocus = (fieldProps, isFocused = true) => {
+export const setFocus = curry((isFocused, fieldProps) => {
+  console.warn({ isFocused, fieldProps })
   return fieldProps.set('focused', isFocused)
-}
+})

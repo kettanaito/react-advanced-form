@@ -1,4 +1,3 @@
-import { expect } from 'chai'
 import { Map, Record } from 'immutable'
 import * as recordUtils from './recordUtils'
 
@@ -17,69 +16,60 @@ const checkboxField = recordUtils.createField({
 
 describe('recordUtils', () => {
   it('createField', () => {
-    expect(inputField).to.be.an.instanceOf(Record)
-    expect(inputField.name).to.equal('fieldOne')
-    expect(inputField.type).to.equal('text')
-    expect(inputField.value).to.equal('foo')
-    expect(inputField.initialValue).to.equal('foo')
+    expect(inputField).toBeInstanceOf(Record)
+    expect(inputField.name).toEqual('fieldOne')
+    expect(inputField.type).toEqual('text')
+    expect(inputField.value).toEqual('foo')
+    expect(inputField.initialValue).toEqual('foo')
 
-    expect(checkboxField).to.be.an.instanceOf(Record)
-    expect(checkboxField.name).to.equal('checkboxOne')
-    expect(checkboxField.type).to.equal('checkbox')
-    expect(checkboxField.checked).to.be.true
-    expect(checkboxField.initialValue).to.be.true
+    expect(checkboxField).toBeInstanceOf(Record)
+    expect(checkboxField.name).toEqual('checkboxOne')
+    expect(checkboxField.type).toEqual('checkbox')
+    expect(checkboxField.checked).toEqual(true)
+    expect(checkboxField.initialValue).toEqual(true)
   })
 
   it('updateCollectionWith', () => {
     const nextCollection = recordUtils.updateCollectionWith(inputField, Map())
-    expect(nextCollection.getIn(inputField.fieldPath)).deep.equal(inputField)
+    expect(nextCollection.getIn(inputField.fieldPath)).toEqual(inputField)
   })
 
   it('getValue', () => {
     const value = recordUtils.getValue(inputField)
-    expect(value).to.equal('foo')
-    expect(inputField.value).to.equal('foo')
+    expect(value).toEqual('foo')
+    expect(inputField.value).toEqual('foo')
   })
 
   it('setValue', () => {
     const nextValue = 'bar'
-    const nextRecord = recordUtils.setValue(inputField, nextValue)
-    expect(nextRecord.value).to.equal(nextValue)
+    const nextRecord = recordUtils.setValue(nextValue, inputField)
+    expect(nextRecord.value).toEqual(nextValue)
   })
 
   it('setFocus', () => {
-    const focusedRecord = recordUtils.setFocus(inputField, true)
-    expect(focusedRecord.focused).to.be.true
+    const focusedRecord = recordUtils.setFocus(true, inputField)
+    expect(focusedRecord.focused).toEqual(true)
 
-    const unfocusedRecord = recordUtils.setFocus(focusedRecord, false)
-    expect(unfocusedRecord.focused).to.be.false
+    const unfocusedRecord = recordUtils.setFocus(false, focusedRecord)
+    expect(unfocusedRecord.focused).toEqual(false)
   })
 
   it('setErrors', () => {
     const errors = ['foo', 'bar']
-    const nextRecord = recordUtils.setErrors(inputField, errors)
-    expect(nextRecord.errors)
-      .to.be.an.instanceOf(Array)
-      .with.lengthOf(2)
-      .that.deep.equals(errors)
+    const nextRecord = recordUtils.setErrors(errors, inputField)
 
-    expect(recordUtils.setErrors(inputField, undefined).errors).to.be.null
+    expect(nextRecord.errors).toBeInstanceOf(Array)
+    expect(nextRecord.errors).toHaveLength(2)
+    expect(nextRecord.errors).toEqual(errors)
+    expect(recordUtils.setErrors(undefined, inputField).errors).toBeNull()
   })
 
   it('reset', () => {
-    const nextInput = recordUtils.setValue(inputField, 'bar')
-    expect(nextInput.value).to.equal('bar')
+    const nextInput = recordUtils.setValue('bar', inputField)
+    expect(nextInput.value).toEqual('bar')
 
     const resetInput = recordUtils.reset(nextInput)
-    expect(resetInput.value).to.equal(resetInput.initialValue)
-  })
-
-  it('beginValidation', () => {
-    const nextRecord = recordUtils.beginValidation(
-      recordUtils.setErrors(inputField, ['foo']),
-    )
-
-    expect(nextRecord.errors).to.be.null
+    expect(resetInput.value).toEqual(resetInput.initialValue)
   })
 
   it('resetValidityState', () => {
@@ -87,8 +77,8 @@ describe('recordUtils', () => {
       inputField.set('valid', true).set('invalid', true),
     )
 
-    expect(nextRecord.valid).to.be.false
-    expect(nextRecord.invalid).to.be.false
+    expect(nextRecord.valid).toEqual(false)
+    expect(nextRecord.invalid).toEqual(false)
   })
 
   it('resetValidationState', () => {
@@ -102,11 +92,11 @@ describe('recordUtils', () => {
         .set('validAsync', true),
     )
 
-    expect(nextRecord.validating).to.be.false
-    expect(nextRecord.validated).to.be.false
-    expect(nextRecord.validatedSync).to.be.false
-    expect(nextRecord.validatedAsync).to.be.false
-    expect(nextRecord.validSync).to.be.false
-    expect(nextRecord.validAsync).to.be.false
+    expect(nextRecord.validating).toEqual(false)
+    expect(nextRecord.validated).toEqual(false)
+    expect(nextRecord.validatedSync).toEqual(false)
+    expect(nextRecord.validatedAsync).toEqual(false)
+    expect(nextRecord.validSync).toEqual(false)
+    expect(nextRecord.validAsync).toEqual(false)
   })
 })

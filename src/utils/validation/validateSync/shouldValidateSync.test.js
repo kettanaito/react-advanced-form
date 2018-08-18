@@ -1,4 +1,3 @@
-import { expect } from 'chai'
 import shouldValidateSync from './shouldValidateSync'
 import * as recordUtils from '../../recordUtils'
 
@@ -11,7 +10,7 @@ test('returns "true" when validation is forced', () => {
     true,
   )
 
-  expect(needsValidation).to.be.true
+  expect(needsValidation).toEqual(true)
 })
 
 test('returns "true" for required field', () => {
@@ -26,7 +25,7 @@ test('returns "true" for required field', () => {
     false,
   )
 
-  expect(needsValidation).to.be.true
+  expect(needsValidation).toEqual(true)
 })
 
 test('returns "true" for non-validated field with value and field rule', () => {
@@ -42,7 +41,7 @@ test('returns "true" for non-validated field with value and field rule', () => {
     false,
   )
 
-  expect(needsValidation).to.be.true
+  expect(needsValidation).toEqual(true)
 })
 
 test('returns "true" for non-validated field with value and form rules', () => {
@@ -59,7 +58,7 @@ test('returns "true" for non-validated field with value and form rules', () => {
     false,
   )
 
-  expect(needsValidation).to.be.true
+  expect(needsValidation).toEqual(true)
 })
 
 test('returns "false" for empty optional field', () => {
@@ -74,5 +73,5 @@ test('returns "false" for empty optional field', () => {
     false,
   )
 
-  expect(needsValidation).to.be.false
+  expect(needsValidation).toEqual(false)
 })
