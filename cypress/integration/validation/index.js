@@ -3,5 +3,5 @@ describe('Validation', () => {
   require('./async')
   require('./composite')
   require('./messages')
-  require('./misc')
+  require('./other')
 })
