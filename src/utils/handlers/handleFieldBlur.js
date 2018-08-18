@@ -12,7 +12,7 @@ export default async function handleFieldBlur(
   // logic being called deeply within the validation algorithm.
   const updatedFieldProps = recordUtils.setFocus(fieldProps, false)
 
-  const nextFieldProps = await validateField({
+  const validatedFieldProps = await validateField({
     __SOURCE__: 'fieldBlur',
     fieldProps: updatedFieldProps,
     fields,
@@ -20,7 +20,10 @@ export default async function handleFieldBlur(
   })
 
   // const nextFieldProps = recordUtils.endValidation(validatedFieldProps)
-  const nextFields = recordUtils.updateCollectionWith(nextFieldProps, fields)
+  const nextFields = recordUtils.updateCollectionWith(
+    validatedFieldProps,
+    fields,
+  )
 
   const { onBlur } = fieldProps
   if (onBlur) {
@@ -28,7 +31,7 @@ export default async function handleFieldBlur(
       onBlur,
       {
         event,
-        fieldProps: nextFieldProps,
+        fieldProps: validatedFieldProps,
         fields: nextFields,
         form,
       },
@@ -36,5 +39,5 @@ export default async function handleFieldBlur(
     )
   }
 
-  return { nextFieldProps, nextFields }
+  return { nextFieldProps: validatedFieldProps, nextFields }
 }

@@ -364,6 +364,7 @@ export default class Form extends React.Component {
   handleFieldBlur = this.ensafeHandler(async (args) => {
     const { fields } = this.state
     const { nextFields } = await handlers.handleFieldBlur(args, fields, this)
+
     this.setState({ fields: nextFields })
   })
 
@@ -414,7 +415,7 @@ export default class Form extends React.Component {
     const flattenedFields = flattenDeep(fields, predicate, true)
 
     /* Validate only the fields matching the optional predicate */
-    // BTW, predicate is not used :/
+    // TODO FIXME, predicate is not used :/
     const validationSequence = flattenedFields.reduce(
       (validations, fieldProps) => {
         return validations.concat(

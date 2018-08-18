@@ -12,8 +12,7 @@ describe('UI behavior', function() {
   })
 
   it('Reflects and persists valid field state', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .typeIn('123')
       .wait(defaultDebounceTime)
       .validSync()
@@ -22,8 +21,7 @@ describe('UI behavior', function() {
   })
 
   it('Reflects and persists invalid field state', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .typeIn('foo')
       .wait(defaultDebounceTime)
       .validSync(false)
@@ -32,8 +30,7 @@ describe('UI behavior', function() {
   })
 
   it('Transitions from invalid to valid state', () => {
-    cy
-      .getField('fieldTwo')
+    cy.getField('fieldTwo')
       .typeIn('foo')
       .wait(defaultDebounceTime)
       .validSync(false)
@@ -43,22 +40,12 @@ describe('UI behavior', function() {
   })
 
   it('Transitions from valid to invalid state', () => {
-    cy
-      .getField('fieldTwo')
+    cy.getField('fieldTwo')
       .type('fooo')
       .wait(defaultDebounceTime)
       .validSync()
       .type('{backspace}')
       .wait(defaultDebounceTime)
       .validSync(false)
-  })
-
-  it('Sets "validating" property during the validation process', () => {
-    cy
-      .getField('fieldOne')
-      .typeIn('123')
-      .validating()
-      .wait(defaultDebounceTime)
-      .validating(false)
   })
 })
