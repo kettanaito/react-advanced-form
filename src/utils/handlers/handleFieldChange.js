@@ -74,15 +74,21 @@ export default async function handleFieldChange(
    * For example, for immediate clearing of field value the validation must be
    * performed immediately, while for typing the value it must be debounced.
    */
-  const shouldDebounce = !!nextValue
+  const shouldDebounce = !!prevValue && !!nextValue
   const appropriateValidation = shouldDebounce
     ? fieldProps.debounceValidate
     : validateField
 
   const nextFieldProps = await appropriateValidation({
-    __SOURCE__: 'onFieldChange',
     chain: [validateSync],
     fieldProps: updatedFieldProps,
+
+    /**
+     * Explicitly force field props, since "Form.validateField" will grab
+     * the actual field props by field name from its state. This works unexpected
+     * with concurrent validations (value updates).
+     */
+    // forceProps: true,
 
     //
     // NOTE
@@ -92,7 +98,7 @@ export default async function handleFieldChange(
     // Internally, "validateField" referenced to the very same fields,
     // but at that moment their entries are up-to-date.
     //
-    // fields: this.state.fields,
+    // fields: form.state.fields,
     form,
   })
 

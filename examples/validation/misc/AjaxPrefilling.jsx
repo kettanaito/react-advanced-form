@@ -1,6 +1,7 @@
 import React from 'react'
 import { Form } from '@lib'
 import { Input } from '@fields'
+import Button from '@shared/Button'
 
 export const timeoutDuration = 1200
 
@@ -10,9 +11,10 @@ export default class AjaxPrefilling extends React.Component {
     street: null,
   }
 
-  handleFetchStreet = (event) => {
+  handleButtonClick = (event) => {
     event.preventDefault()
     this.setState({ isFetching: true })
+
     setTimeout(
       () =>
         this.setState({
@@ -47,13 +49,14 @@ export default class AjaxPrefilling extends React.Component {
           required
         />
 
-        <button
+        <Button
           id="ajax"
+          type="button"
           disabled={isFetching}
-          onClick={this.handleFetchStreet}
+          onClick={this.handleButtonClick}
         >
           Fetch street
-        </button>
+        </Button>
 
         {isFetching && <span>Fetching...</span>}
       </Form>

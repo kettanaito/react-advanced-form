@@ -31,6 +31,7 @@ import FormPropsRules from './validation/sync/Form.props.rules'
 import FieldPropsAsyncRule from './validation/async/Field.props.asyncRule'
 
 import CombinedValidation from './validation/combined'
+import AjaxPrefilling from './validation/misc/AjaxPrefilling'
 
 /* Reactive props */
 import RxPropsFieldReactiveRule from './reactive-props/FieldReactiveRule'
@@ -70,6 +71,11 @@ storiesOf('Validation|Asynchronous validation', module).add(
 storiesOf('Validation|Combined validation', module).add(
   'Combined validation',
   addComponent(<CombinedValidation />),
+)
+
+storiesOf('Validation|Misc', module).add(
+  'AJAX Pre-filling',
+  addComponent(<AjaxPrefilling />),
 )
 
 /* Advanced */

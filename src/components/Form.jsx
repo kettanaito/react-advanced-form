@@ -240,8 +240,8 @@ export default class Form extends React.Component {
             /**
              * Enforce the validation function to use the "fieldProps"
              * provided directly. By default, it will try to grab the
-             * field record from the state, which is missing at this
-             * point of execution.
+             * field record from the state, which is missing at the
+             * point of field mounting.
              */
             forceProps: true,
           })
@@ -337,6 +337,7 @@ export default class Form extends React.Component {
    */
   handleFieldChange = this.ensafeHandler(async (args) => {
     const { fields, dirty } = this.state
+
     const changePayload = await handlers.handleFieldChange(args, fields, this, {
       onUpdateValue: this.updateFieldsWith,
     })
@@ -371,7 +372,6 @@ export default class Form extends React.Component {
    */
   validateField = async (args) => {
     const {
-      __SOURCE__,
       chain,
       force = false,
       fieldProps: explicitFieldProps,
@@ -389,7 +389,6 @@ export default class Form extends React.Component {
 
     /* Perform the validation */
     const validatedField = await validate({
-      __SOURCE__,
       chain,
       force,
       fieldProps,
@@ -414,7 +413,8 @@ export default class Form extends React.Component {
     const { fields } = this.state
     const flattenedFields = flattenDeep(fields, predicate, true)
 
-    /* Validate only the fields matching the optional selection */
+    /* Validate only the fields matching the optional predicate */
+    // BTW, predicate is not used :/
     const validationSequence = flattenedFields.reduce(
       (validations, fieldProps) => {
         return validations.concat(

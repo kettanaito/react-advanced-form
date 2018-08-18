@@ -7,13 +7,12 @@ describe('Messages', function() {
   })
 
   it('Displays error message with "extra" params from response', () => {
-    cy
-      .getField('fieldFour')
+    cy.getField('fieldFour')
       .typeIn('foo')
       .blur({ force: true })
-      .validating()
+      // .validating()
       .wait(500)
-      .validating(false)
+      // .validating(false)
       .hasError('Data from async response')
   })
 })

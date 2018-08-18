@@ -302,6 +302,11 @@ export default function connectField(options) {
           ? customPrevValue
           : contextProps.get(valuePropName)
 
+        console.warn('handling field change for', contextProps.name)
+        console.log('changes from:', prevValue)
+        console.log('changes to:', nextValue)
+        console.log('emitting "fieldChange" event...')
+
         this.context.form.eventEmitter.emit('fieldChange', {
           event,
           nextValue,
