@@ -4,6 +4,7 @@ import Scenario from '@examples/validation/combined'
 describe('Composite validation', function() {
   before(() => {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+    cy.wait(200)
   })
 
   afterEach(() => {

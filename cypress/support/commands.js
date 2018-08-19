@@ -34,7 +34,7 @@ Cypress.Commands.add('getField', (fieldName) => {
 
 Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, text) => {
   cy.wrap(subject)
-    .type(text)
+    .type(text, { delay: 30 })
     .should('have.value', text)
 })
 

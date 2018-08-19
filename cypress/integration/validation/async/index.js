@@ -10,14 +10,6 @@ describe('Asynchronous validation', function() {
     this.form.reset()
   })
 
-  it('Bypasses async validation if sync rule rejects', () => {
-    cy.getField('fieldThree')
-      .typeIn('foo')
-      .valid(false)
-      .validated('sync')
-      .validated('async', false)
-  })
-
   it('Bypasses async validation for empty optional field with async rule', () => {
     cy.getField('fieldOne')
       .focus()

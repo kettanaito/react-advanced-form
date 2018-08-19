@@ -55,10 +55,8 @@ export default class AjaxPrefilling extends React.Component {
           disabled={isFetching}
           onClick={this.handleButtonClick}
         >
-          Fetch street
+          {isFetching ? 'Fetching...' : 'Fetch data'}
         </Button>
-
-        {isFetching && <span>Fetching...</span>}
       </Form>
     )
   }

@@ -53,15 +53,6 @@ export default class FieldPropsAsyncRule extends React.Component {
           />
 
           <Input
-            name="fieldThree"
-            rule={/^\d+$/}
-            label="Field three"
-            hint="Must be provided, contain numbers only (sync) and not equal to `123` (async)"
-            asyncRule={this.validateAsync}
-            required
-          />
-
-          <Input
             name="fieldFour"
             label="Required field with async rule and extra response props"
             hint="Propagates response data to the validation message on fail"
