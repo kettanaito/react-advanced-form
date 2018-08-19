@@ -42,13 +42,6 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
          */
         const nextPropValue = dispatch(resolver, nextResolverArgs, form.context)
 
-        console.warn(
-          'Should update `%s` of `%s` to `%s`',
-          rxPropName,
-          subscriberFieldPath.join('.'),
-          nextPropValue,
-        )
-
         /* Set the next value of reactive prop on the respective field record */
         const nextSubscriberRecord = recordUtils.resetValidityState(
           currentSubscriberRecord.set(rxPropName, nextPropValue),

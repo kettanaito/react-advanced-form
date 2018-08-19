@@ -194,6 +194,5 @@ export const reset = curry((fieldProps) => {
  * @returns {Map}
  */
 export const setFocus = curry((isFocused, fieldProps) => {
-  console.warn({ isFocused, fieldProps })
   return fieldProps.set('focused', isFocused)
 })

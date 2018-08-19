@@ -22,7 +22,6 @@ export default function makeCancelable<R>(
   return {
     itself: wrappedPromise,
     cancel: () => {
-      console.warn('cancelling pending promise...')
       isCanceled = true
     },
   }

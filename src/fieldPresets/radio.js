@@ -15,26 +15,16 @@ export default {
    * 3. Add new "checked" props unique to this field type.
    */
   mapPropsToField({ fieldRecord, props: { checked, value, onChange } }) {
-    console.log(' ')
-    console.log('fieldPresets @ radio @ mapPropsToField')
-    console.log('fieldRecord:', fieldRecord)
-    console.log('checked:', checked)
-    console.log('value:', value)
-
     fieldRecord.type = 'radio'
     fieldRecord.controlled = !!onChange
 
     delete fieldRecord.initialValue
 
     if (checked) {
-      console.log('radio is checked, should set its initialValue to "value"')
       fieldRecord.initialValue = value
     } else {
-      console.log('radio is unchecked, should delete its "value" prop')
       delete fieldRecord.value
     }
-
-    console.warn('return fieldRecord:', fieldRecord)
 
     return fieldRecord
   },
@@ -47,13 +37,7 @@ export default {
    */
   beforeRegister({ fieldProps, fields }) {
     const { fieldPath } = fieldProps
-    console.warn('fieldPresets @ `%s` @ beforeRegister', fieldProps.name)
     const alreadyExist = fields.hasIn(fieldPath)
-
-    console.log('fieldPath', fieldPath)
-    console.log('fieldProps:', fieldProps && fieldProps.toJS())
-    console.log('already exists:', alreadyExist)
-    console.log(' ')
 
     if (!alreadyExist) {
       return fieldProps
@@ -61,6 +45,7 @@ export default {
 
     const valuePropName = fieldProps.get('valuePropName')
     const existingValue = fields.getIn([...fieldPath, valuePropName])
+
     if (existingValue) {
       return false
     }
