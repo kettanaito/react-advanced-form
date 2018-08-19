@@ -5,7 +5,8 @@ import createPropGetter from '../fieldUtils/createPropGetter'
  * arguments Object based on the passed arguments.
  */
 export default function createRuleResolverArgs(args) {
-  const { fieldProps, fields, form } = args
+  const { fieldProps, form } = args
+  const fields = args.fields || form.state.fields
   const valuePropName = fieldProps.get('valuePropName')
   const value = fieldProps.get(valuePropName)
 

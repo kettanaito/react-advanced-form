@@ -54,7 +54,6 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
 
         if (shouldValidate) {
           return form.validateField({
-            __SOURCE__: 'createPropsSubscriptions',
             force: true,
             forceProps: true,
             fieldProps: nextSubscriberRecord,

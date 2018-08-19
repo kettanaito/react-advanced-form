@@ -96,7 +96,6 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
           )
 
           form.eventEmitter.emit('validateField', {
-            __SOURCE__: 'createRulesSubscriptions',
             /**
              * Cannot hard-code "true" since that would validate
              * empty optional fields as unexpected. That is because
