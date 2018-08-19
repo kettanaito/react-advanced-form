@@ -118,7 +118,7 @@ export default async function handleFieldChange(
    * "onChange" handler at the beginning of this method. There is no need to
    * dispatch the handler method once more.
    */
-  if (!isControlled && customChangeHandler) {
+  if (!isControlled) {
     dispatch(
       customChangeHandler,
       {

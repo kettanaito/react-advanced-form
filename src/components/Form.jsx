@@ -296,13 +296,8 @@ export default class Form extends React.Component {
    * @param {Record} fieldProps
    */
   handleFirstChange = ({ event, prevValue, nextValue, fieldProps }) => {
-    const { onFirstChange } = this.props
-    if (!onFirstChange) {
-      return
-    }
-
     dispatch(
-      onFirstChange,
+      this.props.onFirstChange,
       {
         event,
         nextValue,
@@ -475,13 +470,8 @@ export default class Form extends React.Component {
       this.validate((entry) => Record.isRecord(entry) && entry.value !== '')
 
       /* Call custom callback methods to be able to reset controlled fields */
-      const { onReset } = this.props
-      if (!onReset) {
-        return
-      }
-
       dispatch(
-        onReset,
+        this.props.onReset,
         {
           fields: nextFields,
           form: this,
@@ -550,9 +540,7 @@ export default class Form extends React.Component {
      * Event: Submit has started.
      * The submit is consideres started immediately when the submit button is pressed.
      */
-    if (onSubmitStart) {
-      dispatch(onSubmitStart, callbackArgs, this.context)
-    }
+    dispatch(onSubmitStart, callbackArgs, this.context)
 
     const dispatchedAction = dispatch(action, callbackArgs, this.context)
 
@@ -566,21 +554,15 @@ export default class Form extends React.Component {
 
     return dispatchedAction
       .then((res) => {
-        if (onSubmitted) {
-          dispatch(onSubmitted, { ...callbackArgs, res }, this.context)
-        }
+        dispatch(onSubmitted, { ...callbackArgs, res }, this.context)
         return res
       })
       .catch((res) => {
-        if (onSubmitFailed) {
-          dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context)
-        }
+        dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context)
         return res
       })
       .then((res) => {
-        if (onSubmitEnd) {
-          dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context)
-        }
+        dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context)
       })
   }
 

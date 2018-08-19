@@ -15,6 +15,10 @@ export default function dispatch(
   context: TDispatchContext = {},
   overrides: Object = {},
 ) {
+  if (!func) {
+    return
+  }
+
   const { withImmutable } = context
 
   /* When Immutable args allowed, bypass any transformation */

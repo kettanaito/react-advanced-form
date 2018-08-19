@@ -24,19 +24,16 @@ export default async function handleFieldBlur(
     fields,
   )
 
-  const { onBlur } = fieldProps
-  if (onBlur) {
-    dispatch(
-      onBlur,
-      {
-        event,
-        fieldProps: validatedFieldProps,
-        fields: nextFields,
-        form,
-      },
-      form.context,
-    )
-  }
+  dispatch(
+    fieldProps.onBlur,
+    {
+      event,
+      fieldProps: validatedFieldProps,
+      fields: nextFields,
+      form,
+    },
+    form.context,
+  )
 
   return { nextFieldProps: validatedFieldProps, nextFields }
 }

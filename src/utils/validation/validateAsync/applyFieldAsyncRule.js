@@ -8,10 +8,6 @@ export default async function applyFieldAsyncRule(resolverArgs) {
   const { fieldProps, form } = resolverArgs
   const { asyncRule } = fieldProps
 
-  // if (!asyncRule || !value) {
-  //   return createValidationResult(true)
-  // }
-
   const pendingRequest = makeCancelable(dispatch(asyncRule, resolverArgs))
 
   /**
