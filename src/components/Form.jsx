@@ -606,14 +606,27 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Clears all the fields.
+   */
+  clear = () => {
+    const nextFields = this.state.fields.map(fieldUtils.resetField(() => ''));
+    this.setState({ fields: nextFields });
+  }
+
+  /**
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
-    const nextFields = this.state.fields.map(fieldProps => fieldUtils.resetField(fieldProps));
+    const nextFields = this.state.fields.map(fieldUtils.resetField((fieldProps) => {
+      return fieldProps.get('initialValue');
+    }));
 
     this.setState({ fields: nextFields }, () => {
-      /* Validate only non-empty fields, since empty required fields should not be unexpected on reset */
-      this.validate(entry => Map.isMap(entry) && (entry.get('value') !== ''));
+      /**
+       * Validate only non-empty fields, since empty required fields should
+       * not be unexpected upon reset.
+       */
+      this.validate(fieldProps => Map.isMap(fieldProps) && (fieldProps.get('value') !== ''));
 
       /* Call custom callback methods to be able to reset controlled fields */
       const { onReset } = this.props;
