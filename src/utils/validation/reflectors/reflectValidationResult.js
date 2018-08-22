@@ -38,16 +38,5 @@ export default function reflectValidationResult(
     )(fieldProps)
 
     return nextFieldProps
-
-    // return recordUtils.setErrors(
-    //   recordUtils.updateValidityState(
-    //     fieldProps
-    //       .merge(validationProps)
-    //       .set('validated', true)
-    //       .set('expected', expected),
-    //     shouldValidate,
-    //   ),
-    //   errorMessages,
-    // )
   }
 }
