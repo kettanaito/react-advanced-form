@@ -86,13 +86,13 @@ const generateFieldClass = (initialProps) => {
  * @returns {Field}
  */
 export const createField = (initialProps) => {
-  const FieldRecord = generateFieldClass(initialProps)
-  return new FieldRecord(initialProps)
+  const FieldProps = generateFieldClass(initialProps)
+  return new FieldProps(initialProps)
 }
 
 /**
  * Updates the given collection with the given field props.
- * @param {Field} fieldRecord
+ * @param {Field} fieldProps
  * @param {Map} collection
  */
 export const updateCollectionWith = curry((fieldProps, collection) => {
@@ -120,8 +120,8 @@ export const setValue = curry((nextValue, fieldProps) => {
 /**
  * Sets the given error messages to the given field.
  * When no errors are provided, returns field props intact.
- * @param {FieldRecord} fieldProps
- * @param {FieldRecord} errors
+ * @param {FieldProps} fieldProps
+ * @param {FieldProps} errors
  */
 export const setErrors = curry((errors, fieldProps) => {
   /* Allow "null" as explicit empty "errors" value */
@@ -132,8 +132,8 @@ export const setErrors = curry((errors, fieldProps) => {
 
 /**
  * Resets the validity state (valid/invalid) of the given field.
- * @param {FieldRecord} fieldRecord
- * @returns {FieldRecord}
+ * @param {FieldProps} fieldProps
+ * @returns {FieldProps}
  */
 export const resetValidityState = curry((fieldProps) => {
   return fieldProps.merge({

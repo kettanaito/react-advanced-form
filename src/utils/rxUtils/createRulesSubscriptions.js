@@ -13,7 +13,7 @@ import makeObservable from './makeObservable'
  * @returns {Map}
  */
 function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
-  const resolver = fieldProps.get('rule')
+  const { rule: resolver } = fieldProps
 
   if (typeof resolver !== 'function') {
     return ruleGroups

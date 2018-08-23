@@ -29,9 +29,9 @@ import validate from '../utils/handlers/validateField'
 
 /**
  * Binds the component's reference to the function's context and calls
- * an optional callback function to access that reference.
+ * an optional callback function to access the component reference.
  * @param {HTMLElement} element
- * @param {Function} callback
+ * @param {Function?} callback
  */
 function getInnerRef(element, callback) {
   this.innerRef = element
@@ -41,28 +41,28 @@ function getInnerRef(element, callback) {
   }
 }
 
-function filterFields(entity) {
+function isField(entity) {
   return !!entity.fieldPath
 }
 
 export default class Form extends React.Component {
   static propTypes = {
     /* General */
-    innerRef: PropTypes.func, // reference to the <form> element
-    action: PropTypes.func.isRequired, // form submit action
+    innerRef: PropTypes.func,
+    action: PropTypes.func.isRequired,
 
     /* Validation */
     rules: ValidationRulesPropType,
     messages: ValidationMessagesPropType,
 
-    /* Events */
+    /* Callbacks */
     onFirstChange: PropTypes.func,
     onReset: PropTypes.func,
     onInvalid: PropTypes.func,
-    onSubmitStart: PropTypes.func, // form should submit, submit started
-    onSubmitted: PropTypes.func, // form submit went successfully
-    onSubmitFailed: PropTypes.func, // form submit failed
-    onSubmitEnd: PropTypes.func, // form has finished submit (regardless of the result)
+    onSubmitStart: PropTypes.func,
+    onSubmitted: PropTypes.func,
+    onSubmitFailed: PropTypes.func,
+    onSubmitEnd: PropTypes.func,
   }
 
   static defaultProps = {
@@ -142,7 +142,7 @@ export default class Form extends React.Component {
     )
   }
 
-  ensafeHandler = (func) => {
+  withRegisteredField = (func) => {
     return (args) => {
       const { fieldProps } = args
       return this.state.fields.hasIn(fieldProps.fieldPath) && func(args)
@@ -165,8 +165,8 @@ export default class Form extends React.Component {
     invariant(
       !(fieldAlreadyExists && !fieldOptions.allowMultiple),
       'Cannot register field `%s`, the field with ' +
-        'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
-        'or `Field.Group` have unique names.',
+      'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
+      'or `Field.Group` have unique names.',
       fieldPath,
     )
 
@@ -234,7 +234,6 @@ export default class Form extends React.Component {
 
         if (fieldOptions.shouldValidateOnMount) {
           this.validateField({
-            __SOURCE__: 'validateOnMount',
             fieldProps,
 
             /**
@@ -317,7 +316,7 @@ export default class Form extends React.Component {
    * @param {Event} event
    * @param {Record} fieldProps
    */
-  handleFieldFocus = this.ensafeHandler((args) => {
+  handleFieldFocus = this.withRegisteredField((args) => {
     const { fields } = this.state
     const { nextFields } = handlers.handleFieldFocus(args, fields, this)
     this.setState({ fields: nextFields })
@@ -330,7 +329,7 @@ export default class Form extends React.Component {
    * @param {mixed} prevValue
    * @param {mixed} nextValue
    */
-  handleFieldChange = this.ensafeHandler(async (args) => {
+  handleFieldChange = this.withRegisteredField(async (args) => {
     const { fields, dirty } = this.state
 
     const changePayload = await handlers.handleFieldChange(args, fields, this, {
@@ -356,7 +355,7 @@ export default class Form extends React.Component {
    * @param {Event} event
    * @param {Record} fieldProps
    */
-  handleFieldBlur = this.ensafeHandler(async (args) => {
+  handleFieldBlur = this.withRegisteredField(async (args) => {
     const { fields } = this.state
     const { nextFields } = await handlers.handleFieldBlur(args, fields, this)
 
@@ -405,19 +404,15 @@ export default class Form extends React.Component {
    * validations to be completed.
    * @param {Function} predicate (Optional) Predicate function to filter the fields.
    */
-  validate = async (predicate = filterFields) => {
+  validate = async (predicate = isField) => {
     const { fields } = this.state
     const flattenedFields = flattenDeep(fields, predicate, true)
 
     /* Validate only the fields matching the optional predicate */
-    // TODO FIXME, predicate is not used :/
     const validationSequence = flattenedFields.reduce(
       (validations, fieldProps) => {
         return validations.concat(
-          this.validateField({
-            __SOURCE__: 'Form.validate()',
-            fieldProps,
-          }),
+          this.validateField({ fieldProps }),
         )
       },
       [],
@@ -434,7 +429,7 @@ export default class Form extends React.Component {
     if (!isFormValid && onInvalid) {
       const { fields: nextFields } = this.state
 
-      /* Reduce the invalid fields to the ordered Array */
+      /* Filter unexpected fields into a separate collection */
       const invalidFields = List(
         nextFields.filterNot((fieldProps) => fieldProps.expected),
       )
@@ -458,9 +453,7 @@ export default class Form extends React.Component {
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
-    const nextFields = this.state.fields.map((fieldProps) =>
-      recordUtils.reset(fieldProps),
-    )
+    const nextFields = this.state.fields.map(recordUtils.reset)
 
     this.setState({ fields: nextFields }, () => {
       /**
@@ -507,14 +500,14 @@ export default class Form extends React.Component {
     invariant(
       action,
       'Cannot submit the form without `action` prop specified explicitly. ' +
-        'Expected a function which returns Promise, but received: %s.',
+      'Expected a function which returns Promise, but received: %s.',
       action,
     )
 
-    /* Ensure form has no unexpected fields and, therefore, should be submitted */
-    const shouldSubmit = await this.validate()
+    /* Ensure form is valid before submitting */
+    const isFormValid = await this.validate()
 
-    if (!shouldSubmit) {
+    if (!isFormValid) {
       return
     }
 
@@ -547,8 +540,8 @@ export default class Form extends React.Component {
     invariant(
       dispatchedAction && typeof dispatchedAction.then === 'function',
       'Cannot submit the form. Expected `action` prop of the Form to return ' +
-        'an instance of Promise, but got: %s. Make sure you return a Promise ' +
-        'from your action handler.',
+      'an instance of Promise, but got: %s. Make sure you return a Promise ' +
+      'from your action handler.',
       dispatchedAction,
     )
 

@@ -10,16 +10,16 @@ import makeObservable from './makeObservable'
  * @param {ReactElement} form
  */
 export default function createPropsSubscriptions({ fieldProps, fields, form }) {
-  const rxProps = fieldProps.get('reactiveProps')
-  if (!rxProps) {
+  const { reactiveProps } = fieldProps
+  if (!reactiveProps) {
     return
   }
 
   const { fieldPath: subscriberFieldPath } = fieldProps
   const resolverArgs = createRuleResolverArgs({ fieldProps, fields, form })
 
-  Object.keys(rxProps).forEach((rxPropName) => {
-    const resolver = rxProps[rxPropName]
+  Object.keys(reactiveProps).forEach((rxPropName) => {
+    const resolver = reactiveProps[rxPropName]
 
     makeObservable(resolver, resolverArgs, {
       initialCall: true,

@@ -13,11 +13,12 @@ function predicate(fieldProps) {
   }
 
   /* Grab the field's value */
-  const defaultValue = recordUtils.getValue(fieldProps)
+  const value = recordUtils.getValue(fieldProps)
 
   /* Bypass checkboxes with no value */
   const isCheckbox = fieldProps.type === 'checkbox'
-  const hasEmptyValue = defaultValue === ''
+  const hasEmptyValue = value === ''
+
   if (!isCheckbox && hasEmptyValue) {
     return false
   }
@@ -26,7 +27,7 @@ function predicate(fieldProps) {
 }
 
 /**
- * Serializes the provided fields into immutable map.
+ * Serializes the provided fields. Returns
  * @param {Map} fields
  * @param {Boolean} withImmutable
  * @param {Function} transformValue

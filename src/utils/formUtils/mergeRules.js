@@ -7,13 +7,13 @@ import { fromJS, Map } from 'immutable'
  * @param {Map} contextRules
  * @returns {Map}
  */
-export default function mergeRules(formRules, contextRules) {
+export default function mergeRules(formRules, contextRules = Map()) {
   if (!formRules) {
-    return contextRules || Map()
+    return contextRules
   }
 
   const iterableRules = fromJS(formRules)
-  const closestRules = iterableRules || contextRules || Map()
+  const closestRules = iterableRules || contextRules
 
   return iterableRules.get('extend')
     ? contextRules.mergeDeep(iterableRules)

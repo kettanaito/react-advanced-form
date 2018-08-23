@@ -7,13 +7,9 @@ export default async function handleFieldBlur(
   fields,
   form,
 ) {
-  // TODO Intermediate update support.
-  // Unclear how to reflect the validation start with the "shouldValidate"
-  // logic being called deeply within the validation algorithm.
   const updatedFieldProps = recordUtils.setFocus(false, fieldProps)
 
   const validatedFieldProps = await validateField({
-    __SOURCE__: 'fieldBlur',
     fieldProps: updatedFieldProps,
     fields,
     form,
@@ -35,5 +31,8 @@ export default async function handleFieldBlur(
     form.context,
   )
 
-  return { nextFieldProps: validatedFieldProps, nextFields }
+  return {
+    nextFieldProps: validatedFieldProps,
+    nextFields
+  }
 }

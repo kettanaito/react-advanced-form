@@ -9,16 +9,16 @@ import createValidationResult from './createValidationResult'
  */
 export default function applyRule(rule, resolverArgs) {
   const { name, selector, resolver, errorType } = rule
-  const expected = applyResolver(resolver, resolverArgs)
+  const isFieldExpected = applyResolver(resolver, resolverArgs)
 
   /* Create rejected rules */
-  const rejectedRules = expected
+  const rejectedRules = isFieldExpected
     ? undefined
     : createRejectedRule({
-        errorType: errorType || errorTypes.invalid,
-        ruleName: name,
-        selector,
-      })
+      errorType: errorType || errorTypes.invalid,
+      ruleName: name,
+      selector,
+    })
 
-  return createValidationResult(expected, rejectedRules)
+  return createValidationResult(isFieldExpected, rejectedRules)
 }

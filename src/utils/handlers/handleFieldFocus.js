@@ -16,5 +16,8 @@ export default function handleFieldFocus({ event, fieldProps }, fields, form) {
     form.context,
   )
 
-  return { nextFieldProps, nextFields }
+  return {
+    nextFieldProps,
+    nextFields
+  }
 }
