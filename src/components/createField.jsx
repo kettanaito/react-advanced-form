@@ -3,6 +3,7 @@
  * component. Used for custom field styling, implementing fields with custom logic, and
  * third-party field components integration.
  */
+import path from 'ramda/src/path'
 import React from 'react'
 import PropTypes from 'prop-types'
 import hoistNonReactStatics from 'hoist-non-react-statics'
@@ -39,10 +40,19 @@ const defaultOptions = {
   },
 }
 
+/**
+ * Returns the initial value for the given fields.
+ * Takes field props, initial values of a form and field's class into account.
+ * @param {string[]} fieldPath
+ * @param {Record} fieldProps
+ * @param {Map} initialValues
+ * @param {Object} hocOptions
+ * @returns {string?}
+ */
 const getInitialValue = (fieldPath, fieldProps, initialValues, hocOptions) => {
   return (
     fieldProps.initialValue ||
-    (initialValues && initialValues.getIn(fieldPath)) ||
+    (initialValues && path(fieldPath, initialValues)) ||
     hocOptions.initialValue
   )
 }
@@ -101,7 +111,7 @@ export default function connectField(options) {
         const initialValue = getInitialValue(
           fieldPath,
           directProps,
-          form.initialValues,
+          form.props.initialValues,
           hocOptions,
         )
         const registeredValue = isset(contextValue)
