@@ -165,8 +165,8 @@ export default class Form extends React.Component {
     invariant(
       !(fieldAlreadyExists && !fieldOptions.allowMultiple),
       'Cannot register field `%s`, the field with ' +
-      'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
-      'or `Field.Group` have unique names.',
+        'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
+        'or `Field.Group` have unique names.',
       fieldPath,
     )
 
@@ -411,9 +411,7 @@ export default class Form extends React.Component {
     /* Validate only the fields matching the optional predicate */
     const validationSequence = flattenedFields.reduce(
       (validations, fieldProps) => {
-        return validations.concat(
-          this.validateField({ fieldProps }),
-        )
+        return validations.concat(this.validateField({ fieldProps }))
       },
       [],
     )
@@ -447,6 +445,14 @@ export default class Form extends React.Component {
     }
 
     return isFormValid
+  }
+
+  /**
+   * Clears all the fields.
+   */
+  clear = () => {
+    const nextFields = this.state.fields.map(fieldUtils.resetField(() => ''))
+    this.setState({ fields: nextFields })
   }
 
   /**
@@ -500,7 +506,7 @@ export default class Form extends React.Component {
     invariant(
       action,
       'Cannot submit the form without `action` prop specified explicitly. ' +
-      'Expected a function which returns Promise, but received: %s.',
+        'Expected a function which returns Promise, but received: %s.',
       action,
     )
 
@@ -540,8 +546,8 @@ export default class Form extends React.Component {
     invariant(
       dispatchedAction && typeof dispatchedAction.then === 'function',
       'Cannot submit the form. Expected `action` prop of the Form to return ' +
-      'an instance of Promise, but got: %s. Make sure you return a Promise ' +
-      'from your action handler.',
+        'an instance of Promise, but got: %s. Make sure you return a Promise ' +
+        'from your action handler.',
       dispatchedAction,
     )
 

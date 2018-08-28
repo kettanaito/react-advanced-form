@@ -107,7 +107,6 @@ export default function connectField(options) {
             : registeredValue,
           controlled: prunedProps.hasOwnProperty('value'), // TODO Checkboxes are always uncontrolled
           required: prunedProps.required,
-
           reactiveProps,
 
           //
