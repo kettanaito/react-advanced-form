@@ -1,49 +1,49 @@
-const path = require('path');
-const webpack = require('webpack');
-const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const path = require('path')
+const webpack = require('webpack')
+const BabelMinifyPlugin = require('babel-minify-webpack-plugin')
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 /* Environment */
-const nodeEnv = process.env.NODE_ENV || 'development';
-const DEVELOPMENT = (nodeEnv === 'development');
-const PRODUCTION = (nodeEnv === 'production');
+const nodeEnv = process.env.NODE_ENV || 'development'
+const DEVELOPMENT = nodeEnv === 'development'
+const PRODUCTION = nodeEnv === 'production'
 
 module.exports = {
   entry: [
     'regenerator-runtime/runtime',
-    path.resolve(__dirname, 'src/index.js')
+    path.resolve(__dirname, 'src/index.js'),
   ],
   externals: {
     react: 'umd react',
-    immutable: 'umd immutable'
+    immutable: 'umd immutable',
   },
   output: {
     path: path.resolve(__dirname, 'lib'),
     filename: `index.${nodeEnv}.js`,
     library: 'reactAdvancedForm',
     libraryTarget: 'umd',
-    umdNamedDefine: true
+    umdNamedDefine: true,
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-      'process.env.BABEL_ENV': JSON.stringify(nodeEnv)
+      'process.env.BABEL_ENV': JSON.stringify(nodeEnv),
     }),
-    PRODUCTION && new BabelMinifyPlugin({
-      removeDebugger: true,
-      removeConsole: true,
-      mangle: {
-        topLevel: true,
-        exclude: {
-          'connectField': true,
-          'createField': true,
-          'FormProvider': true,
-          'Form': true,
-          'Field': true,
-          'Condition': true
-        }
-      }
-    })
+    PRODUCTION &&
+      new BabelMinifyPlugin({
+        removeDebugger: true,
+        removeConsole: true,
+        mangle: {
+          topLevel: true,
+          exclude: {
+            connectField: true,
+            createField: true,
+            FormProvider: true,
+            Form: true,
+            Field: true,
+          },
+        },
+      }),
   ].filter(Boolean),
   module: {
     rules: [
@@ -55,18 +55,18 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              cacheDirectory: DEVELOPMENT
-            }
+              cacheDirectory: DEVELOPMENT,
+            },
           },
           {
-            loader: 'eslint-loader'
-          }
-        ]
-      }
-    ]
+            loader: 'eslint-loader',
+          },
+        ],
+      },
+    ],
   },
   devtool: DEVELOPMENT && 'source-map',
   resolve: {
-    extensions: ['.js', '.jsx']
-  }
-};
+    extensions: ['.js', '.jsx'],
+  },
+}

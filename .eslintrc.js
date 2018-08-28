@@ -7,36 +7,42 @@ module.exports = {
     ecmaFeatures: {
       classes: true,
       jsx: true,
-      modules: true
-    }
+      modules: true,
+    },
   },
   env: {
     browser: true,
     mocha: true,
-    es6: true
+    es6: true,
+  },
+  globals: {
+    expect: true,
   },
   settings: {
     'import/resolver': {
       webpack: {
-        config: './webpack.config.js'
-      }
-    }
+        config: './webpack.config.js',
+      },
+    },
   },
   rules: {
-    'strict': [2, 'never'],
+    indent: 0,
+    strict: [2, 'never'],
     'no-console': 0,
     'max-len': [1, 120],
     'consistent-return': 0,
+    semi: [1, 'never'],
+    'comma-dangle': 0,
     'array-callback-return': 0,
-    'import/no-extraneous-dependencies': 0,
+    'arrow-parens': [2, 'always'],
     'arrow-body-style': 0,
+    'space-before-function-paren': 0,
     'object-curly-newline': 0,
     'no-mixed-operators': 0,
     'no-plusplus': 0,
     'no-shadow': 0,
     'func-names': 0,
     'no-param-reassign': 0,
-    'import/prefer-default-export': 0,
     'class-methods-use-this': 0,
     'no-prototype-builtins': 0,
     'no-await-in-loop': 0,
@@ -47,12 +53,18 @@ module.exports = {
     'padded-blocks': 0,
     'no-underscore-dangle': 0,
 
+    /* Import */
+    'import/first': 0,
+    'import/no-extraneous-dependencies': 0,
+    'import/prefer-default-export': 0,
+    'import/no-named-as-default-member': 0,
+
     /* React */
     'react/jsx-uses-react': 2,
     'react/jsx-uses-vars': 2,
     'react/react-in-jsx-scope': 2,
 
     /* Mocha */
-    'mocha/no-exclusive-tests': 'error'
-  }
-};
+    'mocha/no-exclusive-tests': 'error',
+  },
+}

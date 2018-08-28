@@ -1,40 +1,57 @@
-import React from 'react';
-import { expect } from 'chai';
-import { mount } from 'cypress-react-unit-test';
-import Scenario from '@examples/basics/ControlledFields';
+import React from 'react'
+import { expect } from 'chai'
+import Scenario from '@examples/basics/ControlledFields'
 
-console.log({ Scenario })
+describe('Controlled fields interactions', function() {
+  before(() => {
+    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+  })
+  afterEach(() => this.form.reset())
 
-describe('Controlled fields interactions', function () {
-  before(() => mount(<Scenario getRef={ form => this.form = form } />));
-  afterEach(() => this.form.reset());
-
-  it('Form rendered with proper initial state.fields values', () => {
+  it('Mounts with proper initial state', () => {
     cy.get('#form').should(() => {
-      const serialized = this.form.serialize();
+      const serialized = this.form.serialize()
       expect(serialized).to.deep.equal({
         inputTwo: 'foo',
         select: 'two',
         radio: 'potato',
         checkbox1: false,
         checkbox2: true,
-        textareaTwo: 'something'
-      });
-    });
-  });
+        textareaTwo: 'something',
+      })
+    })
+  })
 
-  it('Controlled fields interactions change form state properly', () => {
-    cy.get('#inputOne').type('first value').should('have.value', 'first value');
-    cy.get('#inputTwo').clear().type('second value').should('have.value', 'second value');
-    cy.get('#radio3').check().should('be.checked');
-    cy.get('#checkbox1').check().should('be.checked');
-    cy.get('#checkbox2').uncheck().should('not.be.checked');
-    cy.get('#select').select('three');
-    cy.get('#textareaOne').clear().type('foo').should('have.value', 'foo');
-    cy.get('#textareaTwo').clear().type('another').should('have.value', 'another');
+  it('Updates form state on field change', () => {
+    cy.get('#inputOne').typeIn('first value')
+    cy
+      .get('#inputTwo')
+      .clear()
+      .typeIn('second value')
+    cy
+      .get('#radio3')
+      .check({ force: true })
+      .should('be.checked')
+    cy
+      .get('#checkbox1')
+      .check({ force: true })
+      .should('be.checked')
+    cy
+      .get('#checkbox2')
+      .uncheck({ force: true })
+      .should('not.be.checked')
+    cy.get('#select').select('three')
+    cy
+      .get('#textareaOne')
+      .clear()
+      .typeIn('foo')
+    cy
+      .get('#textareaTwo')
+      .clear()
+      .typeIn('another')
+
     cy.then(() => {
-      const serialized = this.form.serialize();
-      console.log({ serialized });
+      const serialized = this.form.serialize()
 
       return expect(serialized).to.deep.equal({
         inputOne: 'first value',
@@ -44,8 +61,8 @@ describe('Controlled fields interactions', function () {
         checkbox2: false,
         select: 'three',
         textareaOne: 'foo',
-        textareaTwo: 'another'
-      });
-    });
-  });
-});
+        textareaTwo: 'another',
+      })
+    })
+  })
+})

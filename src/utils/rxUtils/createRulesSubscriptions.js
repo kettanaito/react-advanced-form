@@ -1,6 +1,8 @@
-import makeObservable from './makeObservable';
-import flushFieldRefs from '../flushFieldRefs';
-import getFieldRules from '../formUtils/getFieldRules';
+import flushFieldRefs from '../flushFieldRefs'
+import getFieldRules from '../formUtils/getFieldRules'
+import * as recordUtils from '../recordUtils'
+import createRuleResolverArgs from '../validation/createRuleResolverArgs'
+import makeObservable from './makeObservable'
 
 /**
  * Appends the "Field.props.rule" resolver function to the provided
@@ -11,88 +13,101 @@ import getFieldRules from '../formUtils/getFieldRules';
  * @returns {Map}
  */
 function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
-  const resolver = fieldProps.get('rule');
+  const { rule: resolver } = fieldProps
 
   if (typeof resolver !== 'function') {
-    return ruleGroups;
+    return ruleGroups
   }
 
-  const { refs } = flushFieldRefs(resolver, resolverArgs);
+  const { refs } = flushFieldRefs(resolver, resolverArgs)
 
-  return ruleGroups.set('rule', [{
-    refs,
-    resolver
-  }]);
+  return ruleGroups.set('rule', [
+    {
+      refs,
+      resolver,
+    },
+  ])
 }
 
 /**
- * Creates an observable for each validation rule which references other fields' props.
- * Flattens deep the validation schema, finding the rules relevant to the currently
- * registering field, and creates observables for those rules which reference another fields.
+ * Creates an observable for each validation rule which references
+ * other fields' props. Flattens deep the validation schema, finding
+ * the rules relevant to the currently registering field, and creates
+ * observables for those rules which reference another fields.
  * @param {Map} fieldProps
  * @param {Map} fields
  * @param {Object} form
  * @returns {Map}
  */
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {
-  const { rxRules } = form.state;
-  const value = fieldProps.get(fieldProps.get('valuePropName'));
+  const { rxRules } = form.state
 
-  const resolverArgs = {
-    value,
+  const resolverArgs = createRuleResolverArgs({
     fieldProps,
     fields,
-    form
-  };
+    form,
+  })
 
   /**
-   * Get the collection of reactive rules from the form validation schema
-   * relative to the registered field.
+   * Get the collection of reactive rules from the form
+   * validation schema relative to the registered field.
    */
   const schemaRuleGroups = getFieldRules({
     fieldProps,
     schema: form.formRules,
+    rxRules,
     transformRule(ruleParams) {
-      const { refs } = flushFieldRefs(ruleParams.resolver, resolverArgs);
+      const { refs } = flushFieldRefs(ruleParams.resolver, resolverArgs)
 
       return {
         ...ruleParams,
-        refs
-      };
-    }
-  });
+        refs,
+      }
+    },
+  })
 
-  /**
-   * Add "Field.props.rule" in case the latter has field references.
-   */
-  const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs);
+  /* Add "Field.props.rule" in case the latter has field references */
+  const ruleGroups = addFieldPropsRule(
+    schemaRuleGroups,
+    fieldProps,
+    resolverArgs,
+  )
 
   if (ruleGroups.size === 0) {
-    return rxRules;
+    return rxRules
   }
 
   /**
-   * Create observable for each rule where another field(s) is referenced.
-   * The observable will listen for the referenced props change event and re-evaluate
-   * the validation rule(s) where that prop is referenced.
+   * Create observable for each rule in which another field(s) is referenced.
+   * The observable will listen for the referenced props change and re-evaluate
+   * the validation rule(s) in which that prop is referenced.
    */
   ruleGroups.forEach((ruleGroup) => {
-    ruleGroup.forEach((rule) => {
+    ruleGroup.forEach(({ refs, resolver }) => {
       /* Bypass rule resolvers without field references */
-      if (rule.refs.length === 0) {
-        return;
+      if (refs.length === 0) {
+        return
       }
 
-      makeObservable(rule.resolver, resolverArgs, {
+      makeObservable(resolver, resolverArgs, {
         subscribe() {
-          form.eventEmitter.emit('validateField', {
-            fieldProps,
-            force: true
-          });
-        }
-      });
-    });
-  });
+          const currentFieldProps = form.state.fields.getIn(
+            fieldProps.fieldPath,
+          )
 
-  return rxRules.mergeDeep(ruleGroups);
+          form.eventEmitter.emit('validateField', {
+            /**
+             * Cannot hard-code "true" since that would validate
+             * empty optional fields as unexpected. That is because
+             * "force" is not the part of "shouldValidate" chain.
+             */
+            force: !!recordUtils.getValue(currentFieldProps),
+            fieldProps: currentFieldProps,
+          })
+        },
+      })
+    })
+  })
+
+  return rxRules.mergeDeep(ruleGroups)
 }

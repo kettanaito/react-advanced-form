@@ -8,10 +8,6 @@ jspm_packages
 .happypack
 lib
 
-# Reserved
-internal
-deprecated
-
 # Logs
 *.log
 yarn-debug.log*
@@ -22,4 +18,9 @@ npm-*
 cypress/fixtures
 cypress/screenshots
 cypress/videos
-cypress/support
+
+# Internals
+internal
+deprecated
+.vscode
+__*

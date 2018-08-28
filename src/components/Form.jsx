@@ -1,568 +1,402 @@
-import invariant from 'invariant';
-import React from 'react';
-import PropTypes from 'prop-types';
-import { EventEmitter } from 'events';
-import { fromJS, List, Map } from 'immutable';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/bufferTime';
-import 'rxjs/add/observable/fromEvent';
+import invariant from 'invariant'
+import React from 'react'
+import PropTypes from 'prop-types'
+import { EventEmitter } from 'events'
+import { fromJS, Record, List, Map } from 'immutable'
+import { Observable } from 'rxjs/Observable'
+import 'rxjs/add/operator/bufferTime'
+import 'rxjs/add/observable/fromEvent'
 
 /* Internal modules */
-import { defaultDebounceTime, TValidationRules, TValidationMessages } from './FormProvider';
-import { BothValidationType, SyncValidationType } from '../classes/ValidationType';
+import {
+  defaultDebounceTime,
+  ValidationRulesPropType,
+  ValidationMessagesPropType,
+} from './FormProvider'
 import {
   CustomPropTypes,
   isset,
   camelize,
   dispatch,
   flattenDeep,
-  formUtils,
+  recordUtils,
   fieldUtils,
-  rxUtils
-} from '../utils';
+  formUtils,
+  rxUtils,
+} from '../utils'
+import * as handlers from '../utils/handlers'
+import validate from '../utils/handlers/validateField'
 
 /**
- * Shorthand: Binds the component's reference to the function's context and calls an optional callback
- * function to access that reference.
+ * Binds the component's reference to the function's context and calls
+ * an optional callback function to access the component reference.
  * @param {HTMLElement} element
- * @param {Function} callback
+ * @param {Function?} callback
  */
 function getInnerRef(element, callback) {
-  this.innerRef = element;
-  if (callback) callback(element);
+  this.innerRef = element
+
+  if (callback) {
+    callback(element)
+  }
 }
 
-function filterFields(entry) {
-  return entry.has('fieldPath');
+function isField(entity) {
+  return !!entity.fieldPath
 }
 
 export default class Form extends React.Component {
   static propTypes = {
     /* General */
-    innerRef: PropTypes.func, // reference to the <form> element
-    action: PropTypes.func.isRequired, // form submit action
+    innerRef: PropTypes.func,
+    action: PropTypes.func.isRequired,
 
     /* Validation */
-    rules: TValidationRules,
-    messages: TValidationMessages,
+    rules: ValidationRulesPropType,
+    messages: ValidationMessagesPropType,
 
-    /* Events */
+    /* Callbacks */
     onFirstChange: PropTypes.func,
     onReset: PropTypes.func,
     onInvalid: PropTypes.func,
-    onSubmitStart: PropTypes.func, // form should submit, submit started
-    onSubmitted: PropTypes.func, // form submit went successfully
-    onSubmitFailed: PropTypes.func, // form submit failed
-    onSubmitEnd: PropTypes.func // form has finished submit (regardless of the result)
+    onSubmitStart: PropTypes.func,
+    onSubmitted: PropTypes.func,
+    onSubmitFailed: PropTypes.func,
+    onSubmitEnd: PropTypes.func,
   }
 
   static defaultProps = {
-    action: () => new Promise(resolve => resolve())
+    action: () => new Promise((resolve) => resolve()),
   }
 
   state = {
     fields: Map(),
     rxRules: Map(),
-    dirty: false
+    dirty: false,
   }
 
-  /* Context which is accepted by Form */
+  /* Context accepted by the Form */
   static contextTypes = {
     rules: CustomPropTypes.Map,
     messages: CustomPropTypes.Map,
     debounceTime: PropTypes.number,
-    withImmutable: PropTypes.bool
+    withImmutable: PropTypes.bool,
   }
 
-  /* Context which Form passes to Fields */
+  /* Context propagated to the fields */
   static childContextTypes = {
     fields: CustomPropTypes.Map.isRequired,
-    form: PropTypes.object.isRequired
+    form: PropTypes.object.isRequired,
   }
 
   getChildContext() {
     return {
       fields: this.state.fields,
-      form: this
-    };
+      form: this,
+    }
   }
 
   constructor(props, context) {
-    super(props, context);
-    const { rules: explicitRules, messages: explicitMessages } = props;
-    const { debounceTime, rules, messages } = context;
+    super(props, context)
+    const { rules: explicitRules, messages: explicitMessages } = props
+    const { debounceTime, rules, messages } = context
 
-    /* Provide a fallback value for validation debounce duration */
-    this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime;
+    /* Set the validation debounce duration */
+    this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime
 
-    /* Define validation rules */
-    this.formRules = formUtils.mergeRules(explicitRules, rules);
+    /* Set validation rules */
+    this.formRules = formUtils.mergeRules(explicitRules, rules)
 
     /**
-     * Define validation messages once, since those should be converted to immutable, which is
-     * an expensive procedure. Moreover, messages are unlikely to change during the component's
-     * lifecycle. It should be safe to store them.
-     * Note: Messages passed from FormProvider (context messages) are already immutable.
+     * Define validation messages once, since those should be converted
+     * to immutable, which is an expensive procedure. Moreover, messages
+     * are unlikely to change during the component's lifecycle. It should
+     * be safe to store them.
+     * Note: Messages passed from FormProvider (context messages) are
+     * already immutable.
      */
-    this.messages = explicitMessages ? fromJS(explicitMessages) : messages;
+    this.messages = explicitMessages ? fromJS(explicitMessages) : messages
 
-    /* Create a private event emitter to communicate between form and its fields */
-    const eventEmitter = new EventEmitter();
-    this.eventEmitter = eventEmitter;
+    /* Create an event emitter to communicate between form and its fields */
+    const eventEmitter = new EventEmitter()
+    this.eventEmitter = eventEmitter
 
     /* Field lifecycle observerables */
     Observable.fromEvent(eventEmitter, 'fieldRegister')
       .bufferTime(100)
-      .subscribe(pendingFields => pendingFields.forEach(this.registerField));
-    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus);
-    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange);
-    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur);
-    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField);
-    Observable.fromEvent(eventEmitter, 'validateField').subscribe(this.validateField);
+      .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
+    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(
+      this.handleFieldFocus,
+    )
+    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(
+      this.handleFieldChange,
+    )
+    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(
+      this.handleFieldBlur,
+    )
+    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(
+      this.unregisterField,
+    )
+    Observable.fromEvent(eventEmitter, 'validateField').subscribe(
+      this.validateField,
+    )
+  }
+
+  withRegisteredField = (func) => {
+    return (args) => {
+      const { fieldProps } = args
+      return this.state.fields.hasIn(fieldProps.fieldPath) && func(args)
+    }
   }
 
   /**
    * Maps the field to the state/context.
-   * Passing fields in context gives a benefit of removing an explicit traversing of children
-   * tree, deconstructing and constructing each appropriate child with the attached handler props.
-   * @param {Map} fieldProps
+   * Passing fields in context gives a benefit of removing an explicit traversing of
+   * children tree, deconstructing and constructing each appropriate child with the
+   * attached handler props.
+   * @param {Record} fieldProps
    */
   registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
-    const { fields } = this.state;
-    const fieldPath = initialFieldProps.get('fieldPath');
-    const isAlreadyExist = fields.hasIn(fieldPath);
+    const { fields } = this.state
+    const { fieldPath } = initialFieldProps
+    const fieldAlreadyExists = fields.hasIn(fieldPath)
 
     /* Warn on field duplicates */
-    invariant(!(isAlreadyExist && !fieldOptions.allowMultiple), 'Cannot register field `%s`, the field with ' +
-      'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
-      'or `Field.Group` have unique names.', fieldPath);
+    invariant(
+      !(fieldAlreadyExists && !fieldOptions.allowMultiple),
+      'Cannot register field `%s`, the field with ' +
+        'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
+        'or `Field.Group` have unique names.',
+      fieldPath,
+    )
 
     /* Perform custom field props transformations upon registration */
     const fieldProps = fieldOptions.beforeRegister({
       fieldProps: initialFieldProps,
-      fields
-    });
+      fields,
+    })
 
     if (!fieldProps) {
-      return;
+      return
     }
 
-    const nextFields = fields.setIn(fieldPath, fieldProps);
-    const { eventEmitter } = this;
+    const nextFields = fields.setIn(fieldPath, fieldProps)
+    const { eventEmitter } = this
 
     /**
-     * Synchronize the field record with the field props.
-     * Create a props change observer to keep field's record in sync with the props changes
-     * of the respective field component. Only the changes in the props relative to the record
-     * should be observed and synchronized.
+     * Synchronize the field record with the field component's props.
+     * Create a props change observer to keep field's record in sync with
+     * the props changes of the respective field component. Only the changes
+     * in the props relative to the record should be observed and synchronized.
      */
-    rxUtils.addPropsObserver({
-      fieldPath,
-      props: ['type'],
-      eventEmitter
-    }).subscribe(({ changedProps }) => {
-      this.updateField({
-        fieldPath,
-        update: fieldProps => Object.keys(changedProps).reduce((acc, propName) => {
-          return acc.set(propName, changedProps[propName]);
-        }, fieldProps)
-      });
-    });
+    rxUtils
+      .createPropsObserver({
+        targetFieldPath: fieldPath,
+        props: ['type'],
+        eventEmitter,
+      })
+      .subscribe(({ nextTargetRecord, changedProps }) => {
+        //
+        // TODO Test if this replaces the previous logic.
+        //
+        const nextFieldProps = nextTargetRecord.merge(changedProps)
+        this.updateFieldsWith(nextFieldProps)
+
+        // this.updateField({
+        //   fieldPath,
+        //   update: (fieldProps) =>
+        //     Object.keys(changedProps).reduce((acc, propName) => {
+        //       return acc.set(propName, changedProps[propName])
+        //     }, fieldProps),
+        // })
+      })
 
     /**
-     * Analyze the rules relevant to the registered field and create reactive subscriptions to
-     * resolve them once their dependencies update. Returns the Map of the recorded formatted rules.
+     * Analyze the rules relevant to the registered field and create
+     * reactive subscriptions to resolve them once their dependencies
+     * update. Returns the Map of the recorded formatted rules.
      * That Map is later used during the sync validation as the rules source.
      */
     const nextRxRules = rxUtils.createRulesSubscriptions({
       fieldProps,
       fields,
-      form: this
-    });
+      form: this,
+    })
 
-    this.setState({ fields: nextFields, rxRules: nextRxRules }, () => {
-      /* Emit the field registered event */
-      const fieldRegisteredEvent = camelize(...fieldPath, 'registered');
-      eventEmitter.emit(fieldRegisteredEvent, fieldProps);
-
-      if (fieldOptions.shouldValidateOnMount) {
-        this.validateField({
-          fieldProps,
-
-          /**
-           * Enforce the validation function to use the "fieldProps" provided directly.
-           * By default, it will try to grab the field record from the state, which is
-           * missing at this point of execution.
-           */
-          forceProps: true
-        });
-      }
-
-      /* Create subscriptions for reactive props */
-      rxUtils.createSubscriptions({
-        fieldProps,
+    this.setState(
+      {
         fields: nextFields,
-        form: this
-      });
-    });
+        rxRules: nextRxRules,
+      },
+      () => {
+        const fieldRegisteredEvent = camelize(...fieldPath, 'registered')
+        eventEmitter.emit(fieldRegisteredEvent, fieldProps)
+
+        if (fieldOptions.shouldValidateOnMount) {
+          this.validateField({
+            fieldProps,
+
+            /**
+             * Enforce the validation function to use the "fieldProps"
+             * provided directly. By default, it will try to grab the
+             * field record from the state, which is missing at the
+             * point of field mounting.
+             */
+            forceProps: true,
+          })
+        }
+
+        /* Create reactive props subscriptions */
+        rxUtils.createPropsSubscriptions({
+          fieldProps,
+          fields: nextFields,
+          form: this,
+        })
+      },
+    )
   }
 
   /**
-   * Determines if the provided field has its record within the state.
-   * @param {Map} fieldProps
-   * @return {boolean}
-   */
-  hasField = (fieldProps) => {
-    return this.state.fields.hasIn(fieldProps.get('fieldPath'));
-  }
-
-  /**
-   * Updates the provided field using a pure "update" function.
-   * Fields can be updated by their field paths, or by providing their field props explicitly.
-   * The latter is useful for scenarios when the field props values are different than those
-   * stored in form's state at the moment of dispatching field update (i.e. field validation).
-   * @param {string[]} fieldPath
-   * @param {Map} fieldProps
-   * @param {Function} update
+   * Updates the fields with the given field record and returns
+   * the updated state of the fields.
+   * @param {Record} fieldProps
    * @returns {Promise}
    */
-  updateField = ({ fieldPath: explicitFieldPath, fieldProps: explicitFieldProps, update }) => {
-    invariant(update, 'Field update failed: expected an `update` function, but got: %s', update);
-    invariant(explicitFieldPath || explicitFieldProps, 'Field update failed: expected `fieldPath` or `fieldProps` ' +
-      'provided, but got: %s.', explicitFieldPath || explicitFieldProps);
-
-    const { fields } = this.state;
-    const fieldPath = explicitFieldProps ? explicitFieldProps.get('fieldPath') : explicitFieldPath;
-    const fieldProps = explicitFieldProps || fields.getIn(fieldPath);
-    const nextFieldProps = update(fieldProps);
-    const nextFields = fields.setIn(fieldPath, nextFieldProps);
+  updateFieldsWith = (fieldProps) => {
+    const nextFields = recordUtils.updateCollectionWith(
+      fieldProps,
+      this.state.fields,
+    )
 
     return new Promise((resolve, reject) => {
       try {
-        this.setState({ fields: nextFields }, () => {
-          resolve({ nextFieldProps, nextFields });
-        });
+        this.setState({ fields: nextFields }, resolve.bind(this, nextFields))
       } catch (error) {
-        reject(error);
+        reject(error)
       }
-    });
+    })
   }
 
   /**
    * Deletes the field record from the state.
-   * @param {Map} fieldProps
+   * @param {Record} fieldProps
    */
   unregisterField = (fieldProps) => {
-    this.setState(prevState => ({
-      fields: prevState.fields.deleteIn(fieldProps.get('fieldPath'))
-    }));
+    this.setState((prevState) => ({
+      fields: prevState.fields.deleteIn(fieldProps.fieldPath),
+    }))
   }
 
   /**
-   * Handles the first field change of the form.
+   * Handles the first change of a field value.
    * @param {Event} event
    * @param {any} nextValue
    * @param {any} prevValue
-   * @param {Map} fieldProps
+   * @param {Record} fieldProps
    */
-  handleFirstChange = ({ event, nextValue, prevValue, fieldProps }) => {
-    const { onFirstChange } = this.props;
-    if (!onFirstChange) return;
-
-    dispatch(onFirstChange, {
-      event,
-      nextValue,
-      prevValue,
-      fieldProps,
-      fields: this.state.fields,
-      form: this
-    }, this.context);
-
-    this.setState({ dirty: true });
-  }
-
-  /**
-   * Handles field focus.
-   * @param {Event} event
-   * @param {Map} fieldProps
-   */
-  handleFieldFocus = async ({ event, fieldProps }) => {
-    /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) return;
-
-    const { nextFieldProps, nextFields } = await this.updateField({
-      fieldPath: fieldProps.get('fieldPath'),
-      update: fieldProps => fieldProps.set('focused', true)
-    });
-
-    /* Call custom onFocus handler */
-    const onFocusHandler = fieldProps.get('onFocus');
-    if (!onFocusHandler) return;
-
-    dispatch(onFocusHandler, {
-      event,
-      fieldProps: nextFieldProps,
-      fields: nextFields,
-      form: this
-    }, this.context);
-  }
-
-  /**
-   * Handles field change.
-   * @param {Event} event
-   * @param {Map} fieldProps
-   * @param {mixed} prevValue
-   * @param {mixed} nextValue
-   */
-  handleFieldChange = async ({ event, fieldProps, prevValue, nextValue }) => {
-    /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) return;
-
-    /**
-     * Handle "onChange" events dispatched by the controlled field.
-     * Controlled field must execute its custom "CustomField.props.onChange" handler since that
-     * is the updater for the source (i.e. state) controlling its value. Internal RAF change handling
-     * must be omitted in that scenario, as it will be bubbled to eventually via
-     * "createField.Field.componentReceiveProps()", when comparing previous and next values of
-     * controlled fields.
-     */
-    const isForcedUpdate = event && !((event.nativeEvent || event).isForcedUpdate);
-    const isControlled = fieldProps.get('controlled');
-    const onChangeHandler = fieldProps.get('onChange');
-
-    if (isForcedUpdate && isControlled) {
-      invariant(onChangeHandler, 'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
-      'but received: %s.', fieldProps.get('name'), onChangeHandler);
-
-      return dispatch(onChangeHandler, {
+  handleFirstChange = ({ event, prevValue, nextValue, fieldProps }) => {
+    dispatch(
+      this.props.onFirstChange,
+      {
         event,
         nextValue,
         prevValue,
         fieldProps,
         fields: this.state.fields,
-        form: this
-      }, this.context);
-    }
+        form: this,
+      },
+      this.context,
+    )
 
-    const valuePropName = fieldProps.get('valuePropName');
+    this.setState({ dirty: true })
+  }
 
-    const { nextFieldProps: updatedFieldProps } = await this.updateField({
-      fieldPath: fieldProps.get('fieldPath'),
-      update: fieldProps => fieldProps
-        .set(valuePropName, nextValue)
-        .set('validated', false)
-        .set('validating', false)
-        .set('validatedSync', false)
-        .set('validSync', false)
-        .set('validatedAsync', false)
-        .set('validAsync', false)
-        // .set('errors', null)
-    });
+  /**
+   * Handles field focus.
+   * @param {Event} event
+   * @param {Record} fieldProps
+   */
+  handleFieldFocus = this.withRegisteredField((args) => {
+    const { fields } = this.state
+    const { nextFields } = handlers.handleFieldFocus(args, fields, this)
+    this.setState({ fields: nextFields })
+  })
 
-    /* Cancel any pending async validation due to the field's value change */
-    if (updatedFieldProps.has('pendingAsyncValidation')) {
-      const cancelPendingValidation = updatedFieldProps.getIn(['pendingAsyncValidation', 'cancel']);
-      cancelPendingValidation();
-    }
+  /**
+   * Handles field change.
+   * @param {Event} event
+   * @param {Record} fieldProps
+   * @param {mixed} prevValue
+   * @param {mixed} nextValue
+   */
+  handleFieldChange = this.withRegisteredField(async (args) => {
+    const { fields, dirty } = this.state
 
-    /**
-     * Perform appropriate field validation on value change.
-     * When field has a value set, perform debounced sync validation. For the cases
-     * when the user clears the field instantly, perform instant sync validation.
-     *
-     * The presence of "value" alone is not enough to determine the necessity for debounced
-     * validation. For instance, it is only when the previous and next value exist we can
-     * assume that the user is typing in the field. Change from "undefined" to some value
-     * most likely means the value update of the controlled field, which must be validated
-     * instantly.
-     */
-    const shouldDebounce = !!prevValue && !!nextValue;
-    const appropriateValidation = shouldDebounce ? fieldProps.get('debounceValidate') : this.validateField;
-
-    const { nextFields, nextFieldProps: validatedFieldProps } = await appropriateValidation({
-      type: SyncValidationType,
-      fieldProps: updatedFieldProps,
-      forceProps: !shouldDebounce
-    });
+    const changePayload = await handlers.handleFieldChange(args, fields, this, {
+      onUpdateValue: this.updateFieldsWith,
+    })
 
     /**
-     * Call custom "onChange" handler for uncontrolled fields only.
-     * "onChange" callback method acts as an updated function for controlled fields, and as a callback
-     * function for uncontrolled fields. The value update of uncontrolled fields is handled by the Form.
-     * Controlled fields dispatch "onChange" handler at the beginning of this method.
-     * There is no need to dispatch the handler method once more.
+     * Change handler for controlled fields does not return the next field props
+     * record, therefore, need to explicitly ensure the payload was returned.
      */
-    if (!isControlled && onChangeHandler) {
-      dispatch(onChangeHandler, {
-        event,
-        nextValue,
-        prevValue,
-        fieldProps: validatedFieldProps,
-        fields: nextFields,
-        form: this
-      }, this.context);
+    if (changePayload) {
+      this.updateFieldsWith(changePayload.nextFieldProps)
     }
 
     /* Mark form as dirty if it's not already */
-    if (!this.state.dirty) {
-      this.handleFirstChange({ event, nextValue, prevValue, fieldProps });
+    if (!dirty) {
+      this.handleFirstChange(args)
     }
-  }
+  })
 
   /**
    * Handles field blur.
    * @param {Event} event
-   * @param {Map} fieldProps
+   * @param {Record} fieldProps
    */
-  handleFieldBlur = async ({ event, fieldProps }) => {
-    /* Bypass events called from an unregistered Field */
-    if (!this.hasField(fieldProps)) return;
+  handleFieldBlur = this.withRegisteredField(async (args) => {
+    const { fields } = this.state
+    const { nextFields } = await handlers.handleFieldBlur(args, fields, this)
 
-    const fieldPath = fieldProps.get('fieldPath');
-    const asyncRule = fieldProps.get('asyncRule');
-    const validSync = fieldProps.get('validSync');
-    const validatedSync = fieldProps.get('validatedSync');
-    const validatedAsync = fieldProps.get('validatedAsync');
-
-    /**
-     * Determine whether the validation is needed.
-     * Also, determine a type of the validation. In case the field has been validated sync
-     * and is valid sync, it's ready to be validated async (if any async validation is present).
-     * However, if the field hasn't been validated sync yet (hasn't been touched), first require
-     * sync validation. When the latter fails, user will be prompted to change the value of the
-     * field. Changing the value resets the "async" validation state as well. Hence, when the
-     * user will pass sync validation, upon blurring out the field, the validation type will
-     * be "async".
-     */
-    //
-    //
-    // TODO Review if this is really needed. Why not just "ValidationType.shouldValidate()"?
-    //
-    //
-    const shouldValidate = !validatedSync || (validSync && !validatedAsync && asyncRule);
-
-    if (shouldValidate) {
-      /* Indicate that the validation is running */
-      const { nextFieldProps } = await this.updateField({
-        fieldPath,
-        update: fieldProps => fieldProps
-          .set('errors', null)
-          .set('invalid', false)
-          .set('validating', true)
-      });
-
-      /* Validate the field */
-      await this.validateField({ fieldProps: nextFieldProps });
-    }
-
-    /* Make field enabled, update its props */
-    const { nextFields, nextFieldProps } = await this.updateField({
-      fieldPath,
-      update: fieldProps => fieldProps
-        .set('focused', false)
-        .set('validating', false)
-    });
-
-    /* Call custom onBlur handler */
-    const onBlur = nextFieldProps.get('onBlur');
-    if (!onBlur) return;
-
-    dispatch(onBlur, {
-      event,
-      fieldProps: nextFieldProps,
-      fields: nextFields,
-      form: this
-    }, this.context);
-  }
+    this.setState({ fields: nextFields })
+  })
 
   /**
-   * Validates the provided field.
-   * @param {Map} fieldProps
-   * @param {ValidationType} type
-   * @param {boolean} forceProps (Optional) Use the field props from the arguments instead of form's state.
-   * @param {Map} fields (Optional) Explicit fields state to prevent validation concurrency.
-   * @param {boolean} force (Optional) Force validation. Bypass "shouldValidate" logic.
+   * Validates the provided field with the additional options.
    */
-  validateField = async ({
-    type = BothValidationType,
-    fieldProps: explicitFieldProps,
-    fields: explicitFields,
-    forceProps = false,
-    force = false
-  }) => {
-    const { formRules } = this;
-    const fields = explicitFields || this.state.fields;
+  validateField = async (args) => {
+    const {
+      chain,
+      force = false,
+      fieldProps: explicitFieldProps,
+      fields: explicitFields,
+      forceProps = false,
+      shouldUpdateFields = true,
+    } = args
 
-    let fieldProps = forceProps ? explicitFieldProps : fields.getIn(explicitFieldProps.get('fieldPath'));
-    fieldProps = fieldProps || explicitFieldProps;
+    const fields = explicitFields || this.state.fields
 
-    /* Bypass the validation if the provided validation type has been already validated */
-    const needsValidation = type.shouldValidate({
-      validationType: type,
-      fieldProps,
-      formRules
-    });
-
-    const shouldValidate = force || needsValidation;
-
-    /* Bypass the validation when none is needed */
-    if (!shouldValidate) {
-      return {
-        nextFieldProps: fieldProps,
-        nextFields: fields
-      };
-    }
+    let fieldProps = forceProps
+      ? explicitFieldProps
+      : fields.getIn(explicitFieldProps.fieldPath)
+    fieldProps = fieldProps || explicitFieldProps
 
     /* Perform the validation */
-    const validationResult = await fieldUtils.validate({
-      type,
+    const validatedField = await validate({
+      chain,
+      force,
       fieldProps,
       fields,
       form: this,
-      formRules
-    });
-
-    /* Update the validity state (valid/invalid) of the field */
-    let propsPatch = validationResult.get('propsPatch');
-    const expected = propsPatch.get('expected');
-
-    /* Determine if there are any messages available to form */
-    const { messages } = this;
-    const hasMessages = messages && (messages.size > 0);
-
-    /* Get the validation messages based on the validation result */
-    if (hasMessages && !expected) {
-      const errorMessages = fieldUtils.getErrorMessages({
-        validationResult,
-        messages,
-        fieldProps,
-        fields,
-        form: this
-      });
-
-      if (errorMessages) {
-        propsPatch = propsPatch.set('errors', errorMessages);
-      }
-    }
-
-    /**
-     * Get the next validity (valid/invalid) state.
-     * Based on the changed fieldProps, the field aquires a new validity state,
-     * which means its "valid" and "invalid" props values are updated.
-     */
-    const nextFieldProps = fieldProps.merge(propsPatch);
-    const nextValidityState = fieldUtils.getValidityState({
-      fieldProps: nextFieldProps,
-      needsValidation
-    });
+    })
 
     /* Update the field in the state to reflect the changes */
-    return this.updateField({
-      fieldProps: nextFieldProps,
-      update: fieldProps => fieldProps
-        .merge(propsPatch)
-        .merge(nextValidityState)
-    });
+    if (shouldUpdateFields) {
+      await this.updateFieldsWith(validatedField)
+    }
+
+    return validatedField
   }
 
   /**
@@ -570,82 +404,91 @@ export default class Form extends React.Component {
    * validations to be completed.
    * @param {Function} predicate (Optional) Predicate function to filter the fields.
    */
-  validate = async (predicate = filterFields) => {
-    const { fields } = this.state;
-    const flattenedFields = flattenDeep(fields, predicate, true);
+  validate = async (predicate = isField) => {
+    const { fields } = this.state
+    const flattenedFields = flattenDeep(fields, predicate, true)
 
-    /* Validate only the fields matching the optional selection */
-    const validationSequence = flattenedFields.reduce((validations, fieldProps) => {
-      return validations.concat(this.validateField({ fieldProps }));
-    }, []);
+    /* Validate only the fields matching the optional predicate */
+    const validationSequence = flattenedFields.reduce(
+      (validations, fieldProps) => {
+        return validations.concat(this.validateField({ fieldProps }))
+      },
+      [],
+    )
 
     /* Await for all validation promises to resolve before returning */
-    const validatedFields = await Promise.all(validationSequence);
+    const validatedFields = await Promise.all(validationSequence)
+    const isFormValid = validatedFields.every((validatedFieldProps) => {
+      return validatedFieldProps.expected
+    })
 
-    const isFormValid = !validatedFields.some(({ nextFieldProps }) => {
-      return !nextFieldProps.get('expected');
-    });
-
-    const { onInvalid } = this.props;
+    const { onInvalid } = this.props
 
     if (!isFormValid && onInvalid) {
-      const { fields: nextFields } = this.state;
+      const { fields: nextFields } = this.state
 
-      /* Reduce the invalid fields to the ordered Array */
-      const invalidFields = List(nextFields.filterNot(fieldProps => fieldProps.get('expected')));
+      /* Filter unexpected fields into a separate collection */
+      const invalidFields = List(
+        nextFields.filterNot((fieldProps) => fieldProps.expected),
+      )
 
       /* Call custom callback */
-      dispatch(onInvalid, {
-        fields: nextFields,
-        invalidFields,
-        form: this
-      }, this.context);
+      dispatch(
+        onInvalid,
+        {
+          fields: nextFields,
+          invalidFields,
+          form: this,
+        },
+        this.context,
+      )
     }
 
-    return isFormValid;
+    return isFormValid
   }
 
   /**
    * Clears all the fields.
    */
   clear = () => {
-    const nextFields = this.state.fields.map(fieldUtils.resetField(() => ''));
-    this.setState({ fields: nextFields });
+    const nextFields = this.state.fields.map(fieldUtils.resetField(() => ''))
+    this.setState({ fields: nextFields })
   }
 
   /**
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
-    const nextFields = this.state.fields.map(fieldUtils.resetField((fieldProps) => {
-      return fieldProps.get('initialValue');
-    }));
+    const nextFields = this.state.fields.map(recordUtils.reset)
 
     this.setState({ fields: nextFields }, () => {
       /**
-       * Validate only non-empty fields, since empty required fields should
-       * not be unexpected upon reset.
+       * Validate only non-empty fields, since empty required fields
+       * should not be unexpected after reset.
        */
-      this.validate(fieldProps => Map.isMap(fieldProps) && (fieldProps.get('value') !== ''));
+      this.validate((entry) => Record.isRecord(entry) && entry.value !== '')
 
       /* Call custom callback methods to be able to reset controlled fields */
-      const { onReset } = this.props;
-      if (!onReset) return;
-
-      dispatch(onReset, {
-        fields: nextFields,
-        form: this
-      }, this.context);
-    });
+      dispatch(
+        this.props.onReset,
+        {
+          fields: nextFields,
+          form: this,
+        },
+        this.context,
+      )
+    })
   }
 
   /**
-   * Serializes the fields' values into a plain Object.
+   * Returns a collection of serialized fields.
    * @returns {Map|Object}
    */
   serialize = () => {
-    const serialized = fieldUtils.serializeFields(this.state.fields);
-    return this.context.withImmutable ? serialized : serialized.toJS();
+    return fieldUtils.serializeFields(
+      this.state.fields,
+      this.context.withImmutable,
+    )
   }
 
   /**
@@ -653,67 +496,88 @@ export default class Form extends React.Component {
    * @param {Event} event
    */
   submit = async (event) => {
-    if (event) event.preventDefault();
+    if (event) {
+      event.preventDefault()
+    }
 
     /* Throw on submit attempt without the "action" prop */
-    const { action } = this.props;
+    const { action } = this.props
 
-    invariant(action, 'Cannot submit the form without `action` prop specified explicitly. Expected a function ' +
-      'which returns Promise, but received: %s.', action);
+    invariant(
+      action,
+      'Cannot submit the form without `action` prop specified explicitly. ' +
+        'Expected a function which returns Promise, but received: %s.',
+      action,
+    )
 
-    /* Ensure form has no unexpected fields and, therefore, should be submitted */
-    const shouldSubmit = await this.validate();
-    if (!shouldSubmit) return;
+    /* Ensure form is valid before submitting */
+    const isFormValid = await this.validate()
 
-    const { fields } = this.state;
-    const { onSubmitStart, onSubmitted, onSubmitFailed, onSubmitEnd } = this.props;
+    if (!isFormValid) {
+      return
+    }
+
+    const { fields } = this.state
+    const {
+      onSubmitStart,
+      onSubmitted,
+      onSubmitFailed,
+      onSubmitEnd,
+    } = this.props
 
     /* Serialize the fields */
-    const serialized = this.serialize();
+    const serialized = this.serialize()
 
     /* Compose a single Object of arguments passed to each custom handler */
     const callbackArgs = {
       serialized,
       fields,
-      form: this
-    };
+      form: this,
+    }
 
     /**
      * Event: Submit has started.
      * The submit is consideres started immediately when the submit button is pressed.
-     * This is a good place to have a UI logic dependant on the form submit (i.e. loaders).
      */
-    if (onSubmitStart) dispatch(onSubmitStart, callbackArgs, this.context);
+    dispatch(onSubmitStart, callbackArgs, this.context)
 
-    const dispatchedAction = dispatch(action, callbackArgs, this.context);
+    const dispatchedAction = dispatch(action, callbackArgs, this.context)
 
-    invariant(dispatchedAction && (typeof dispatchedAction.then === 'function'), 'Cannot submit the form. ' +
-      'Expected `action` prop of the Form to return an instance of Promise, but got: %s. Make sure you return a ' +
-      'Promise from your action handler.', dispatchedAction);
+    invariant(
+      dispatchedAction && typeof dispatchedAction.then === 'function',
+      'Cannot submit the form. Expected `action` prop of the Form to return ' +
+        'an instance of Promise, but got: %s. Make sure you return a Promise ' +
+        'from your action handler.',
+      dispatchedAction,
+    )
 
-    return dispatchedAction.then((res) => {
-      if (onSubmitted) dispatch(onSubmitted, { ...callbackArgs, res }, this.context);
-      return res;
-    }).catch((res) => {
-      if (onSubmitFailed) dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context);
-      return res;
-    }).then((res) => {
-      if (onSubmitEnd) dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context);
-    });
+    return dispatchedAction
+      .then((res) => {
+        dispatch(onSubmitted, { ...callbackArgs, res }, this.context)
+        return res
+      })
+      .catch((res) => {
+        dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context)
+        return res
+      })
+      .then((res) => {
+        dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context)
+      })
   }
 
   render() {
-    const { innerRef, id, className, children } = this.props;
+    const { innerRef, id, className, children } = this.props
 
     return (
       <form
-        ref={ ref => getInnerRef.call(this, ref, innerRef) }
-        { ...{ id } }
-        { ...{ className } }
-        onSubmit={ this.submit }
-        noValidate>
-        { children }
+        ref={(ref) => getInnerRef.call(this, ref, innerRef)}
+        {...{ id }}
+        {...{ className }}
+        onSubmit={this.submit}
+        noValidate
+      >
+        {children}
       </form>
-    );
+    )
   }
 }

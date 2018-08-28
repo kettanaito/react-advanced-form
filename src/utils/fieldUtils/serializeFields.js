@@ -1,33 +1,43 @@
-import { Map } from 'immutable';
-import flattenDeep from '../flattenDeep';
-
-function defaultTransformValue(fieldProps) {
-  return fieldProps.get(fieldProps.get('valuePropName'));
-}
+import { Record } from 'immutable'
+import flattenDeep from '../flattenDeep'
+import * as recordUtils from '../recordUtils'
 
 function predicate(fieldProps) {
-  if (!Map.isMap(fieldProps) || !fieldProps.has('fieldPath')) return;
+  if (!Record.isRecord(fieldProps) || !fieldProps.fieldPath) {
+    return
+  }
 
   /* Bypass the fields which should be skipped */
-  if (fieldProps.get('skip')) return false;
+  if (fieldProps.skip) {
+    return false
+  }
 
   /* Grab the field's value */
-  const defaultValue = fieldProps.get(fieldProps.get('valuePropName'));
+  const value = recordUtils.getValue(fieldProps)
 
   /* Bypass checkboxes with no value */
-  const isCheckbox = (fieldProps.get('type') === 'checkbox');
-  const hasEmptyValue = (defaultValue === '');
-  if (!isCheckbox && hasEmptyValue) return false;
+  const isCheckbox = fieldProps.type === 'checkbox'
+  const hasEmptyValue = value === ''
 
-  return true;
+  if (!isCheckbox && hasEmptyValue) {
+    return false
+  }
+
+  return true
 }
 
 /**
- * Serializes the provided fields into immutable map.
+ * Serializes the provided fields. Returns
  * @param {Map} fields
+ * @param {Boolean} withImmutable
  * @param {Function} transformValue
  * @returns {Map}
  */
-export default function serializeFields(fields, transformValue = defaultTransformValue) {
-  return flattenDeep(fields, predicate, false, transformValue);
+export default function serializeFields(
+  fields,
+  withImmutable,
+  transformValue = recordUtils.getValue,
+) {
+  const serialized = flattenDeep(fields, predicate, false, transformValue)
+  return withImmutable ? serialized : serialized.toJS()
 }

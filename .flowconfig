@@ -1,0 +1,13 @@
+[ignore]
+node_modules
+internal
+__*
+
+[include]
+src/**/*.js
+
+[libs]
+
+[lints]
+
+[options]

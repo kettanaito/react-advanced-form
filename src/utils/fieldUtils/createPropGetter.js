@@ -12,12 +12,12 @@ export default function createPropGetter(fields, callback) {
      * Internally, "fields" are always Immutable Map and are not affected
      * by the form context options.
      */
-    const propValue = fields.getIn(propPath);
+    const propValue = fields.getIn(propPath)
 
     if (callback) {
-      callback(propPath, propValue);
+      callback(propPath, propValue)
     }
 
-    return propValue;
-  };
+    return propValue
+  }
 }

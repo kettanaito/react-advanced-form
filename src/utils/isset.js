@@ -1,8 +1,7 @@
+// @flow
 /**
  * Determines if the provided variable is set.
- * @param {any} variable
- * @return {boolean}
  */
-export default function isset(variable) {
-  return (typeof variable !== 'undefined') && (variable !== null);
+export default function isset(variable: mixed): boolean {
+  return typeof variable !== 'undefined' && variable !== null
 }

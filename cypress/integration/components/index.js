@@ -1,4 +1,4 @@
-describe('Components', function () {
-  require('./createField');
-  require('./FormProvider');
-});
+describe('Components', function() {
+  require('./createField')
+  require('./FormProvider')
+})

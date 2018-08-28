@@ -35,25 +35,30 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "start-storybook -p 6009 -s ./",
+    "start": "NODE_ENV=development start-storybook -p 6009 -s ./",
     "dev": "NODE_ENV=development webpack -w",
+    "flow": "flow",
+    "prettify": "prettier src/**/*.js cypress/integration/**/*.{js,jsx} examples/**/*.{js,jsx} --write",
     "cypress": "node_modules/.bin/cypress open",
     "clean": "rm -rf ./lib && exit 0",
     "build": "npm run clean && npm run build:dev && npm run build:prod",
     "build:prod": "NODE_ENV=production webpack",
     "build:dev": "NODE_ENV=development webpack",
     "build:storybook": "build-storybook",
-    "test:unit": "NODE_ENV=production mocha --require babel-core/register --exit",
+    "test:utils": "NODE_ENV=production jest",
     "test:integration": "NODE_ENV=production node_modules/.bin/cypress run --spec cypress/integration/index.js",
-    "test": "npm run test:unit && npm run test:integration",
+    "test": "npm run test:utils && npm run test:integration",
     "prepublishOnly": "npm run build && npm test"
   },
+  "pre-push": [
+    "prettify"
+  ],
   "peerDependencies": {
     "react": "^15.0.0",
     "immutable": "^3.8.2"
   },
   "devDependencies": {
-    "@cypress/webpack-preprocessor": "^2.0.1",
+    "@cypress/webpack-preprocessor": "^1.1.3",
     "@storybook/addon-actions": "^3.4.8",
     "@storybook/addon-centered": "^3.4.8",
     "@storybook/addon-links": "^3.4.8",
@@ -64,14 +69,13 @@
     "babel-eslint": "^8.2.6",
     "babel-loader": "^7.1.5",
     "babel-minify-webpack-plugin": "^0.3.1",
-    "babel-plugin-async-to-promises": "^1.0.5",
-    "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-export-extensions": "^6.22.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "bootstrap": "^4.1.3",
     "chai": "^4.1.2",
@@ -86,9 +90,11 @@
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-mocha": "^5.1.0",
     "eslint-plugin-react": "^7.10.0",
+    "flow": "^0.2.3",
     "gitbook-plugin-custom-favicon": "0.0.4",
     "gitbook-plugin-prism": "^2.3.0",
-    "immutable": "^3.8.2",
+    "immutable": "^4.0.0-rc.9",
+    "jest": "^23.4.1",
     "jsdom": "^11.11.0",
     "mocha": "^5.2.0",
     "moment": "^2.22.2",
@@ -112,6 +118,7 @@
     "create-prop-types": "^1.0.0",
     "hoist-non-react-statics": "^2.5.0",
     "invariant": "^2.2.4",
+    "ramda": "^0.25.0",
     "rxjs": "^5.5.6"
   }
 }
