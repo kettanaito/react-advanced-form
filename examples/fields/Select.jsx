@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { createField, fieldPresets } from '../../'
 
-class Select extends React.Component {
+export class Select extends React.Component {
   static propTypes = {
     /* General */
     id: PropTypes.string,

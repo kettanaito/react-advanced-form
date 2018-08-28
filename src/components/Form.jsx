@@ -50,6 +50,7 @@ export default class Form extends React.Component {
     /* General */
     innerRef: PropTypes.func,
     action: PropTypes.func.isRequired,
+    initialValues: PropTypes.object,
 
     /* Validation */
     rules: ValidationRulesPropType,
@@ -67,6 +68,7 @@ export default class Form extends React.Component {
 
   static defaultProps = {
     action: () => new Promise((resolve) => resolve()),
+    initialValues: {},
   }
 
   state = {
@@ -98,8 +100,15 @@ export default class Form extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    const { rules: explicitRules, messages: explicitMessages } = props
+    const {
+      initialValues,
+      rules: explicitRules,
+      messages: explicitMessages,
+    } = props
     const { debounceTime, rules, messages } = context
+
+    /* Convert initial values to immutable Map for deep field references */
+    this.initialValues = initialValues && fromJS(initialValues)
 
     /* Set the validation debounce duration */
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime
