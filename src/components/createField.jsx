@@ -39,6 +39,14 @@ const defaultOptions = {
   },
 }
 
+const getInitialValue = (fieldPath, fieldProps, initialValues, hocOptions) => {
+  return (
+    fieldProps.initialValue ||
+    (initialValues && initialValues.getIn(fieldPath)) ||
+    hocOptions.initialValue
+  )
+}
+
 export default function connectField(options) {
   const hocOptions = { ...defaultOptions, ...options }
   const { valuePropName } = hocOptions
@@ -84,16 +92,21 @@ export default function connectField(options) {
       register() {
         const { props: directProps, context, fieldPath } = this
         const { fields, fieldGroup, form } = context
-        const { initialValue } = directProps
         const value = directProps[valuePropName]
         const contextValue = fields.getIn([...fieldPath, valuePropName])
 
-        /* Get the proper field value */
+        const { reactiveProps, prunedProps } = rxUtils.getRxProps(directProps)
+
+        /* Set value and initial value */
+        const initialValue = getInitialValue(
+          fieldPath,
+          directProps,
+          form.initialValues,
+          hocOptions,
+        )
         const registeredValue = isset(contextValue)
           ? contextValue
-          : value || initialValue || hocOptions.initialValue
-
-        const { reactiveProps, prunedProps } = rxUtils.getRxProps(directProps)
+          : value || initialValue
 
         const initialFieldProps = {
           ref: this,
@@ -102,9 +115,7 @@ export default function connectField(options) {
           type: prunedProps.type,
           valuePropName,
           [valuePropName]: registeredValue,
-          initialValue: prunedProps.hasOwnProperty('initialValue')
-            ? initialValue
-            : registeredValue,
+          initialValue,
           controlled: prunedProps.hasOwnProperty('value'), // TODO Checkboxes are always uncontrolled
           required: prunedProps.required,
           reactiveProps,
