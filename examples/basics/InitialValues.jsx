@@ -1,5 +1,5 @@
 import React from 'react'
-import { fieldPresets, createField, Form } from '@lib'
+import { fieldPresets, createField, Form, Field } from '@lib'
 import { Input } from '@fields'
 import { Select } from '@examples/fields/Select'
 import Button from '@shared/Button'
@@ -23,6 +23,11 @@ export default class InitialValues extends React.Component {
             <option value="developer">Developer</option>
             <option value="designer">Designer</option>
           </OccupattionSelect>
+
+          <Field.Group name="billingAddress">
+            <Input name="street" label="Street" />
+            <Input name="houseNumber" label="Street" initialValue="4" />
+          </Field.Group>
         </Form>
       </React.Fragment>
     )
