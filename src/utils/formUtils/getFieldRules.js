@@ -1,3 +1,4 @@
+import equals from 'ramda/src/equals'
 import flattenDeep from '../flattenDeep'
 
 /**
@@ -6,18 +7,18 @@ import flattenDeep from '../flattenDeep'
  * validation rules schema.
  */
 export const ruleSelectors = [
-  (fieldProps) => ['name', fieldProps.get('name')],
-  (fieldProps) => ['type', fieldProps.get('type')],
+  (fieldProps) => ['name', fieldProps.name],
+  (fieldProps) => ['type', fieldProps.type],
 ]
 
 const defaultRuleTransformer = (rule) => rule
 
-const createValueTransformer = (ruleFormatter) => {
+const createValueTransformer = (formatRule) => {
   return (value, ruleKeyPath) => {
     const selector = ruleKeyPath[0]
 
     if (typeof value === 'function') {
-      const formattedRule = ruleFormatter({
+      const formattedRule = formatRule({
         selector,
         ruleKeyPath,
         resolver: value,
@@ -27,7 +28,7 @@ const createValueTransformer = (ruleFormatter) => {
     }
 
     return value.reduce((list, resolver, name) => {
-      const formattedRule = ruleFormatter({
+      const formattedRule = formatRule({
         name,
         selector,
         resolver,
@@ -41,19 +42,17 @@ const createValueTransformer = (ruleFormatter) => {
 
 /**
  * Returns a predicate function based on the provided field props.
- * @param {Array<RuleSelector>} ruleSelectors
- * @param {Map} fieldProps
- * @returns {Function}
+ * @param {Function[]} ruleSelectors
+ * @param {Record} fieldProps
  */
-const createPredicate = (ruleSelectors, fieldProps, validationSchema) => {
-  return (value, deepKeyPath) => {
-    if (validationSchema.has(deepKeyPath.join('.'))) {
+const createPredicate = (ruleSelectors, fieldProps, rxRules) => {
+  return (_, keyPath) => {
+    if (rxRules.hasOwnProperty(keyPath.join('.'))) {
       return false
     }
 
     return ruleSelectors.some((ruleSelector) => {
-      const ruleKeyPath = ruleSelector(fieldProps)
-      return ruleKeyPath.every((key, index) => deepKeyPath[index] === key)
+      return equals(keyPath, ruleSelector(fieldProps))
     })
   }
 }
@@ -62,19 +61,11 @@ const createPredicate = (ruleSelectors, fieldProps, validationSchema) => {
  * Returns flattened Map of formatted rules applicable to the provided field.
  * Accepts optional transformation parameters to format the keys/values of the rules.
  */
-export default function getFieldRules({
-  fieldProps,
-  schema,
-  rxRules,
-  flattenKeys = true,
-  transformRule = null,
-  transformKey = null,
-}) {
+export default function getFieldRules({ fieldProps, schema, rxRules, transformRule }) {
   return flattenDeep(
     schema,
     createPredicate(ruleSelectors, fieldProps, rxRules),
-    flattenKeys,
+    true,
     createValueTransformer(transformRule || defaultRuleTransformer),
-    transformKey,
   )
 }

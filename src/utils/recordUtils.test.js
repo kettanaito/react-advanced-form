@@ -1,14 +1,17 @@
-import { Map, Record } from 'immutable'
+import * as R from 'ramda'
+import { Record } from 'immutable'
 import * as recordUtils from './recordUtils'
 
 const inputField = recordUtils.createField({
   name: 'fieldOne',
+  fieldPath: ['fieldOne'],
   value: 'foo',
   valuePropName: 'value',
 })
 
 const checkboxField = recordUtils.createField({
   name: 'checkboxOne',
+  fieldPath: ['checkboxOne'],
   type: 'checkbox',
   checked: true,
   valuePropName: 'checked',
@@ -30,8 +33,8 @@ describe('recordUtils', () => {
   })
 
   it('updateCollectionWith', () => {
-    const nextCollection = recordUtils.updateCollectionWith(inputField, Map())
-    expect(nextCollection.getIn(inputField.fieldPath)).toEqual(inputField)
+    const nextCollection = recordUtils.updateCollectionWith(inputField, {})
+    expect(R.path(inputField.fieldPath, nextCollection)).toEqual(inputField)
   })
 
   it('getValue', () => {

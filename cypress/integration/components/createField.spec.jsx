@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import React from 'react'
 import { Record } from 'immutable'
 import { expect } from 'chai'
@@ -12,7 +13,7 @@ describe('createField', function() {
     cy.get('[name="fieldOne"]').then(() => {
       setTimeout(() => {
         const { fields } = this.form.state
-        const fieldProps = fields.get('fieldOne')
+        const fieldProps = R.path(['fieldOne'], fields)
 
         expect(Record.isRecord(fieldProps))
         expect(fieldProps.name).to.equal('fieldOne')
@@ -24,8 +25,7 @@ describe('createField', function() {
   it('Supports custom field event handlers', () => {
     const testWord = 'Text'
 
-    cy
-      .get('[name="fieldOne"]')
+    cy.get('[name="fieldOne"]')
       .type(testWord)
       .should('have.value', testWord)
     cy.get('#count').should('have.text', String(testWord.length))

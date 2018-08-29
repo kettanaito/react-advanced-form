@@ -1,3 +1,6 @@
+import path from 'ramda/src/path'
+import assocPath from 'ramda/src/assocPath'
+
 import dispatch from '../dispatch'
 import * as recordUtils from '../recordUtils'
 import createRuleResolverArgs from '../validation/createRuleResolverArgs'
@@ -27,8 +30,8 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         const { fields } = form.state
         const { fieldPath: targetFieldPath } = nextTargetRecord
 
-        const currentSubscriberRecord = fields.getIn(subscriberFieldPath)
-        const nextFields = fields.set(targetFieldPath, nextTargetRecord)
+        const currentSubscriberRecord = path(subscriberFieldPath, fields)
+        const nextFields = assocPath(targetFieldPath, nextTargetRecord, fields)
 
         const nextResolverArgs = createRuleResolverArgs({
           fieldProps,
@@ -47,9 +50,10 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
           currentSubscriberRecord.set(rxPropName, nextPropValue),
         )
 
-        const updatedFields = nextFields.setIn(
+        const updatedFields = assocPath(
           subscriberFieldPath,
           nextSubscriberRecord,
+          nextFields,
         )
 
         if (shouldValidate) {

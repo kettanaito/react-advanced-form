@@ -1,14 +1,17 @@
-import { Record } from 'immutable'
 import flattenDeep from '../flattenDeep'
 import * as recordUtils from '../recordUtils'
 
-function predicate(fieldProps) {
-  if (!Record.isRecord(fieldProps) || !fieldProps.fieldPath) {
+const predicate = (fieldProps) => {
+  console.log('   serialize: predicate')
+  console.log('   fieldProps:', fieldProps)
+
+  if (!fieldProps.fieldPath) {
     return
   }
 
   /* Bypass the fields which should be skipped */
   if (fieldProps.skip) {
+    console.log('   should be skipped, skipping...')
     return false
   }
 
@@ -20,8 +23,11 @@ function predicate(fieldProps) {
   const hasEmptyValue = value === ''
 
   if (!isCheckbox && hasEmptyValue) {
+    console.log('  is not a checkbox and has empty value')
     return false
   }
+
+  console.log('   satisfies predicate', fieldProps)
 
   return true
 }
@@ -29,15 +35,12 @@ function predicate(fieldProps) {
 /**
  * Serializes the provided fields. Returns
  * @param {Map} fields
- * @param {Boolean} withImmutable
+ * @param {Object} options
  * @param {Function} transformValue
  * @returns {Map}
  */
-export default function serializeFields(
-  fields,
-  withImmutable,
-  transformValue = recordUtils.getValue,
-) {
-  const serialized = flattenDeep(fields, predicate, false, transformValue)
-  return withImmutable ? serialized : serialized.toJS()
+export default function serializeFields(fields, transformValue = recordUtils.getValue) {
+  console.warn('serialize')
+  console.log('should serialize:', fields)
+  return flattenDeep(fields, predicate, false, transformValue)
 }

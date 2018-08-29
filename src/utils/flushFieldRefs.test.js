@@ -5,12 +5,14 @@ import flushFieldRefs from './flushFieldRefs'
 
 const fieldOne = recordUtils.createField({
   name: 'fieldOne',
+  fieldPath: ['fieldOne'],
   value: 'foo',
 })
 
 const fieldTwo = recordUtils.createField({
   name: 'fieldTwo',
   fieldGroup: ['groupTwo'],
+  fieldPath: ['groupTwo', 'fieldTwo'],
   value: 'bar',
 })
 

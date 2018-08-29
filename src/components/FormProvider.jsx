@@ -45,7 +45,7 @@ export default class FormProvider extends React.Component {
     const { rules, messages, withImmutable, debounceTime } = this.props
 
     return {
-      rules: fromJS(rules),
+      rules,
       messages: fromJS(messages),
       withImmutable,
       debounceTime,

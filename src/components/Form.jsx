@@ -1,8 +1,13 @@
+import map from 'ramda/src/map'
+import path from 'ramda/src/path'
+import assocPath from 'ramda/src/assocPath'
+import values from 'ramda/src/values'
+
 import invariant from 'invariant'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { EventEmitter } from 'events'
-import { fromJS, Record, List, Map } from 'immutable'
+import { fromJS, Record, List } from 'immutable'
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/bufferTime'
 import 'rxjs/add/observable/fromEvent'
@@ -41,8 +46,8 @@ function getInnerRef(element, callback) {
   }
 }
 
-function isField(entity) {
-  return !!entity.fieldPath
+const isField = (entry) => {
+  return !!entry.fieldPath
 }
 
 export default class Form extends React.Component {
@@ -59,6 +64,7 @@ export default class Form extends React.Component {
     /* Callbacks */
     onFirstChange: PropTypes.func,
     onReset: PropTypes.func,
+    onSerialize: PropTypes.func,
     onInvalid: PropTypes.func,
     onSubmitStart: PropTypes.func,
     onSubmitted: PropTypes.func,
@@ -71,14 +77,14 @@ export default class Form extends React.Component {
   }
 
   state = {
-    fields: Map(),
-    rxRules: Map(),
+    fields: {},
+    rxRules: {},
     dirty: false,
   }
 
   /* Context accepted by the Form */
   static contextTypes = {
-    rules: CustomPropTypes.Map,
+    rules: PropTypes.object,
     messages: CustomPropTypes.Map,
     debounceTime: PropTypes.number,
     withImmutable: PropTypes.bool,
@@ -86,7 +92,7 @@ export default class Form extends React.Component {
 
   /* Context propagated to the fields */
   static childContextTypes = {
-    fields: CustomPropTypes.Map.isRequired,
+    fields: PropTypes.object.isRequired,
     form: PropTypes.object.isRequired,
   }
 
@@ -126,27 +132,18 @@ export default class Form extends React.Component {
     Observable.fromEvent(eventEmitter, 'fieldRegister')
       .bufferTime(100)
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
-    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(
-      this.handleFieldFocus,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(
-      this.handleFieldChange,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(
-      this.handleFieldBlur,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(
-      this.unregisterField,
-    )
-    Observable.fromEvent(eventEmitter, 'validateField').subscribe(
-      this.validateField,
-    )
+    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
+    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
+    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
+    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField)
+    Observable.fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
   }
 
   withRegisteredField = (func) => {
     return (args) => {
       const { fieldProps } = args
-      return this.state.fields.hasIn(fieldProps.fieldPath) && func(args)
+      const includesField = path(fieldProps.fieldPath, this.state.fields)
+      return includesField && func(args)
     }
   }
 
@@ -160,7 +157,7 @@ export default class Form extends React.Component {
   registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
     const { fields } = this.state
     const { fieldPath } = initialFieldProps
-    const fieldAlreadyExists = fields.hasIn(fieldPath)
+    const fieldAlreadyExists = path(fieldPath, fields)
 
     /* Warn on field duplicates */
     invariant(
@@ -181,7 +178,7 @@ export default class Form extends React.Component {
       return
     }
 
-    const nextFields = fields.setIn(fieldPath, fieldProps)
+    const nextFields = assocPath(fieldPath, fieldProps, fields)
     const { eventEmitter } = this
 
     /**
@@ -264,10 +261,7 @@ export default class Form extends React.Component {
    * @returns {Promise}
    */
   updateFieldsWith = (fieldProps) => {
-    const nextFields = recordUtils.updateCollectionWith(
-      fieldProps,
-      this.state.fields,
-    )
+    const nextFields = recordUtils.updateCollectionWith(fieldProps, this.state.fields)
 
     return new Promise((resolve, reject) => {
       try {
@@ -378,10 +372,14 @@ export default class Form extends React.Component {
 
     const fields = explicitFields || this.state.fields
 
-    let fieldProps = forceProps
-      ? explicitFieldProps
-      : fields.getIn(explicitFieldProps.fieldPath)
+    console.warn('validation')
+    console.log({ explicitFieldProps })
+    console.log({ fields })
+
+    let fieldProps = forceProps ? explicitFieldProps : path(explicitFieldProps.fieldPath, fields)
     fieldProps = fieldProps || explicitFieldProps
+
+    console.log({ fieldProps })
 
     /* Perform the validation */
     const validatedField = await validate({
@@ -407,18 +405,29 @@ export default class Form extends React.Component {
    */
   validate = async (predicate = isField) => {
     const { fields } = this.state
-    const flattenedFields = flattenDeep(fields, predicate, true)
 
-    /* Validate only the fields matching the optional predicate */
-    const validationSequence = flattenedFields.reduce(
-      (validations, fieldProps) => {
-        return validations.concat(this.validateField({ fieldProps }))
-      },
-      [],
+    console.warn('validate')
+    console.log('mutable fields:', fields)
+
+    const flatFields = flattenDeep(fields, predicate, true)
+
+    console.log({ flatFields })
+
+    /* Map pending field validations into a list */
+    const pendingValidations = map(
+      (fieldProps) => this.validateField({ fieldProps }),
+      values(flatFields),
     )
 
+    // const pendingValidations = flatFields.reduce(
+    //   (validations, fieldProps) => {
+    //     return validations.concat(this.validateField({ fieldProps }))
+    //   },
+    //   [],
+    // )
+
     /* Await for all validation promises to resolve before returning */
-    const validatedFields = await Promise.all(validationSequence)
+    const validatedFields = await Promise.all(pendingValidations)
     const isFormValid = validatedFields.every((validatedFieldProps) => {
       return validatedFieldProps.expected
     })
@@ -429,9 +438,7 @@ export default class Form extends React.Component {
       const { fields: nextFields } = this.state
 
       /* Filter unexpected fields into a separate collection */
-      const invalidFields = List(
-        nextFields.filterNot((fieldProps) => fieldProps.expected),
-      )
+      const invalidFields = List(nextFields.filterNot((fieldProps) => fieldProps.expected))
 
       /* Call custom callback */
       dispatch(
@@ -452,7 +459,7 @@ export default class Form extends React.Component {
    * Clears all the fields.
    */
   clear = () => {
-    const nextFields = this.state.fields.map(fieldUtils.resetField(() => ''))
+    const nextFields = map(fieldUtils.resetField(() => ''), this.state.fields)
     this.setState({ fields: nextFields })
   }
 
@@ -460,7 +467,7 @@ export default class Form extends React.Component {
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
-    const nextFields = this.state.fields.map(recordUtils.reset)
+    const nextFields = map(recordUtils.reset, this.state.fields)
 
     this.setState({ fields: nextFields }, () => {
       /**
@@ -483,13 +490,20 @@ export default class Form extends React.Component {
 
   /**
    * Returns a collection of serialized fields.
-   * @returns {Map|Object}
+   * @returns {Object}
    */
   serialize = () => {
-    return fieldUtils.serializeFields(
-      this.state.fields,
-      this.context.withImmutable,
-    )
+    const { fields } = this.state
+    const { onSerialize } = this.props
+
+    const serialized = fieldUtils.serializeFields(fields)
+    return onSerialize
+      ? onSerialize({
+          serialized,
+          fields,
+          form: this,
+        })
+      : serialized
   }
 
   /**
@@ -519,12 +533,7 @@ export default class Form extends React.Component {
     }
 
     const { fields } = this.state
-    const {
-      onSubmitStart,
-      onSubmitted,
-      onSubmitFailed,
-      onSubmitEnd,
-    } = this.props
+    const { onSubmitStart, onSubmitted, onSubmitFailed, onSubmitEnd } = this.props
 
     /* Serialize the fields */
     const serialized = this.serialize()

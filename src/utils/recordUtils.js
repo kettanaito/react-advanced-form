@@ -5,6 +5,7 @@
  * the next state of the field record.
  */
 import curry from 'ramda/src/curry'
+import assocPath from 'ramda/src/assocPath'
 import { Record } from 'immutable'
 
 /**
@@ -27,6 +28,7 @@ const generateFieldClass = (initialProps) => {
       /* Internal */
       ref: null,
       fieldGroup: null,
+      fieldPath: null,
 
       /* Basic */
       type: 'text',
@@ -69,10 +71,10 @@ const generateFieldClass = (initialProps) => {
   )
 
   return class Field extends FieldRecord {
-    get fieldPath() {
-      const fieldGroup = this.fieldGroup || []
-      return fieldGroup.concat(this.name)
-    }
+    // get fieldPath() {
+    //   const fieldGroup = this.fieldGroup || []
+    //   return fieldGroup.concat(this.name)
+    // }
 
     get displayFieldPath() {
       return this.fieldPath.join('.')
@@ -96,7 +98,7 @@ export const createField = (initialProps) => {
  * @param {Map} collection
  */
 export const updateCollectionWith = curry((fieldProps, collection) => {
-  return collection.setIn(fieldProps.fieldPath, fieldProps)
+  return assocPath(fieldProps.fieldPath, fieldProps, collection)
 })
 
 /**
@@ -105,7 +107,7 @@ export const updateCollectionWith = curry((fieldProps, collection) => {
  * @returns {any}
  */
 export const getValue = (fieldProps) => {
-  return fieldProps.get(fieldProps.get('valuePropName'))
+  return fieldProps[fieldProps.valuePropName]
 }
 
 /**

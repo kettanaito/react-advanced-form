@@ -1,21 +1,21 @@
-import { fromJS, Map } from 'immutable'
+import mergeDeepLeft from 'ramda/src/mergeDeepLeft'
+// import { fromJS, Map } from 'immutable'
 
 /**
  * Returns the iterable instance of form rules based on the provided proprietary rules
  * and the inherited context rules.
  * @param {Object} formRules
- * @param {Map} contextRules
- * @returns {Map}
+ * @param {Object} contextRules
+ * @returns {Object}
  */
-export default function mergeRules(formRules, contextRules = Map()) {
+export default function mergeRules(formRules, contextRules = {}) {
   if (!formRules) {
     return contextRules
   }
 
-  const iterableRules = fromJS(formRules)
-  const closestRules = iterableRules || contextRules
+  const closestRules = formRules || contextRules
 
-  return iterableRules.get('extend')
-    ? contextRules.mergeDeep(iterableRules)
+  return closestRules.extend
+    ? mergeDeepLeft(closestRules, contextRules)
     : closestRules
 }

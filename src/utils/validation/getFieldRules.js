@@ -3,14 +3,14 @@
  * applicable to the given field.
  */
 export const getRulesBySelector = (selector, fieldProps, schema) => {
-  const keyPath = [selector, fieldProps.get(selector)]
+  const keyPath = [selector, fieldProps[selector]]
 
   //
   // TODO
   // Shallow keyed collection is not a usual behavior, but only suitable
   // for the reduced schema into "rxRules". Think of the unified interface.
   //
-  return schema.get(keyPath.join('.'))
+  return schema[keyPath.join('.')]
 }
 
 /**

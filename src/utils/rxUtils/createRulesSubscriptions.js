@@ -1,3 +1,8 @@
+import path from 'ramda/src/path'
+import values from 'ramda/src/values'
+import assoc from 'ramda/src/assoc'
+import mergeDeepLeft from 'ramda/src/mergeDeepLeft'
+
 import flushFieldRefs from '../flushFieldRefs'
 import getFieldRules from '../formUtils/getFieldRules'
 import * as recordUtils from '../recordUtils'
@@ -21,12 +26,16 @@ function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
 
   const { refs } = flushFieldRefs(resolver, resolverArgs)
 
-  return ruleGroups.set('rule', [
-    {
-      refs,
-      resolver,
-    },
-  ])
+  return assoc(
+    'rule',
+    [
+      {
+        refs,
+        resolver,
+      },
+    ],
+    ruleGroups,
+  )
 }
 
 /**
@@ -67,13 +76,9 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   })
 
   /* Add "Field.props.rule" in case the latter has field references */
-  const ruleGroups = addFieldPropsRule(
-    schemaRuleGroups,
-    fieldProps,
-    resolverArgs,
-  )
+  const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs)
 
-  if (ruleGroups.size === 0) {
+  if (Object.keys(ruleGroups).length === 0) {
     return rxRules
   }
 
@@ -82,24 +87,26 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
    * The observable will listen for the referenced props change and re-evaluate
    * the validation rule(s) in which that prop is referenced.
    */
-  ruleGroups.forEach((ruleGroup) => {
-    ruleGroup.forEach(({ refs, resolver }) => {
-      /* Bypass rule resolvers without field references */
+  values(ruleGroups).forEach((ruleGroup) => {
+    ruleGroup.forEach((rule) => {
+      const { refs, resolver } = rule
+
+      /**
+       * Rule resolver without field references are not reactive,
+       * thus there is no need to create an observable for it.
+       */
       if (refs.length === 0) {
         return
       }
 
       makeObservable(resolver, resolverArgs, {
         subscribe() {
-          const currentFieldProps = form.state.fields.getIn(
-            fieldProps.fieldPath,
-          )
+          const currentFieldProps = path(fieldProps.fieldPath, form.state.fields)
 
           form.eventEmitter.emit('validateField', {
             /**
-             * Cannot hard-code "true" since that would validate
-             * empty optional fields as unexpected. That is because
-             * "force" is not the part of "shouldValidate" chain.
+             * Cannot hard-code "true" because that would validate
+             * empty optional fields as unexpected.
              */
             force: !!recordUtils.getValue(currentFieldProps),
             fieldProps: currentFieldProps,
@@ -109,5 +116,5 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     })
   })
 
-  return rxRules.mergeDeep(ruleGroups)
+  return mergeDeepLeft(rxRules, ruleGroups)
 }

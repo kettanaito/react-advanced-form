@@ -1,3 +1,5 @@
+import path from 'ramda/src/path'
+
 export default {
   /**
    * There can be multiple radio fields with the same name represented by
@@ -14,7 +16,7 @@ export default {
    * 2. Determine "initialValue" based on optional "checked" prop.
    * 3. Add new "checked" props unique to this field type.
    */
-  mapPropsToField({ fieldRecord, props: { checked, value, onChange } }) {
+  mapPropsToField: ({ fieldRecord, props: { checked, value, onChange } }) => {
     fieldRecord.type = 'radio'
     fieldRecord.controlled = !!onChange
 
@@ -35,16 +37,16 @@ export default {
    * propagate their value to the field's record, other radio fields are
    * registered, but their value is ignored.
    */
-  beforeRegister({ fieldProps, fields }) {
+  beforeRegister: ({ fieldProps, fields }) => {
     const { fieldPath } = fieldProps
-    const alreadyExist = fields.hasIn(fieldPath)
+    const alreadyExist = path(fieldPath, fields)
 
     if (!alreadyExist) {
       return fieldProps
     }
 
     const valuePropName = fieldProps.get('valuePropName')
-    const existingValue = fields.getIn([...fieldPath, valuePropName])
+    const existingValue = path(fieldPath.concat(valuePropName), fields)
 
     if (existingValue) {
       return false
@@ -66,7 +68,7 @@ export default {
    * value, but a "checked" prop. Regardless, what should be compared is the
    * next value and the current value in the field's record.
    */
-  shouldUpdateRecord({ nextValue, nextProps, contextProps }) {
+  shouldUpdateRecord: ({ nextValue, nextProps, contextProps }) => {
     return nextProps.checked && nextValue !== contextProps.get('value')
   },
 
