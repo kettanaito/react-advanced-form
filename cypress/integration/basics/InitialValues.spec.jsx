@@ -9,6 +9,9 @@ describe('Initial values', function() {
     billingAddress: {
       street: 'Baker st.',
     },
+    deliveryAddress: {
+      street: 'Sunwell ave.',
+    },
   }
 
   before(() => {
@@ -25,9 +28,14 @@ describe('Initial values', function() {
       .should('have.value', initialValues.username)
       .valid()
 
-    cy.getField('street').should(
+    cy.get('#billing-street').should(
       'have.value',
       initialValues.billingAddress.street,
+    )
+
+    cy.get('#delivery-street').should(
+      'have.value',
+      initialValues.deliveryAddress.street,
     )
   })
 
