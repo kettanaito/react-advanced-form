@@ -25,8 +25,16 @@ export default class InitialValues extends React.Component {
           </OccupattionSelect>
 
           <Field.Group name="billingAddress">
-            <Input name="street" label="Street" />
+            <Input id="billing-street" name="street" label="Street (billing)" />
             <Input name="houseNumber" label="Street" initialValue="4" />
+          </Field.Group>
+
+          <Field.Group name="deliveryAddress">
+            <Input
+              id="delivery-street"
+              name="street"
+              label="Street (delivery)"
+            />
           </Field.Group>
         </Form>
       </React.Fragment>
