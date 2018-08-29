@@ -1,4 +1,8 @@
-import { Map } from 'immutable'
+import path from 'ramda/src/path'
+import assoc from 'ramda/src/assoc'
+import toPairs from 'ramda/src/toPairs'
+import propOr from 'ramda/src/propOr'
+
 import { Observable } from 'rxjs/Observable'
 import camelize from '../camelize'
 import * as recordUtils from '../recordUtils'
@@ -8,26 +12,23 @@ import createPropsObserver from './createPropsObserver'
 /**
  * Returns the formatted references in a { [fieldPath]: props } format.
  * @param {string[]} refs
- * @returns {Map<string, string[]>}
+ * @returns {Object}
  */
-function formatRefs(refs) {
-  return refs.reduce((formatted, ref) => {
+const formatRefs = (fieldsRefs) => {
+  return fieldsRefs.reduce((formattedRef, ref) => {
     if (ref.length < 2) {
-      return formatted
+      return formattedRef
     }
 
     /* Assume the last referenced key is always a prop name */
     const fieldPath = ref.slice(0, ref.length - 1)
+    const joinedFieldPath = fieldPath.join('.')
     const propName = ref.slice(ref.length - 1)
+    const prevPropsList = propOr([], joinedFieldPath, formatRefs)
+    const nextPropsList = prevPropsList.concat(propName)
 
-    if (formatted.hasIn(ref)) {
-      return formatted.update(fieldPath.join('.'), (propsList) =>
-        propsList.concat(propName),
-      )
-    }
-
-    return formatted.set(fieldPath.join('.'), propName)
-  }, Map())
+    return assoc(joinedFieldPath, nextPropsList, formattedRef)
+  }, {})
 }
 
 /**
@@ -35,26 +36,20 @@ function formatRefs(refs) {
  * @param {string} targetPath
  * @param {Array<string>} targetProps
  * @param {string} rxPropName
- * @param {Map} fieldProps
+ * @param {Record} fieldProps
  * @param {ReactElement} form
  * @param {Object} observerOptions
  * @returns {Subscription}
  */
-function createObserver({
-  targetFieldPath,
-  props,
-  form,
-  subscribe,
-  observerOptions,
-}) {
+function createObserver({ targetFieldPath, props, form, subscribe, observerOptions }) {
   return createPropsObserver({
     targetFieldPath,
     props,
     predicate({ propName, prevTargetRecord, nextTargetRecord }) {
-      return prevTargetRecord.get(propName) !== nextTargetRecord.get(propName)
+      return prevTargetRecord[propName] !== nextTargetRecord[propName]
     },
     getNextValue({ propName, nextTargetRecord }) {
-      return nextTargetRecord.get(propName)
+      return nextTargetRecord[propName]
     },
     eventEmitter: form.eventEmitter,
     ...observerOptions,
@@ -77,7 +72,12 @@ export default function makeObservable(
   const { refs, initialValue } = flushFieldRefs(method, methodArgs)
 
   const formattedTargetRefs = formatRefs(refs)
-  formattedTargetRefs.forEach((props, gluedTargetFieldPath) => {
+
+  toPairs(formattedTargetRefs).forEach(([gluedTargetFieldPath, props]) => {
+    //
+    // TODO
+    // This would be nice to improve to omit keys glue.
+    //
     const targetFieldPath = gluedTargetFieldPath.split('.')
 
     /**
@@ -87,8 +87,9 @@ export default function makeObservable(
      * validate to prevent invalid fields at initial form render.
      */
     const shouldValidate = !!recordUtils.getValue(subscriberProps)
+    const includesField = path(targetFieldPath, fields)
 
-    if (fields.hasIn(targetFieldPath)) {
+    if (includesField) {
       const subscription = createObserver({
         targetFieldPath,
         props,
@@ -104,7 +105,10 @@ export default function makeObservable(
         })
       }
 
-      return { refs, initialValue }
+      return {
+        refs,
+        initialValue,
+      }
     }
 
     /**
@@ -137,5 +141,8 @@ export default function makeObservable(
     })
   })
 
-  return { refs, initialValue }
+  return {
+    refs,
+    initialValue,
+  }
 }

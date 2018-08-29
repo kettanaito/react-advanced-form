@@ -1,5 +1,4 @@
 import React from 'react'
-import { expect } from 'chai'
 import Scenario from '@examples/basics/InitialValues'
 
 describe('Initial values', function() {

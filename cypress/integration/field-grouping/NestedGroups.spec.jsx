@@ -1,5 +1,5 @@
+import * as R from 'ramda'
 import React from 'react'
-import { expect } from 'chai'
 import Scenario from '@examples/field-grouping/NestedGroups'
 
 describe('Nested groups', function() {
@@ -11,10 +11,10 @@ describe('Nested groups', function() {
     await cy.wait(100)
     const { fields } = this.form.state
 
-    expect(fields.has('fieldOne')).to.be.true
-    expect(fields.hasIn(['groupName', 'fieldOne'])).to.be.true
-    expect(fields.hasIn(['groupName', 'fieldTwo'])).to.be.true
-    expect(fields.hasIn(['groupName', 'nestedGroup', 'fieldOne'])).to.be.true
+    expect(R.has('fieldOne', fields))
+    expect(R.path(['groupName', 'fieldOne'], fields)).not.to.be.undefined
+    expect(R.path(['groupName', 'fieldTwo'], fields)).not.to.be.undefined
+    expect(R.path(['groupName', 'nestedGroup', 'fieldOne'])).not.to.be.undefined
   })
 
   it('Serializes nested field groups properly', () => {

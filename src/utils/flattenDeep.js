@@ -1,50 +1,36 @@
-import { Map } from 'immutable'
+import assocPath from 'ramda/src/assocPath'
+import toPairs from 'ramda/src/toPairs'
+import isset from './isset'
 
-/**
- * Flattens the given Iterable. Returns entries which satisfy the predicate function and
- * applies optional transformations for keys and/or values of the respective Iterable.
- * @param {Iterable} iter
- * @param {Function} predicate
- * @param {boolean} flattenKeys
- * @param {Function} transformValue
- * @param {string[]} nextKeyPath
- * @param {Iterable} nextAcc
- * @returns {Iterable}
- */
 export default function flattenDeep(
-  iter,
-  predicate = null,
+  source,
+  predicate = () => true,
   flattenKeys = false,
-  transformValue = null,
-  transformKey = null,
-  nextKeyPath = [],
-  nextAcc = Map(),
+  transformValue = (value) => value,
+  transformKey,
+  prevKeyPath = [],
+  nextAcc = {},
 ) {
-  return iter.reduce((acc, value, key) => {
-    const deepKeyPath = nextKeyPath.concat(key)
-    const satisfiesPredicate = predicate
-      ? predicate(value, deepKeyPath, acc)
-      : true
-
-    if (satisfiesPredicate) {
-      const transformedKeyPath = transformKey
-        ? [transformKey(deepKeyPath)]
-        : deepKeyPath
-      const resolvedKeyPath = flattenKeys
-        ? [transformedKeyPath.join('.')]
-        : transformedKeyPath
-      const resolvedValue = transformValue
-        ? transformValue(value, deepKeyPath)
-        : value
-
-      return acc.setIn(resolvedKeyPath, resolvedValue)
+  return toPairs(source).reduce((acc, [key, value]) => {
+    if (!isset(value)) {
+      return acc
     }
 
-    /**
-     * Do not call flatten recursively in case the current value
-     * is not an instance of Iterable.
-     */
-    if (!Map.isMap(value)) {
+    const deepKeyPath = prevKeyPath.concat(key)
+    const satisfiesPredicate = predicate(value, deepKeyPath, acc)
+
+    if (satisfiesPredicate) {
+      const transformedKeyPath = transformKey ? [transformKey(deepKeyPath)] : deepKeyPath
+      const resolvedKeyPath = flattenKeys ? [transformedKeyPath.join('.')] : transformedKeyPath
+      const resolvedValue = transformValue(value, deepKeyPath)
+
+      return assocPath(resolvedKeyPath, resolvedValue, acc)
+    }
+
+    // FIXME
+    // There was some check to prevent passing instances different from Map
+    // down the iteration tree.
+    if (!(value instanceof Object)) {
       return acc
     }
 

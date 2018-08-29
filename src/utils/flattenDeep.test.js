@@ -1,5 +1,4 @@
-import { expect } from 'chai'
-import { fromJS, Map } from 'immutable'
+import * as R from 'ramda'
 import flattenDeep from './flattenDeep'
 
 const initialState = {
@@ -14,34 +13,32 @@ const initialState = {
   b: 'bar',
 }
 
-const iter = fromJS(initialState)
-
-const stringsOnly = (value, deepKeyPath) => {
-  expect(deepKeyPath)
-    .to.be.a.instanceOf(Array)
-    .with.length.gt(0)
+const filterString = (value, deepKeyPath) => {
+  expect(deepKeyPath).toBeInstanceOf(Array)
+  expect(deepKeyPath.length).toBeGreaterThan(0)
   return typeof value === 'string'
 }
 
 test('Returns intact iterable when no predicate is provided', () => {
-  const res = flattenDeep(iter)
-  expect(Map.isMap(res))
-  expect(res.toJS()).to.deep.equal(initialState)
+  const res = flattenDeep(initialState)
+  expect(res).toEqual(initialState)
 })
 
 test('Returns values which satisfy the given predicate', () => {
-  const res = flattenDeep(iter, stringsOnly)
+  const res = flattenDeep(initialState, filterString)
 
-  expect(Map.isMap(res))
-  expect(res.equals(iter.deleteIn(['a', 'two']).deleteIn(['a', 'three'])))
+  const prepareInitialState = R.compose(
+    R.dissocPath(['a', 'two']),
+    R.dissocPath(['a', 'three']),
+  )
+
+  expect(res).toEqual(prepareInitialState(initialState))
 })
 
 test('Allows to flatten keys', () => {
-  // TODO "flattenKeys" doesn't work without custom "predicate"
-  const res = flattenDeep(iter, stringsOnly, true)
+  const res = flattenDeep(initialState, filterString, true)
 
-  expect(Map.isMap(res))
-  expect(res.toJS()).to.deep.equal({
+  expect(res).toEqual({
     'a.one': 'foo',
     b: 'bar',
   })
@@ -49,28 +46,31 @@ test('Allows to flatten keys', () => {
 
 test('Allows transforming values', () => {
   const transformValues = (value, deepKeyPath) => {
-    expect(deepKeyPath)
-      .to.be.an.instanceOf(Array)
-      .with.length.gt(0)
+    expect(deepKeyPath).toBeInstanceOf(Array)
+    expect(deepKeyPath.length).toBeGreaterThan(0)
     return `_${value}`
   }
-  const res = flattenDeep(iter, stringsOnly, false, transformValues)
+  const res = flattenDeep(initialState, filterString, false, transformValues)
 
-  expect(Map.isMap(res))
-  expect(res.getIn(['a', 'one'])).to.equal('_foo')
-  expect(res.getIn(['b'])).to.equal('_bar')
+  expect(R.path(['a', 'one'], res)).toEqual('_foo')
+  expect(R.path(['b'], res)).toEqual('_bar')
 })
 
 test('Allows transforming keys', () => {
   const transformKeys = (deepKeyPath) => {
-    expect(deepKeyPath)
-      .to.be.an.instanceOf(Array)
-      .with.length.gt(0)
+    expect(deepKeyPath).toBeInstanceOf(Array)
+    expect(deepKeyPath.length).toBeGreaterThan(0)
     return deepKeyPath.join('_')
   }
-  const res = flattenDeep(iter, stringsOnly, true, null, transformKeys)
 
-  expect(Map.isMap(res))
-  expect(res.hasIn(['a_one']))
-  expect(res.hasIn(['b']))
+  const res = flattenDeep(
+    initialState,
+    filterString,
+    true,
+    undefined,
+    transformKeys,
+  )
+
+  expect(R.has('a_one', res))
+  expect(R.has('b', res))
 })

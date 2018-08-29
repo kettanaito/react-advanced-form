@@ -4,6 +4,7 @@
  * third-party field components integration.
  */
 import path from 'ramda/src/path'
+
 import React from 'react'
 import PropTypes from 'prop-types'
 import hoistNonReactStatics from 'hoist-non-react-statics'
@@ -11,7 +12,6 @@ import {
   isset,
   camelize,
   debounce,
-  CustomPropTypes,
   getComponentName,
   recordUtils,
   rxUtils,
@@ -77,7 +77,7 @@ export default function connectField(options) {
 
       static contextTypes = {
         form: PropTypes.object.isRequired,
-        fields: CustomPropTypes.Map.isRequired,
+        fields: PropTypes.object.isRequired,
         fieldGroup: PropTypes.arrayOf(PropTypes.string),
       }
 
@@ -103,7 +103,7 @@ export default function connectField(options) {
         const { props: directProps, context, fieldPath } = this
         const { fields, fieldGroup, form } = context
         const value = directProps[valuePropName]
-        const contextValue = fields.getIn([...fieldPath, valuePropName])
+        const contextValue = path(fieldPath.concat(valuePropName), fields)
 
         const { reactiveProps, prunedProps } = rxUtils.getRxProps(directProps)
 
@@ -121,6 +121,7 @@ export default function connectField(options) {
         const initialFieldProps = {
           ref: this,
           fieldGroup,
+          fieldPath,
           name: prunedProps.name,
           type: prunedProps.type,
           valuePropName,
@@ -223,7 +224,7 @@ export default function connectField(options) {
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
         /* Bypass scenarios when field is being updated, but not yet registred within the Form */
-        const nextContextProps = nextContext.fields.getIn(this.fieldPath)
+        const nextContextProps = path(this.fieldPath, nextContext.fields)
 
         if (!nextContextProps) {
           return

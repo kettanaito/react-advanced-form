@@ -1,5 +1,6 @@
-import React from 'react'
+import * as R from 'ramda'
 import { expect } from 'chai'
+import React from 'react'
 import Scenario from '@examples/field-grouping/SimpleGroup'
 
 describe('Simple group', function() {
@@ -11,9 +12,9 @@ describe('Simple group', function() {
     await cy.wait(100)
     const { fields } = this.form.state
 
-    expect(fields.has('fieldOne')).to.be.true
-    expect(fields.hasIn(['groupName', 'fieldOne'])).to.be.true
-    expect(fields.hasIn(['groupName', 'fieldTwo'])).to.be.true
+    expect(R.has('fieldOne', fields))
+    expect(R.path(['groupName', 'fieldOne'], fields)).not.to.be.undefined
+    expect(R.path(['groupName', 'fieldTwo'], fields)).not.to.be.undefined
   })
 
   it('Serializes grouped fields properly', () => {
