@@ -71,11 +71,6 @@ const generateFieldClass = (initialProps) => {
   )
 
   return class Field extends FieldRecord {
-    // get fieldPath() {
-    //   const fieldGroup = this.fieldGroup || []
-    //   return fieldGroup.concat(this.name)
-    // }
-
     get displayFieldPath() {
       return this.fieldPath.join('.')
     }
@@ -127,9 +122,7 @@ export const setValue = curry((nextValue, fieldProps) => {
  */
 export const setErrors = curry((errors, fieldProps) => {
   /* Allow "null" as explicit empty "errors" value */
-  return typeof errors !== 'undefined'
-    ? fieldProps.set('errors', errors)
-    : fieldProps
+  return typeof errors !== 'undefined' ? fieldProps.set('errors', errors) : fieldProps
 })
 
 /**

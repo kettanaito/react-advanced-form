@@ -15,7 +15,7 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
 ## Features
 
 * **Boilterplate-free**. Remember tossing tons of configurations for high-order components to forms? No more. Create clean and powerful forms without repeating yourself, without building crazy abstractions.
-* **Immutable**. Rest asured as all the fields are controlled using immutable data structures that makes their updates efficient and side-effect free.
+* **Immutable**. Each interaction or update is a pure function that produces the next state of a field. Predictable, immutable, side-effect free.
 * [**Composite fields**](https://redd.gitbook.io/react-advanced-form/getting-started/creating-fields). React Advanced Form is _field-centric_. That means you define flexible fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
 * [**Intuitive usage**](https://redd.gitbook.io/react-advanced-form/getting-started/creating-form). Place a `Form` component, add some fields and the form is working without extra effort.
 

@@ -73,12 +73,12 @@ export default function makeObservable(
 
   const formattedTargetRefs = formatRefs(refs)
 
-  toPairs(formattedTargetRefs).forEach(([gluedTargetFieldPath, props]) => {
+  toPairs(formattedTargetRefs).forEach(([joinedFieldPath, props]) => {
     //
     // TODO
     // This would be nice to improve to omit keys glue.
     //
-    const targetFieldPath = gluedTargetFieldPath.split('.')
+    const targetFieldPath = joinedFieldPath.split('.')
 
     /**
      * When the delegated reactive prop resolver executes, we need
