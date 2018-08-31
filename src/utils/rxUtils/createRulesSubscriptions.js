@@ -49,7 +49,7 @@ function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
  * @returns {Map}
  */
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {
-  const { rxRules } = form.state
+  const { validationSchema } = form.state
 
   const resolverArgs = createRuleResolverArgs({
     fieldProps,
@@ -64,7 +64,7 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   const schemaRuleGroups = getFieldRules({
     fieldProps,
     schema: form.formRules,
-    rxRules,
+    validationSchema,
     transformRule(ruleParams) {
       const { refs } = flushFieldRefs(ruleParams.resolver, resolverArgs)
 
@@ -79,7 +79,7 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs)
 
   if (Object.keys(ruleGroups).length === 0) {
-    return rxRules
+    return validationSchema
   }
 
   /**
@@ -116,5 +116,5 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     })
   })
 
-  return mergeDeepLeft(rxRules, ruleGroups)
+  return mergeDeepLeft(validationSchema, ruleGroups)
 }
