@@ -45,9 +45,9 @@ const createValueTransformer = (formatRule) => {
  * @param {Function[]} ruleSelectors
  * @param {Record} fieldProps
  */
-const createPredicate = (ruleSelectors, fieldProps, rxRules) => {
+const createPredicate = (ruleSelectors, fieldProps, validationSchema) => {
   return (_, keyPath) => {
-    if (rxRules.hasOwnProperty(keyPath.join('.'))) {
+    if (validationSchema.hasOwnProperty(keyPath.join('.'))) {
       return false
     }
 
@@ -61,10 +61,15 @@ const createPredicate = (ruleSelectors, fieldProps, rxRules) => {
  * Returns flattened Map of formatted rules applicable to the provided field.
  * Accepts optional transformation parameters to format the keys/values of the rules.
  */
-export default function getFieldRules({ fieldProps, schema, rxRules, transformRule }) {
+export default function getFieldRules({
+  fieldProps,
+  schema,
+  validationSchema,
+  transformRule,
+}) {
   return flattenDeep(
     schema,
-    createPredicate(ruleSelectors, fieldProps, rxRules),
+    createPredicate(ruleSelectors, fieldProps, validationSchema),
     true,
     createValueTransformer(transformRule || defaultRuleTransformer),
   )

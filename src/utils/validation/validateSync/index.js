@@ -15,8 +15,8 @@ const hasFormRules = (rules) => {
 
 export default async function validateSync(resolverArgs, force) {
   const { fieldProps, form } = resolverArgs
-  const { rxRules } = form.state
-  const relevantFormRules = getFieldRules(fieldProps, rxRules)
+  const { validationSchema } = form.state
+  const relevantFormRules = getFieldRules(fieldProps, validationSchema)
 
   //
   // TODO Deal with data management between getRulesSeq and shoulValidate.

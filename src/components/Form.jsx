@@ -78,7 +78,7 @@ export default class Form extends React.Component {
 
   state = {
     fields: {},
-    rxRules: {},
+    validationSchema: {},
     dirty: false,
   }
 
@@ -215,7 +215,7 @@ export default class Form extends React.Component {
      * update. Returns the Map of the recorded formatted rules.
      * That Map is later used during the sync validation as the rules source.
      */
-    const nextRxRules = rxUtils.createRulesSubscriptions({
+    const nextValidationSchema = rxUtils.createRulesSubscriptions({
       fieldProps,
       fields,
       form: this,
@@ -224,7 +224,7 @@ export default class Form extends React.Component {
     this.setState(
       {
         fields: nextFields,
-        rxRules: nextRxRules,
+        validationSchema: nextValidationSchema,
       },
       () => {
         const fieldRegisteredEvent = camelize(...fieldPath, 'registered')
@@ -376,7 +376,9 @@ export default class Form extends React.Component {
     console.log({ explicitFieldProps })
     console.log({ fields })
 
-    let fieldProps = forceProps ? explicitFieldProps : path(explicitFieldProps.fieldPath, fields)
+    let fieldProps = forceProps
+      ? explicitFieldProps
+      : path(explicitFieldProps.fieldPath, fields)
     fieldProps = fieldProps || explicitFieldProps
 
     console.log({ fieldProps })
@@ -438,7 +440,9 @@ export default class Form extends React.Component {
       const { fields: nextFields } = this.state
 
       /* Filter unexpected fields into a separate collection */
-      const invalidFields = List(nextFields.filterNot((fieldProps) => fieldProps.expected))
+      const invalidFields = List(
+        nextFields.filterNot((fieldProps) => fieldProps.expected),
+      )
 
       /* Call custom callback */
       dispatch(
