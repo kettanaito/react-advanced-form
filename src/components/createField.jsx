@@ -3,8 +3,7 @@
  * component. Used for custom field styling, implementing fields with custom logic, and
  * third-party field components integration.
  */
-import path from 'ramda/src/path'
-
+import * as R from 'ramda'
 import React from 'react'
 import PropTypes from 'prop-types'
 import hoistNonReactStatics from 'hoist-non-react-statics'
@@ -52,7 +51,7 @@ const defaultOptions = {
 const getInitialValue = (fieldPath, fieldProps, initialValues, hocOptions) => {
   return (
     fieldProps.initialValue ||
-    (initialValues && path(fieldPath, initialValues)) ||
+    (initialValues && R.path(fieldPath, initialValues)) ||
     hocOptions.initialValue
   )
 }
@@ -103,7 +102,7 @@ export default function connectField(options) {
         const { props: directProps, context, fieldPath } = this
         const { fields, fieldGroup, form } = context
         const value = directProps[valuePropName]
-        const contextValue = path(fieldPath.concat(valuePropName), fields)
+        const contextValue = R.path(fieldPath.concat(valuePropName), fields)
 
         const { reactiveProps, prunedProps } = rxUtils.getRxProps(directProps)
 
@@ -114,9 +113,7 @@ export default function connectField(options) {
           form.props.initialValues,
           hocOptions,
         )
-        const registeredValue = isset(contextValue)
-          ? contextValue
-          : value || initialValue
+        const registeredValue = isset(contextValue) ? contextValue : value || initialValue
 
         const initialFieldProps = {
           ref: this,
@@ -193,9 +190,9 @@ export default function connectField(options) {
          * should be propagated to the Form's state to guarantee the field's
          * internal record is updated respectively.
          */
-        const controlled = contextProps.get('controlled')
-        const nextValue = nextProps[valuePropName]
-        const prevValue = this.props[valuePropName]
+        const { controlled } = contextProps
+        const nextValue = recordUtils.getValue(nextProps)
+        const prevValue = recordUtils.getValue(this.props)
 
         const shouldUpdateRecord = hocOptions.shouldUpdateRecord({
           nextValue,
@@ -224,7 +221,7 @@ export default function connectField(options) {
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
         /* Bypass scenarios when field is being updated, but not yet registred within the Form */
-        const nextContextProps = path(this.fieldPath, nextContext.fields)
+        const nextContextProps = R.path(this.fieldPath, nextContext.fields)
 
         if (!nextContextProps) {
           return
@@ -252,10 +249,7 @@ export default function connectField(options) {
        * Deletes the field's record upon unmounting.
        */
       componentWillUnmount() {
-        this.context.form.eventEmitter.emit(
-          'fieldUnregister',
-          this.contextProps,
-        )
+        this.context.form.eventEmitter.emit('fieldUnregister', this.contextProps)
       }
 
       /**
@@ -308,11 +302,7 @@ export default function connectField(options) {
        * @param {any} prevValue
        */
       handleChange = (args) => {
-        const {
-          event,
-          nextValue: customNextValue,
-          prevValue: customPrevValue,
-        } = args
+        const { event, nextValue: customNextValue, prevValue: customPrevValue } = args
         const { contextProps } = this
 
         const nextValue = args.hasOwnProperty('nextValue')
@@ -321,7 +311,7 @@ export default function connectField(options) {
 
         const prevValue = args.hasOwnProperty('prevValue')
           ? customPrevValue
-          : contextProps.get(valuePropName)
+          : contextProps[valuePropName] // TODO Use "recordUtils.getValue()"
 
         this.context.form.eventEmitter.emit('fieldChange', {
           event,
@@ -347,7 +337,7 @@ export default function connectField(options) {
 
         /* Reference to the enforced props from the HOC options */
         const enforcedProps = hocOptions.enforceProps({ props, contextProps })
-        const fieldState = contextProps.toJS()
+        const fieldState = contextProps
         const { valuePropName } = fieldState
         const value = fieldState.controlled
           ? props[valuePropName] || ''

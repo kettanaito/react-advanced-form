@@ -1,20 +1,36 @@
-import is from 'ramda/src/is'
-import when from 'ramda/src/when'
-import compose from 'ramda/src/compose'
-import chain from 'ramda/src/chain'
-import values from 'ramda/src/values'
-import allPass from 'ramda/src/allPass'
-import curry from 'ramda/src/curry'
+import * as R from 'ramda'
 
 /**
  * Accepts an object and returns a list of its leaves.
  */
-const getLeaves = when(
-  is(Object),
-  compose(
-    (vals) => chain(getLeaves, vals),
-    values,
-  ),
-)
+// const getLeaves = when(
+//   is(Object),
+//   compose(
+//     (vals) => chain(getLeaves, vals),
+//     values,
+//   ),
+// )
 
-export default getLeaves
+const createLeavesGetter = (predicate) => {
+  return R.ifElse(
+    R.is(Object),
+    R.compose(
+      R.reject(R.isNil),
+      R.chain(R.when(R.complement(predicate), getLeavesWhich(predicate))),
+      R.values,
+    ),
+    () => null,
+  )
+}
+
+/**
+ * Returns the list of the object's leaves that satisfy the given predicate.
+ * @param {Function<boolean>} predicate
+ * @param {Object} obj
+ * @returns {any[]}
+ */
+const getLeavesWhich = R.curry((predicate, obj) => {
+  return createLeavesGetter(predicate)(obj)
+})
+
+export default getLeavesWhich

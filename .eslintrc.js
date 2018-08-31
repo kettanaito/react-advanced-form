@@ -52,6 +52,7 @@ module.exports = {
     'no-confusing-arrow': 0,
     'padded-blocks': 0,
     'no-underscore-dangle': 0,
+    'no-use-before-define': 0,
 
     /* Import */
     'import/first': 0,
