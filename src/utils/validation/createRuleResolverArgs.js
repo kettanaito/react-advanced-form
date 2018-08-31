@@ -6,9 +6,13 @@ import createPropGetter from '../fieldUtils/createPropGetter'
  */
 export default function createRuleResolverArgs(args) {
   const { fieldProps, form } = args
+
+  // Ensure fields are present, since debounced validation calls
+  // do not pass "fields" on purpose to prevent passing fields
+  // with the obsolete state.
   const fields = args.fields || form.state.fields
-  const valuePropName = fieldProps.get('valuePropName')
-  const value = fieldProps.get(valuePropName)
+  const { valuePropName } = fieldProps
+  const value = fieldProps[valuePropName]
 
   return {
     fieldProps,

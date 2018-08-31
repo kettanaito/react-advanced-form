@@ -1,4 +1,4 @@
-import path from 'ramda/src/path'
+import * as R from 'ramda'
 
 export default {
   /**
@@ -39,21 +39,21 @@ export default {
    */
   beforeRegister: ({ fieldProps, fields }) => {
     const { fieldPath } = fieldProps
-    const alreadyExist = path(fieldPath, fields)
+    const alreadyExist = R.path(fieldPath, fields)
 
     if (!alreadyExist) {
       return fieldProps
     }
 
-    const valuePropName = fieldProps.get('valuePropName')
-    const existingValue = path(fieldPath.concat(valuePropName), fields)
+    const { valuePropName } = fieldProps
+    const existingValue = R.path(fieldPath.concat(valuePropName), fields)
 
     if (existingValue) {
       return false
     }
 
-    const fieldValue = fieldProps.get(valuePropName)
-    return fieldValue ? fieldProps.set(valuePropName, fieldValue) : fieldProps
+    const fieldValue = fieldProps[valuePropName]
+    return fieldValue ? R.assoc(valuePropName, fieldValue, fieldProps) : fieldProps
   },
 
   /**
@@ -69,13 +69,11 @@ export default {
    * next value and the current value in the field's record.
    */
   shouldUpdateRecord: ({ nextValue, nextProps, contextProps }) => {
-    return nextProps.checked && nextValue !== contextProps.get('value')
+    return nextProps.checked && nextValue !== contextProps.value
   },
 
   enforceProps: ({ props, contextProps }) => ({
     value: props.value,
-    checked: contextProps.get('controlled')
-      ? props.checked
-      : props.value === contextProps.get('value'),
+    checked: contextProps.controlled ? props.checked : props.value === contextProps.value,
   }),
 }

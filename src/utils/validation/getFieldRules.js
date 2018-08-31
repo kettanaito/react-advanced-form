@@ -1,3 +1,5 @@
+import path from 'ramda/src/path'
+
 /**
  * Returns the collection of validation rules of the given selector
  * applicable to the given field.
@@ -10,7 +12,9 @@ export const getRulesBySelector = (selector, fieldProps, validationSchema) => {
   // Shallow keyed collection is not a usual behavior, but only suitable
   // for the reduced schema into "validationSchema". Think of the unified interface.
   //
-  return validationSchema[keyPath.join('.')]
+  // return validationSchema[keyPath.join('.')]
+
+  return path(keyPath, validationSchema)
 }
 
 /**

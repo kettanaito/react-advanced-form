@@ -1,5 +1,4 @@
 import mergeDeepLeft from 'ramda/src/mergeDeepLeft'
-// import { fromJS, Map } from 'immutable'
 
 /**
  * Returns the iterable instance of form rules based on the provided proprietary rules
@@ -15,7 +14,5 @@ export default function mergeRules(formRules, contextRules = {}) {
 
   const closestRules = formRules || contextRules
 
-  return closestRules.extend
-    ? mergeDeepLeft(closestRules, contextRules)
-    : closestRules
+  return closestRules.extend ? mergeDeepLeft(closestRules, contextRules) : closestRules
 }

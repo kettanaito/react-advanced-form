@@ -1,7 +1,4 @@
-import map from 'ramda/src/map'
-import path from 'ramda/src/path'
-import assocPath from 'ramda/src/assocPath'
-import values from 'ramda/src/values'
+import * as R from 'ramda'
 
 import invariant from 'invariant'
 import React from 'react'
@@ -23,7 +20,6 @@ import {
   isset,
   camelize,
   dispatch,
-  flattenDeep,
   recordUtils,
   fieldUtils,
   formUtils,
@@ -44,10 +40,6 @@ function getInnerRef(element, callback) {
   if (callback) {
     callback(element)
   }
-}
-
-const isField = (entry) => {
-  return !!entry.fieldPath
 }
 
 export default class Form extends React.Component {
@@ -106,13 +98,13 @@ export default class Form extends React.Component {
   constructor(props, context) {
     super(props, context)
     const { rules: explicitRules, messages: explicitMessages } = props
-    const { debounceTime, rules, messages } = context
+    const { debounceTime, rules: contextRules, messages } = context
 
     /* Set the validation debounce duration */
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime
 
     /* Set validation rules */
-    this.formRules = formUtils.mergeRules(explicitRules, rules)
+    this.formRules = formUtils.mergeRules(explicitRules, contextRules)
 
     /**
      * Define validation messages once, since those should be converted
@@ -142,7 +134,7 @@ export default class Form extends React.Component {
   withRegisteredField = (func) => {
     return (args) => {
       const { fieldProps } = args
-      const includesField = path(fieldProps.fieldPath, this.state.fields)
+      const includesField = R.path(fieldProps.fieldPath, this.state.fields)
       return includesField && func(args)
     }
   }
@@ -157,7 +149,7 @@ export default class Form extends React.Component {
   registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
     const { fields } = this.state
     const { fieldPath } = initialFieldProps
-    const fieldAlreadyExists = path(fieldPath, fields)
+    const fieldAlreadyExists = R.path(fieldPath, fields)
 
     /* Warn on field duplicates */
     invariant(
@@ -178,7 +170,7 @@ export default class Form extends React.Component {
       return
     }
 
-    const nextFields = assocPath(fieldPath, fieldProps, fields)
+    const nextFields = R.assocPath(fieldPath, fieldProps, fields)
     const { eventEmitter } = this
 
     /**
@@ -327,6 +319,8 @@ export default class Form extends React.Component {
   handleFieldChange = this.withRegisteredField(async (args) => {
     const { fields, dirty } = this.state
 
+    console.log({ fields })
+
     const changePayload = await handlers.handleFieldChange(args, fields, this, {
       onUpdateValue: this.updateFieldsWith,
     })
@@ -378,7 +372,7 @@ export default class Form extends React.Component {
 
     let fieldProps = forceProps
       ? explicitFieldProps
-      : path(explicitFieldProps.fieldPath, fields)
+      : R.path(explicitFieldProps.fieldPath, fields)
     fieldProps = fieldProps || explicitFieldProps
 
     console.log({ fieldProps })
@@ -403,22 +397,20 @@ export default class Form extends React.Component {
   /**
    * Performs the validation of each field in parallel, awaiting for all the pending
    * validations to be completed.
-   * @param {Function} predicate (Optional) Predicate function to filter the fields.
    */
-  validate = async (predicate = isField) => {
+  validate = async () => {
     const { fields } = this.state
 
     console.warn('validate')
-    console.log('mutable fields:', fields)
+    console.log('plain fields:', fields)
 
-    const flatFields = flattenDeep(fields, predicate, true)
+    const flattenedFields = fieldUtils.flattenFields(fields)
 
-    console.log({ flatFields })
+    console.log('flattenedFields:', flattenedFields)
 
     /* Map pending field validations into a list */
-    const pendingValidations = map(
-      (fieldProps) => this.validateField({ fieldProps }),
-      values(flatFields),
+    const pendingValidations = flattenedFields.map((fieldProps) =>
+      this.validateField({ fieldProps }),
     )
 
     // const pendingValidations = flatFields.reduce(
@@ -463,7 +455,7 @@ export default class Form extends React.Component {
    * Clears all the fields.
    */
   clear = () => {
-    const nextFields = map(fieldUtils.resetField(() => ''), this.state.fields)
+    const nextFields = R.map(fieldUtils.resetField(() => ''), this.state.fields)
     this.setState({ fields: nextFields })
   }
 
@@ -471,7 +463,7 @@ export default class Form extends React.Component {
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
-    const nextFields = map(recordUtils.reset, this.state.fields)
+    const nextFields = R.map(recordUtils.reset, this.state.fields)
 
     this.setState({ fields: nextFields }, () => {
       /**
@@ -501,6 +493,8 @@ export default class Form extends React.Component {
     const { onSerialize } = this.props
 
     const serialized = fieldUtils.serializeFields(fields)
+    console.log('serialized:', serialized)
+
     return onSerialize
       ? onSerialize({
           serialized,

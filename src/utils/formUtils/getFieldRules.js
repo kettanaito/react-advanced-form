@@ -1,3 +1,4 @@
+import path from 'ramda/src/path'
 import equals from 'ramda/src/equals'
 import flattenDeep from '../flattenDeep'
 
@@ -11,7 +12,9 @@ export const ruleSelectors = [
   (fieldProps) => ['type', fieldProps.type],
 ]
 
-const defaultRuleTransformer = (rule) => rule
+const defaultRuleTransformer = (rule) => {
+  return rule
+}
 
 const createValueTransformer = (formatRule) => {
   return (value, ruleKeyPath) => {
@@ -44,10 +47,12 @@ const createValueTransformer = (formatRule) => {
  * Returns a predicate function based on the provided field props.
  * @param {Function[]} ruleSelectors
  * @param {Record} fieldProps
+ * @returns {Function<boolean>}
  */
 const createPredicate = (ruleSelectors, fieldProps, validationSchema) => {
   return (_, keyPath) => {
-    if (validationSchema.hasOwnProperty(keyPath.join('.'))) {
+    // if (validationSchema.hasOwnProperty(keyPath.join('.'))) {
+    if (path(keyPath, validationSchema)) {
       return false
     }
 
@@ -67,6 +72,11 @@ export default function getFieldRules({
   validationSchema,
   transformRule,
 }) {
+  console.warn('getFieldRules')
+  console.log({ schema })
+  console.log({ fieldProps })
+  console.log({ validationSchema })
+
   return flattenDeep(
     schema,
     createPredicate(ruleSelectors, fieldProps, validationSchema),

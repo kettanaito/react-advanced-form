@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import dispatch from '../../dispatch'
 import makeCancelable from '../../makeCancelable'
 import createValidationResult from '../createValidationResult'
@@ -14,9 +15,7 @@ export default async function applyFieldAsyncRule(resolverArgs) {
    * Set pending async request reference on field props to be able
    * to cancel request upon field value change.
    */
-  form.updateFieldsWith(
-    fieldProps.set('pendingAsyncValidation', pendingRequest),
-  )
+  form.updateFieldsWith(R.assoc('pendingAsyncValidation', pendingRequest, fieldProps))
 
   const result = await pendingRequest.itself
 

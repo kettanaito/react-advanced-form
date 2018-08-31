@@ -1,7 +1,8 @@
-import flattenDeep from '../flattenDeep'
+import * as R from 'ramda'
 import * as recordUtils from '../recordUtils'
+import flattenFields from './flattenFields'
 
-const predicate = (fieldProps) => {
+const shouldSerializeField = (fieldProps) => {
   console.log('   serialize: predicate')
   console.log('   fieldProps:', fieldProps)
 
@@ -34,13 +35,15 @@ const predicate = (fieldProps) => {
 
 /**
  * Serializes the provided fields. Returns
- * @param {Map} fields
- * @param {Object} options
- * @param {Function} transformValue
- * @returns {Map}
+ * @param {Object} fields
+ * @returns {Object}
  */
-export default function serializeFields(fields, transformValue = recordUtils.getValue) {
-  console.warn('serialize')
-  console.log('should serialize:', fields)
-  return flattenDeep(fields, predicate, false, transformValue)
-}
+const serializeFields = R.compose(
+  R.reduce((acc, fieldProps) => {
+    return R.assocPath(fieldProps.fieldPath, recordUtils.getValue(fieldProps), acc)
+  }, {}),
+  R.filter(shouldSerializeField),
+  flattenFields,
+)
+
+export default serializeFields

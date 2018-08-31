@@ -1,22 +1,22 @@
 import PropTypes from 'prop-types'
-import { CustomPropTypes, fieldUtils } from '../utils'
+import { fieldUtils } from '../utils'
 
 export default function Condition(props, context) {
-    const { fields, form } = context
-    const { children, when } = props
+  const { fields, form } = context
+  const { children, when } = props
 
-    /* Resolve the condition in order to render the children */
-    const operableFields = fieldUtils.serializeFields(fields, form.context.withImmutable)
-    const shouldRenderChildren = when({ fields: operableFields })
+  /* Resolve the condition in order to render the children */
+  const serializedFields = fieldUtils.serializeFields(fields)
+  const shouldRenderChildren = when({ fields: serializedFields, form })
 
-    return shouldRenderChildren ? children : null
+  return shouldRenderChildren ? children : null
 }
 
 Condition.propTypes = {
-    when: PropTypes.func.isRequired
+  when: PropTypes.func.isRequired,
 }
 
 Condition.contextTypes = {
-    fields: CustomPropTypes.Map.isRequired,
-    form: PropTypes.object.isRequired,
+  fields: PropTypes.object.isRequired,
+  form: PropTypes.object.isRequired,
 }
