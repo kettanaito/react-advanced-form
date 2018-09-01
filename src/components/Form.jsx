@@ -70,7 +70,7 @@ export default class Form extends React.Component {
 
   state = {
     fields: {},
-    validationSchema: {},
+    applicableRules: {},
     dirty: false,
   }
 
@@ -114,6 +114,10 @@ export default class Form extends React.Component {
      * Note: Messages passed from FormProvider (context messages) are
      * already immutable.
      */
+    //
+    // TODO
+    // Ditch "fromJS" calls.
+    //
     this.messages = explicitMessages ? fromJS(explicitMessages) : messages
 
     /* Create an event emitter to communicate between form and its fields */
@@ -133,8 +137,7 @@ export default class Form extends React.Component {
 
   withRegisteredField = (func) => {
     return (args) => {
-      const { fieldProps } = args
-      const includesField = R.path(fieldProps.fieldPath, this.state.fields)
+      const includesField = R.path(args.fieldProps.fieldPath, this.state.fields)
       return includesField && func(args)
     }
   }
@@ -207,16 +210,22 @@ export default class Form extends React.Component {
      * update. Returns the Map of the recorded formatted rules.
      * That Map is later used during the sync validation as the rules source.
      */
-    const nextValidationSchema = rxUtils.createRulesSubscriptions({
+    const nextApplicableRules = rxUtils.createRulesSubscriptions({
       fieldProps,
       fields,
       form: this,
     })
 
+    console.log(' ')
+    console.log('--- form ---')
+    console.log('this.formRules', this.formRules)
+    console.log('this.state.applicableRules', nextApplicableRules)
+    console.log(' ')
+
     this.setState(
       {
         fields: nextFields,
-        validationSchema: nextValidationSchema,
+        applicableRules: nextApplicableRules,
       },
       () => {
         const fieldRegisteredEvent = camelize(...fieldPath, 'registered')
@@ -366,16 +375,10 @@ export default class Form extends React.Component {
 
     const fields = explicitFields || this.state.fields
 
-    console.warn('validation')
-    console.log({ explicitFieldProps })
-    console.log({ fields })
-
     let fieldProps = forceProps
       ? explicitFieldProps
       : R.path(explicitFieldProps.fieldPath, fields)
     fieldProps = fieldProps || explicitFieldProps
-
-    console.log({ fieldProps })
 
     /* Perform the validation */
     const validatedField = await validate({

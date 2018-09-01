@@ -1,10 +1,6 @@
-import path from 'ramda/src/path'
-import values from 'ramda/src/values'
-import assoc from 'ramda/src/assoc'
-import mergeDeepLeft from 'ramda/src/mergeDeepLeft'
-
+import * as R from 'ramda'
 import flushFieldRefs from '../flushFieldRefs'
-import getFieldRules from '../formUtils/getFieldRules'
+import findRulesInSchema from '../formUtils/findRulesInSchema'
 import * as recordUtils from '../recordUtils'
 import createRuleResolverArgs from '../validation/createRuleResolverArgs'
 import makeObservable from './makeObservable'
@@ -26,7 +22,7 @@ function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
 
   const { refs } = flushFieldRefs(resolver, resolverArgs)
 
-  return assoc(
+  return R.assoc(
     'rule',
     [
       {
@@ -49,7 +45,10 @@ function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
  * @returns {Map}
  */
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {
-  const { validationSchema } = form.state
+  const {
+    formRules,
+    state: { applicableRules },
+  } = form
 
   const resolverArgs = createRuleResolverArgs({
     fieldProps,
@@ -61,60 +60,46 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
    * Get the collection of reactive rules from the form
    * validation schema relative to the registered field.
    */
-  const schemaRuleGroups = getFieldRules({
+  const schemaRuleGroups = findRulesInSchema({
     fieldProps,
-    schema: form.formRules,
-    validationSchema,
-    transformRule(ruleParams) {
-      const { refs } = flushFieldRefs(ruleParams.resolver, resolverArgs)
+    applicableRules: formRules,
+    transformRule: (rule) => {
+      const { resolver } = rule
+      const { refs } = flushFieldRefs(resolver, resolverArgs)
+
+      if (refs.length > 0) {
+        /**
+         * Create observable for a rule that references another field(s).
+         * The observable will listen for the referenced props change and re-evaluate
+         * the validation rule(s) in which that prop is referenced.
+         */
+        makeObservable(resolver, resolverArgs, {
+          subscribe() {
+            const currentFieldProps = R.path(fieldProps.fieldPath, form.state.fields)
+
+            form.eventEmitter.emit('validateField', {
+              /**
+               * Cannot hard-code "true" because that would validate
+               * empty optional fields as unexpected.
+               */
+              force: !!recordUtils.getValue(currentFieldProps),
+              fieldProps: currentFieldProps,
+            })
+          },
+        })
+      }
 
       return {
-        ...ruleParams,
+        ...rule,
         refs,
       }
     },
   })
 
-  /* Add "Field.props.rule" in case the latter has field references */
+  console.log({ schemaRuleGroups })
+
+  /* Add "Field.props.rule" in case the latter has fields references */
   const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs)
 
-  if (Object.keys(ruleGroups).length === 0) {
-    return validationSchema
-  }
-
-  /**
-   * Create observable for each rule in which another field(s) is referenced.
-   * The observable will listen for the referenced props change and re-evaluate
-   * the validation rule(s) in which that prop is referenced.
-   */
-  values(ruleGroups).forEach((ruleGroup) => {
-    ruleGroup.forEach((rule) => {
-      const { refs, resolver } = rule
-
-      /**
-       * Rule resolver without field references are not reactive,
-       * thus there is no need to create an observable for it.
-       */
-      if (refs.length === 0) {
-        return
-      }
-
-      makeObservable(resolver, resolverArgs, {
-        subscribe() {
-          const currentFieldProps = path(fieldProps.fieldPath, form.state.fields)
-
-          form.eventEmitter.emit('validateField', {
-            /**
-             * Cannot hard-code "true" because that would validate
-             * empty optional fields as unexpected.
-             */
-            force: !!recordUtils.getValue(currentFieldProps),
-            fieldProps: currentFieldProps,
-          })
-        },
-      })
-    })
-  })
-
-  return mergeDeepLeft(validationSchema, ruleGroups)
+  return R.mergeDeepLeft(applicableRules, ruleGroups)
 }
