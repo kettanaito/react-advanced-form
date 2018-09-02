@@ -193,7 +193,7 @@ export const setErrors = R.curry((errors, fieldProps) => {
  * @param {Object} fieldProps
  * @returns {Object}
  */
-export const resetValidityState = R.mergeDeepRight({
+export const resetValidityState = R.mergeDeepLeft({
   valid: false,
   invalid: false,
 })
@@ -218,7 +218,7 @@ export const updateValidityState = R.curry((shouldValidate, fieldProps) => {
   const { validated, expected } = fieldProps
   const value = getValue(fieldProps)
 
-  return R.mergeDeepRight(
+  return R.mergeDeepLeft(
     {
       valid: !!value && validated && expected,
       invalid: validated && !expected,
@@ -232,7 +232,7 @@ export const updateValidityState = R.curry((shouldValidate, fieldProps) => {
  * @param {Object} fieldProps
  * @returns {Object}
  */
-export const resetValidationState = R.mergeDeepRight({
+export const resetValidationState = R.mergeDeepLeft({
   validating: false,
   validated: false,
   validatedSync: false,
