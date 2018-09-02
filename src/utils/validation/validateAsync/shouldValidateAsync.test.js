@@ -6,6 +6,7 @@ test('Returns "true" for sync valid with asyncRule', () => {
     {
       fieldProps: recordUtils.createField({
         name: 'fieldOne',
+        fieldPath: ['fieldOne'],
         value: 'foo',
         asyncRule: () => true,
         validatedSync: true,
@@ -23,6 +24,7 @@ test('Returns "false" for empty field with asyncRule', () => {
     {
       fieldProps: recordUtils.createField({
         name: 'fieldOne',
+        fieldPath: ['fieldOne'],
         value: '',
         asyncRule: () => true,
       }),
@@ -38,6 +40,7 @@ test('Returns "false" for sync valid field without asyncRule', () => {
     {
       fieldProps: recordUtils.createField({
         name: 'fieldOne',
+        fieldPath: ['fieldOne'],
         value: 'foo',
         validSync: true,
       }),
@@ -51,6 +54,8 @@ test('Returns "false" for sync valid field without asyncRule', () => {
 test('Returns "false" for sync invalid field with asyncRule', () => {
   const needsValidation = shouldValidateAsync({
     fieldProps: recordUtils.createField({
+      name: 'fieldOne',
+      fieldPath: ['fieldOne'],
       value: 'foo',
       asyncRule: () => true,
       validatedSync: true,
@@ -65,8 +70,9 @@ test('Retuns "false" for async valid field', () => {
   const needsValidation = shouldValidateAsync(
     {
       fieldProps: recordUtils.createField({
-        value: 'foo',
         name: 'fieldOne',
+        fieldPath: ['fieldOne'],
+        value: 'foo',
         asyncRule: () => true,
         validSync: true,
         validAsync: true,

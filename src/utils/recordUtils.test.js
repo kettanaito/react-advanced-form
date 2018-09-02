@@ -1,5 +1,4 @@
 import * as R from 'ramda'
-import { Record } from 'immutable'
 import * as recordUtils from './recordUtils'
 
 const inputField = recordUtils.createField({
@@ -19,13 +18,13 @@ const checkboxField = recordUtils.createField({
 
 describe('recordUtils', () => {
   it('createField', () => {
-    expect(inputField).toBeInstanceOf(Record)
+    expect(inputField).toBeInstanceOf(Object)
     expect(inputField.name).toEqual('fieldOne')
     expect(inputField.type).toEqual('text')
     expect(inputField.value).toEqual('foo')
     expect(inputField.initialValue).toEqual('foo')
 
-    expect(checkboxField).toBeInstanceOf(Record)
+    expect(checkboxField).toBeInstanceOf(Object)
     expect(checkboxField.name).toEqual('checkboxOne')
     expect(checkboxField.type).toEqual('checkbox')
     expect(checkboxField.checked).toEqual(true)
@@ -77,7 +76,10 @@ describe('recordUtils', () => {
 
   it('resetValidityState', () => {
     const nextRecord = recordUtils.resetValidityState(
-      inputField.set('valid', true).set('invalid', true),
+      R.compose(
+        R.assoc('valid', true),
+        R.assoc('invalid', true),
+      )(inputField),
     )
 
     expect(nextRecord.valid).toEqual(false)
@@ -86,13 +88,14 @@ describe('recordUtils', () => {
 
   it('resetValidationState', () => {
     const nextRecord = recordUtils.resetValidationState(
-      inputField
-        .set('validating', true)
-        .set('validated', true)
-        .set('validatedSync', true)
-        .set('validatedAsync', true)
-        .set('validSync', true)
-        .set('validAsync', true),
+      R.compose(
+        R.assoc('validating', true),
+        R.assoc('validated', true),
+        R.assoc('validatedSync', true),
+        R.assoc('validatedAsync', true),
+        R.assoc('validSync', true),
+        R.assoc('validAsync', true),
+      )(inputField),
     )
 
     expect(nextRecord.validating).toEqual(false)

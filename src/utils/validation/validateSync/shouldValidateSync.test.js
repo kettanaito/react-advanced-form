@@ -4,7 +4,10 @@ import * as recordUtils from '../../recordUtils'
 test('returns "true" when validation is forced', () => {
   const needsValidation = shouldValidateSync(
     {
-      fieldProps: recordUtils.createField({ name: 'fieldOne' }),
+      fieldProps: recordUtils.createField({
+        name: 'fieldOne',
+        fieldPath: ['fieldOne'],
+      }),
     },
     null,
     true,
@@ -18,6 +21,7 @@ test('returns "true" for required field', () => {
     {
       fieldProps: recordUtils.createField({
         name: 'fieldOne',
+        fieldPath: ['fieldOne'],
         required: true,
       }),
     },
@@ -33,6 +37,7 @@ test('returns "true" for non-validated field with value and field rule', () => {
     {
       fieldProps: recordUtils.createField({
         name: 'fieldOne',
+        fieldPath: ['fieldOne'],
         rule: /\d+/,
         value: 'foo',
       }),
@@ -49,6 +54,7 @@ test('returns "true" for non-validated field with value and form rules', () => {
     {
       fieldProps: recordUtils.createField({
         name: 'fieldOne',
+        fieldPath: ['fieldOne'],
         value: 'foo',
       }),
     },
@@ -66,6 +72,7 @@ test('returns "false" for empty optional field', () => {
     {
       fieldProps: recordUtils.createField({
         name: 'fieldOne',
+        fieldPath: ['fieldOne'],
         value: '',
       }),
     },
