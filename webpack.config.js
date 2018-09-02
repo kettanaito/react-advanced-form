@@ -9,10 +9,7 @@ const DEVELOPMENT = nodeEnv === 'development'
 const PRODUCTION = nodeEnv === 'production'
 
 module.exports = {
-  entry: [
-    'regenerator-runtime/runtime',
-    path.resolve(__dirname, 'src/index.js'),
-  ],
+  entry: ['regenerator-runtime/runtime', path.resolve(__dirname, 'src/index.js')],
   externals: {
     react: 'umd react',
     immutable: 'umd immutable',
@@ -29,6 +26,9 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify(nodeEnv),
       'process.env.BABEL_ENV': JSON.stringify(nodeEnv),
     }),
+
+    new webpack.optimize.ModuleConcatenationPlugin(),
+
     PRODUCTION &&
       new BabelMinifyPlugin({
         removeDebugger: true,
