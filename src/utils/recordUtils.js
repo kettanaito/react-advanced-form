@@ -83,7 +83,7 @@ import invariant from 'invariant'
  */
 export const createField = (initialState) => {
   const { valuePropName } = initialState
-  const value = getValue(initialState)
+  const value = initialState[valuePropName]
 
   return {
     /* Internal */
@@ -144,7 +144,11 @@ export const updateCollectionWith = R.curry((fieldProps, collection) => {
 export const getValue = (fieldProps) => {
   const { fieldPath, valuePropName } = fieldProps
 
-  invariant(fieldPath, 'Failed to get field value: provided object is not a field.')
+  invariant(
+    fieldPath,
+    'Failed to get field value: provided object is not a field: %s',
+    Object.keys(fieldProps).join(),
+  )
 
   invariant(
     valuePropName,
@@ -197,12 +201,6 @@ export const resetValidityState = R.mergeDeepLeft({
   valid: false,
   invalid: false,
 })
-// export const resetValidityState = R.curry((fieldProps) => {
-//   return fieldProps.merge({
-//     valid: false,
-//     invalid: false,
-//   })
-// })
 
 /**
  * Sets the validity state props (valid/invalid) on the given field.
@@ -241,31 +239,20 @@ export const resetValidationState = R.mergeDeepLeft({
   validAsync: false,
 })
 
-// export const resetValidationState = curry((fieldProps) => {
-//   return fieldProps.merge({
-//     validating: false,
-//     validated: false,
-//     validatedSync: false,
-//     validatedAsync: false,
-//     validSync: false,
-//     validAsync: false,
-//   })
-// })
-
 /**
  * Resets the given field to its initial state.
  * @param {Object} fieldProps
  * @returns {Object}
  */
 export const reset = R.compose(
-  setValue(R.prop('initialValue')),
+  setValue(R.prop('initialValue')), // TODO This most likely works wrong
   setErrors(null),
   resetValidationState,
   resetValidityState,
 )
 
 /**
- * Sets the given field's focus.
+ * Sets the focus of the given field to the next value.
  * @param {boolean} isFocused
  * @param {Object} fieldProps
  * @returns {Object}
