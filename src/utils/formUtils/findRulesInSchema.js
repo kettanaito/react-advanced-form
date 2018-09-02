@@ -16,28 +16,34 @@ const getFieldRulesPaths = (fieldProps) => [
 ]
 
 const createValueTransformer = (formatRule) => {
-  return (value, ruleKeyPath) => {
-    const selector = ruleKeyPath[0]
+  return (value, rulePath) => {
+    const selector = rulePath[0]
 
     if (typeof value === 'function') {
-      const formattedRule = formatRule({
-        selector,
-        ruleKeyPath,
-        resolver: value,
-      })
+      const formattedRule = formatRule(
+        {
+          selector,
+          ruleKeyPath: rulePath,
+          resolver: value,
+        },
+        rulePath,
+      )
 
       return [formattedRule]
     }
 
-    return value.reduce((list, resolver, name) => {
-      const formattedRule = formatRule({
-        name,
-        selector,
-        resolver,
-        ruleKeyPath: ruleKeyPath.concat(name),
-      })
+    return value.reduce((acc, resolver, name) => {
+      const formattedRule = formatRule(
+        {
+          name,
+          selector,
+          resolver,
+          ruleKeyPath: rulePath.concat(name),
+        },
+        rulePath,
+      )
 
-      return list.concat(formattedRule)
+      return acc.concat(formattedRule)
     }, [])
   }
 }
@@ -52,11 +58,11 @@ const createValueTransformer = (formatRule) => {
  */
 export default function findRulesInSchema({
   fieldProps,
-  applicableRules,
+  validationSchema,
   transformRule = (rule) => rule,
 }) {
   return getFieldRulesPaths(fieldProps).reduce((acc, rulePath) => {
-    const foundRule = R.path(rulePath, applicableRules)
+    const foundRule = R.path(rulePath, validationSchema)
 
     return foundRule
       ? R.assocPath(

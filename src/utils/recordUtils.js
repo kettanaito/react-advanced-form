@@ -5,7 +5,7 @@
  * the next state of the field record.
  */
 import * as R from 'ramda'
-// import { Record } from 'immutable'
+import invariant from 'invariant'
 
 /**
  * Generates a Field class relative to the given initial props.
@@ -90,19 +90,13 @@ export const createField = (initialState) => {
     ref: null,
     fieldGroup: null,
     fieldPath: null,
-    get displayFieldPath() {
-      return this.fieldPath.join('.')
-    },
 
     /* Basic */
     type: 'text',
-    initialValue: value, // TODO Shouldn't this be set here?
+    initialValue: value, // TODO Should this be set here?
     [valuePropName]: value,
     valuePropName: 'value',
-
-    // TODO "radio" field cannot propagate "checked" prop, not in the record
     focused: false,
-    checked: null,
     skip: false,
 
     /* Validation */
@@ -133,15 +127,10 @@ export const createField = (initialState) => {
   }
 }
 
-// export const createField = (initialProps) => {
-//   const FieldProps = generateFieldClass(initialProps)
-//   return new FieldProps(initialProps)
-// }
-
 /**
  * Updates the given collection with the given field props.
- * @param {Field} fieldProps
- * @param {Map} collection
+ * @param {Object} fieldProps
+ * @param {Object} collection
  */
 export const updateCollectionWith = R.curry((fieldProps, collection) => {
   return R.assocPath(fieldProps.fieldPath, fieldProps, collection)
@@ -149,29 +138,48 @@ export const updateCollectionWith = R.curry((fieldProps, collection) => {
 
 /**
  * Returns the value of the given field.
- * @param {Field} fieldProps
+ * @param {Object} fieldProps
  * @returns {any}
  */
 export const getValue = (fieldProps) => {
-  return R.prop(fieldProps.valuePropName, fieldProps)
+  const { fieldPath, valuePropName } = fieldProps
+
+  invariant(fieldPath, 'Failed to get field value: provided object is not a field.')
+
+  invariant(
+    valuePropName,
+    'Failed to get value of the `%s`: field has no `valuePropName` property.',
+    fieldPath.join('.'),
+  )
+
+  return R.prop(valuePropName, fieldProps)
 }
 
 /**
  * Updates the value prop of the given field with the given next value.
- * @param {Map} fieldProps
+ * Beware that this function references "valuePropName" prop of the given field.
+ * Thus, it cannot be used on non-field object.
+ * @param {Object} fieldProps
  * @param {any} nextValue
  */
 export const setValue = R.curry((nextValue, fieldProps) => {
-  console.log({ nextValue, fieldProps })
-  return R.assoc(fieldProps.valuePropName, nextValue, fieldProps)
-  // return fieldProps.set(fieldProps.valuePropName, nextValue)
+  const { fieldPath, valuePropName } = fieldProps
+
+  invariant(
+    valuePropName,
+    'Failed to set value to `%s` on `%s`: field has no `valuePropName` property.',
+    nextValue,
+    fieldPath.join('.'),
+  )
+
+  return R.assoc(valuePropName, nextValue, fieldProps)
 })
 
 /**
  * Sets the given error messages to the given field.
  * When no errors are provided, returns field props intact.
- * @param {FieldProps} fieldProps
- * @param {FieldProps} errors
+ * @param {string[]} errors
+ * @param {Object} fieldProps
  */
 export const setErrors = R.curry((errors, fieldProps) => {
   /* Allow "null" as explicit empty "errors" value */
@@ -182,10 +190,10 @@ export const setErrors = R.curry((errors, fieldProps) => {
 
 /**
  * Resets the validity state (valid/invalid) of the given field.
- * @param {FieldProps} fieldProps
- * @returns {FieldProps}
+ * @param {Object} fieldProps
+ * @returns {Object}
  */
-export const resetValidityState = R.mergeDeepLeft({
+export const resetValidityState = R.mergeDeepRight({
   valid: false,
   invalid: false,
 })
@@ -198,9 +206,9 @@ export const resetValidityState = R.mergeDeepLeft({
 
 /**
  * Sets the validity state props (valid/invalid) on the given field.
- * @param {Map} fieldProps
- * @param {Boolean} shouldValidate
- * @returns {Map}
+ * @param {Object} fieldProps
+ * @param {boolean} shouldValidate
+ * @returns {Object}
  */
 export const updateValidityState = R.curry((shouldValidate, fieldProps) => {
   if (!shouldValidate) {
@@ -210,7 +218,7 @@ export const updateValidityState = R.curry((shouldValidate, fieldProps) => {
   const { validated, expected } = fieldProps
   const value = getValue(fieldProps)
 
-  return R.mergeDeepLeft(
+  return R.mergeDeepRight(
     {
       valid: !!value && validated && expected,
       invalid: validated && !expected,
@@ -221,10 +229,10 @@ export const updateValidityState = R.curry((shouldValidate, fieldProps) => {
 
 /**
  * Resets the validation state of the given field.
- * @param {Map} fieldProps
- * @returns {Map}
+ * @param {Object} fieldProps
+ * @returns {Object}
  */
-export const resetValidationState = R.mergeDeepLeft({
+export const resetValidationState = R.mergeDeepRight({
   validating: false,
   validated: false,
   validatedSync: false,
@@ -246,18 +254,20 @@ export const resetValidationState = R.mergeDeepLeft({
 
 /**
  * Resets the given field to its initial state.
- * @param {Map} fieldProps
- * @returns {Map}
+ * @param {Object} fieldProps
+ * @returns {Object}
  */
-export const reset = (fieldProps) => {
-  console.error('Beware, as .clear() will not work anymore on plain Object.')
-  return fieldProps.clear()
-}
+export const reset = R.compose(
+  setValue(R.prop('initialValue')),
+  setErrors(null),
+  resetValidationState,
+  resetValidityState,
+)
 
 /**
  * Sets the given field's focus.
- * @param {Map} fieldProps
- * @param {Boolean} isFocused
- * @returns {Map}
+ * @param {boolean} isFocused
+ * @param {Object} fieldProps
+ * @returns {Object}
  */
 export const setFocus = R.assoc('focused')
