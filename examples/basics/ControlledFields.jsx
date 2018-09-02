@@ -16,7 +16,9 @@ export default class ControlledFields extends React.Component {
   }
 
   handleFieldChange = ({ nextValue, fieldProps }) => {
-    this.setState({ [fieldProps.name]: nextValue })
+    this.setState({
+      [fieldProps.name]: nextValue,
+    })
   }
 
   render() {
