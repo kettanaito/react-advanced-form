@@ -35,11 +35,7 @@ export default class ControlledFields extends React.Component {
       <React.Fragment>
         <h1>Controlled fields</h1>
 
-        <Form
-          id="form"
-          ref={this.props.getRef}
-          onSubmitStart={this.props.onSubmitStart}
-        >
+        <Form id="form" ref={this.props.getRef} onSubmitStart={this.props.onSubmitStart}>
           {/* Inputs */}
           <Input
             id="inputOne"
@@ -60,7 +56,7 @@ export default class ControlledFields extends React.Component {
           <Radio
             id="radio1"
             name="radio"
-            label="Radio one"
+            label="Cheese"
             value="cheese"
             checked={radio === 'cheese'}
             onChange={this.handleFieldChange}
@@ -68,7 +64,7 @@ export default class ControlledFields extends React.Component {
           <Radio
             id="radio2"
             name="radio"
-            label="Radio two"
+            label="Potato"
             value="potato"
             checked={radio === 'potato'}
             onChange={this.handleFieldChange}
@@ -76,7 +72,7 @@ export default class ControlledFields extends React.Component {
           <Radio
             id="radio3"
             name="radio"
-            label="Radio three"
+            label="Cucumber"
             value="cucumber"
             checked={radio === 'cucumber'}
             onChange={this.handleFieldChange}

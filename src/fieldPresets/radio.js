@@ -1,4 +1,5 @@
 import * as R from 'ramda'
+import * as recordUtils from '../utils/recordUtils'
 
 export default {
   /**
@@ -39,20 +40,20 @@ export default {
    */
   beforeRegister: ({ fieldProps, fields }) => {
     const { fieldPath } = fieldProps
-    const alreadyExist = R.path(fieldPath, fields)
+    const existingField = R.path(fieldPath, fields)
 
-    if (!alreadyExist) {
+    if (!existingField) {
       return fieldProps
     }
 
     const { valuePropName } = fieldProps
-    const existingValue = R.path(fieldPath.concat(valuePropName), fields)
+    const existingValue = recordUtils.getValue(existingField)
 
     if (existingValue) {
       return false
     }
 
-    const fieldValue = fieldProps[valuePropName]
+    const fieldValue = recordUtils.getValue(fieldProps)
     return fieldValue ? R.assoc(valuePropName, fieldValue, fieldProps) : fieldProps
   },
 
@@ -71,7 +72,6 @@ export default {
   shouldUpdateRecord: ({ nextValue, nextProps, contextProps }) => {
     return nextProps.checked && nextValue !== contextProps.value
   },
-
   enforceProps: ({ props, contextProps }) => ({
     value: props.value,
     checked: contextProps.controlled ? props.checked : props.value === contextProps.value,

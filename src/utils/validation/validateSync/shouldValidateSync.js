@@ -22,8 +22,8 @@ const hasFieldRule = ({ fieldProps }) => {
   return !!fieldProps.rule
 }
 
-const hasFormRules = (resolverArgs, rules) => {
-  return rules && (rules.type || rules.name)
+const hasFormRules = (resolverArgs, formRules) => {
+  return formRules && (formRules.type || formRules.name)
 }
 
 /**

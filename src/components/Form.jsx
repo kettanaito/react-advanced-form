@@ -104,7 +104,7 @@ export default class Form extends React.Component {
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime
 
     /* Set validation rules */
-    this.formRules = formUtils.mergeRules(explicitRules, contextRules)
+    this.validationSchema = formUtils.mergeRules(explicitRules, contextRules)
 
     /**
      * Define validation messages once, since those should be converted
@@ -152,7 +152,7 @@ export default class Form extends React.Component {
   registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
     const { fields } = this.state
     const { fieldPath } = initialFieldProps
-    const fieldAlreadyExists = R.path(fieldPath, fields)
+    const fieldAlreadyExists = !!R.path(fieldPath, fields)
 
     /* Warn on field duplicates */
     invariant(
@@ -215,12 +215,6 @@ export default class Form extends React.Component {
       fields,
       form: this,
     })
-
-    console.log(' ')
-    console.log('--- form ---')
-    console.log('this.formRules', this.formRules)
-    console.log('this.state.applicableRules', nextApplicableRules)
-    console.log(' ')
 
     this.setState(
       {
@@ -328,8 +322,6 @@ export default class Form extends React.Component {
   handleFieldChange = this.withRegisteredField(async (args) => {
     const { fields, dirty } = this.state
 
-    console.log({ fields })
-
     const changePayload = await handlers.handleFieldChange(args, fields, this, {
       onUpdateValue: this.updateFieldsWith,
     })
@@ -403,13 +395,7 @@ export default class Form extends React.Component {
    */
   validate = async () => {
     const { fields } = this.state
-
-    console.warn('validate')
-    console.log('plain fields:', fields)
-
     const flattenedFields = fieldUtils.flattenFields(fields)
-
-    console.log('flattenedFields:', flattenedFields)
 
     /* Map pending field validations into a list */
     const pendingValidations = flattenedFields.map((fieldProps) =>

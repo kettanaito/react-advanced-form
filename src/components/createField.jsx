@@ -178,7 +178,7 @@ export default function connectField(options) {
       }
 
       componentWillReceiveProps(nextProps) {
-        const { contextProps } = this
+        const { props: prevProps, contextProps } = this
         if (!contextProps) {
           return
         }
@@ -191,13 +191,13 @@ export default function connectField(options) {
          * internal record is updated respectively.
          */
         const { controlled } = contextProps
-        const nextValue = recordUtils.getValue(nextProps)
-        const prevValue = recordUtils.getValue(this.props)
+        const nextValue = nextProps[valuePropName]
+        const prevValue = prevProps[valuePropName]
 
         const shouldUpdateRecord = hocOptions.shouldUpdateRecord({
           nextValue,
           prevValue,
-          prevProps: this.props,
+          prevProps,
           nextProps,
           contextProps,
         })
@@ -266,7 +266,7 @@ export default function connectField(options) {
 
         /**
          * Allow direct reference to inner component.
-         * <CustomField innerRef={ ... } />
+         * <CustomField innerRef={...} />
          *
          * First, check if the component where "fieldProps" are destructued is another
          * React Component. This means, that the end developer wrapped the "input" with
@@ -303,7 +303,10 @@ export default function connectField(options) {
        */
       handleChange = (args) => {
         const { event, nextValue: customNextValue, prevValue: customPrevValue } = args
-        const { contextProps } = this
+        const {
+          contextProps,
+          context: { form },
+        } = this
 
         const nextValue = args.hasOwnProperty('nextValue')
           ? customNextValue
@@ -313,7 +316,7 @@ export default function connectField(options) {
           ? customPrevValue
           : contextProps[valuePropName] // TODO Use "recordUtils.getValue()"
 
-        this.context.form.eventEmitter.emit('fieldChange', {
+        form.eventEmitter.emit('fieldChange', {
           event,
           nextValue,
           prevValue,

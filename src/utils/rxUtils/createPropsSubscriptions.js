@@ -1,6 +1,4 @@
-import path from 'ramda/src/path'
-import assocPath from 'ramda/src/assocPath'
-
+import * as R from 'ramda'
 import dispatch from '../dispatch'
 import * as recordUtils from '../recordUtils'
 import createRuleResolverArgs from '../validation/createRuleResolverArgs'
@@ -30,8 +28,8 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         const { fields } = form.state
         const { fieldPath: targetFieldPath } = nextTargetRecord
 
-        const currentSubscriberRecord = path(subscriberFieldPath, fields)
-        const nextFields = assocPath(targetFieldPath, nextTargetRecord, fields)
+        const currentSubscriberRecord = R.path(subscriberFieldPath, fields)
+        const nextFields = R.assocPath(targetFieldPath, nextTargetRecord, fields)
 
         const nextResolverArgs = createRuleResolverArgs({
           fieldProps,
@@ -47,10 +45,10 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
 
         /* Set the next value of reactive prop on the respective field record */
         const nextSubscriberRecord = recordUtils.resetValidityState(
-          currentSubscriberRecord.set(rxPropName, nextPropValue),
+          R.assoc(rxPropName, nextPropValue, currentSubscriberRecord),
         )
 
-        const updatedFields = assocPath(
+        const updatedFields = R.assocPath(
           subscriberFieldPath,
           nextSubscriberRecord,
           nextFields,

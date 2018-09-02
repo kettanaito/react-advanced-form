@@ -28,8 +28,8 @@ export default async function handleFieldChange(
     invariant(
       customChangeHandler,
       'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
-      'but got: %s.',
-      fieldProps.displayFieldPath,
+        'but got: %s.',
+      fieldProps.fieldPath.join('.'),
       customChangeHandler,
     )
 
@@ -134,6 +134,6 @@ export default async function handleFieldChange(
   }
 
   return {
-    nextFieldProps: validatedFieldProps
+    nextFieldProps: validatedFieldProps,
   }
 }

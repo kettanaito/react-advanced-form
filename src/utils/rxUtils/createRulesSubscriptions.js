@@ -8,12 +8,12 @@ import makeObservable from './makeObservable'
 /**
  * Appends the "Field.props.rule" resolver function to the provided
  * rule groups in case the resolver is a reactive function.
- * @param {Map} ruleGroups
- * @param {Map} fieldProps
+ * @param {Object} ruleGroups
+ * @param {Object} fieldProps
  * @param {Object} resolverArgs
- * @returns {Map}
+ * @returns {Object}
  */
-function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
+const addFieldPropsRule = (ruleGroups, fieldProps, resolverArgs) => {
   const { rule: resolver } = fieldProps
 
   if (typeof resolver !== 'function') {
@@ -39,14 +39,14 @@ function addFieldPropsRule(ruleGroups, fieldProps, resolverArgs) {
  * other fields' props. Flattens deep the validation schema, finding
  * the rules relevant to the currently registering field, and creates
  * observables for those rules which reference another fields.
- * @param {Map} fieldProps
- * @param {Map} fields
+ * @param {Object} fieldProps
+ * @param {Object} fields
  * @param {Object} form
- * @returns {Map}
+ * @returns {Object}
  */
 export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   const {
-    formRules,
+    validationSchema,
     state: { applicableRules },
   } = form
 
@@ -62,8 +62,13 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
    */
   const schemaRuleGroups = findRulesInSchema({
     fieldProps,
-    applicableRules: formRules,
-    transformRule: (rule) => {
+    validationSchema,
+    transformRule: (rule, rulePath) => {
+      /* Omit any transformations for a rule that is already present in the applicable rules */
+      if (R.path(rulePath, applicableRules)) {
+        return rule
+      }
+
       const { resolver } = rule
       const { refs } = flushFieldRefs(resolver, resolverArgs)
 
@@ -96,10 +101,8 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     },
   })
 
-  console.log({ schemaRuleGroups })
-
   /* Add "Field.props.rule" in case the latter has fields references */
   const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs)
 
-  return R.mergeDeepLeft(applicableRules, ruleGroups)
+  return R.mergeDeepRight(applicableRules, ruleGroups)
 }
