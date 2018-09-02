@@ -21,8 +21,7 @@ export default async function handleFieldChange(
    */
   const eventInstance = event.nativeEvent || event
   const isForcedUpdate = event && !eventInstance.isForcedUpdate
-  const isControlled = fieldProps.controlled
-  const customChangeHandler = fieldProps.onChange
+  const { controlled: isControlled, onChange: customChangeHandler } = fieldProps
 
   if (isForcedUpdate && isControlled) {
     invariant(

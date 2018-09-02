@@ -402,18 +402,9 @@ export default class Form extends React.Component {
       this.validateField({ fieldProps }),
     )
 
-    // const pendingValidations = flatFields.reduce(
-    //   (validations, fieldProps) => {
-    //     return validations.concat(this.validateField({ fieldProps }))
-    //   },
-    //   [],
-    // )
-
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(pendingValidations)
-    const isFormValid = validatedFields.every((validatedFieldProps) => {
-      return validatedFieldProps.expected
-    })
+    const isFormValid = validatedFields.every(R.propEq('expected', true))
 
     const { onInvalid } = this.props
 
