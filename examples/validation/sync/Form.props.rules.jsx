@@ -10,10 +10,7 @@ const rules = {
   },
   name: {
     fieldOne: ({ value, fieldProps }) => {
-      const {
-        ref: { props },
-      } = fieldProps
-
+      const fieldRef = fieldProps.getRef()
       return value !== 'foo'
     },
     fieldTwo: ({ value, get }) => {

@@ -19,15 +19,12 @@ const messages = {
 
 export default class FieldPropsAsyncRule extends React.Component {
   validateAsync = ({ value, fieldProps }) => {
-    const {
-      ref: { props },
-    } = fieldProps
+    const fieldRef = fieldProps.getRef()
 
     return new Promise((resolve) => {
       setTimeout(resolve, 500)
     }).then(() => ({
-      valid:
-        fieldProps.name === 'fieldThree' ? value !== '123' : value !== 'foo',
+      valid: fieldProps.name === 'fieldThree' ? value !== '123' : value !== 'foo',
       extra: fieldProps.name === 'fieldFour' && 'Data from async response',
     }))
   }
