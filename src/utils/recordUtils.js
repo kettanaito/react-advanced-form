@@ -149,11 +149,13 @@ export const updateValidityState = R.curry((shouldValidate, fieldProps) => {
 
   const { validated, expected } = fieldProps
   const value = getValue(fieldProps)
+  const nextValid = !!value && validated && expected
+  const nextInvalid = validated && !expected
 
   return R.mergeDeepLeft(
     {
-      valid: !!value && validated && expected,
-      invalid: validated && !expected,
+      valid: nextValid,
+      invalid: nextInvalid,
     },
     fieldProps,
   )
@@ -179,7 +181,7 @@ export const resetValidationState = R.mergeDeepLeft({
  * @returns {Object}
  */
 export const reset = R.compose(
-  setValue(R.prop('initialValue')), // TODO This most likely works wrong
+  setValue(R.prop('initialValue')),
   setErrors(null),
   resetValidationState,
   resetValidityState,

@@ -1,5 +1,4 @@
 import * as R from 'ramda'
-import compose from 'ramda/src/compose'
 import camelize from '../../camelize'
 import * as recordUtils from '../../recordUtils'
 import getMessages from '../messages/getMessages'
@@ -14,9 +13,9 @@ export default function reflectValidationResult(resolverArgs, shouldValidate = t
     const { validators, expected } = validationResult
     const errorMessages = getMessages(validationResult, resolverArgs, messages)
 
-    const validationProps = validators.reduce((props, validatorFuncName) => {
-      const validPropName = camelize('valid', validatorFuncName)
-      const validatedPropName = camelize('validated', validatorFuncName)
+    const validationProps = validators.reduce((props, validatorName) => {
+      const validPropName = camelize('valid', validatorName)
+      const validatedPropName = camelize('validated', validatorName)
 
       return {
         ...props,
@@ -25,21 +24,16 @@ export default function reflectValidationResult(resolverArgs, shouldValidate = t
       }
     }, {})
 
-    const nextFieldProps = compose(
+    const updateFieldProps = R.compose(
       recordUtils.setErrors(errorMessages),
       recordUtils.updateValidityState(shouldValidate),
       R.compose(
         R.assoc('expected', expected),
         R.assoc('validated', true),
-        R.merge(validationProps),
+        R.mergeDeepLeft(validationProps),
       ),
-      // (fieldProps) =>
-      //   fieldProps
-      //     .merge(validationProps)
-      //     .set('validated', true)
-      //     .set('expected', expected),
-    )(fieldProps)
+    )
 
-    return nextFieldProps
+    return updateFieldProps(fieldProps)
   }
 }
