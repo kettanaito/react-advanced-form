@@ -27,6 +27,7 @@ import {
 } from '../utils'
 import * as handlers from '../utils/handlers'
 import validate from '../utils/handlers/validateField'
+import getLeavesWhich from '../utils/getLeaves'
 
 /**
  * Binds the component's reference to the function's context and calls
@@ -392,9 +393,12 @@ export default class Form extends React.Component {
    * Performs the validation of each field in parallel, awaiting for all the pending
    * validations to be completed.
    */
-  validate = async () => {
+  validate = async (predicate = R.T) => {
     const { fields } = this.state
-    const flattenedFields = fieldUtils.flattenFields(fields)
+    const flattenedFields = getLeavesWhich(
+      R.allPass([R.is(Object), R.has('fieldPath'), predicate]),
+      fields,
+    )
 
     /* Map pending field validations into a list */
     const pendingValidations = flattenedFields.map((fieldProps) =>
@@ -406,8 +410,6 @@ export default class Form extends React.Component {
     const isFormValid = validatedFields.every(R.propEq('expected', true))
 
     const { onInvalid } = this.props
-
-    console.log({ validatedFields })
 
     if (!isFormValid && onInvalid) {
       const { fields: nextFields } = this.state
@@ -432,14 +434,6 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Clears all the fields.
-   */
-  clear = () => {
-    const nextFields = R.map(fieldUtils.resetField(() => ''), this.state.fields)
-    this.setState({ fields: nextFields })
-  }
-
-  /**
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
@@ -447,18 +441,26 @@ export default class Form extends React.Component {
 
     this.setState({ fields: nextFields }, () => {
       /**
-       * Validate only non-empty fields, since empty required fields
-       * should not be unexpected after reset.
+       * Invoke form validation with the predicate that omits empty fields,
+       * regardless of their required status. That is to prevent having
+       * invalid empty required fields after reset.
        */
-      this.validate() // TODO Check that "entry.value !== ''" is not necessary
-      // this.validate((entry) => Record.isRecord(entry) && entry.value !== '')
+      this.validate(R.allPass([R.has('value'), R.complement(R.propEq('value', ''))]))
 
-      /* Call custom callback methods to be able to reset controlled fields */
+      /* Callback method to reset controlled fields */
       dispatch(this.props.onReset, {
         fields: nextFields,
         form: this,
       })
     })
+  }
+
+  /**
+   * Clears all the fields.
+   */
+  clear = () => {
+    const nextFields = R.map(fieldUtils.resetField(() => ''), this.state.fields)
+    this.setState({ fields: nextFields })
   }
 
   /**
@@ -522,21 +524,21 @@ export default class Form extends React.Component {
 
     /**
      * Event: Submit has started.
-     * The submit is consideres started immediately when the submit button is pressed.
+     * The submit is considered started immediately when the submit button is pressed.
      */
     dispatch(onSubmitStart, callbackArgs)
 
-    const dispatchedAction = dispatch(action, callbackArgs)
+    const pendingSubmit = dispatch(action, callbackArgs)
 
     invariant(
-      dispatchedAction && typeof dispatchedAction.then === 'function',
+      pendingSubmit && typeof pendingSubmit.then === 'function',
       'Cannot submit the form. Expected `action` prop of the Form to return ' +
         'an instance of Promise, but got: %s. Make sure you return a Promise ' +
         'from your action handler.',
-      dispatchedAction,
+      pendingSubmit,
     )
 
-    return dispatchedAction
+    return pendingSubmit
       .then((res) => {
         dispatch(onSubmitted, { ...callbackArgs, res })
         return res

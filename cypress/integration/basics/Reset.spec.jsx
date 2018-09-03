@@ -26,9 +26,8 @@ describe('Reset', function() {
 
   it('Resets changed field to its initial value', () => {
     cy.getField('username')
-      .hasValue('user@site.com')
-      .valid(false) // TODO Is this the expected behavior, though?
-      .invalid(false)
+      .hasValue('john.doe')
+      .expected()
   })
 
   it('Does not validate reset empty field', () => {

@@ -10,7 +10,7 @@ import invariant from 'invariant'
 /**
  * Creates a new field based on its initial state.
  * @param {Object} initialState
- * @returns {Field}
+ * @returns {Object}
  */
 export const createField = (initialState) => {
   const { valuePropName } = initialState
@@ -26,7 +26,7 @@ export const createField = (initialState) => {
     type: 'text',
     initialValue: value, // TODO Should this be set here?
     [valuePropName]: value,
-    valuePropName: 'value',
+    valuePropName: 'value', // TODO Why this is not propagated to new instances?
     focused: false,
     skip: false,
 
@@ -181,6 +181,7 @@ export const resetValidationState = R.mergeDeepLeft({
  * @returns {Object}
  */
 export const reset = R.compose(
+  // Beware that this will set value to "undefined" when no "initialValue" is found
   setValue(R.prop('initialValue')),
   setErrors(null),
   resetValidationState,

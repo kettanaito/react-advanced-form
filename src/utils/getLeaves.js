@@ -13,7 +13,7 @@ import * as R from 'ramda'
 
 const createLeavesGetter = (predicate) => {
   return R.ifElse(
-    R.is(Object),
+    R.allPass([R.complement(R.is(Function)), R.is(Object)]),
     R.compose(
       R.reject(R.isNil),
       R.chain(R.when(R.complement(predicate), getLeavesWhich(predicate))),

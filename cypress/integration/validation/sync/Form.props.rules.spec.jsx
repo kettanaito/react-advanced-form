@@ -7,31 +7,28 @@ describe('Form rules', function() {
   })
 
   it('Resolves empty optional field with relevant form rules', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .focus()
       .blur({ force: true })
-      .should('not.have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .valid(false)
+      .invalid(false)
   })
 
   it('Resets validation status after clearing optional unexpected field', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('foo')
       .validSync(false)
       .clear()
       .blur({ force: true })
-      .should('not.have.class', 'is-invalid')
-      .should('not.have.class', 'is-valid')
+      .valid(false)
+      .invalid(false)
   })
 
   it('Retains validation status after clearing required unexpected field', () => {
     cy.loadStory(<Scenario required />)
 
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('foo')
       .validSync(false)
@@ -41,32 +38,28 @@ describe('Form rules', function() {
   })
 
   it('Resolves optional field with name-specific matching value', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('some')
       .validSync()
   })
 
   it('Rejects optional field with name-specific unmatching value', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('foo')
       .validSync(false)
   })
 
   it('Resolves optional field with type-specific matching value', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('some')
       .validSync()
   })
 
   it('Rejects optional field with type-specific unmatching value', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('ba')
       .validSync(false)
@@ -75,8 +68,7 @@ describe('Form rules', function() {
   it('Resolves required field with name-specific matching value', () => {
     cy.loadStory(<Scenario required />)
 
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('some')
       .validSync()
@@ -85,21 +77,18 @@ describe('Form rules', function() {
   it('Rejects required field with name-specific unmatching value', () => {
     cy.loadStory(<Scenario required />)
 
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('foo')
       .validSync(false)
   })
 
   it('Re-evaluates rule when referenced field prop updates', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .clear()
       .typeIn('something')
 
-    cy
-      .getField('fieldTwo')
+    cy.getField('fieldTwo')
       .typeIn('foo')
       .validSync(false)
       .clear()
