@@ -1,7 +1,6 @@
-import { expect } from 'chai'
 import makeCancelable from './makeCancelable'
 
-test('Allows to cancel pending promise', () => {
+test('Supports canceling of a pending promise', () => {
   let num = 0
   const pendingPromise = makeCancelable(
     new Promise(() => {
@@ -9,13 +8,13 @@ test('Allows to cancel pending promise', () => {
     }),
   )
 
-  expect(pendingPromise.itself).to.be.an.instanceOf(Promise)
+  expect(pendingPromise.itself).toBeInstanceOf(Promise)
 
   setTimeout(() => {
     pendingPromise.cancel()
   }, 50)
 
   setTimeout(() => {
-    expect(num).to.equal(0)
+    expect(num).toEqual(0)
   }, 110)
 })
