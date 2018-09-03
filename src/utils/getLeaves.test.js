@@ -40,11 +40,9 @@ test.only('getLeavesWhich', () => {
   }
 
   const getNestedFields = getLeavesWhich(R.has('fieldPath'))
-  const res = getNestedFields(fields)
+  const nestedFields = getNestedFields(fields)
 
-  console.log(res)
-
-  expect(res).toEqual([
+  expect(nestedFields).toEqual([
     fields.fieldOne,
     fields.groupName.fieldTwo,
     fields.groupName.nestedGroupName.fieldThree,
