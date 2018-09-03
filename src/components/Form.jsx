@@ -4,7 +4,7 @@ import invariant from 'invariant'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { EventEmitter } from 'events'
-import { fromJS, Record, List } from 'immutable'
+import { fromJS, List } from 'immutable'
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/bufferTime'
 import 'rxjs/add/observable/fromEvent'
@@ -79,7 +79,6 @@ export default class Form extends React.Component {
     rules: PropTypes.object,
     messages: CustomPropTypes.Map,
     debounceTime: PropTypes.number,
-    withImmutable: PropTypes.bool,
   }
 
   /* Context propagated to the fields */
@@ -124,7 +123,7 @@ export default class Form extends React.Component {
     const eventEmitter = new EventEmitter()
     this.eventEmitter = eventEmitter
 
-    /* Field lifecycle observerables */
+    /* Field events observerables */
     Observable.fromEvent(eventEmitter, 'fieldRegister')
       .bufferTime(100)
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
@@ -135,6 +134,10 @@ export default class Form extends React.Component {
     Observable.fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
   }
 
+  /**
+   * Wraps a given function, ensuring its invocation only when the payload
+   * of that function has a field that is a part of the form's fields.
+   */
   withRegisteredField = (func) => {
     return (args) => {
       const includesField = R.path(args.fieldProps.fieldPath, this.state.fields)
@@ -143,11 +146,11 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Maps the field to the state/context.
+   * Maps the field to the state.
    * Passing fields in context gives a benefit of removing an explicit traversing of
    * children tree, deconstructing and constructing each appropriate child with the
    * attached handler props.
-   * @param {Record} fieldProps
+   * @param {Object} fieldProps
    */
   registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
     const { fields } = this.state
@@ -252,7 +255,7 @@ export default class Form extends React.Component {
   /**
    * Updates the fields with the given field record and returns
    * the updated state of the fields.
-   * @param {Record} fieldProps
+   * @param {Object} fieldProps
    * @returns {Promise}
    */
   updateFieldsWith = (fieldProps) => {
@@ -269,7 +272,7 @@ export default class Form extends React.Component {
 
   /**
    * Deletes the field record from the state.
-   * @param {Record} fieldProps
+   * @param {Object} fieldProps
    */
   unregisterField = (fieldProps) => {
     this.setState((prevState) => ({
@@ -282,21 +285,17 @@ export default class Form extends React.Component {
    * @param {Event} event
    * @param {any} nextValue
    * @param {any} prevValue
-   * @param {Record} fieldProps
+   * @param {Object} fieldProps
    */
   handleFirstChange = ({ event, prevValue, nextValue, fieldProps }) => {
-    dispatch(
-      this.props.onFirstChange,
-      {
-        event,
-        nextValue,
-        prevValue,
-        fieldProps,
-        fields: this.state.fields,
-        form: this,
-      },
-      this.context,
-    )
+    dispatch(this.props.onFirstChange, {
+      event,
+      nextValue,
+      prevValue,
+      fieldProps,
+      fields: this.state.fields,
+      form: this,
+    })
 
     this.setState({ dirty: true })
   }
@@ -304,7 +303,7 @@ export default class Form extends React.Component {
   /**
    * Handles field focus.
    * @param {Event} event
-   * @param {Record} fieldProps
+   * @param {Object} fieldProps
    */
   handleFieldFocus = this.withRegisteredField((args) => {
     const { fields } = this.state
@@ -315,7 +314,7 @@ export default class Form extends React.Component {
   /**
    * Handles field change.
    * @param {Event} event
-   * @param {Record} fieldProps
+   * @param {Object} fieldProps
    * @param {mixed} prevValue
    * @param {mixed} nextValue
    */
@@ -343,7 +342,7 @@ export default class Form extends React.Component {
   /**
    * Handles field blur.
    * @param {Event} event
-   * @param {Record} fieldProps
+   * @param {Object} fieldProps
    */
   handleFieldBlur = this.withRegisteredField(async (args) => {
     const { fields } = this.state
@@ -408,24 +407,25 @@ export default class Form extends React.Component {
 
     const { onInvalid } = this.props
 
+    console.log({ validatedFields })
+
     if (!isFormValid && onInvalid) {
       const { fields: nextFields } = this.state
 
-      /* Filter unexpected fields into a separate collection */
+      /* Get a list of invalid fields */
+      //
+      // TODO Ditch immutable List
+      //
       const invalidFields = List(
         nextFields.filterNot((fieldProps) => fieldProps.expected),
       )
 
       /* Call custom callback */
-      dispatch(
-        onInvalid,
-        {
-          fields: nextFields,
-          invalidFields,
-          form: this,
-        },
-        this.context,
-      )
+      dispatch(onInvalid, {
+        fields: nextFields,
+        invalidFields,
+        form: this,
+      })
     }
 
     return isFormValid
@@ -450,17 +450,14 @@ export default class Form extends React.Component {
        * Validate only non-empty fields, since empty required fields
        * should not be unexpected after reset.
        */
-      this.validate((entry) => Record.isRecord(entry) && entry.value !== '')
+      this.validate() // TODO Check that "entry.value !== ''" is not necessary
+      // this.validate((entry) => Record.isRecord(entry) && entry.value !== '')
 
       /* Call custom callback methods to be able to reset controlled fields */
-      dispatch(
-        this.props.onReset,
-        {
-          fields: nextFields,
-          form: this,
-        },
-        this.context,
-      )
+      dispatch(this.props.onReset, {
+        fields: nextFields,
+        form: this,
+      })
     })
   }
 
@@ -527,9 +524,9 @@ export default class Form extends React.Component {
      * Event: Submit has started.
      * The submit is consideres started immediately when the submit button is pressed.
      */
-    dispatch(onSubmitStart, callbackArgs, this.context)
+    dispatch(onSubmitStart, callbackArgs)
 
-    const dispatchedAction = dispatch(action, callbackArgs, this.context)
+    const dispatchedAction = dispatch(action, callbackArgs)
 
     invariant(
       dispatchedAction && typeof dispatchedAction.then === 'function',
@@ -541,15 +538,15 @@ export default class Form extends React.Component {
 
     return dispatchedAction
       .then((res) => {
-        dispatch(onSubmitted, { ...callbackArgs, res }, this.context)
+        dispatch(onSubmitted, { ...callbackArgs, res })
         return res
       })
       .catch((res) => {
-        dispatch(onSubmitFailed, { ...callbackArgs, res }, this.context)
+        dispatch(onSubmitFailed, { ...callbackArgs, res })
         return res
       })
       .then((res) => {
-        dispatch(onSubmitEnd, { ...callbackArgs, res }, this.context)
+        dispatch(onSubmitEnd, { ...callbackArgs, res })
       })
   }
 
