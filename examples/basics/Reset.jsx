@@ -20,7 +20,7 @@ export default class Reset extends React.Component {
             getRef && getRef(form)
           }}
         >
-          <Input name="username" label="Username" initialValue="user@site.com" required />
+          <Input name="username" label="Username" initialValue="john.doe" required />
           <Input name="password" type="password" label="Password" required />
           <Input name="firstName" label="First name" />
           <Checkbox

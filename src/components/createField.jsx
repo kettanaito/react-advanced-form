@@ -86,7 +86,7 @@ export default function connectField(options) {
         const { name } = props
 
         /* Compose the field path */
-        this.fieldPath = fieldGroup ? [...fieldGroup, name] : [name]
+        this.__fieldPath = fieldGroup ? [...fieldGroup, name] : [name]
 
         /**
          * Register the field in the parent Form's state and store its internal record
@@ -99,16 +99,16 @@ export default function connectField(options) {
 
       /* Registers the current field within the parent form's state */
       register() {
-        const { props: directProps, context, fieldPath } = this
+        const { props: directProps, context, __fieldPath } = this
         const { fields, fieldGroup, form } = context
         const value = directProps[valuePropName]
-        const contextValue = R.path(fieldPath.concat(valuePropName), fields)
+        const contextValue = R.path(__fieldPath.concat(valuePropName), fields)
 
         const { reactiveProps, prunedProps } = rxUtils.getRxProps(directProps)
 
         /* Set value and initial value */
         const initialValue = getInitialValue(
-          fieldPath,
+          __fieldPath,
           directProps,
           form.props.initialValues,
           hocOptions,
@@ -116,9 +116,9 @@ export default function connectField(options) {
         const registeredValue = isset(contextValue) ? contextValue : value || initialValue
 
         const initialFieldProps = {
-          ref: this,
+          getRef: () => this,
           fieldGroup,
-          fieldPath,
+          fieldPath: __fieldPath,
           name: prunedProps.name,
           type: prunedProps.type,
           valuePropName,
@@ -221,7 +221,7 @@ export default function connectField(options) {
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
         /* Bypass scenarios when field is being updated, but not yet registred within the Form */
-        const nextContextProps = R.path(this.fieldPath, nextContext.fields)
+        const nextContextProps = R.path(this.__fieldPath, nextContext.fields)
 
         if (!nextContextProps) {
           return
