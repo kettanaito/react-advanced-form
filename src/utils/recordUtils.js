@@ -176,7 +176,10 @@ export const setValue = R.curry((nextValue, fieldProps) => {
     fieldPath.join('.'),
   )
 
-  return R.assoc(valuePropName, nextValue, fieldProps)
+  /* Accept "nextValue" as a function to be able to make "setValue" composable */
+  const assocValue = typeof nextValue === 'function' ? nextValue(fieldProps) : nextValue
+
+  return R.assoc(valuePropName, assocValue, fieldProps)
 })
 
 /**
@@ -186,7 +189,7 @@ export const setValue = R.curry((nextValue, fieldProps) => {
  * @param {Object} fieldProps
  */
 export const setErrors = R.curry((errors, fieldProps) => {
-  /* Allow "null" as explicit empty "errors" value */
+  /* Allow explicit "null" for empty "errors" value */
   return typeof errors !== 'undefined'
     ? R.assoc('errors', errors, fieldProps)
     : fieldProps
