@@ -26,20 +26,20 @@ describe('Reset', function() {
 
   it('Resets changed field to its initial value', () => {
     cy.getField('username')
-      .should('have.value', 'user@site.com')
+      .hasValue('user@site.com')
       .valid(false) // TODO Is this the expected behavior, though?
       .invalid(false)
   })
 
   it('Does not validate reset empty field', () => {
     cy.getField('firstName')
-      .should('have.value', '')
+      .hasValue('')
       .validated('sync', false)
       .validated('async', false)
       .valid(false)
       .invalid(false)
     cy.getField('password')
-      .should('have.value', '')
+      .hasValue('')
       .valid(false)
       .invalid(false)
   })

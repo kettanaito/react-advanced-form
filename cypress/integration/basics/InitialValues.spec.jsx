@@ -18,21 +18,21 @@ describe('Initial values', function() {
   })
 
   it('Takes "fieldProps.initialValue" as the highest priority', () => {
-    cy.getField('firstName').should('have.value', 'John')
-    cy.getField('houseNumber').should('have.value', '4')
+    cy.getField('firstName').hasValue('John')
+    cy.getField('houseNumber').hasValue('4')
   })
 
   it('Takes "Form.props.initialValues"', () => {
     cy.getField('username')
-      .should('have.value', initialValues.username)
+      .hasValue(initialValues.username)
       .expected()
 
-    cy.get('#billing-street').should('have.value', initialValues.billingAddress.street)
+    cy.get('#billing-street').hasValue(initialValues.billingAddress.street)
 
-    cy.get('#delivery-street').should('have.value', initialValues.deliveryAddress.street)
+    cy.get('#delivery-street').hasValue(initialValues.deliveryAddress.street)
   })
 
   it('Takes field-wide "initialValue" as the last fallback, when such value is set', () => {
-    cy.getField('occupation').should('have.value', 'developer')
+    cy.getField('occupation').hasValue('developer')
   })
 })

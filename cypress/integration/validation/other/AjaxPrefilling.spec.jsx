@@ -11,13 +11,13 @@ describe('AJAX Pre-filling', function() {
 
   it('Pre-fills value properly', () => {
     cy.getField('street')
-      .should('have.value', 'Baker')
+      .hasValue('Baker')
       .expected()
   })
 
   it('Validates pre-filled value properly', () => {
     cy.getField('streetRule')
-      .should('have.value', 'Baker')
+      .hasValue('Baker')
       .expected(false)
   })
 })
