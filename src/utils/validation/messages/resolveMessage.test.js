@@ -1,31 +1,28 @@
-import { expect } from 'chai'
-import { Map } from 'immutable'
 import * as recordUtils from '../../recordUtils'
 import resolveMessage from './resolveMessage'
 
 const fieldOne = recordUtils.createField({
   name: 'fieldOne',
+  fieldPath: ['fieldOne'],
   value: 'foo',
+  valuePropName: 'value',
 })
 
 const fieldTwo = recordUtils.createField({
   name: 'fieldTwo',
+  fieldPath: ['fieldTwo'],
   value: 'bar',
+  valuePropName: 'value',
 })
 
 const resolverArgs = {
   fieldProps: fieldOne,
-  fields: Map({ fieldOne, fieldTwo }),
-  form: {
-    context: {
-      withImmutable: false,
-    },
-  },
+  fields: { fieldOne, fieldTwo },
 }
 
 test('Returns plain string', () => {
   const message = resolveMessage('String message')
-  expect(message).to.equal('String message')
+  expect(message).toEqual('String message')
 })
 
 test('Executes message resolver and returns a proper message', () => {
@@ -34,5 +31,5 @@ test('Executes message resolver and returns a proper message', () => {
   }
 
   const message = resolveMessage(resolver, resolverArgs)
-  expect(message).to.equal('String foo bar')
+  expect(message).toEqual('String foo bar')
 })

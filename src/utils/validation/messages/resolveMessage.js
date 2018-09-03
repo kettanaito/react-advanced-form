@@ -13,7 +13,5 @@ export default function resolveMessage(
   resolver: TResolvable,
   resolverArgs: TMessageResolverArgs,
 ): string {
-  return typeof resolver === 'function'
-    ? dispatch(resolver, resolverArgs, resolverArgs.form.context)
-    : resolver
+  return typeof resolver === 'function' ? dispatch(resolver, resolverArgs) : resolver
 }

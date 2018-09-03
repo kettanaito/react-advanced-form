@@ -24,30 +24,26 @@ export default class FormProvider extends React.Component {
   static propTypes = {
     rules: ValidationRulesPropType,
     messages: ValidationMessagesPropType,
-    withImmutable: PropTypes.bool,
     debounceTime: PropTypes.number,
   }
 
   static defaultProps = {
     messages: {},
-    withImmutable: false,
     debounceTime: defaultDebounceTime,
   }
 
   static childContextTypes = {
     rules: ValidationRulesPropType,
     messages: ValidationMessagesPropType,
-    withImmutable: PropTypes.bool,
     debounceTime: PropTypes.number,
   }
 
   getChildContext() {
-    const { rules, messages, withImmutable, debounceTime } = this.props
+    const { rules, messages, debounceTime } = this.props
 
     return {
       rules,
       messages: fromJS(messages),
-      withImmutable,
       debounceTime,
     }
   }

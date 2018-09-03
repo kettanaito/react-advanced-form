@@ -1,38 +1,21 @@
-import { expect } from 'chai'
-import { Map } from 'immutable'
 import dispatch from './dispatch'
 
 const args = {
-  a: Map({
+  a: {
     nestedProp: 'foo',
-  }),
+  },
   b: 'value',
 }
 
-test('Bypasses Immutable instances when invoked with "withImmutable: true', () => {
-  dispatch(
-    ({ a, b }) => {
-      expect(a).to.be.an.instanceOf(Map)
-      expect(a.get('nestedProp')).to.equal('foo')
-      expect(b).to.equal('value')
-    },
-    args,
-    {
-      withImmutable: true,
-    },
-  )
+test('Dispatches the given function when it exists', () => {
+  dispatch(({ a, b }) => {
+    expect(a).toBeInstanceOf(Object)
+    expect(a.nestedProp).toEqual(args.a.nestedProp)
+    expect(b).toEqual(args.b)
+  }, args)
 })
 
-test('Converts Immutable instances to JS when invoked with "withImmutable: false', () => {
-  dispatch(
-    ({ a, b }) => {
-      expect(a).to.be.an.instanceOf(Object)
-      expect(a.nestedProp).to.equal('foo')
-      expect(b).to.equal('value')
-    },
-    args,
-    {
-      withImmutable: false,
-    },
-  )
+test('Silences function call when the function does not exist', () => {
+  const call = () => dispatch(null, args)
+  expect(call).not.toThrow()
 })

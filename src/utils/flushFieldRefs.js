@@ -11,24 +11,16 @@ type TFieldRefs = {
  * Returns the map of flushed field props paths referenced within
  * the provided method, and its initial value.
  */
-export default function flushFieldRefs(
-  method: Function,
-  methodArgs: mixed,
-): TFieldRefs {
-  const { fields, form } = methodArgs
+export default function flushFieldRefs(func: Function, args: mixed): TFieldRefs {
   const refs = []
-  const fieldPropGetter = createPropGetter(fields, (propRefPath) =>
+  const fieldPropGetter = createPropGetter(args.fields, (propRefPath) =>
     refs.push(propRefPath),
   )
 
-  const initialValue = dispatch(
-    method,
-    {
-      ...methodArgs,
-      get: fieldPropGetter,
-    },
-    form.context,
-  )
+  const initialValue = dispatch(func, {
+    ...args,
+    get: fieldPropGetter,
+  })
 
   return { refs, initialValue }
 }

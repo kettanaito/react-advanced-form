@@ -1,5 +1,5 @@
+import dispatch from '../dispatch'
 import errorTypes from './errorTypes'
-import applyResolver from './applyResolver'
 import createRejectedRule from './createRejectedRule'
 import createValidationResult from './createValidationResult'
 
@@ -9,16 +9,16 @@ import createValidationResult from './createValidationResult'
  */
 export default function applyRule(rule, resolverArgs) {
   const { name, selector, resolver, errorType } = rule
-  const isFieldExpected = applyResolver(resolver, resolverArgs)
+  const isFieldExpected = dispatch(resolver, resolverArgs)
 
   /* Create rejected rules */
   const rejectedRules = isFieldExpected
     ? undefined
     : createRejectedRule({
-      errorType: errorType || errorTypes.invalid,
-      ruleName: name,
-      selector,
-    })
+        errorType: errorType || errorTypes.invalid,
+        ruleName: name,
+        selector,
+      })
 
   return createValidationResult(isFieldExpected, rejectedRules)
 }

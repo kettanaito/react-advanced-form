@@ -41,7 +41,7 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
          * Get the next reactive prop value by invoking the same resolver
          * with the updated arguments.
          */
-        const nextPropValue = dispatch(resolver, nextResolverArgs, form.context)
+        const nextPropValue = dispatch(resolver, nextResolverArgs)
 
         /* Set the next value of reactive prop on the respective field record */
         const nextSubscriberRecord = recordUtils.resetValidityState(
