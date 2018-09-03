@@ -32,10 +32,14 @@ Cypress.Commands.add('getField', (fieldName) => {
   return cy.get(`[name="${fieldName}"]`)
 })
 
+Cypress.Commands.add('hasValue', { prevSubject: true }, (subject, expectedValue) => {
+  cy.wrap(subject).should('have.value', expectedValue)
+})
+
 Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, text) => {
   cy.wrap(subject)
     .type(text, { delay: 30 })
-    .should('have.value', text)
+    .hasValue(text)
 })
 
 Cypress.Commands.add('loadStory', (story) => {

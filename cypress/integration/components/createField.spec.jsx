@@ -25,9 +25,7 @@ describe('createField', function() {
   it('Supports custom field event handlers', () => {
     const testWord = 'Text'
 
-    cy.get('[name="fieldOne"]')
-      .type(testWord)
-      .should('have.value', testWord)
+    cy.get('[name="fieldOne"]').typeIn(testWord)
     cy.get('#count').should('have.text', String(testWord.length))
   })
 })
