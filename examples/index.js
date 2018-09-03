@@ -13,6 +13,7 @@ function addComponent(Component) {
 
 /* Basics */
 import InitialValues from './basics/InitialValues'
+import Reset from './basics/Reset'
 import Serialize from './basics/Serialize'
 import UncontrolledFields from './basics/UncontrolledFields'
 import ControlledFields from './basics/ControlledFields'
@@ -54,6 +55,7 @@ import ReactDatepicker from './third-party/react-datepicker'
 /* Basics */
 storiesOf('Basics|Interaction', module)
   .add('Initial values', addComponent(<InitialValues />))
+  .add('Reset', addComponent(<Reset />))
   .add('Serialize', addComponent(<Serialize />))
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
   .add('Controlled fields', addComponent(<ControlledFields />))

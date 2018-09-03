@@ -4,6 +4,10 @@ import { Input } from '@fields'
 import { Select } from '@examples/fields/Select'
 import Button from '@shared/Button'
 
+/**
+ * Create a field class where "initialValue" is set
+ * for all instances of that class.
+ */
 const OccupattionSelect = createField({
   ...fieldPresets.select,
   initialValue: 'developer',
@@ -30,11 +34,7 @@ export default class InitialValues extends React.Component {
           </Field.Group>
 
           <Field.Group name="deliveryAddress">
-            <Input
-              id="delivery-street"
-              name="street"
-              label="Street (delivery)"
-            />
+            <Input id="delivery-street" name="street" label="Street (delivery)" />
           </Field.Group>
         </Form>
       </React.Fragment>

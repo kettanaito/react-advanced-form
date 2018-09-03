@@ -8,23 +8,21 @@ describe('FormProvider', function() {
   })
 
   it('Propagates the default value of "debounceTime"', () => {
-    cy
-      .get('[name="fieldOne"]')
+    cy.get('[name="fieldOne"]')
       .typeIn('fo')
       .wait(defaultDebounceTime)
-      .valid(false)
+      .expected(false)
       .type('o')
       .wait(defaultDebounceTime)
-      .valid()
+      .expected()
   })
 
   it('Supports custom value of "debounceTime"', () => {
-    cy
-      .get('[name="fieldTwo"]')
+    cy.get('[name="fieldTwo"]')
       .typeIn('fo')
-      .valid(false)
+      .expected(false)
       .type('o')
       .wait(0)
-      .valid()
+      .expected()
   })
 })

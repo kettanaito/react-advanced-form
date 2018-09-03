@@ -42,82 +42,82 @@ Cypress.Commands.add('loadStory', (story) => {
   mount(<StoryContainer>{story}</StoryContainer>)
 })
 
-Cypress.Commands.add(
-  'valid',
-  { prevSubject: true },
-  (subject, expected = true) => {
-    cy.wrap(subject)
-      .should('have.class', expected ? 'is-valid' : 'is-invalid')
-      .should('not.have.class', expected ? 'is-invalid' : 'is-valid')
-  },
-)
+/**
+ * Asserts the given subject as expected field.
+ * Expected implies mutually excluding behavior of validity props.
+ * Use this command to assert strict validity. Use granular "valid" or "invalid" commands
+ * to assert precise validity, or neither of them.
+ */
+Cypress.Commands.add('expected', { prevSubject: true }, (subject, expected = true) => {
+  cy.wrap(subject)
+    .should('have.class', expected ? 'is-valid' : 'is-invalid')
+    .should('not.have.class', expected ? 'is-invalid' : 'is-valid')
+})
 
-Cypress.Commands.add(
-  'validating',
-  { prevSubject: true },
-  (subject, expected = true) => {
-    const prefix = expected ? '' : 'not.'
-    cy.wrap(subject).should(`${prefix}have.class`, 'is-validating')
-  },
-)
+/**
+ * Asserts that the given subject field is valid.
+ */
+Cypress.Commands.add('valid', { prevSubject: true }, (subject, expected = true) => {
+  const prefix = expected ? '' : 'not.'
+  cy.wrap(subject).should(`${prefix}have.class`, 'is-valid')
+})
 
+/**
+ * Asserts that the given subject field is invalid.
+ */
+Cypress.Commands.add('invalid', { prevSubject: true }, (subject, expected = true) => {
+  const prefix = expected ? '' : 'not.'
+  cy.wrap(subject).should(`${prefix}have.class`, 'is-invalid')
+})
+
+/**
+ * Asserts that the given subject field is being validated.
+ */
+Cypress.Commands.add('validating', { prevSubject: true }, (subject, expected = true) => {
+  const prefix = expected ? '' : 'not.'
+  cy.wrap(subject).should(`${prefix}have.class`, 'is-validating')
+})
+
+/**
+ * Asserts that the validation of the given type on the subject field.
+ * Can be used for both positive and negative assertions.
+ */
 Cypress.Commands.add(
   'validated',
   { prevSubject: true },
   (subject, validationType, expected = true) => {
     const prefix = expected ? '' : 'not.'
-    return cy
-      .wrap(subject)
-      .should(`${prefix}have.class`, `validated-${validationType}`)
+    return cy.wrap(subject).should(`${prefix}have.class`, `validated-${validationType}`)
   },
 )
 
-// Cypress.Commands.add(
-//   'valid',
-//   { prevSubject: true },
-//   (subject, validationType = true, expected = true) => {
-//     if (typeof validationType === 'string') {
-//       const prefix = expected ? '' : 'not.'
-//       return cy
-//         .wrap(subject)
-//         .should('have.class', `validated-${validationType}`)
-//         .should(`${prefix}have.class`, `valid-${validationType}`)
-//     }
+/**
+ * Asserts the synchronous validity of the given subject field.
+ * Can be used for both positive and negative assertions.
+ */
+Cypress.Commands.add('validSync', { prevSubject: true }, (subject, expected = true) => {
+  const prefix = expected ? '' : 'not.'
+  cy.wrap(subject)
+    .should('have.class', 'validated-sync')
+    .should(`${prefix}have.class`, 'valid-sync')
+})
 
-//     return cy
-//       .wrap(subject)
-//       .should('have.class', validationType ? 'is-valid' : 'is-invalid')
-//   },
-// )
+/**
+ * Asserts the asynchronous validity of the given subject field.
+ * Can be used for both positive and negative assertions.
+ */
+Cypress.Commands.add('validAsync', { prevSubject: true }, (subject, expected = true) => {
+  const prefix = expected ? '' : 'not.'
+  cy.wrap(subject)
+    .should('have.class', 'validated-async')
+    .should(`${prefix}have.class`, 'valid-async')
+})
 
-Cypress.Commands.add(
-  'validSync',
-  { prevSubject: true },
-  (subject, expected = true) => {
-    const prefix = expected ? '' : 'not.'
-    cy.wrap(subject)
-      .should('have.class', 'validated-sync')
-      .should(`${prefix}have.class`, 'valid-sync')
-  },
-)
-
-Cypress.Commands.add(
-  'validAsync',
-  { prevSubject: true },
-  (subject, expected = true) => {
-    const prefix = expected ? '' : 'not.'
-    cy.wrap(subject)
-      .should('have.class', 'validated-async')
-      .should(`${prefix}have.class`, 'valid-async')
-  },
-)
-
-Cypress.Commands.add(
-  'hasError',
-  { prevSubject: true },
-  (subject, errorText) => {
-    cy.wrap(subject)
-      .siblings('.invalid-feedback')
-      .should('have.text', errorText)
-  },
-)
+/**
+ * Asserts the error on the given subject field.
+ */
+Cypress.Commands.add('hasError', { prevSubject: true }, (subject, errorText) => {
+  cy.wrap(subject)
+    .siblings('.invalid-feedback')
+    .should('have.text', errorText)
+})

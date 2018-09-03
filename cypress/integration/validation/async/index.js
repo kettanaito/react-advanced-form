@@ -22,7 +22,7 @@ describe('Asynchronous validation', function() {
     cy.getField('fieldTwo')
       .focus()
       .blur({ force: true })
-      .valid(false)
+      .expected(false)
   })
 
   it('Resolves field that satisfies async rule', () => {
@@ -32,7 +32,7 @@ describe('Asynchronous validation', function() {
       // .validating()
       .wait(500)
       // .validating(false)
-      .valid()
+      .expected()
   })
 
   it('Rejects field that does not satisfy async rule', () => {
@@ -42,7 +42,7 @@ describe('Asynchronous validation', function() {
       // .validating()
       .wait(500)
       // .validating(false)
-      .valid(false)
+      .expected(false)
   })
 
   it('Cancels pending async validation on field change', () => {
@@ -60,6 +60,6 @@ describe('Asynchronous validation', function() {
       // .validating()
       .wait(500)
       // .validating(false)
-      .valid()
+      .expected()
   })
 })

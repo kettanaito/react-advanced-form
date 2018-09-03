@@ -25,17 +25,11 @@ describe('Initial values', function() {
   it('Takes "Form.props.initialValues"', () => {
     cy.getField('username')
       .should('have.value', initialValues.username)
-      .valid()
+      .expected()
 
-    cy.get('#billing-street').should(
-      'have.value',
-      initialValues.billingAddress.street,
-    )
+    cy.get('#billing-street').should('have.value', initialValues.billingAddress.street)
 
-    cy.get('#delivery-street').should(
-      'have.value',
-      initialValues.deliveryAddress.street,
-    )
+    cy.get('#delivery-street').should('have.value', initialValues.deliveryAddress.street)
   })
 
   it('Takes field-wide "initialValue" as the last fallback, when such value is set', () => {
