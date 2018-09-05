@@ -4,6 +4,7 @@ import findRulesInSchema from '../formUtils/findRulesInSchema'
 import * as recordUtils from '../recordUtils'
 import createRuleResolverArgs from '../validation/createRuleResolverArgs'
 import makeObservable from './makeObservable'
+import getLeavesWhich from '../getLeaves'
 
 /**
  * Appends the "Field.props.rule" resolver function to the provided
@@ -21,6 +22,9 @@ const addFieldPropsRule = (ruleGroups, fieldProps, resolverArgs) => {
   }
 
   const { refs } = flushFieldRefs(resolver, resolverArgs)
+
+  console.log({ ruleGroups })
+  console.log('flushed refs:', refs)
 
   return R.assoc(
     'rule',
@@ -56,14 +60,40 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     form,
   })
 
+  /* Add "Field.props.rule" in case the latter has fields references */
+  // const nextValidationSchema = addFieldPropsRule(
+  //   validationSchema,
+  //   fieldProps,
+  //   resolverArgs,
+  // )
+  const nextValidationSchema = R.assocPath(
+    ['fieldProps', 'rule'],
+    {
+      resolver: fieldProps.rule,
+    },
+    validationSchema,
+  )
+
+  //
+  // TODO
+  // Maybe consider handling these rules as arrays of rule objects.
+  // And then write a custom mergin function that would do
+  // R.assocPath(rule.keyPath, rule, {})
+  // and return a deep object with rules to store in the state.
+  //
+
   /**
    * Get the collection of reactive rules from the form
    * validation schema relative to the registered field.
    */
   const schemaRuleGroups = findRulesInSchema({
     fieldProps,
-    validationSchema,
+    validationSchema: nextValidationSchema,
     transformRule: (rule, rulePath) => {
+      console.log('transform rule')
+      console.log({ rule })
+      console.log({ rulePath })
+
       /* Omit any transformations for a rule that is already present in the applicable rules */
       if (R.path(rulePath, applicableRules)) {
         return rule
@@ -73,6 +103,7 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
       const { refs } = flushFieldRefs(resolver, resolverArgs)
 
       if (refs.length > 0) {
+        console.warn('should create observable for', refs)
         /**
          * Create observable for a rule that references another field(s).
          * The observable will listen for the referenced props change and re-evaluate
@@ -101,8 +132,8 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     },
   })
 
-  /* Add "Field.props.rule" in case the latter has fields references */
-  const ruleGroups = addFieldPropsRule(schemaRuleGroups, fieldProps, resolverArgs)
+  console.log({ schemaRuleGroups })
+  console.log('rules leaves:', getLeavesWhich(R.has('selector'), schemaRuleGroups))
 
-  return R.mergeDeepRight(applicableRules, ruleGroups)
+  return R.mergeDeepRight(applicableRules, schemaRuleGroups)
 }
