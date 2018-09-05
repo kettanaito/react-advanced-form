@@ -48,6 +48,7 @@ export default class Form extends React.Component {
 
     /* Events */
     onFirstChange: PropTypes.func,
+    onClear: PropTypes.func,
     onReset: PropTypes.func,
     onInvalid: PropTypes.func,
     onSubmitStart: PropTypes.func, // form should submit, submit started
@@ -608,18 +609,38 @@ export default class Form extends React.Component {
   /**
    * Clears all the fields.
    */
-  clear = () => {
-    const nextFields = this.state.fields.map(fieldUtils.resetField(() => ''));
+  clear = (predicate = Boolean) => {
+    const { fields } = this.state;
+
+    const clearedFields = fields
+      .filter(predicate)
+      .map(fieldUtils.resetField(() => ''));
+    const nextFields = fields.mergeDeep(clearedFields);
+
     this.setState({ fields: nextFields });
+
+    const { onClear } = this.props;
+    if (onClear) {
+      dispatch(onClear, {
+        clearedFields,
+        fields: nextFields,
+        form: this
+      }, this.context);
+    }
   }
 
   /**
    * Resets all the fields to their initial state upon mounting.
    */
-  reset = () => {
-    const nextFields = this.state.fields.map(fieldUtils.resetField((fieldProps) => {
-      return fieldProps.get('initialValue');
-    }));
+  reset = (predicate = Boolean) => {
+    const { fields } = this.state;
+
+    const resetFields = fields
+      .filter(predicate)
+      .map(fieldUtils.resetField((fieldProps) => {
+        return fieldProps.get('initialValue');
+      }));
+    const nextFields = fields.mergeDeep(resetFields);
 
     this.setState({ fields: nextFields }, () => {
       /**
