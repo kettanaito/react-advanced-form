@@ -4,7 +4,7 @@ import invariant from 'invariant'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { EventEmitter } from 'events'
-import { fromJS, List } from 'immutable'
+import { fromJS } from 'immutable'
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/bufferTime'
 import 'rxjs/add/observable/fromEvent'
@@ -414,18 +414,13 @@ export default class Form extends React.Component {
     if (!isFormValid && onInvalid) {
       const { fields: nextFields } = this.state
 
-      /* Get a list of invalid fields */
-      //
-      // TODO Ditch immutable List
-      //
-      const invalidFields = List(
-        nextFields.filterNot((fieldProps) => fieldProps.expected),
-      )
+      /* Get a map of invalid fields */
+      const invalidFields = validatedFields.filter(R.propEq('expected', false))
 
       /* Call custom callback */
       dispatch(onInvalid, {
-        fields: nextFields,
         invalidFields,
+        fields: nextFields,
         form: this,
       })
     }
