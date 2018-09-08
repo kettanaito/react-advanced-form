@@ -1,2 +1,3 @@
 export mergeRules from './mergeRules'
-export findRulesInSchema from './findRulesInSchema'
+export filterSchemaByField from './filterSchemaByField'
+export getRulesRefs from './getRulesRefs'

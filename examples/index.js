@@ -68,11 +68,11 @@ storiesOf('Basics|Components', module)
 
 /* Validation */
 storiesOf('Validation|Synchronous validation', module)
-  .add('Field.props.rule', addComponent(<FieldPropsRule />))
-  .add('Form.props.rules', addComponent(<FormPropsRules />))
+  .add('Field rules', addComponent(<FieldPropsRule />))
+  .add('Form rules', addComponent(<FormPropsRules />))
 
 storiesOf('Validation|Asynchronous validation', module).add(
-  'Field.props.asyncRule',
+  'Field async rule',
   addComponent(<FieldPropsAsyncRule />),
 )
 
