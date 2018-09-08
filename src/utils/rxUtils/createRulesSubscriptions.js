@@ -1,42 +1,11 @@
 import * as R from 'ramda'
-import flushFieldRefs from '../flushFieldRefs'
-import findRulesInSchema from '../formUtils/findRulesInSchema'
 import * as recordUtils from '../recordUtils'
 import createRuleResolverArgs from '../validation/createRuleResolverArgs'
 import makeObservable from './makeObservable'
-import getLeavesWhich from '../getLeaves'
 
-/**
- * Appends the "Field.props.rule" resolver function to the provided
- * rule groups in case the resolver is a reactive function.
- * @param {Object} ruleGroups
- * @param {Object} fieldProps
- * @param {Object} resolverArgs
- * @returns {Object}
- */
-const addFieldPropsRule = (ruleGroups, fieldProps, resolverArgs) => {
-  const { rule: resolver } = fieldProps
-
-  if (typeof resolver !== 'function') {
-    return ruleGroups
-  }
-
-  const { refs } = flushFieldRefs(resolver, resolverArgs)
-
-  console.log({ ruleGroups })
-  console.log('flushed refs:', refs)
-
-  return R.assoc(
-    'rule',
-    [
-      {
-        refs,
-        resolver,
-      },
-    ],
-    ruleGroups,
-  )
-}
+import filterSchemaByField from '../formUtils/filterSchemaByField'
+import getRulesRefs from '../formUtils/getRulesRefs'
+import stitchBy from '../stitchBy'
 
 /**
  * Creates an observable for each validation rule which references
@@ -61,79 +30,44 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   })
 
   /* Add "Field.props.rule" in case the latter has fields references */
-  // const nextValidationSchema = addFieldPropsRule(
-  //   validationSchema,
-  //   fieldProps,
-  //   resolverArgs,
-  // )
-  const nextValidationSchema = R.assocPath(
-    ['fieldProps', 'rule'],
-    {
-      resolver: fieldProps.rule,
-    },
-    validationSchema,
-  )
+  // TODO this
 
-  //
-  // TODO
-  // Maybe consider handling these rules as arrays of rule objects.
-  // And then write a custom mergin function that would do
-  // R.assocPath(rule.keyPath, rule, {})
-  // and return a deep object with rules to store in the state.
-  //
+  const fieldRules = filterSchemaByField(fieldProps, validationSchema)
+  const nextFieldRules = getRulesRefs(resolverArgs, fieldRules)
 
-  /**
-   * Get the collection of reactive rules from the form
-   * validation schema relative to the registered field.
-   */
-  const schemaRuleGroups = findRulesInSchema({
-    fieldProps,
-    validationSchema: nextValidationSchema,
-    transformRule: (rule, rulePath) => {
-      console.log('transform rule')
-      console.log({ rule })
-      console.log({ rulePath })
+  nextFieldRules.forEach((rule) => {
+    const { refs, resolver } = rule
 
-      /* Omit any transformations for a rule that is already present in the applicable rules */
-      if (R.path(rulePath, applicableRules)) {
-        return rule
-      }
+    if (refs.length > 0) {
+      console.warn('should create observable for', refs)
 
-      const { resolver } = rule
-      const { refs } = flushFieldRefs(resolver, resolverArgs)
+      /**
+       * Create observable for a rule that references another field(s).
+       * The observable will listen for the referenced props change and re-evaluate
+       * the validation rule(s) in which that prop is referenced.
+       */
+      makeObservable(resolver, resolverArgs, {
+        subscribe() {
+          const futureFieldProps = R.path(
+            fieldProps.fieldPath,
+            form.state.fields,
+          )
 
-      if (refs.length > 0) {
-        console.warn('should create observable for', refs)
-        /**
-         * Create observable for a rule that references another field(s).
-         * The observable will listen for the referenced props change and re-evaluate
-         * the validation rule(s) in which that prop is referenced.
-         */
-        makeObservable(resolver, resolverArgs, {
-          subscribe() {
-            const currentFieldProps = R.path(fieldProps.fieldPath, form.state.fields)
-
-            form.eventEmitter.emit('validateField', {
-              /**
-               * Cannot hard-code "true" because that would validate
-               * empty optional fields as unexpected.
-               */
-              force: !!recordUtils.getValue(currentFieldProps),
-              fieldProps: currentFieldProps,
-            })
-          },
-        })
-      }
-
-      return {
-        ...rule,
-        refs,
-      }
-    },
+          form.eventEmitter.emit('validateField', {
+            /**
+             * Cannot hard-code "true" because that would validate
+             * empty optional fields as unexpected.
+             */
+            force: !!recordUtils.getValue(futureFieldProps),
+            fieldProps: futureFieldProps,
+          })
+        },
+      })
+    }
   })
 
-  console.log({ schemaRuleGroups })
-  console.log('rules leaves:', getLeavesWhich(R.has('selector'), schemaRuleGroups))
+  const stitchedRules = stitchBy(['keyPath'], nextFieldRules)
+  console.log('stitched:', stitchedRules)
 
-  return R.mergeDeepRight(applicableRules, schemaRuleGroups)
+  return R.mergeDeepRight(applicableRules, stitchedRules)
 }

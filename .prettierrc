@@ -7,5 +7,5 @@
   "semi": false,
   "tabWidth": 2,
   "jsxBracketSameLine": false,
-  "printWidth": 90
+  "printWidth": 80
 }
