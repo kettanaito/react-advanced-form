@@ -5,14 +5,12 @@ const fieldOne = recordUtils.createField({
   name: 'fieldOne',
   fieldPath: ['fieldOne'],
   value: 'foo',
-  valuePropName: 'value',
 })
 
 const fieldTwo = recordUtils.createField({
   name: 'fieldTwo',
   fieldPath: ['fieldTwo'],
   value: 'bar',
-  valuePropName: 'value',
 })
 
 const resolverArgs = {

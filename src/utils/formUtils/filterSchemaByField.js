@@ -5,9 +5,6 @@ const getRulesPaths = (fieldProps) => [
   ['type', fieldProps.type],
 ]
 
-// const hasFunctionalRule = (fieldProps) => () =>
-//   R.allPass([R.complement(R.isNil), R.is(Function)])
-
 /**
  * Returns the list of validators applicable to the given field.
  * @param {Object} fieldProps
@@ -22,10 +19,6 @@ const filterSchemaByField = (fieldProps, validationSchema) =>
       resolver,
     })),
     R.filter(R.head),
-    // R.when(
-    //   hasFunctionalRule(fieldProps.rule),
-    //   R.prepend([fieldProps.rule, ['fieldProps', 'rule']]),
-    // ),
     R.map((keyPath) => [R.path(keyPath, validationSchema), keyPath]),
     getRulesPaths,
   )(fieldProps)
