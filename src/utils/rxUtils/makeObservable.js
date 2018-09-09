@@ -34,14 +34,20 @@ const formatRefs = (fieldsRefs) => {
 /**
  * Shorthand: Creates a props change observer with the provided arguments.
  * @param {string} targetPath
- * @param {Array<string>} targetProps
+ * @param {string[]} targetProps
  * @param {string} rxPropName
- * @param {Record} fieldProps
- * @param {ReactElement} form
+ * @param {Object} fieldProps
+ * @param {Object} form
  * @param {Object} observerOptions
  * @returns {Subscription}
  */
-function createObserver({ targetFieldPath, props, form, subscribe, observerOptions }) {
+function createObserver({
+  targetFieldPath,
+  props,
+  form,
+  subscribe,
+  observerOptions,
+}) {
   return createPropsObserver({
     targetFieldPath,
     props,
@@ -60,7 +66,7 @@ function createObserver({ targetFieldPath, props, form, subscribe, observerOptio
  * Makes the provided method observable, subscribing to props changes
  * of the referenced fields in the method.
  * @param {Function} method
- * @param {Object<argName: argValue>} methodArgs
+ * @param {Object} methodArgs
  * @param {Options} options
  */
 export default function makeObservable(

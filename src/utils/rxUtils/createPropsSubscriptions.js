@@ -6,9 +6,9 @@ import makeObservable from './makeObservable'
 
 /**
  * Creates Observable for the reactive props of the given field.
- * @param {Record} fieldProps
- * @param {Map} fields
- * @param {ReactElement} form
+ * @param {Object} fieldProps
+ * @param {Object} fields
+ * @param {Object} form
  */
 export default function createPropsSubscriptions({ fieldProps, fields, form }) {
   const { reactiveProps } = fieldProps
@@ -29,7 +29,11 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         const { fieldPath: targetFieldPath } = nextTargetRecord
 
         const currentSubscriberRecord = R.path(subscriberFieldPath, fields)
-        const nextFields = R.assocPath(targetFieldPath, nextTargetRecord, fields)
+        const nextFields = R.assocPath(
+          targetFieldPath,
+          nextTargetRecord,
+          fields,
+        )
 
         const nextResolverArgs = createRuleResolverArgs({
           fieldProps,
