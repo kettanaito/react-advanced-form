@@ -5,7 +5,6 @@ const inputField = recordUtils.createField({
   name: 'fieldOne',
   fieldPath: ['fieldOne'],
   value: 'foo',
-  valuePropName: 'value',
 })
 
 const checkboxField = recordUtils.createField({
@@ -22,6 +21,7 @@ describe('recordUtils', () => {
     expect(inputField.name).toEqual('fieldOne')
     expect(inputField.type).toEqual('text')
     expect(inputField.value).toEqual('foo')
+    expect(inputField.valuePropName).toEqual('value')
     expect(inputField.initialValue).toEqual('foo')
 
     expect(checkboxField).toBeInstanceOf(Object)

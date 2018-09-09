@@ -13,7 +13,7 @@ import invariant from 'invariant'
  * @returns {Object}
  */
 export const createField = (initialState) => {
-  const { valuePropName } = initialState
+  const valuePropName = initialState.valuePropName || 'value'
   const value = initialState[valuePropName]
 
   return {
@@ -24,9 +24,9 @@ export const createField = (initialState) => {
 
     /* Basic */
     type: 'text',
-    initialValue: value, // TODO Should this be set here?
+    initialValue: value,
     [valuePropName]: value,
-    valuePropName: 'value', // TODO Why this is not propagated to new instances?
+    valuePropName,
     focused: false,
     skip: false,
 
@@ -108,7 +108,8 @@ export const setValue = R.curry((nextValue, fieldProps) => {
   )
 
   /* Accept "nextValue" as a function to be able to make "setValue" composable */
-  const assocValue = typeof nextValue === 'function' ? nextValue(fieldProps) : nextValue
+  const assocValue =
+    typeof nextValue === 'function' ? nextValue(fieldProps) : nextValue
 
   return R.assoc(valuePropName, assocValue, fieldProps)
 })
