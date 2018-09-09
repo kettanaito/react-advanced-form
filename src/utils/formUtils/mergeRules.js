@@ -1,4 +1,4 @@
-import mergeDeepRight from 'ramda/src/mergeDeepRight'
+import * as R from 'ramda'
 
 /**
  * Returns form rules based on the provided proprietary rules
@@ -13,5 +13,7 @@ export default function mergeRules(validationSchema, contextRules = {}) {
   }
 
   const closestRules = validationSchema || contextRules
-  return closestRules.extend ? mergeDeepRight(closestRules, contextRules) : closestRules
+  return closestRules.extend
+    ? R.mergeDeepRight(closestRules, contextRules)
+    : closestRules
 }

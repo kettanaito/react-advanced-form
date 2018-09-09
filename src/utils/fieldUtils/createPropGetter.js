@@ -4,7 +4,7 @@ import path from 'ramda/src/path'
  * A thunk to generate a field prop getter function.
  * The latter is used for reactive props implementation and allows to flush
  * field prop references into a single source using a callback function.
- * @param {Map} fields
+ * @param {Object} fields
  * @param {Function?} callback
  * @returns {Function} A field prop getter function.
  */

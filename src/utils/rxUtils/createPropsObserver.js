@@ -10,8 +10,8 @@ import enforceArray from '../enforceArray'
  * @param {string} propName
  * @param {Object} prevTargetProps
  * @param {Object} nextTargetProps
- * @param {Map} prevTargetRecord
- * @param {Map} nextTargetRecord
+ * @param {Object} prevTargetRecord
+ * @param {Object} nextTargetRecord
  * @returns {boolean}
  */
 const defaultPredicate = ({ propName, prevTargetProps, nextTargetProps }) => {
