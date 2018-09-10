@@ -1,9 +1,7 @@
 // @flow
 import type { TRejectedRule } from '../createRejectedRule'
 
-import when from 'ramda/src/when'
-import compose from 'ramda/src/compose'
-import prepend from 'ramda/src/prepend'
+import * as R from 'ramda'
 import ensureLength from '../../ensureLength'
 
 type TKeyResolver = (rejectedRule: TRejectedRule, field: any) => string[]
@@ -50,9 +48,9 @@ const getKeyResolvers = (startPos: number): TKeyResolver[] => {
 }
 
 const getResolverPaths = (rejectedRule: TRejectedRule) =>
-  compose(
+  R.compose(
     ensureLength(4),
-    when(isNamedRule(rejectedRule), prepend(namedRuleResolver)),
+    R.when(isNamedRule(rejectedRule), R.prepend(namedRuleResolver)),
     getKeyResolvers,
     getStartPos,
   )(rejectedRule)

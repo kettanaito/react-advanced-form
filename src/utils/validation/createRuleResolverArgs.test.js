@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { Map } from 'immutable'
 import * as recordUtils from '../recordUtils'
 import createRuleResolverArgs from './createRuleResolverArgs'
 
@@ -10,7 +9,7 @@ const checkbox = recordUtils.createField({
   checked: true,
   valuePropName: 'checked',
 })
-const fields = Map({ fieldOne: fieldProps })
+const fields = { fieldOne: fieldProps }
 const form = {}
 
 test('Cannot be called without "fieldProps", "fields" and "form"', () => {

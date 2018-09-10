@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { Map } from 'immutable'
 import getRxProps from './getRxProps'
 
 test('Returns the map of reactive props', () => {
