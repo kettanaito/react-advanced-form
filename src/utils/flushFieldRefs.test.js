@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { Map } from 'immutable'
 import * as recordUtils from './recordUtils'
 import flushFieldRefs from './flushFieldRefs'
 
@@ -18,7 +17,7 @@ const fieldTwo = recordUtils.createField({
 
 const fields = recordUtils.updateCollectionWith(
   fieldOne,
-  recordUtils.updateCollectionWith(fieldTwo, Map()),
+  recordUtils.updateCollectionWith(fieldTwo, {}),
 )
 
 const method = ({ a, get }) => {

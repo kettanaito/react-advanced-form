@@ -4,7 +4,6 @@ import invariant from 'invariant'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { EventEmitter } from 'events'
-import { fromJS } from 'immutable'
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/operator/bufferTime'
 import 'rxjs/add/observable/fromEvent'
@@ -113,7 +112,7 @@ export default class Form extends React.Component {
      * Note: Messages passed from FormProvider (context messages) are
      * already immutable.
      */
-    this.messages = explicitMessages ? fromJS(explicitMessages) : messages
+    this.messages = explicitMessages || messages
 
     /* Create an event emitter to communicate between form and its fields */
     const eventEmitter = new EventEmitter()

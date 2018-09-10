@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import getResolvePaths from './getResolvePaths'
 import resolveMessage from './resolveMessage'
 import pruneMessages from './pruneMessages'
@@ -19,7 +20,7 @@ const createResolveIterator = (
       }
 
       const keyPath = keyPathGetter(rule, resolverArgs.fieldProps)
-      const resolver = messagesSchema.getIn(keyPath)
+      const resolver = R.path(keyPath, messagesSchema)
 
       return resolveMessage(resolver, messageResolverArgs)
     })

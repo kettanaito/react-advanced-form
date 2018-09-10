@@ -5,7 +5,6 @@
  */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { fromJS } from 'immutable'
 
 export const defaultDebounceTime = 250
 
@@ -43,7 +42,7 @@ export default class FormProvider extends React.Component {
 
     return {
       rules,
-      messages: fromJS(messages),
+      messages,
       debounceTime,
     }
   }

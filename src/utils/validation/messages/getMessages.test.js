@@ -1,11 +1,10 @@
-import { expect } from 'chai'
-import { fromJS } from 'immutable'
+import * as R from 'ramda'
 import * as recordUtils from '../../recordUtils'
 import createValidationResult from '../createValidationResult'
 import createRejectedRule from '../createRejectedRule'
 import getMessages from './getMessages'
 
-const messagesSchema = fromJS({
+const messagesSchema = {
   general: {
     missing: 'General missing',
     invalid: 'General invalid',
@@ -27,7 +26,7 @@ const messagesSchema = fromJS({
       },
     },
   },
-})
+}
 
 const fieldOne = recordUtils.createField({
   name: 'fieldOne',
@@ -55,26 +54,26 @@ test('Resolvers type-specific named rejected rules', () => {
     resolverArgs,
     messagesSchema,
   )
-  expect(namedRuleMessage).to.deep.equal([
-    messagesSchema.getIn(['type', 'email', 'rule', 'customRule']),
+  expect(namedRuleMessage).toEqual([
+    R.path(['type', 'email', 'rule', 'customRule'], messagesSchema),
   ])
 
   const typeFallbackMessage = getMessages(
     createValidationResult(false, rejectedRules),
     resolverArgs,
-    messagesSchema.deleteIn(['type', 'email', 'rule']),
+    R.dissocPath(['type', 'email', 'rule'], messagesSchema),
   )
-  expect(typeFallbackMessage).to.deep.equal([
-    messagesSchema.getIn(['type', 'email', 'invalid']),
+  expect(typeFallbackMessage).toEqual([
+    R.path(['type', 'email', 'invalid'], messagesSchema),
   ])
 
   const generalFallbackMessage = getMessages(
     createValidationResult(false, rejectedRules),
     resolverArgs,
-    messagesSchema.deleteIn(['type']),
+    R.dissocPath(['type'], messagesSchema),
   )
-  expect(generalFallbackMessage).to.deep.equal([
-    messagesSchema.getIn(['general', 'invalid']),
+  expect(generalFallbackMessage).toEqual([
+    R.path(['general', 'invalid'], messagesSchema),
   ])
 })
 
@@ -99,8 +98,8 @@ test('Multiple rejected rules of different resolvers length', () => {
     messagesSchema,
   )
 
-  expect(messages).to.deep.equal([
-    messagesSchema.getIn(['name', 'fieldOne', 'rule', 'customRule']),
+  expect(messages).toEqual([
+    R.path(['name', 'fieldOne', 'rule', 'customRule'], messagesSchema),
   ])
 })
 
@@ -120,35 +119,38 @@ test('Resolvers name-specific named rejected rules', () => {
     resolverArgs,
     messagesSchema,
   )
-  expect(namedRuleMessage).to.deep.equal([
-    messagesSchema.getIn(['name', 'fieldOne', 'rule', 'customRule']),
+  expect(namedRuleMessage).toEqual([
+    R.path(['name', 'fieldOne', 'rule', 'customRule'], messagesSchema),
   ])
 
   const nameFallbackMessage = getMessages(
     createValidationResult(false, rejectedRules),
     resolverArgs,
-    messagesSchema.deleteIn(['name', 'fieldOne', 'rule']),
+    R.dissocPath(['name', 'fieldOne', 'rule'], messagesSchema),
   )
-  expect(nameFallbackMessage).to.deep.equal([
-    messagesSchema.getIn(['name', 'fieldOne', 'invalid']),
+  expect(nameFallbackMessage).toEqual([
+    R.path(['name', 'fieldOne', 'invalid'], messagesSchema),
   ])
 
   const typeFallbackMessage = getMessages(
     createValidationResult(false, rejectedRules),
     resolverArgs,
-    messagesSchema.deleteIn(['name', 'fieldOne']),
+    R.dissocPath(['name', 'fieldOne'], messagesSchema),
   )
-  expect(typeFallbackMessage).to.deep.equal([
-    messagesSchema.getIn(['type', 'email', 'invalid']),
+  expect(typeFallbackMessage).toEqual([
+    R.path(['type', 'email', 'invalid'], messagesSchema),
   ])
 
   const generalFallbackMessage = getMessages(
     createValidationResult(false, rejectedRules),
     resolverArgs,
-    messagesSchema.deleteIn(['name', 'fieldOne']).deleteIn(['type', 'email']),
+    R.compose(
+      R.dissocPath(['type', 'email']),
+      R.dissocPath(['name', 'fieldOne']),
+    )(messagesSchema),
   )
-  expect(generalFallbackMessage).to.deep.equal([
-    messagesSchema.getIn(['general', 'invalid']),
+  expect(generalFallbackMessage).toEqual([
+    R.path(['general', 'invalid'], messagesSchema),
   ])
 })
 
