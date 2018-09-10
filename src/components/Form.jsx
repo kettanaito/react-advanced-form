@@ -16,7 +16,6 @@ import {
   ValidationMessagesPropType,
 } from './FormProvider'
 import {
-  CustomPropTypes,
   isset,
   camelize,
   dispatch,
@@ -78,7 +77,7 @@ export default class Form extends React.Component {
   /* Context accepted by the Form */
   static contextTypes = {
     rules: PropTypes.object,
-    messages: CustomPropTypes.Map,
+    messages: PropTypes.object,
     debounceTime: PropTypes.number,
   }
 
@@ -114,10 +113,6 @@ export default class Form extends React.Component {
      * Note: Messages passed from FormProvider (context messages) are
      * already immutable.
      */
-    //
-    // TODO
-    // Ditch "fromJS" calls.
-    //
     this.messages = explicitMessages ? fromJS(explicitMessages) : messages
 
     /* Create an event emitter to communicate between form and its fields */
@@ -128,11 +123,21 @@ export default class Form extends React.Component {
     Observable.fromEvent(eventEmitter, 'fieldRegister')
       .bufferTime(100)
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
-    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
-    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
-    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
-    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField)
-    Observable.fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
+    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(
+      this.handleFieldFocus,
+    )
+    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(
+      this.handleFieldChange,
+    )
+    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(
+      this.handleFieldBlur,
+    )
+    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(
+      this.unregisterField,
+    )
+    Observable.fromEvent(eventEmitter, 'validateField').subscribe(
+      this.validateField,
+    )
   }
 
   /**
@@ -260,7 +265,10 @@ export default class Form extends React.Component {
    * @returns {Promise}
    */
   updateFieldsWith = (fieldProps) => {
-    const nextFields = recordUtils.updateCollectionWith(fieldProps, this.state.fields)
+    const nextFields = recordUtils.updateCollectionWith(
+      fieldProps,
+      this.state.fields,
+    )
 
     return new Promise((resolve, reject) => {
       try {
@@ -440,7 +448,9 @@ export default class Form extends React.Component {
        * regardless of their required status. That is to prevent having
        * invalid empty required fields after reset.
        */
-      this.validate(R.allPass([R.has('value'), R.complement(R.propEq('value', ''))]))
+      this.validate(
+        R.allPass([R.has('value'), R.complement(R.propEq('value', ''))]),
+      )
 
       /* Callback method to reset controlled fields */
       dispatch(this.props.onReset, {
@@ -505,7 +515,12 @@ export default class Form extends React.Component {
     }
 
     const { fields } = this.state
-    const { onSubmitStart, onSubmitted, onSubmitFailed, onSubmitEnd } = this.props
+    const {
+      onSubmitStart,
+      onSubmitted,
+      onSubmitFailed,
+      onSubmitEnd,
+    } = this.props
 
     /* Serialize the fields */
     const serialized = this.serialize()
