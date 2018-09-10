@@ -24,3 +24,6 @@ internal
 deprecated
 .vscode
 __*
+
+# OS
+.DS_*
