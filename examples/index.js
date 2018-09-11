@@ -8,7 +8,9 @@ function logSerialized({ serialized }) {
 }
 
 function addComponent(Component) {
-  return () => <Component.type {...Component.props} onSubmitStart={logSerialized} />
+  return () => (
+    <Component.type {...Component.props} onSubmitStart={logSerialized} />
+  )
 }
 
 /* Basics */
@@ -35,6 +37,7 @@ import FormPropsRules from './validation/sync/Form.props.rules'
 import FieldPropsAsyncRule from './validation/async/Field.props.asyncRule'
 
 import CombinedValidation from './validation/combined'
+import SetErrors from './validation/messages/SetErrors'
 import AjaxPrefilling from './validation/misc/AjaxPrefilling'
 
 /* Reactive props */
@@ -79,6 +82,11 @@ storiesOf('Validation|Asynchronous validation', module).add(
 storiesOf('Validation|Combined validation', module).add(
   'Combined validation',
   addComponent(<CombinedValidation />),
+)
+
+storiesOf('Validation|Messages', module).add(
+  'Set errors',
+  addComponent(<SetErrors />),
 )
 
 storiesOf('Validation|Misc', module).add(

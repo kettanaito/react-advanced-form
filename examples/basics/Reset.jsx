@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form } from '@lib'
+import { Form, Field } from '@lib'
 import { Input, Checkbox } from '@fields'
 import Button from '@shared/Button'
 
@@ -20,9 +20,17 @@ export default class Reset extends React.Component {
             getRef && getRef(form)
           }}
         >
-          <Input name="username" label="Username" initialValue="john.doe" required />
+          <Input
+            name="username"
+            label="Username"
+            initialValue="john.doe"
+            required
+          />
           <Input name="password" type="password" label="Password" required />
-          <Input name="firstName" label="First name" />
+          <Field.Group name="billingAddress">
+            <Input name="firstName" label="First name" />
+          </Field.Group>
+
           <Checkbox
             name="termsAndConditions"
             label="I agree to Terms and Conditions"
