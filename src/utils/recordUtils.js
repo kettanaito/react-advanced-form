@@ -6,6 +6,7 @@
  */
 import * as R from 'ramda'
 import invariant from 'invariant'
+import enforceArray from './enforceArray'
 
 /**
  * Creates a new field based on its initial state.
@@ -123,7 +124,7 @@ export const setValue = R.curry((nextValue, fieldProps) => {
 export const setErrors = R.curry((errors, fieldProps) => {
   /* Allow explicit "null" for empty "errors" value */
   return typeof errors !== 'undefined'
-    ? R.assoc('errors', errors, fieldProps)
+    ? R.assoc('errors', errors && enforceArray(errors), fieldProps)
     : fieldProps
 })
 
