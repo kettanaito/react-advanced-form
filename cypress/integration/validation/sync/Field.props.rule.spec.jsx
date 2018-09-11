@@ -11,49 +11,45 @@ describe('Field rules', function() {
   })
 
   it('Resolves empty optional field with sync rule', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .focus()
       .blur({ force: true })
-      .should('not.have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .valid(false)
+      .invalid(false)
+    // .should('not.have.class', 'is-valid')
+    // .should('not.have.class', 'is-invalid')
   })
 
   it('Rejects empty required field with sync rule', () => {
-    cy
-      .getField('fieldTwo')
+    cy.getField('fieldTwo')
       .focus()
       .blur({ force: true })
       .validSync(false)
   })
 
   it('Reslolves filled optional field with matching value', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .typeIn('123')
       .blur({ force: true })
       .validSync()
   })
 
   it('Rejects filled optional field with unmatching value', () => {
-    cy
-      .getField('fieldOne')
+    cy.getField('fieldOne')
       .typeIn('foo')
       .blur({ force: true })
       .validSync(false)
   })
 
   it('Resolves filled required field with matching value', () => {
-    cy
-      .getField('fieldTwo')
+    cy.getField('fieldTwo')
       .typeIn('foo')
       .blur({ force: true })
       .validSync()
   })
 
   it('Rejects filled required field with unmatching value', () => {
-    cy
-      .getField('fieldTwo')
+    cy.getField('fieldTwo')
       .typeIn('123')
       .blur({ force: true })
       .validSync(false)
