@@ -85,7 +85,7 @@ export const getValue = (fieldProps) => {
   invariant(
     valuePropName,
     'Failed to get value of the `%s`: field has no `valuePropName` property.',
-    fieldPath.join('.'),
+    fieldPath && fieldPath.join('.'),
   )
 
   return R.prop(valuePropName, fieldProps)
@@ -105,7 +105,7 @@ export const setValue = R.curry((nextValue, fieldProps) => {
     valuePropName,
     'Failed to set value to `%s` on `%s`: field has no `valuePropName` property.',
     nextValue,
-    fieldPath.join('.'),
+    fieldPath && fieldPath.join('.'),
   )
 
   /* Accept "nextValue" as a function to be able to make "setValue" composable */
