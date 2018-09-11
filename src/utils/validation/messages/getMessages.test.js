@@ -82,8 +82,8 @@ test('Resolvers type-specific named rejected rules', () => {
 test('Multiple rejected rules of different resolvers length', () => {
   const multipleRejectedRules = [
     createRejectedRule({
-      errorType: 'invalid',
       selector: 'name',
+      errorType: 'invalid',
       ruleName: 'customRule',
     }),
     createRejectedRule({
@@ -145,13 +145,54 @@ test('Resolvers name-specific named rejected rules', () => {
     createValidationResult(false, rejectedRules),
     resolverArgs,
     R.compose(
-      R.dissocPath(['type', 'email']),
-      R.dissocPath(['name', 'fieldOne']),
+      R.dissoc('type'),
+      R.dissoc('name'),
     )(messagesSchema),
   )
+
   expect(generalFallbackMessage).toEqual([
     R.path(['general', 'invalid'], messagesSchema),
   ])
 })
 
-// test('Fallbacks to the general message when no specific ones found', () => {})
+test('Fallbacks to the general invalid message when no specific ones found', () => {
+  const rejectedRules = [
+    createRejectedRule({
+      selector: 'type',
+      errorType: 'invalid',
+      ruleName: 'customRule',
+    }),
+  ]
+
+  const messages = getMessages(
+    createValidationResult(false, rejectedRules),
+    resolverArgs,
+    R.compose(
+      R.dissoc('type'),
+      R.dissoc('name'),
+    )(messagesSchema),
+  )
+
+  expect(messages).toEqual([R.path(['general', 'invalid'], messagesSchema)])
+})
+
+test('Fallbacks to the general missing message when no specific ones found', () => {
+  const rejectedRules = [
+    createRejectedRule({
+      selector: 'type',
+      errorType: 'missing',
+      ruleName: 'customRule',
+    }),
+  ]
+
+  const messages = getMessages(
+    createValidationResult(false, rejectedRules),
+    resolverArgs,
+    R.compose(
+      R.dissoc('type'),
+      R.dissoc('name'),
+    )(messagesSchema),
+  )
+
+  expect(messages).toEqual([R.path(['general', 'missing'], messagesSchema)])
+})

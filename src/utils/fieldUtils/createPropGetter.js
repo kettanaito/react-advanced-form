@@ -10,10 +10,6 @@ import path from 'ramda/src/path'
  */
 export default function createPropGetter(fields, callback) {
   return (propPath) => {
-    /**
-     * Internally, "fields" are always Immutable Map and are not affected
-     * by the form context options.
-     */
     const propValue = path(propPath, fields)
 
     if (callback) {

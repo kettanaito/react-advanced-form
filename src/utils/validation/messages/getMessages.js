@@ -39,7 +39,9 @@ export default function getErrorMessages(
     return
   }
 
-  const resolvePaths = validationResult.rejectedRules.map(getResolvePaths)
+  const messagesResolversPaths = validationResult.rejectedRules.map(
+    getResolvePaths,
+  )
 
   /**
    * Iterates over the list of message resolver paths and resolves
@@ -47,7 +49,7 @@ export default function getErrorMessages(
    * only the relevant message(s) based on the rejected rule(s) priority.
    */
   return pruneMessages(
-    resolvePaths.map(
+    messagesResolversPaths.map(
       createResolveIterator(validationResult, resolverArgs, messagesSchema),
     ),
   )

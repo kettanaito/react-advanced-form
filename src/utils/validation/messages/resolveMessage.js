@@ -1,17 +1,25 @@
 // @flow
 import dispatch from '../../dispatch'
 
-type TMessageResolverArgs = {}
-type TMessageResolver = (args: TMessageResolverArgs) => string
-type TResolvable = TMessageResolver | string
+type MessageResolverArgs = {
+  value: any,
+  fieldProps: Object,
+  fields: Object,
+  form: Object,
+}
+
+type MessageResolver = (args: MessageResolverArgs) => string
+type MessageResolvable = MessageResolver | string
 
 /**
- * Accepts a message resolver, which can be a Function or a String
- * and always returns a String.
+ * Accepts a resolvable, which can be a Function or a String
+ * and returns a resolved message string.
  */
 export default function resolveMessage(
-  resolver: TResolvable,
-  resolverArgs: TMessageResolverArgs,
+  resolvable: MessageResolvable,
+  resolverArgs: MessageResolverArgs,
 ): string {
-  return typeof resolver === 'function' ? dispatch(resolver, resolverArgs) : resolver
+  return typeof resolvable === 'function'
+    ? dispatch(resolvable, resolverArgs)
+    : resolvable
 }

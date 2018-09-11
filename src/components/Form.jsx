@@ -104,14 +104,10 @@ export default class Form extends React.Component {
     /* Set validation rules */
     this.validationSchema = formUtils.mergeRules(explicitRules, contextRules)
 
-    /**
-     * Define validation messages once, since those should be converted
-     * to immutable, which is an expensive procedure. Moreover, messages
-     * are unlikely to change during the component's lifecycle. It should
-     * be safe to store them.
-     * Note: Messages passed from FormProvider (context messages) are
-     * already immutable.
-     */
+    //
+    // TODO
+    // Consider moving this to the form's state.
+    //
     this.messages = explicitMessages || messages
 
     /* Create an event emitter to communicate between form and its fields */

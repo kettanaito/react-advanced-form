@@ -1,6 +1,6 @@
 import * as R from 'ramda'
 
-const firstFullPair = R.find((value) => !!value)
+const firstValueOfList = R.find((value) => !!value)
 
 /**
  * Transposes the array of arrays of error messages,
@@ -9,11 +9,11 @@ const firstFullPair = R.find((value) => !!value)
  * and returns the first messages group that is not empty.
  */
 const pruneMessages = R.compose(
-  R.find(firstFullPair),
+  R.find(firstValueOfList),
   R.map(
     R.compose(
       R.uniq,
-      R.filter(Boolean),
+      R.reject(R.isNil),
     ),
   ),
   R.transpose,
