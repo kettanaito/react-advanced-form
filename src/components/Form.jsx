@@ -468,6 +468,10 @@ export default class Form extends React.Component {
   setErrors = (fieldsDelta) => {
     const { fields } = this.state
 
+    /**
+     * Get transformers for fields in the following format:
+     * [fieldPath]: fieldTransformer(fieldProps)
+     */
     const transformers = deriveDeepWith(
       (_, errors) =>
         R.compose(
@@ -480,6 +484,10 @@ export default class Form extends React.Component {
       fields,
     )
 
+    /**
+     * Apply transformers object to the current fields.
+     * Fields not included in transformers are returned as-is.
+     */
     const nextFields = R.evolve(transformers, fields)
 
     this.setState({ fields: nextFields })
