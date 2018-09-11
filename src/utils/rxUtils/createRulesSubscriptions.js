@@ -5,7 +5,7 @@ import makeObservable from './makeObservable'
 
 import filterSchemaByField from '../formUtils/filterSchemaByField'
 import getRulesRefs from '../formUtils/getRulesRefs'
-import stitchBy from '../stitchBy'
+import stitchWith from '../stitchWith'
 import flushFieldRefs from '../flushFieldRefs'
 
 const hasReactiveProp = R.allPass([R.complement(R.isNil), R.is(Function)])
@@ -82,7 +82,11 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   }
 
   /* Stitch the list of field-related rules into an object */
-  const stitchedRules = stitchBy(['keyPath'], nextFieldRules)
+  const stitchedRules = stitchWith(
+    (entry, keyPath, acc) => R.append(entry, R.pathOr([], keyPath, acc)),
+    ['keyPath'],
+    nextFieldRules,
+  )
 
   /* Merge field-related rules with the applicable rules */
   return R.mergeDeepRight(applicableRules, stitchedRules)
