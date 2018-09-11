@@ -26,6 +26,7 @@ import {
 import * as handlers from '../utils/handlers'
 import validate from '../utils/handlers/validateField'
 import getLeavesWhich from '../utils/getLeaves'
+import deriveDeepWith from '../utils/deriveDeepWith'
 
 /**
  * Binds the component's reference to the function's context and calls
@@ -116,7 +117,7 @@ export default class Form extends React.Component {
 
     /* Field events observerables */
     Observable.fromEvent(eventEmitter, 'fieldRegister')
-      .bufferTime(100)
+      .bufferTime(50)
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
     Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(
       this.handleFieldFocus,
@@ -435,7 +436,11 @@ export default class Form extends React.Component {
    * Resets all the fields to their initial state upon mounting.
    */
   reset = () => {
-    const nextFields = R.map(recordUtils.reset, this.state.fields)
+    const nextFields = R.compose(
+      fieldUtils.stitchFields,
+      R.map(recordUtils.reset),
+      fieldUtils.flattenFields,
+    )(this.state.fields)
 
     this.setState({ fields: nextFields }, () => {
       /**
@@ -456,26 +461,28 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Sets the given errors messages on the field by its field path.
-   * @param {string[]} fieldPath
-   * @param {string[]} errors
-   * @returns {Object}
+   * Sets the objects mapping field paths to error messages,
+   * and applies the given messages to the form's fields.
+   * @param {Object} fieldsDelta
    */
-  setErrors = (fieldPath, errors) => {
+  setErrors = (fieldsDelta) => {
     const { fields } = this.state
-    const fieldProps = R.path(fieldPath, fields)
-    const hasErrors = !!errors
 
-    const nextFieldProps = R.compose(
-      recordUtils.setErrors(errors),
-      recordUtils.updateValidityState(true),
-      R.assoc('expected', !hasErrors),
-      R.assoc('validated', true),
-    )(fieldProps)
+    const transformers = deriveDeepWith(
+      (_, errors) =>
+        R.compose(
+          recordUtils.setErrors(errors),
+          recordUtils.updateValidityState(true),
+          R.assoc('expected', !errors),
+          R.assoc('validated', true),
+        ),
+      fieldsDelta,
+      fields,
+    )
 
-    this.updateFieldsWith(nextFieldProps)
+    const nextFields = R.evolve(transformers, fields)
 
-    return nextFieldProps
+    this.setState({ fields: nextFields })
   }
 
   /**
