@@ -456,6 +456,29 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Sets the given errors messages on the field by its field path.
+   * @param {string[]} fieldPath
+   * @param {string[]} errors
+   * @returns {Object}
+   */
+  setErrors = (fieldPath, errors) => {
+    const { fields } = this.state
+    const fieldProps = R.path(fieldPath, fields)
+    const hasErrors = !!errors
+
+    const nextFieldProps = R.compose(
+      recordUtils.setErrors(errors),
+      recordUtils.updateValidityState(true),
+      R.assoc('expected', !hasErrors),
+      R.assoc('validated', true),
+    )(fieldProps)
+
+    this.updateFieldsWith(nextFieldProps)
+
+    return nextFieldProps
+  }
+
+  /**
    * Clears all the fields.
    */
   clear = () => {
