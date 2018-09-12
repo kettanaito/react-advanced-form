@@ -70,7 +70,7 @@ describe('recordUtils', () => {
     const nextInput = recordUtils.setValue('bar', inputField)
     expect(nextInput.value).toEqual('bar')
 
-    const resetInput = recordUtils.reset(nextInput)
+    const resetInput = recordUtils.reset(R.prop('initialValue'), nextInput)
     expect(resetInput.value).toEqual(resetInput.initialValue)
   })
 

@@ -55,6 +55,7 @@ export default class Form extends React.Component {
 
     /* Callbacks */
     onFirstChange: PropTypes.func,
+    onClear: PropTypes.func,
     onReset: PropTypes.func,
     onSerialize: PropTypes.func,
     onInvalid: PropTypes.func,
@@ -433,12 +434,36 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Resets all the fields to their initial state upon mounting.
+   * Clears the fields matching the given predicate.
    */
-  reset = () => {
+  clear = (predicate = Boolean) => {
     const nextFields = R.compose(
       fieldUtils.stitchFields,
-      R.map(recordUtils.reset),
+      R.map(recordUtils.reset(R.always(''))),
+      R.filter(predicate),
+      fieldUtils.flattenedFields,
+    )(this.state.fields)
+
+    this.setState({ fields: nextFields }, () => {
+      dispatch(
+        this.props.onClear,
+        {
+          fields: nextFields,
+          form: this,
+        },
+        this.context,
+      )
+    })
+  }
+
+  /**
+   * Resets all the fields to their initial state.
+   */
+  reset = (predicate = Boolean) => {
+    const nextFields = R.compose(
+      fieldUtils.stitchFields,
+      R.map(recordUtils.reset(R.prop('initialValue'))),
+      R.filter(predicate),
       fieldUtils.flattenFields,
     )(this.state.fields)
 
@@ -490,14 +515,6 @@ export default class Form extends React.Component {
      */
     const nextFields = R.evolve(transformers, fields)
 
-    this.setState({ fields: nextFields })
-  }
-
-  /**
-   * Clears all the fields.
-   */
-  clear = () => {
-    const nextFields = R.map(fieldUtils.resetField(() => ''), this.state.fields)
     this.setState({ fields: nextFields })
   }
 
