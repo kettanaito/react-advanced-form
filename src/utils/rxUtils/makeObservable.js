@@ -1,9 +1,6 @@
-import path from 'ramda/src/path'
-import assoc from 'ramda/src/assoc'
-import toPairs from 'ramda/src/toPairs'
-import propOr from 'ramda/src/propOr'
-
-import { Observable } from 'rxjs/Observable'
+import * as R from 'ramda'
+import { Observable } from 'rxjs/internal/Observable'
+import { fromEvent } from 'rxjs/internal/observable/fromEvent'
 import camelize from '../camelize'
 import * as recordUtils from '../recordUtils'
 import flushFieldRefs from '../flushFieldRefs'
@@ -24,10 +21,10 @@ const formatRefs = (fieldsRefs) => {
     const fieldPath = ref.slice(0, ref.length - 1)
     const joinedFieldPath = fieldPath.join('.')
     const propName = ref.slice(ref.length - 1)
-    const prevPropsList = propOr([], joinedFieldPath, formatRefs)
+    const prevPropsList = R.propOr([], joinedFieldPath, formatRefs)
     const nextPropsList = prevPropsList.concat(propName)
 
-    return assoc(joinedFieldPath, nextPropsList, formattedRef)
+    return R.assoc(joinedFieldPath, nextPropsList, formattedRef)
   }, {})
 }
 
@@ -79,7 +76,7 @@ export default function makeObservable(
 
   const formattedTargetRefs = formatRefs(refs)
 
-  toPairs(formattedTargetRefs).forEach(([joinedFieldPath, props]) => {
+  R.toPairs(formattedTargetRefs).forEach(([joinedFieldPath, props]) => {
     //
     // TODO
     // This would be nice to improve to omit keys glue.
@@ -93,7 +90,7 @@ export default function makeObservable(
      * validate to prevent invalid fields at initial form render.
      */
     const shouldValidate = !!recordUtils.getValue(subscriberProps)
-    const includesField = path(targetFieldPath, fields)
+    const includesField = R.path(targetFieldPath, fields)
 
     if (includesField) {
       const subscription = createObserver({
@@ -125,7 +122,7 @@ export default function makeObservable(
      * the resolver function again, just create a subscription.
      */
     const fieldRegisteredEvent = camelize(...targetFieldPath, 'registered')
-    const delegatedSubscription = Observable.fromEvent(
+    const delegatedSubscription = fromEvent(
       form.eventEmitter,
       fieldRegisteredEvent,
     ).subscribe((delegatedFieldProps) => {

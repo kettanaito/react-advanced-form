@@ -1,6 +1,7 @@
-import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/filter'
+import { Observable } from 'rxjs/internal/Observable'
+import { fromEvent } from 'rxjs/internal/observable/fromEvent'
+import { map } from 'rxjs/internal/operators/map'
+import { filter } from 'rxjs/internal/operators/filter'
 import camelize from '../camelize'
 import enforceArray from '../enforceArray'
 
@@ -47,35 +48,34 @@ export default function createPropsObserver({
   const propsChangeEventName = camelize(...targetFieldPath, 'props', 'change')
   const propsList = enforceArray(props)
 
-  return (
-    Observable.fromEvent(eventEmitter, propsChangeEventName)
-      .map((eventPayload) => {
-        const changedProps = propsList.reduce((acc, propName) => {
-          const hasPropsChanged = predicate({
-            ...eventPayload,
-            propName,
-          })
-
-          if (hasPropsChanged) {
-            const nextPropValue = getNextValue
-              ? getNextValue({ ...eventPayload, propName })
-              : eventPayload.nextTargetProps[propName]
-
-            return {
-              ...acc,
-              [propName]: nextPropValue,
-            }
-          }
-
-          return acc
-        }, {})
-
-        return {
+  return fromEvent(eventEmitter, propsChangeEventName).pipe(
+    map((eventPayload) => {
+      const changedProps = propsList.reduce((acc, propName) => {
+        const hasPropsChanged = predicate({
           ...eventPayload,
-          changedProps,
+          propName,
+        })
+
+        if (hasPropsChanged) {
+          const nextPropValue = getNextValue
+            ? getNextValue({ ...eventPayload, propName })
+            : eventPayload.nextTargetProps[propName]
+
+          return {
+            ...acc,
+            [propName]: nextPropValue,
+          }
         }
-      })
-      /* Emit the events with changed props only */
-      .filter(filterPropChanges)
+
+        return acc
+      }, {})
+
+      return {
+        ...eventPayload,
+        changedProps,
+      }
+    }),
+    /* Emit the events with changed props only */
+    filter(filterPropChanges),
   )
 }

@@ -15,8 +15,6 @@ const createRuleObservable = R.curry((resolverArgs, rule) => {
   const { refs, resolver } = rule
 
   if (refs.length > 0) {
-    console.warn('should create observable for', refs)
-
     /**
      * Create observable for a rule that references another field(s).
      * The observable will listen for the referenced props change and re-evaluate

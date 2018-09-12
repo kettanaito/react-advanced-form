@@ -4,9 +4,9 @@ import invariant from 'invariant'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { EventEmitter } from 'events'
-import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/operator/bufferTime'
-import 'rxjs/add/observable/fromEvent'
+import { Observable } from 'rxjs/internal/Observable'
+import { fromEvent } from 'rxjs/internal/observable/fromEvent'
+import { bufferTime } from 'rxjs/internal/operators/bufferTime'
 
 /* Internal modules */
 import {
@@ -123,24 +123,14 @@ export default class Form extends React.Component {
     this.eventEmitter = eventEmitter
 
     /* Field events observerables */
-    Observable.fromEvent(eventEmitter, 'fieldRegister')
-      .bufferTime(50)
+    fromEvent(eventEmitter, 'fieldRegister')
+      .pipe(bufferTime(50))
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
-    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(
-      this.handleFieldFocus,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(
-      this.handleFieldChange,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(
-      this.handleFieldBlur,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(
-      this.unregisterField,
-    )
-    Observable.fromEvent(eventEmitter, 'validateField').subscribe(
-      this.validateField,
-    )
+    fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
+    fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
+    fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
+    fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField)
+    fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
   }
 
   /**
@@ -332,6 +322,8 @@ export default class Form extends React.Component {
    */
   handleFieldChange = this.withRegisteredField(async (args) => {
     const { fields, dirty } = this.state
+
+    console.log('field change', { args })
 
     const changePayload = await handlers.handleFieldChange(args, fields, this, {
       onUpdateValue: this.updateFieldsWith,
