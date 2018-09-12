@@ -1,4 +1,4 @@
-import isEmail from 'validator/lib/isEmail';
+import isEmail from 'validator/lib/isEmail'
 
 export default {
   type: {
@@ -6,15 +6,15 @@ export default {
     password: {
       capitalLetter: ({ value }) => /[A-Z]/.test(value),
       oneNumber: ({ value }) => /[0-9]/.test(value),
-      minLength: ({ value }) => (value.length > 5)
-    }
+      minLength: ({ value }) => value.length > 5,
+    },
   },
 
   name: {
     confirmPassword: {
       matches: ({ value, fields }) => {
-        return (value === fields.userPassword.value);
-      }
-    }
-  }
-};
+        return value === fields.userPassword.value
+      },
+    },
+  },
+}

@@ -15,6 +15,7 @@ book.json
 cypress.json
 npm-*
 webpack*
+jest*
 
 # Misc
 .storybook
@@ -22,3 +23,4 @@ favicon.*
 logo.*
 internal
 examples
+favicon.ico

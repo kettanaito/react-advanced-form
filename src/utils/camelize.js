@@ -1,8 +1,9 @@
+// @flow
 /**
- * Returns a string formatted in camelCase from the passed strings.
- * @param {string[]} args
- * @return {string}
+ * Takes the given string and returns it formatted it in cammelCase.
  */
-export default function camelize(...args) {
-  return args.join('-').replace(/-(.)/g, (_, char) => char.toUpperCase());
+export default function camelize(...args: string[]): string {
+  return args
+    .join('-')
+    .replace(/-(.)/g, (_, char: string) => char.toUpperCase())
 }

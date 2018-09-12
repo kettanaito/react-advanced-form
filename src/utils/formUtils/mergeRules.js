@@ -1,17 +1,19 @@
-import { fromJS, Map } from 'immutable';
+import * as R from 'ramda'
 
 /**
- * Returns the iterable instance of form rules based on the provided proprietary rules
+ * Returns form rules based on the provided proprietary rules
  * and the inherited context rules.
- * @param {Object} formRules
- * @param {Map} contextRules
- * @returns {Map}
+ * @param {Object} validationSchema
+ * @param {Object} contextRules
+ * @returns {Object}
  */
-export default function mergeRules(formRules, contextRules) {
-  if (!formRules) return (contextRules || Map());
+export default function mergeRules(validationSchema, contextRules = {}) {
+  if (!validationSchema) {
+    return contextRules
+  }
 
-  const iterableRules = fromJS(formRules);
-  const closestRules = iterableRules || contextRules || Map();
-
-  return iterableRules.get('extend') ? contextRules.mergeDeep(iterableRules) : closestRules;
+  const closestRules = validationSchema || contextRules
+  return closestRules.extend
+    ? R.mergeDeepRight(closestRules, contextRules)
+    : closestRules
 }

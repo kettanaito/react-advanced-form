@@ -1,28 +1,30 @@
-import React from 'react';
-import { expect } from 'chai';
-import { mount } from 'cypress-react-unit-test';
-import Scenario from '@examples/field-grouping/SimpleGroup';
+import * as R from 'ramda'
+import { expect } from 'chai'
+import React from 'react'
+import Scenario from '@examples/field-grouping/SimpleGroup'
 
-describe('Simple group', function () {
-  before(() => mount(<Scenario getRef={ form => this.form = form } />));
+describe('Simple group', function() {
+  before(() => {
+    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+  })
 
-  it('Grouped fields register properly', async () => {
-    await cy.wait(100);
-    const { fields } = this.form.state;
+  it('Registers grouped fields properly', async () => {
+    await cy.wait(100)
+    const { fields } = this.form.state
 
-    expect(fields.has('fieldOne')).to.be.true;
-    expect(fields.hasIn(['groupName', 'fieldOne'])).to.be.true;
-    expect(fields.hasIn(['groupName', 'fieldTwo'])).to.be.true;
-  });
+    expect(R.has('fieldOne', fields))
+    expect(R.path(['groupName', 'fieldOne'], fields)).not.to.be.undefined
+    expect(R.path(['groupName', 'fieldTwo'], fields)).not.to.be.undefined
+  })
 
-  it('Form with group fields serializes properly', () => {
-    const serialized = this.form.serialize();
+  it('Serializes grouped fields properly', () => {
+    const serialized = this.form.serialize()
 
     expect(serialized).to.deep.equal({
       fieldOne: 'foo',
       groupName: {
-        fieldOne: 'bar'
-      }
-    });
-  });
-});
+        fieldOne: 'bar',
+      },
+    })
+  })
+})

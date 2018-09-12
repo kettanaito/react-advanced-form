@@ -1,21 +1,26 @@
-import dispatch from './dispatch';
-import createPropGetter from './fieldUtils/createPropGetter';
+// @flow
+import dispatch from './dispatch'
+import createPropGetter from './fieldUtils/createPropGetter'
+
+type TFieldRefs = {
+  refs: string[][],
+  initialValue: mixed,
+}
 
 /**
- * Returns the map of flushed field props paths referenced within the provided
- * method, and its initial value.
- * @param {Function} method
- * @param {CallbackHandlerArgs} methodArgs
+ * Returns the map of flushed field props paths referenced within
+ * the provided method, and its initial value.
  */
-export default function flushFieldRefs(method, methodArgs) {
-  const { fields, form } = methodArgs;
-  const refs = [];
-  const fieldPropGetter = createPropGetter(fields, propRefPath => refs.push(propRefPath));
+export default function flushFieldRefs(func: Function, args: mixed): TFieldRefs {
+  const refs = []
+  const fieldPropGetter = createPropGetter(args.fields, (propRefPath) =>
+    refs.push(propRefPath),
+  )
 
-  const initialValue = dispatch(method, {
-    ...methodArgs,
-    get: fieldPropGetter
-  }, form.context);
+  const initialValue = dispatch(func, {
+    ...args,
+    get: fieldPropGetter,
+  })
 
-  return { refs, initialValue };
+  return { refs, initialValue }
 }

@@ -1,33 +1,42 @@
-import { Map } from 'immutable';
-import flattenDeep from '../flattenDeep';
+import * as R from 'ramda'
+import * as recordUtils from '../recordUtils'
+import flattenFields from './flattenFields'
 
-function defaultTransformValue(fieldProps) {
-  return fieldProps.get(fieldProps.get('valuePropName'));
-}
-
-function predicate(fieldProps) {
-  if (!Map.isMap(fieldProps) || !fieldProps.has('fieldPath')) return;
+const shouldSerializeField = (fieldProps) => {
+  if (!fieldProps.fieldPath) {
+    return
+  }
 
   /* Bypass the fields which should be skipped */
-  if (fieldProps.get('skip')) return false;
+  if (fieldProps.skip) {
+    return false
+  }
 
   /* Grab the field's value */
-  const defaultValue = fieldProps.get(fieldProps.get('valuePropName'));
+  const value = recordUtils.getValue(fieldProps)
 
   /* Bypass checkboxes with no value */
-  const isCheckbox = (fieldProps.get('type') === 'checkbox');
-  const hasEmptyValue = (defaultValue === '');
-  if (!isCheckbox && hasEmptyValue) return false;
+  const isCheckbox = fieldProps.type === 'checkbox'
+  const hasEmptyValue = value === ''
 
-  return true;
+  if (!isCheckbox && hasEmptyValue) {
+    return false
+  }
+
+  return true
 }
 
 /**
- * Serializes the provided fields into immutable map.
- * @param {Map} fields
- * @param {Function} transformValue
- * @returns {Map}
+ * Serializes the provided fields. Returns
+ * @param {Object} fields
+ * @returns {Object}
  */
-export default function serializeFields(fields, transformValue = defaultTransformValue) {
-  return flattenDeep(fields, predicate, false, transformValue);
-}
+const serializeFields = R.compose(
+  R.reduce((acc, fieldProps) => {
+    return R.assocPath(fieldProps.fieldPath, recordUtils.getValue(fieldProps), acc)
+  }, {}),
+  R.filter(shouldSerializeField),
+  flattenFields,
+)
+
+export default serializeFields

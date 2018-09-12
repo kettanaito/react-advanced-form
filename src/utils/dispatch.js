@@ -1,24 +1,8 @@
-import { Iterable } from 'immutable';
-
+// @flow
 /**
- * Dispatches the provided function after applying conditional transformations to its params
- * based on the passed context options.
- * @param {Function} func
- * @param {Object} args
- * @param {Object} context
+ * Dispatches the given function when the following exists.
+ * Returns the return of the given function.
  */
-export default function dispatch(func, args, context = {}, overrides = {}) {
-  const { withImmutable } = context;
+const dispatch = (func: Function, args: Object) => func && func(args)
 
-  /* When Immutable args allowed, bypass any transformation */
-  const resolvedArgs = withImmutable
-    ? args
-    : Object.keys(args).reduce((nextArgs, argName) => {
-      const argValue = args[argName];
-      nextArgs[argName] = Iterable.isIterable(argValue) ? argValue.toJS() : argValue;
-
-      return nextArgs;
-    }, {});
-
-  return func({ ...resolvedArgs, ...overrides });
-}
+export default dispatch

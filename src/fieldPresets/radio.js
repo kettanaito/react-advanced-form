@@ -1,3 +1,6 @@
+import * as R from 'ramda'
+import * as recordUtils from '../utils/recordUtils'
+
 export default {
   /**
    * There can be multiple radio fields with the same name represented by
@@ -7,69 +10,70 @@ export default {
 
   /**
    * Handling of contextProps of Radio inputs is unique.
-   * 1. Never pass "props.value" to context. <Field.Radio> is always expected to receive a "value" prop,
-   * however it should never set it to context on registration. The value in the context will be changed
-   * according to the onChange handlers in the future.
+   * 1. Never pass "props.value" to context. <Field.Radio> is always expected
+   * to receive a "value" prop, however it should never set it to context on
+   * registration. The value in the context will be changed according to the
+   * onChange handlers in the future.
    * 2. Determine "initialValue" based on optional "checked" prop.
    * 3. Add new "checked" props unique to this field type.
    */
-  mapPropsToField({ fieldRecord, props: { checked, value, onChange } }) {
-    fieldRecord.type = 'radio';
-    fieldRecord.controlled = !!onChange;
+  mapPropsToField: ({ fieldRecord, props: { checked, value, onChange } }) => {
+    fieldRecord.type = 'radio'
+    fieldRecord.controlled = !!onChange
 
-    delete fieldRecord.initialValue;
+    delete fieldRecord.initialValue
 
     if (checked) {
-      fieldRecord.initialValue = value;
+      fieldRecord.initialValue = value
     } else {
-      delete fieldRecord.value;
+      delete fieldRecord.value
     }
 
-    return fieldRecord;
+    return fieldRecord
   },
 
   /**
-   * When the radio field with the same name is already registered, check if it has
-   * some value in the record. Only radio fields with "checked" prop propagate their value
-   * to the field's record, other radio fields are registered, but their value is ignored.
+   * When the radio field with the same name is already registered, check if it
+   * has some value in the record. Only radio fields with "checked" prop
+   * propagate their value to the field's record, other radio fields are
+   * registered, but their value is ignored.
    */
-  beforeRegister({ fieldProps, fields }) {
-    const fieldPath = fieldProps.get('fieldPath');
-    const alreadyExist = fields.hasIn(fieldPath);
+  beforeRegister: ({ fieldProps, fields }) => {
+    const { fieldPath } = fieldProps
+    const existingField = R.path(fieldPath, fields)
 
-    if (!alreadyExist) {
-      return fieldProps;
+    if (!existingField) {
+      return fieldProps
     }
 
-    const valuePropName = fieldProps.get('valuePropName');
-    const existingValue = fields.getIn([...fieldPath, valuePropName]);
+    const { valuePropName } = fieldProps
+    const existingValue = recordUtils.getValue(existingField)
+
     if (existingValue) {
-      return false;
+      return false
     }
 
-    const fieldValue = fieldProps.get(valuePropName);
-    return fieldValue ? fieldProps.set(valuePropName, fieldValue) : fieldProps;
+    const fieldValue = recordUtils.getValue(fieldProps)
+    return fieldValue ? R.assoc(valuePropName, fieldValue, fieldProps) : fieldProps
   },
 
   /**
    * Should update record.
-   * Determines when it is needed to execute the native "Form.handleFieldChange" during the
-   * "Field.componentWillReceiveProps" for controlled fields.
+   * Determines when it is needed to execute the native
+   * "Form.handleFieldChange" during the "Field.componentWillReceiveProps"
+   * for controlled fields.
    *
-   * This is needed for the Radio field since on "Field.componentWillReceiveProps" the "prevValue" and "nextValue"
-   * will always be the same - Radio field controlled updates do NOT update the value, but a "checked" prop.
-   * Regardless, what should be compared is the next value and the current value in the field's record.
+   * This is needed for the Radio field since on
+   * "Field.componentWillReceiveProps" the "prevValue" and "nextValue" will
+   * always be the same - Radio field controlled updates do NOT update the
+   * value, but a "checked" prop. Regardless, what should be compared is the
+   * next value and the current value in the field's record.
    */
-  shouldUpdateRecord({ nextValue, nextProps, contextProps }) {
-    return nextProps.checked && (nextValue !== contextProps.get('value'));
+  shouldUpdateRecord: ({ nextValue, nextProps, contextProps }) => {
+    return nextProps.checked && nextValue !== contextProps.value
   },
-
-  enforceProps({ props, contextProps }) {
-    return {
-      value: props.value,
-      checked: contextProps.get('controlled')
-        ? props.checked
-        : (props.value === contextProps.get('value'))
-    };
-  }
-};
+  enforceProps: ({ props, contextProps }) => ({
+    value: props.value,
+    checked: contextProps.controlled ? props.checked : props.value === contextProps.value,
+  }),
+}
