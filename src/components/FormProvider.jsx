@@ -9,14 +9,14 @@ import PropTypes from 'prop-types'
 export const defaultDebounceTime = 250
 
 export const ValidationRulesPropType = PropTypes.shape({
-  type: PropTypes.object, // type-specific field validation rules
-  name: PropTypes.object, // name-specific field validation rules
+  type: PropTypes.object,
+  name: PropTypes.object,
 })
 
 export const ValidationMessagesPropType = PropTypes.shape({
-  general: PropTypes.object, // general validation messages
-  type: PropTypes.object, // type-specific validation messages
-  name: PropTypes.object, // name-specific validation messages
+  general: PropTypes.object,
+  type: PropTypes.object,
+  name: PropTypes.object,
 })
 
 export default class FormProvider extends React.Component {
@@ -24,11 +24,13 @@ export default class FormProvider extends React.Component {
     rules: ValidationRulesPropType,
     messages: ValidationMessagesPropType,
     debounceTime: PropTypes.number,
+    withImmutable: PropTypes.bool,
   }
 
   static defaultProps = {
     messages: {},
     debounceTime: defaultDebounceTime,
+    withImmutable: false,
   }
 
   static childContextTypes = {
@@ -39,6 +41,12 @@ export default class FormProvider extends React.Component {
 
   getChildContext() {
     const { rules, messages, debounceTime } = this.props
+
+    if (this.props.hasOwnProperty('withImmutable')) {
+      console.warn(
+        'FormProvider: `withImmutable` prop has been deprecated. Please remove it and treat exposed library instances as plain JavaScript data types. See more details: https://goo.gl/h5YUiS',
+      )
+    }
 
     return {
       rules,

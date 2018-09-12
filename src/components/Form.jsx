@@ -100,6 +100,12 @@ export default class Form extends React.Component {
     const { rules: explicitRules, messages: explicitMessages } = props
     const { debounceTime, rules: contextRules, messages } = context
 
+    if (this.props.hasOwnProperty('withImmutable')) {
+      console.warn(
+        'FormProvider: `withImmutable` prop has been deprecated. Please remove it and treat exposed library instances as plain JavaScript data types. See more details: https://goo.gl/h5YUiS',
+      )
+    }
+
     /* Set the validation debounce duration */
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime
 
