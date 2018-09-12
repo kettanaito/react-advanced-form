@@ -10,14 +10,32 @@ const options = [
 ]
 
 export default class ReactSelectExample extends React.Component {
+  transformSerialized = ({ serialized }) => {
+    const { food, multipleValues } = serialized
+
+    /* Transform serialized fields to include "value" property of selected options */
+    return {
+      food: food.value,
+      multipleValues: multipleValues.map((option) => option.value),
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
         <h1>react-select</h1>
 
-        <Form onSubmitStart={this.props.onSubmitStart}>
+        <Form
+          onSerialize={this.transformSerialized}
+          onSubmitStart={this.props.onSubmitStart}
+        >
           <Select name="food" label="Choose a single value" options={options} />
-          <Select name="multipleValues" label="Choose multiple values" options={options} multi />
+          <Select
+            name="multipleValues"
+            label="Choose multiple values"
+            options={options}
+            isMulti
+          />
 
           <Button>Submit</Button>
         </Form>

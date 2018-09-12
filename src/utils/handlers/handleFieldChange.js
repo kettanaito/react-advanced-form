@@ -19,7 +19,7 @@ export default async function handleFieldChange(
    * eventually via "createField.Field.componentReceiveProps()", when comparing previous
    * and next values of controlled fields.
    */
-  const eventInstance = event.nativeEvent || event
+  const eventInstance = event && (event.nativeEvent || event)
   const isForcedUpdate = event && !eventInstance.isForcedUpdate
   const { controlled: isControlled, onChange: customChangeHandler } = fieldProps
 
