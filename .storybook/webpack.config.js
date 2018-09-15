@@ -5,16 +5,17 @@
 // IMPORTANT
 // When you add this file, we won't add the default configurations which is similar
 // to "React Create App". This only has babel loader to load JavaScript.
-const path = require('path');
-const cwd = process.cwd();
+const path = require('path')
+const cwd = process.cwd()
 
 module.exports = {
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'raw-loader']
-      }
+        exclude: /node_modules/,
+        use: ['style-loader', 'raw-loader'],
+      },
     ],
   },
   resolve: {
@@ -22,7 +23,7 @@ module.exports = {
       '@lib': path.resolve(cwd, './'),
       '@examples': path.resolve(cwd, './examples'),
       '@shared': path.resolve(cwd, './examples/shared'),
-      '@fields': path.resolve(cwd, './examples/fields')
-    }
-  }
-};
+      '@fields': path.resolve(cwd, './examples/fields'),
+    },
+  },
+}

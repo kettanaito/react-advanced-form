@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const webpackPreprocessor = require('@cypress/webpack-preprocessor')
 const storybookWebpackConfig = require('../../.storybook/webpack.config')
+const babelConfig = require('../../babel.config')
 
 const webpackOptions = {
   module: {
@@ -8,22 +9,16 @@ const webpackOptions = {
       {
         test: /\.jsx?$/i,
         loader: 'babel-loader',
-        options: {
-          presets: ['env', 'react', 'flow'],
-          plugins: ['transform-class-properties'],
-        },
+        exclude: /node_modules/,
+        options: babelConfig,
       },
       {
         test: /\.css$/i,
+        // exclude: /node_modules/,
         use: ['style-loader', 'raw-loader'],
       },
     ],
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-    }),
-  ],
   resolve: {
     alias: storybookWebpackConfig.resolve.alias,
     extensions: ['.spec.jsx', '.spec.js', '.jsx', '.js'],
@@ -35,6 +30,6 @@ const options = {
   watchOptions: {},
 }
 
-module.exports = on => {
+module.exports = (on) => {
   on('file:preprocessor', webpackPreprocessor(options))
 }

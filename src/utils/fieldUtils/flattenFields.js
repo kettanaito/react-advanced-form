@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import getLeavesWhich from '../getLeaves'
+import getLeavesWhich from '../getLeavesWhich'
 
 /**
  * Accepts an object with deep nested fields and

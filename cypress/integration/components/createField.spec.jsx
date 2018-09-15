@@ -1,6 +1,5 @@
 import * as R from 'ramda'
 import React from 'react'
-import { Record } from 'immutable'
 import { expect } from 'chai'
 import Scenario from '@examples/components/createField'
 
@@ -15,7 +14,7 @@ describe('createField', function() {
         const { fields } = this.form.state
         const fieldProps = R.path(['fieldOne'], fields)
 
-        expect(Record.isRecord(fieldProps))
+        expect(fieldProps).to.be.instanceOf(Object)
         expect(fieldProps.name).to.equal('fieldOne')
         expect(fieldProps.fieldPath).to.deep.equal(['fieldOne'])
       }, 100)

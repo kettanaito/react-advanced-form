@@ -1,6 +1,6 @@
 import deriveDeepWith from './deriveDeepWith'
 
-test('deriveDeepWith', () => {
+test('Returns matching object with the given transformation applied', () => {
   const res = deriveDeepWith(
     (k, l, r) => l * r.value,
     {

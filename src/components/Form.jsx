@@ -25,7 +25,7 @@ import {
 } from '../utils'
 import * as handlers from '../utils/handlers'
 import validate from '../utils/handlers/validateField'
-import getLeavesWhich from '../utils/getLeaves'
+import getLeavesWhich from '../utils/getLeavesWhich'
 import deriveDeepWith from '../utils/deriveDeepWith'
 
 /**
