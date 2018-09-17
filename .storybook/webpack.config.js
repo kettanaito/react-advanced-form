@@ -7,13 +7,14 @@
 // to "React Create App". This only has babel loader to load JavaScript.
 const path = require('path')
 const cwd = process.cwd()
+const nodeEnv = process.env.NODE_ENV
 
 module.exports = {
+  mode: nodeEnv,
   module: {
     rules: [
       {
         test: /\.css$/,
-        exclude: /node_modules/,
         use: ['style-loader', 'raw-loader'],
       },
     ],
