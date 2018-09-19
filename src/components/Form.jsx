@@ -323,8 +323,6 @@ export default class Form extends React.Component {
   handleFieldChange = this.withRegisteredField(async (args) => {
     const { fields, dirty } = this.state
 
-    console.log('field change', { args })
-
     const changePayload = await handlers.handleFieldChange(args, fields, this, {
       onUpdateValue: this.updateFieldsWith,
     })
@@ -334,7 +332,7 @@ export default class Form extends React.Component {
      * record, therefore, need to explicitly ensure the payload was returned.
      */
     if (changePayload) {
-      this.updateFieldsWith(changePayload.nextFieldProps)
+      await this.updateFieldsWith(changePayload.nextFieldProps)
     }
 
     /* Mark form as dirty if it's not already */
@@ -350,9 +348,13 @@ export default class Form extends React.Component {
    */
   handleFieldBlur = this.withRegisteredField(async (args) => {
     const { fields } = this.state
-    const { nextFields } = await handlers.handleFieldBlur(args, fields, this)
+    const { nextFieldProps } = await handlers.handleFieldBlur(
+      args,
+      fields,
+      this,
+    )
 
-    this.setState({ fields: nextFields })
+    this.updateFieldsWith(nextFieldProps)
   })
 
   /**
@@ -525,7 +527,6 @@ export default class Form extends React.Component {
     const { onSerialize } = this.props
 
     const serialized = fieldUtils.serializeFields(fields)
-    console.log('serialized:', serialized)
 
     return onSerialize
       ? onSerialize({
