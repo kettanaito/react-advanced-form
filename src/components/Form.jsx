@@ -4,9 +4,9 @@ import invariant from 'invariant'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { EventEmitter } from 'events'
-import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/operator/bufferTime'
-import 'rxjs/add/observable/fromEvent'
+import { Observable } from 'rxjs/internal/Observable'
+import { fromEvent } from 'rxjs/internal/observable/fromEvent'
+import { bufferTime } from 'rxjs/internal/operators/bufferTime'
 
 /* Internal modules */
 import {
@@ -25,7 +25,7 @@ import {
 } from '../utils'
 import * as handlers from '../utils/handlers'
 import validate from '../utils/handlers/validateField'
-import getLeavesWhich from '../utils/getLeaves'
+import getLeavesWhich from '../utils/getLeavesWhich'
 import deriveDeepWith from '../utils/deriveDeepWith'
 
 /**
@@ -123,24 +123,14 @@ export default class Form extends React.Component {
     this.eventEmitter = eventEmitter
 
     /* Field events observerables */
-    Observable.fromEvent(eventEmitter, 'fieldRegister')
-      .bufferTime(50)
+    fromEvent(eventEmitter, 'fieldRegister')
+      .pipe(bufferTime(50))
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
-    Observable.fromEvent(eventEmitter, 'fieldFocus').subscribe(
-      this.handleFieldFocus,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldChange').subscribe(
-      this.handleFieldChange,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldBlur').subscribe(
-      this.handleFieldBlur,
-    )
-    Observable.fromEvent(eventEmitter, 'fieldUnregister').subscribe(
-      this.unregisterField,
-    )
-    Observable.fromEvent(eventEmitter, 'validateField').subscribe(
-      this.validateField,
-    )
+    fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
+    fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
+    fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
+    fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField)
+    fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
   }
 
   /**
@@ -342,7 +332,7 @@ export default class Form extends React.Component {
      * record, therefore, need to explicitly ensure the payload was returned.
      */
     if (changePayload) {
-      this.updateFieldsWith(changePayload.nextFieldProps)
+      await this.updateFieldsWith(changePayload.nextFieldProps)
     }
 
     /* Mark form as dirty if it's not already */
@@ -358,9 +348,13 @@ export default class Form extends React.Component {
    */
   handleFieldBlur = this.withRegisteredField(async (args) => {
     const { fields } = this.state
-    const { nextFields } = await handlers.handleFieldBlur(args, fields, this)
+    const { nextFieldProps } = await handlers.handleFieldBlur(
+      args,
+      fields,
+      this,
+    )
 
-    this.setState({ fields: nextFields })
+    this.updateFieldsWith(nextFieldProps)
   })
 
   /**
@@ -533,7 +527,6 @@ export default class Form extends React.Component {
     const { onSerialize } = this.props
 
     const serialized = fieldUtils.serializeFields(fields)
-    console.log('serialized:', serialized)
 
     return onSerialize
       ? onSerialize({

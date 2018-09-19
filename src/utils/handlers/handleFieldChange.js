@@ -19,21 +19,21 @@ export default async function handleFieldChange(
    * eventually via "createField.Field.componentReceiveProps()", when comparing previous
    * and next values of controlled fields.
    */
-  const eventInstance = event.nativeEvent || event
-  const isForcedUpdate = event && !eventInstance.isForcedUpdate
-  const { controlled: isControlled, onChange: customChangeHandler } = fieldProps
+  const eventInstance = event && (event.nativeEvent || event)
+  const { isForcedUpdate } = eventInstance || {}
+  const { controlled: isControlled, onChange } = fieldProps
 
-  if (isForcedUpdate && isControlled) {
+  if (!isForcedUpdate && isControlled) {
     invariant(
-      customChangeHandler,
+      onChange,
       'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
         'but got: %s.',
       fieldProps.fieldPath.join('.'),
-      customChangeHandler,
+      onChange,
     )
 
     return dispatch(
-      customChangeHandler,
+      onChange,
       {
         event,
         nextValue,
@@ -119,7 +119,7 @@ export default async function handleFieldChange(
    */
   if (!isControlled) {
     dispatch(
-      customChangeHandler,
+      onChange,
       {
         event,
         nextValue,

@@ -113,7 +113,9 @@ export default function connectField(options) {
           form.props.initialValues,
           hocOptions,
         )
-        const registeredValue = isset(contextValue) ? contextValue : value || initialValue
+        const registeredValue = isset(contextValue)
+          ? contextValue
+          : value || initialValue
 
         const initialFieldProps = {
           getRef: () => this,
@@ -249,7 +251,10 @@ export default function connectField(options) {
        * Deletes the field's record upon unmounting.
        */
       componentWillUnmount() {
-        this.context.form.eventEmitter.emit('fieldUnregister', this.contextProps)
+        this.context.form.eventEmitter.emit(
+          'fieldUnregister',
+          this.contextProps,
+        )
       }
 
       /**
@@ -302,7 +307,11 @@ export default function connectField(options) {
        * @param {any} prevValue
        */
       handleChange = (args) => {
-        const { event, nextValue: customNextValue, prevValue: customPrevValue } = args
+        const {
+          event,
+          nextValue: customNextValue,
+          prevValue: customPrevValue,
+        } = args
         const {
           contextProps,
           context: { form },
@@ -314,7 +323,7 @@ export default function connectField(options) {
 
         const prevValue = args.hasOwnProperty('prevValue')
           ? customPrevValue
-          : contextProps[valuePropName] // TODO Use "recordUtils.getValue()"
+          : contextProps[valuePropName]
 
         form.eventEmitter.emit('fieldChange', {
           event,
@@ -340,18 +349,17 @@ export default function connectField(options) {
 
         /* Reference to the enforced props from the HOC options */
         const enforcedProps = hocOptions.enforceProps({ props, contextProps })
-        const fieldState = contextProps
-        const { valuePropName } = fieldState
-        const value = fieldState.controlled
+        const { valuePropName } = contextProps
+        const value = contextProps.controlled
           ? props[valuePropName] || ''
-          : fieldState[valuePropName]
+          : contextProps[valuePropName]
 
         /* Props to assign to the field component directly (input, select, etc.) */
         const fieldProps = {
-          name: fieldState.name,
-          type: fieldState.type,
+          name: contextProps.name,
+          type: contextProps.type,
           [valuePropName]: value,
-          required: fieldState.required,
+          required: contextProps.required,
           disabled: this.props.disabled,
 
           /* Assign/override the props provided via {options.enforceProps()} */
@@ -370,7 +378,7 @@ export default function connectField(options) {
           <WrappedComponent
             {...props}
             fieldProps={fieldProps}
-            fieldState={fieldState}
+            fieldState={contextProps}
             handleFieldFocus={this.handleFocus}
             handleFieldChange={this.handleChange}
             handleFieldBlur={this.handleBlur}

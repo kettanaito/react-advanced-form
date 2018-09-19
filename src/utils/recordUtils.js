@@ -19,7 +19,6 @@ export const createField = (initialState) => {
 
   return {
     /* Internal */
-    ref: null,
     fieldGroup: null,
     fieldPath: null,
 
@@ -95,11 +94,17 @@ export const getValue = (fieldProps) => {
  * Updates the value prop of the given field with the given next value.
  * Beware that this function references "valuePropName" prop of the given field.
  * Thus, it cannot be used on non-field object.
+ * @param {Function|any} nextValueGetter
  * @param {Object} fieldProps
- * @param {any} nextValue
  */
-export const setValue = R.curry((nextValue, fieldProps) => {
+export const setValue = R.curry((nextValueGetter, fieldProps) => {
   const { fieldPath, valuePropName } = fieldProps
+
+  /* Accept "nextValue" as a function to be able to make "setValue" composable */
+  const nextValue =
+    typeof nextValueGetter === 'function'
+      ? nextValueGetter(fieldProps)
+      : nextValueGetter
 
   invariant(
     valuePropName,
@@ -108,11 +113,7 @@ export const setValue = R.curry((nextValue, fieldProps) => {
     fieldPath && fieldPath.join('.'),
   )
 
-  /* Accept "nextValue" as a function to be able to make "setValue" composable */
-  const assocValue =
-    typeof nextValue === 'function' ? nextValue(fieldProps) : nextValue
-
-  return R.assoc(valuePropName, assocValue, fieldProps)
+  return R.assoc(valuePropName, nextValue, fieldProps)
 })
 
 /**
@@ -179,14 +180,14 @@ export const resetValidationState = R.mergeDeepLeft({
 
 /**
  * Resets the given field to its initial state.
- * @param {Function} nextValue
+ * @param {Function} nextValueGetter
  * @param {Object} fieldProps
  * @returns {Object}
  */
-export const reset = R.curry((nextValue, fieldProps) => {
+export const reset = R.curry((nextValueGetter, fieldProps) => {
   return R.compose(
     // Beware that this will set value to "undefined" when no "initialValue" is found
-    setValue(nextValue(fieldProps)),
+    setValue(nextValueGetter(fieldProps)),
     setErrors(null),
     resetValidationState,
     resetValidityState,

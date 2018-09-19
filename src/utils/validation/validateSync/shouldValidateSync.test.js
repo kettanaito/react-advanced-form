@@ -1,7 +1,7 @@
 import shouldValidateSync from './shouldValidateSync'
 import * as recordUtils from '../../recordUtils'
 
-test('returns "true" when validation is forced', () => {
+test('Returns "true" when validation is forced', () => {
   const needsValidation = shouldValidateSync(
     {
       fieldProps: recordUtils.createField({
@@ -16,7 +16,7 @@ test('returns "true" when validation is forced', () => {
   expect(needsValidation).toEqual(true)
 })
 
-test('returns "true" for required field', () => {
+test('Returns "true" for required field', () => {
   const needsValidation = shouldValidateSync(
     {
       fieldProps: recordUtils.createField({
@@ -32,7 +32,7 @@ test('returns "true" for required field', () => {
   expect(needsValidation).toEqual(true)
 })
 
-test('returns "true" for non-validated field with value and field rule', () => {
+test('Returns "true" for non-validated field with value and field rule', () => {
   const needsValidation = shouldValidateSync(
     {
       fieldProps: recordUtils.createField({
@@ -49,7 +49,7 @@ test('returns "true" for non-validated field with value and field rule', () => {
   expect(needsValidation).toEqual(true)
 })
 
-test('returns "true" for non-validated field with value and form rules', () => {
+test('Returns "true" for non-validated field with value and form rules', () => {
   const needsValidation = shouldValidateSync(
     {
       fieldProps: recordUtils.createField({
@@ -67,7 +67,7 @@ test('returns "true" for non-validated field with value and form rules', () => {
   expect(needsValidation).toEqual(true)
 })
 
-test('returns "false" for empty optional field', () => {
+test('Returns "false" for empty optional field', () => {
   const needsValidation = shouldValidateSync(
     {
       fieldProps: recordUtils.createField({

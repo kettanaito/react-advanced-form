@@ -4,7 +4,7 @@ import { Input } from '@fields'
 import Button from '@shared/Button'
 
 export default class SetErrors extends React.Component {
-  handleButtonClick = (event) => {
+  handleFirstButtonClick = (event) => {
     event.preventDefault()
 
     this.form.setErrors({
@@ -30,7 +30,7 @@ export default class SetErrors extends React.Component {
       <Form
         ref={(form) => {
           this.form = form
-          getRef && getRef(form)
+          return getRef && getRef(form)
         }}
       >
         <Input
@@ -43,7 +43,7 @@ export default class SetErrors extends React.Component {
           <Input name="firstName" required />
         </Field.Group>
 
-        <Button id="btn-first" onClick={this.handleButtonClick}>
+        <Button id="btn-first" onClick={this.handleFirstButtonClick}>
           Set both errors
         </Button>
         <Button id="btn-second" onClick={this.handleSecondButtonClick}>

@@ -12,7 +12,7 @@ const checkbox = recordUtils.createField({
 const fields = { fieldOne: fieldProps }
 const form = {}
 
-test('Cannot be called without "fieldProps", "fields" and "form"', () => {
+test('Throws on call attempt without "fieldProps" and "form"', () => {
   expect(createRuleResolverArgs).to.throw()
   expect(createRuleResolverArgs.bind(this, {})).to.throw()
 })

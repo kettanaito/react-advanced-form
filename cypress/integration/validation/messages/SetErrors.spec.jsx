@@ -1,4 +1,5 @@
 import React from 'react'
+import { expect } from 'chai'
 import Scenario from '@examples/validation/messages/SetErrors'
 
 const firstButtonClick = () => cy.get('#btn-first').click()
@@ -14,7 +15,9 @@ describe('Form-wide errors', function() {
   })
 
   it('Sets error messages for fields using form ref', () => {
+    cy.wait(100)
     firstButtonClick()
+    cy.wait(100)
 
     cy.getField('fieldOne')
       .invalid()
@@ -31,13 +34,11 @@ describe('Form-wide errors', function() {
       .valid()
 
     firstButtonClick()
-
     cy.getField('fieldOne')
       .invalid()
       .hasError('foo')
 
     secondButtonClick()
-
     cy.getField('fieldOne').valid()
     cy.getField('firstName').invalid()
   })

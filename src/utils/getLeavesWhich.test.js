@@ -1,7 +1,7 @@
 import * as R from 'ramda'
-import getLeavesWhich from './getLeaves'
+import getLeavesWhich from './getLeavesWhich'
 
-// test('Returns all leaves of the given object', () => {
+// test('Returns leaves of the given object', () => {
 //   const res = getLeaves({
 //     a: 1,
 //     b: {
@@ -16,7 +16,7 @@ import getLeavesWhich from './getLeaves'
 //   expect(res).toEqual([1, 2, 3, 4])
 // })
 
-test.only('getLeavesWhich', () => {
+test.only('Returns list of leaves that satisfy the predicate', () => {
   const fields = {
     foo: {
       bar: 'doe',
