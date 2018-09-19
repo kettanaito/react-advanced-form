@@ -47,9 +47,7 @@ describe('Submit', () => {
     expect(submitCount).to.equal(0)
 
     cy.getField('termsAndConditions')
-      .check({ force: true })
-      .should('be.checked')
-      .blur()
+      .markChecked()
       .valid()
 
     cy.get('button[type="submit"]')

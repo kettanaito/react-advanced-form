@@ -27,26 +27,17 @@ describe('Uncontrolled fields interactions', function() {
 
   it('Updates form state on field change', () => {
     cy.get('#inputOne').type('first value')
-    cy
-      .get('#inputTwo')
+    cy.get('#inputTwo')
       .clear()
       .typeIn('second value')
-    cy.get('#radio3').check({ force: true })
-    cy
-      .get('#checkbox1')
-      .check({ force: true })
-      .should('be.checked')
-    cy
-      .get('#checkbox2')
-      .uncheck({ force: true })
-      .should('not.be.checked')
+    cy.get('#radio3').markChecked()
+    cy.get('#checkbox1').markChecked()
+    cy.get('#checkbox2').markUnchecked()
     cy.get('#select').select('three')
-    cy
-      .get('#textareaOne')
+    cy.get('#textareaOne')
       .clear()
       .typeIn('foo')
-    cy
-      .get('#textareaTwo')
+    cy.get('#textareaTwo')
       .clear()
       .typeIn('another')
 

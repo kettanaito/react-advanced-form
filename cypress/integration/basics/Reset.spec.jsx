@@ -11,14 +11,14 @@ describe('Reset', function() {
 
     cy.getField('username')
       .clear()
-      .typeIn('john.doe')
+      .typeIn('admin')
       .expected()
     cy.getField('password')
       .clear()
       .typeIn('foo')
       .expected()
     cy.getField('termsAndConditions')
-      .check({ force: true })
+      .markChecked()
       .expected()
 
     reset()
@@ -30,7 +30,7 @@ describe('Reset', function() {
       .expected()
   })
 
-  it('Does not validate reset empty field', () => {
+  it('Does not validate empty reset field', () => {
     cy.getField('firstName')
       .hasValue('')
       .validated('sync', false)
