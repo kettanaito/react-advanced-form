@@ -2,28 +2,46 @@ version: 2
 
 jobs:
   build:
-    machine:
-      node:
-        version: 6.11.4
+    docker:
+      - image: cypress/browsers:chrome67
+        environment:
+          TERM: xterm
+
+    working_directory: ~/root
+
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+            - v1-dependencies-{{ .Branch }}
+            - v1-dependencies
 
-      - run: npm install
+      - run:
+          name: Checking node version
+          command: |
+            node --version
+            npm --version
+
+      - run:
+          name: Installing dependencies
+          command: npm ci
 
       - save_cache:
+          key: v1-dependencies-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - ~/.npm
+            - ~/.cache
 
-      # Install the library
-      - run: npm run build:prod
+      - run:
+          name: Running unit tests
+          command: npm run test:unit
 
-      # Run tests
-      - run: npm test
+      - run:
+          name: Building the package
+          command: npm run build:prod
+
+      - run:
+          name: Running integration tests
+          command: npm run test:integration

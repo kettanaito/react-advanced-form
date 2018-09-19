@@ -45,9 +45,9 @@
     "build:prod": "NODE_ENV=production webpack",
     "build:dev": "NODE_ENV=development webpack",
     "build:storybook": "build-storybook",
-    "test:utils": "NODE_ENV=production jest",
+    "test:unit": "NODE_ENV=production jest",
     "test:integration": "NODE_ENV=production node_modules/.bin/cypress run --spec cypress/integration/index.js",
-    "test": "npm run test:utils && npm run test:integration",
+    "test": "npm run test:unit && npm run test:integration",
     "prepublishOnly": "npm run build && npm test"
   },
   "pre-push": [
