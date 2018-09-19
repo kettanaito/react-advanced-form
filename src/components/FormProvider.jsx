@@ -24,13 +24,11 @@ export default class FormProvider extends React.Component {
     rules: ValidationRulesPropType,
     messages: ValidationMessagesPropType,
     debounceTime: PropTypes.number,
-    withImmutable: PropTypes.bool,
   }
 
   static defaultProps = {
     messages: {},
     debounceTime: defaultDebounceTime,
-    withImmutable: false,
   }
 
   static childContextTypes = {
