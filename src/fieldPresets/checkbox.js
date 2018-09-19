@@ -5,7 +5,6 @@ export default {
     ...fieldRecord,
     type: 'checkbox',
     checked: !!checked,
-    initialValue: checked,
   }),
   enforceProps: ({ contextProps }) => ({
     checked: contextProps.checked,
