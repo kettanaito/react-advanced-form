@@ -49,8 +49,8 @@ const defaultOptions = {
  * Returns the initial value for the given fields.
  * Takes field props, initial values of a form and field's class into account.
  * @param {string[]} fieldPath
- * @param {Record} fieldProps
- * @param {Map} initialValues
+ * @param {Object} fieldProps
+ * @param {Object} initialValues
  * @param {Object} hocOptions
  * @returns {string?}
  */
@@ -124,11 +124,12 @@ export default function connectField(options) {
           : value || initialValue
 
         const initialFieldProps = {
+          ...prunedProps,
           getRef: () => this,
           fieldGroup,
           fieldPath: __fieldPath,
-          name: prunedProps.name,
-          type: prunedProps.type,
+          // name: prunedProps.name,
+          // type: prunedProps.type,
           valuePropName,
           [valuePropName]: hocOptions.mapValue(registeredValue),
           /**
@@ -155,7 +156,7 @@ export default function connectField(options) {
            * relatively to the field, regardless of the other fields being validated.
            */
           debounceValidate: debounce(form.validateField, form.debounceTime),
-          skip: prunedProps.skip,
+          // skip: prunedProps.skip,
 
           rule: prunedProps.rule,
           asyncRule: prunedProps.asyncRule,
