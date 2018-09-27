@@ -1,8 +1,9 @@
+import * as R from 'ramda'
+
 //
 // TODO It would be great to allow any prop to be a function with the unified
 // resolver interface.
 //
-
 /* The list of supported dynamic props */
 export const supportedRxProps = ['required']
 
@@ -11,17 +12,13 @@ export const supportedRxProps = ['required']
  */
 export default function getRxProps(props) {
   return Object.keys(props).reduce(
-    (res, propName) => {
+    (reactiveProps, propName) => {
       const propValue = props[propName]
       const isReactiveProp =
         supportedRxProps.includes(propName) && typeof propValue === 'function'
-      const propDest = isReactiveProp ? 'reactiveProps' : 'prunedProps'
+      const propGroup = isReactiveProp ? 'reactiveProps' : 'prunedProps'
 
-      return Object.assign({}, res, {
-        [propDest]: Object.assign({}, res[propDest], {
-          [propName]: propValue,
-        }),
-      })
+      return R.assocPath([propGroup, propName], propValue, reactiveProps)
     },
     {
       reactiveProps: {},
