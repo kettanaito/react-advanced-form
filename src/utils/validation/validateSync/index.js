@@ -10,23 +10,27 @@ import ensureValue from './ensureValue'
 import applyFieldRule from './applyFieldRule'
 import applyFormRules from './applyFormRules'
 
+/**
+ * Accepts form rules relevant to the current field
+ * and resolves if those are present.
+ */
 const hasFormRules = R.allPass([R.complement(R.isNil), R.keys])
-
-const _hasFormRules = (rules) => {
-  return rules && Object.keys(rules).length > 0
-}
 
 export default async function validateSync(resolverArgs, force) {
   const { fieldProps, form } = resolverArgs
   const { applicableRules } = form.state
   const relevantFormRules = getFieldRules(fieldProps, applicableRules)
 
-  //
-  // TODO Deal with data management between getRulesSeq and shoulValidate.
-  // No need to overfetch, reuse data.
-  //
+  /**
+   * @todo Share output between getRulesSeq and shouldValidate.
+   * Avoid repeating the logic, prefer reusing the output.
+   * Review if this comment is relative.
+   */
   const should = shouldValidateSync(resolverArgs, relevantFormRules, force)
 
+  /**
+   * @todo Rewrite listOf composition to be pure.
+   */
   const rulesList = listOf(
     addWhen(fieldProps.required, (required) => required, ensureValue),
     addWhen(fieldProps.rule, isset, applyFieldRule),
