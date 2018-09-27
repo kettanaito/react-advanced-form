@@ -31,8 +31,6 @@ module.exports = {
       'process.env.BABEL_ENV': JSON.stringify(nodeEnv),
     }),
 
-    new webpack.optimize.ModuleConcatenationPlugin(),
-
     // PRODUCTION &&
     //   new BabelMinifyPlugin({
     //     removeDebugger: true,
