@@ -334,8 +334,8 @@ export default class Form extends React.Component {
   handleFirstChange = ({ event, prevValue, nextValue, fieldProps }) => {
     dispatch(this.props.onFirstChange, {
       event,
-      nextValue,
       prevValue,
+      nextValue,
       fieldProps,
       fields: this.state.fields,
       form: this,
