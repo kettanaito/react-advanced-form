@@ -1,5 +1,4 @@
 import * as R from 'ramda'
-
 import invariant from 'invariant'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -34,7 +33,7 @@ import deriveDeepWith from '../utils/deriveDeepWith'
  * @param {HTMLElement} element
  * @param {Function?} callback
  */
-function getInnerRef(element, callback) {
+function bindInnerRef(element, callback) {
   this.innerRef = element
 
   if (callback) {
@@ -102,7 +101,8 @@ export default class Form extends React.Component {
 
     if (this.props.hasOwnProperty('withImmutable')) {
       console.warn(
-        'FormProvider: `withImmutable` prop has been deprecated. Please remove it and treat exposed library instances as plain JavaScript data types. See more details: https://goo.gl/h5YUiS',
+        'FormProvider: `withImmutable` prop has been deprecated. Please remove it and treat exposed library ' +
+          'instances as plain JavaScript data types. See more details: https://goo.gl/h5YUiS',
       )
     }
 
@@ -112,10 +112,9 @@ export default class Form extends React.Component {
     /* Set validation rules */
     this.validationSchema = formUtils.mergeRules(explicitRules, contextRules)
 
-    //
-    // TODO
-    // Consider moving this to the form's state.
-    //
+    /**
+     * @todo Consider moving this to the form's state.
+     */
     this.messages = explicitMessages || messages
 
     /* Create an event emitter to communicate between form and its fields */
@@ -441,6 +440,8 @@ export default class Form extends React.Component {
    * validations to be completed.
    * When an optional predicate function is supplied, validates only the fields that
    * match the given predicate.
+   * @param {Function} predicate
+   * @returns {boolean}
    */
   validate = async (predicate = R.T) => {
     const { fields } = this.state
@@ -464,7 +465,7 @@ export default class Form extends React.Component {
       const { fields: nextFields } = this.state
 
       /* Get a map of invalid fields */
-      const invalidFields = validatedFields.filter(R.propEq('expected', false))
+      const invalidFields = R.reject(R.propEq('expected'), validatedFields)
 
       /* Call custom callback */
       dispatch(onInvalid, {
@@ -479,8 +480,8 @@ export default class Form extends React.Component {
 
   /**
    * Clears the fields.
-   * If an optional predicate function is provided, clears
-   * only the fields that match the given predicate.
+   * Clears the fields matching the given predicate.
+   * @param {Function} predicate
    */
   clear = (predicate = Boolean) => {
     const nextFields = R.compose(
@@ -504,6 +505,7 @@ export default class Form extends React.Component {
 
   /**
    * Resets all the fields to their initial state.
+   * @param {Function} predicate
    */
   reset = (predicate = Boolean) => {
     const nextFields = R.compose(
@@ -662,7 +664,7 @@ export default class Form extends React.Component {
 
     return (
       <form
-        ref={(ref) => getInnerRef.call(this, ref, innerRef)}
+        ref={(ref) => bindInnerRef.call(this, ref, innerRef)}
         id={id}
         className={className}
         style={style}
