@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import listOf from '../../listOf'
 import addWhen from '../../addWhen'
 import isset from '../../isset'
@@ -9,7 +10,9 @@ import ensureValue from './ensureValue'
 import applyFieldRule from './applyFieldRule'
 import applyFormRules from './applyFormRules'
 
-const hasFormRules = (rules) => {
+const hasFormRules = R.allPass([R.complement(R.isNil), R.keys])
+
+const _hasFormRules = (rules) => {
   return rules && Object.keys(rules).length > 0
 }
 
