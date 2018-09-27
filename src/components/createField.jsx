@@ -43,8 +43,8 @@ const defaultOptions = {
  * Returns the initial value for the given fields.
  * Takes field props, initial values of a form and field's class into account.
  * @param {string[]} fieldPath
- * @param {Record} fieldProps
- * @param {Map} initialValues
+ * @param {Object} fieldProps
+ * @param {Object} initialValues
  * @param {Object} hocOptions
  * @returns {string?}
  */
@@ -118,16 +118,17 @@ export default function connectField(options) {
           : value || initialValue
 
         const initialFieldProps = {
+          ...prunedProps,
           getRef: () => this,
           fieldGroup,
           fieldPath: __fieldPath,
-          name: prunedProps.name,
-          type: prunedProps.type,
+          // name: prunedProps.name,
+          // type: prunedProps.type,
           valuePropName,
           [valuePropName]: registeredValue,
           initialValue,
           controlled: prunedProps.hasOwnProperty('value'), // TODO Checkboxes are always uncontrolled
-          required: prunedProps.required,
+          // required: prunedProps.required,
           reactiveProps,
 
           //
@@ -142,18 +143,21 @@ export default function connectField(options) {
            * relatively to the field, regardless of the other fields being validated.
            */
           debounceValidate: debounce(form.validateField, form.debounceTime),
-          skip: prunedProps.skip,
+          // skip: prunedProps.skip,
 
-          rule: prunedProps.rule,
-          asyncRule: prunedProps.asyncRule,
-          onFocus: prunedProps.onFocus,
-          onChange: prunedProps.onChange,
-          onBlur: prunedProps.onBlur,
+          // rule: prunedProps.rule,
+          // asyncRule: prunedProps.asyncRule,
+          // onFocus: prunedProps.onFocus,
+          // onChange: prunedProps.onChange,
+          // onBlur: prunedProps.onBlur,
         }
 
         /* (Optional) Alter the field record using HOC options */
         const mappedFieldProps = hocOptions.mapPropsToField({
-          fieldRecord: initialFieldProps, // TODO Align naming
+          /**
+           * @todo Aling parameters names.
+           */
+          fieldRecord: initialFieldProps,
           props: prunedProps,
           valuePropName,
           context,
