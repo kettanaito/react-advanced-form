@@ -12,6 +12,7 @@ import makeObservable from './makeObservable'
  */
 export default function createPropsSubscriptions({ fieldProps, fields, form }) {
   const { reactiveProps } = fieldProps
+
   if (!reactiveProps) {
     return
   }
@@ -19,8 +20,8 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
   const { fieldPath: subscriberFieldPath } = fieldProps
   const resolverArgs = createRuleResolverArgs({ fieldProps, fields, form })
 
-  Object.keys(reactiveProps).forEach((rxPropName) => {
-    const resolver = reactiveProps[rxPropName]
+  Object.keys(reactiveProps).forEach((propName) => {
+    const resolver = reactiveProps[propName]
 
     makeObservable(resolver, resolverArgs, {
       initialCall: true,
@@ -48,9 +49,10 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         const nextPropValue = dispatch(resolver, nextResolverArgs)
 
         /* Set the next value of reactive prop on the respective field record */
-        const nextSubscriberRecord = recordUtils.resetValidityState(
-          R.assoc(rxPropName, nextPropValue, currentSubscriberRecord),
-        )
+        const nextSubscriberRecord = R.compose(
+          recordUtils.resetValidityState,
+          R.assoc(propName, nextPropValue),
+        )(currentSubscriberRecord)
 
         const updatedFields = R.assocPath(
           subscriberFieldPath,
