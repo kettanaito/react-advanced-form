@@ -145,18 +145,15 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Maps the field to the state.
-   * Passing fields in context gives a benefit of removing an explicit traversing of
-   * children tree, deconstructing and constructing each appropriate child with the
-   * attached handler props.
+   * Registers a new field in the form's state.
    * @param {Object} fieldProps
+   * @param {Object} fieldOptions
    */
-  registerField = ({ fieldProps: initialFieldProps, fieldOptions }) => {
+  registerField = ({ fieldProps: pristineFieldProps, fieldOptions }) => {
     const { fields } = this.state
-    const { fieldPath } = initialFieldProps
+    const { fieldPath } = pristineFieldProps
     const fieldAlreadyExists = !!R.path(fieldPath, fields)
 
-    /* Warn on field duplicates */
     invariant(
       !(fieldAlreadyExists && !fieldOptions.allowMultiple),
       'Cannot register field `%s`, the field with ' +
@@ -167,14 +164,22 @@ export default class Form extends React.Component {
 
     /* Perform custom field props transformations upon registration */
     const fieldProps = fieldOptions.beforeRegister({
-      fieldProps: initialFieldProps,
+      fieldProps: pristineFieldProps,
       fields,
     })
 
+    /**
+     * Field registration may be explicitly prevented if "beforeRegister" method
+     * returns null. This is useful to control mounting of complex fields (i.e. radio).
+     */
     if (!fieldProps) {
       return
     }
 
+    /**
+     * Assume the next state of the fields with the newly registered field
+     * set in the fields map.
+     */
     const nextFields = R.assocPath(fieldPath, fieldProps, fields)
     const { eventEmitter } = this
 
@@ -191,11 +196,13 @@ export default class Form extends React.Component {
         eventEmitter,
       })
       .subscribe(({ nextTargetRecord, changedProps }) => {
-        //
-        // TODO Test if this replaces the previous logic.
-        //
-        const nextFieldProps = nextTargetRecord.merge(changedProps)
-        this.updateFieldsWith(nextFieldProps)
+        /**
+         * @todo Verify that this replaces the previous logic.
+         */
+        R.compose(
+          this.updateFieldsWith,
+          R.mergeDeepRight(nextTargetRecord),
+        )(changedProps)
 
         // this.updateField({
         //   fieldPath,
@@ -234,8 +241,8 @@ export default class Form extends React.Component {
             /**
              * Enforce the validation function to use the "fieldProps"
              * provided directly. By default, it will try to grab the
-             * field record from the state, which is missing at the
-             * point of field mounting.
+             * field record from the state, which does not exist at
+             * the point of new field mounting.
              */
             forceProps: true,
           })
@@ -612,13 +619,14 @@ export default class Form extends React.Component {
   }
 
   render() {
-    const { innerRef, id, className, children } = this.props
+    const { innerRef, children, id, className, style } = this.props
 
     return (
       <form
         ref={(ref) => getInnerRef.call(this, ref, innerRef)}
-        {...{ id }}
-        {...{ className }}
+        id={id}
+        className={className}
+        style={style}
         onSubmit={this.submit}
         noValidate
       >
