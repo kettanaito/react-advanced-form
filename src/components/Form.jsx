@@ -612,13 +612,14 @@ export default class Form extends React.Component {
   }
 
   render() {
-    const { innerRef, id, className, children } = this.props
+    const { innerRef, children, id, className, style } = this.props
 
     return (
       <form
+        id={id}
+        className={className}
+        style={style}
         ref={(ref) => getInnerRef.call(this, ref, innerRef)}
-        {...{ id }}
-        {...{ className }}
         onSubmit={this.submit}
         noValidate
       >
