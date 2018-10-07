@@ -8,16 +8,14 @@
 
 [React Advanced Form](https://github.com/kettanaito/react-advanced-form) is a library for tailoring real-world forms in [React](https://reactjs.org/) with pleasure and ease.
 
-No boilerplate. No obscure high-order component configurations. No redundant state management. Embrace powerful custom styling, field grouping, advanced multi-layer validation, validation messages with smart fallback system, reactive props resolvers and much more.
-
 ---
 
-## Features
+# Features
 
-- **Changing expectations**. Trust and expect a form to do more than just rendering the fields. Our features are designed to handle cumbersome use cases with clean and performant code.
-- **Immutable**. Each interaction or update is a pure function that produces the next state of a field.
-- [**Composite fields**](https://redd.gitbook.io/react-advanced-form/getting-started/creating-fields). React Advanced Form is _field-centric_. That means you define flexible fields composites and reuse them throughout the entire application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
-- [**Prototyping speed**](https://redd.gitbook.io/react-advanced-form/getting-started/creating-form). Develop production-ready forms in a speed of a prototype.
+- **Expectations shift**. Trust and expect a form to do more than just rendering the fields. Our features are designed to handle cumbersome use cases with clean and performant code.
+- **Immutable**. Each interaction or update is a pure function that produces the next state of a field. Immutability is a must in any decent implementation.
+- [**Composite fields**](https://redd.gitbook.io/react-advanced-form/getting-started/creating-fields). React Advanced Form is _field-centric_. That means you define flexible fields composites and reuse them throughout the application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
+- [**Clean and fast**](https://redd.gitbook.io/react-advanced-form/getting-started/creating-form). Develop production-ready forms in a speed of a prototype.
 
 ```jsx
 // This is not a diminished example, this is a finite form
@@ -27,7 +25,7 @@ No boilerplate. No obscure high-order component configurations. No redundant sta
 </Form>
 ```
 
-- [**Smart multi-layer validation**](https://redd.gitbook.io/react-advanced-form/validation/getting-started). Declare even the most complex validation logic using single-line resolver functions.
+- [**Layered validation schema**](https://redd.gitbook.io/react-advanced-form/validation/getting-started). Declare validation rules of any complexity using pure single-line resolvers.
 
 ```javascript
 export default {
@@ -62,7 +60,7 @@ Access the field's `value`, `fieldProps`, and the `form` as the parameters of ea
   required={({ get }) => !!get(['firstName', 'value'])} />
 ```
 
-Get as many data from the sibling fields as needed, and build your logic on that. Embrace the power of reactive programming, which re-evaluates a resolver function whenever the referenced field props update.
+Get as many data from the sibling fields as needed, and build your logic around that. Rely on reactive programming that will re-evaluate a resolver function whenever the referenced field props update.
 
 - [**Field grouping**](https://redd.gitbook.io/react-advanced-form/components/field-group). Control the serialized data structure on the layout level by grouping the fields. Take advantage of nested and split groups.
 
@@ -99,13 +97,13 @@ The layout above serializes into the following JSON:
 }
 ```
 
-- **Third-party fields integration**. React Advanced Form can be used with **any** third-party fields library by using powerful [`createField`](https://redd.gitbook.io/react-advanced-form/hoc/create-field) API.
+- **Third-party fields support**. React Advanced Form can be used with **any** third-party fields library by using powerful [`createField`](https://redd.gitbook.io/react-advanced-form/hoc/create-field) API.
 
 ---
 
-## Getting started
+# Getting started
 
-### Install
+## Install
 
 ```bash
 npm install react-advanced-form --save
@@ -113,36 +111,36 @@ npm install react-advanced-form --save
 
 > Make sure to have [React](https://github.com/facebook/react) \(15.0+\) installed in your project.
 
-### Guidelines
+## Guidelines
 
 Starting with something new may appear challenging. We have prepared step-by-step instructions on how to [Get started with React Advanced Form](https://redd.gitbook.io/react-advanced-form/getting-started/installation) to make the adoption process clear and fast.
 
 ---
 
-## Resources
+# Materials
 
 - [Documentation](https://redd.gitbook.io/react-advanced-form)
 - [Advanced forms in React made easy](https://medium.com/@kettanaito/advanced-forms-in-react-made-easy-92a6e208f017) \(Medium\)
 
 ---
 
-## Browser support
+# Browser support
 
 | Chrome | Firefox | Safari | iOS Safari | Edge | Internet Explorer |
 | ------ | ------- | ------ | ---------- | ---- | ----------------- |
-| 65+    | 57+     | 9+     | 8+         | 41+  | –                 |
+| 65+    | 57+     | 9+     | 8+         | 41+  | 11\*              |
 
-> We do not conduct testing on Internet Explorer. Features may, or may not work in that browser. Consider educating the web and cutting down support of legacy browsers.
+> \* There is no official support for Internet Explorer. Consider educating the web and deprecating legacy browsers.
 
 ---
 
-## Live examples
+# Live examples
 
 - [Synchronous validation](https://codesandbox.io/s/53wlvmp42l?module=%2Fsrc%2FSyncValidation.js)
 - [Asynchronous validation](https://codesandbox.io/s/73236qlk06?module=%2Fsrc%2FAsyncValidation.js)
 
 ---
 
-## Contributing
+# Contributing
 
 Any of your contributions are highly appreciated. Please read through the [Contribution guidelines](https://redd.gitbook.io/react-advanced-form/developers/contributing) beforehand. Development isn't the only way to support, there are [many more](https://redd.gitbook.io/react-advanced-form/developers/contributing#other-contributions).
