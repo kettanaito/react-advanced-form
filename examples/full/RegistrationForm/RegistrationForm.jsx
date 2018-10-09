@@ -6,7 +6,7 @@ import Button from '@shared/Button'
 export default class RegistrationForm extends React.Component {
   registerUser = ({ serialized }) => {
     console.log(serialized)
-    return new Promise(resolve => resolve())
+    return new Promise((resolve) => resolve())
   }
 
   render() {
@@ -18,22 +18,32 @@ export default class RegistrationForm extends React.Component {
             <Input name="userEmail" type="email" label="E-mail" required />
           </Field.Group>
 
-          <Input name="userPassword" type="password" label="Password" required />
-          <Input name="confirmPassword" type="password" label="Confirm password" required />
+          <Input
+            name="userPassword"
+            type="password"
+            label="Password"
+            required
+          />
+          <Input
+            name="confirmPassword"
+            type="password"
+            label="Confirm password"
+            required
+          />
 
           <Field.Group name="primaryInfo">
             <Input
               name="firstName"
               label="First name"
-              required={({ fields }) => {
-                return !!fields.primaryInfo.lastName.value
+              required={({ get }) => {
+                return !!get(['primaryInfo', 'lastName', 'value'])
               }}
             />
             <Input
               name="lastName"
               label="Last name"
-              required={({ fields }) => {
-                return !!fields.primaryInfo.firstName.value
+              required={({ get }) => {
+                return !!get(['primaryInfo', 'firstName', 'value'])
               }}
             />
           </Field.Group>
