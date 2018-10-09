@@ -7,13 +7,10 @@ import path from 'ramda/src/path'
 export const getRulesBySelector = (selector, fieldProps, applicableRules) => {
   const keyPath = [selector, fieldProps[selector]]
 
-  //
-  // TODO
-  // Shallow keyed collection is not a usual behavior, but only suitable
-  // for the reduced schema into "applicableRules". Think of the unified interface.
-  //
-  // return applicableRules[keyPath.join('.')]
-
+  /**
+   * @todo Shallow keyed collection is not a usual behavior, but only suitable
+   * for the reduced schema into "applicableRules". Consider a unified interface.
+   */
   return path(keyPath, applicableRules)
 }
 
