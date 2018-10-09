@@ -12,8 +12,8 @@ export default {
 
   name: {
     confirmPassword: {
-      matches: ({ value, fields }) => {
-        return value === fields.userPassword.value
+      matches: ({ value, get }) => {
+        return value === get(['userPassword', 'value'])
       },
     },
   },
