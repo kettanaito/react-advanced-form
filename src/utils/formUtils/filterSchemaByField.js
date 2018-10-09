@@ -28,11 +28,6 @@ const projectResolvers = ([resolver, keyPath]) => {
   })
 }
 
-const debug = (message) => (a) => {
-  console.log(message, a)
-  return a
-}
-
 /**
  * Returns the list of resolver records from the given validation schema
  * applicable to the given field.
@@ -43,14 +38,10 @@ const filterSchemaByField = (
 ): ResolverRecord[] =>
   R.compose(
     /* Create rule record from the list of resolvers */
-    debug('result'),
     R.map(createRuleRecord),
 
     /* Handle and flat map multiple resolvers */
-    debug('after chain'),
     R.chain(projectResolvers),
-
-    debug('before chain'),
 
     /* Filter out selectors that have no rules */
     R.filter(R.head),

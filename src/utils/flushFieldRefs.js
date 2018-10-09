@@ -13,10 +13,10 @@ type FieldRefs = {
  */
 export default function flushFieldRefs(func: Function, args: mixed): FieldRefs {
   const refs = []
-  const fieldPropGetter = createPropGetter(args.fields, refs.push)
+
   const initialValue = dispatch(func, {
     ...args,
-    get: fieldPropGetter,
+    get: createPropGetter(args.fields, (propRefPath) => refs.push(propRefPath)),
   })
 
   return { refs, initialValue }

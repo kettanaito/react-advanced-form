@@ -8,7 +8,7 @@ import getRulesRefs from '../formUtils/getRulesRefs'
 import stitchWith from '../stitchWith'
 import flushFieldRefs from '../flushFieldRefs'
 
-const hasReactiveProp = R.allPass([R.complement(R.isNil), R.is(Function)])
+const shouldObserve = R.allPass([R.complement(R.isNil), R.is(Function)])
 
 const createRuleObservable = R.curry((resolverArgs, rule) => {
   const { fieldProps, form } = resolverArgs
@@ -21,12 +21,12 @@ const createRuleObservable = R.curry((resolverArgs, rule) => {
      * the validation rule(s) in which that prop is referenced.
      */
     makeObservable(resolver, resolverArgs, {
-      //
-      // TODO This is a slight overhead, since "makeObservable" will also flush
-      // the passed function field references. Since here it's done from the higher
-      // scope, it should be considered to simply this logic, or remove refs flushing
-      // from the schema.
-      //
+      /**
+       * @todo This is a slight overhead, since "makeObservable" will also flush
+       * the passed function field references. Since here it's done from the higher
+       * scope, it should be considered to simply this logic, or remove refs flushing
+       * from the schema.
+       */
       subscribe() {
         const futureFieldProps = R.path(fieldProps.fieldPath, form.state.fields)
 
@@ -66,15 +66,13 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   })
 
   const fieldRules = filterSchemaByField(fieldProps, validationSchema)
-  console.log({ fieldRules })
-
   const nextFieldRules = getRulesRefs(resolverArgs, fieldRules)
   nextFieldRules.forEach(createRuleObservable(resolverArgs))
 
   /* Add "Field.props.rule" in case the latter has fields references */
   const { rule } = fieldProps
 
-  if (hasReactiveProp(rule)) {
+  if (shouldObserve(rule)) {
     createRuleObservable(resolverArgs, {
       refs: flushFieldRefs(rule, resolverArgs).refs,
       resolver: rule,
