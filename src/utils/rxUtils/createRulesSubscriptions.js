@@ -66,6 +66,8 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   })
 
   const fieldRules = filterSchemaByField(fieldProps, validationSchema)
+  console.log({ fieldRules })
+
   const nextFieldRules = getRulesRefs(resolverArgs, fieldRules)
   nextFieldRules.forEach(createRuleObservable(resolverArgs))
 

@@ -13,6 +13,7 @@ export default function mergeRules(validationSchema, contextRules = {}) {
   }
 
   const closestRules = validationSchema || contextRules
+
   return closestRules.extend
     ? R.mergeDeepRight(closestRules, contextRules)
     : closestRules
