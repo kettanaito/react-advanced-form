@@ -77,10 +77,9 @@ export default function makeObservable(
   const formattedTargetRefs = formatRefs(refs)
 
   R.toPairs(formattedTargetRefs).forEach(([joinedFieldPath, props]) => {
-    //
-    // TODO
-    // This would be nice to improve to omit keys glue.
-    //
+    /**
+     * @todo Omit the keys glue.
+     */
     const targetFieldPath = joinedFieldPath.split('.')
 
     /**
@@ -90,9 +89,9 @@ export default function makeObservable(
      * validate to prevent invalid fields at initial form render.
      */
     const shouldValidate = !!recordUtils.getValue(subscriberProps)
-    const includesField = R.path(targetFieldPath, fields)
+    const isTargetRegistered = R.path(targetFieldPath, fields)
 
-    if (includesField) {
+    if (isTargetRegistered) {
       const subscription = createObserver({
         targetFieldPath,
         props,
