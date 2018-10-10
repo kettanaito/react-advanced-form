@@ -34,6 +34,9 @@ const methodArgs = {
   a: 'value',
   fields,
   form: {
+    state: {
+      fields,
+    },
     context: {},
   },
 }
