@@ -9,10 +9,6 @@ export type ResolverRecord = {
 
 type ResolverTuple = [Function, string[]]
 
-type FilterSchemaByField = (
-  validationSchema: Object,
-) => (fieldProps: Object) => ResolverRecord[]
-
 const getRulesPaths = (fieldProps: Object) => [
   ['name', fieldProps.name],
   ['type', fieldProps.type],
@@ -41,20 +37,22 @@ const projectResolvers = ([resolver, keyPath]: ResolverTuple) => {
  * Returns the list of resolver records from the given validation schema
  * applicable to the given field.
  */
-const filterSchemaByField: FilterSchemaByField = (validationSchema) =>
-  R.compose(
-    /* Create the list of resolver records from the list of resolvers */
-    R.map(createResolverRecord),
+const filterSchemaByField = R.curry(
+  (validationSchema: Object, fieldProps: Object): ResolverRecord[] =>
+    R.compose(
+      /* Create the list of resolver records from the list of resolvers */
+      R.map(createResolverRecord),
 
-    /* Flat map multiple resolvers */
-    R.chain(projectResolvers),
+      /* Flat map multiple resolvers */
+      R.chain(projectResolvers),
 
-    /* Filter out selectors that have no resolvers */
-    R.filter(R.head),
+      /* Filter out selectors that have no resolvers */
+      R.filter(R.head),
 
-    /* Grab resolvers based on the paths from the schema */
-    R.map((keyPath) => [R.path(keyPath, validationSchema), keyPath]),
-    getRulesPaths,
-  )
+      /* Grab resolvers based on the paths from the schema */
+      R.map((keyPath) => [R.path(keyPath, validationSchema), keyPath]),
+      getRulesPaths,
+    )(fieldProps),
+)
 
 export default filterSchemaByField
