@@ -16,7 +16,9 @@ export default function flushFieldRefs(func: Function, args: mixed): FieldRefs {
 
   const initialValue = dispatch(func, {
     ...args,
-    get: createPropGetter(args.fields, (propRefPath) => refs.push(propRefPath)),
+    get: createPropGetter(args.form.state.fields, (propRefPath) =>
+      refs.push(propRefPath),
+    ),
   })
 
   return { refs, initialValue }
