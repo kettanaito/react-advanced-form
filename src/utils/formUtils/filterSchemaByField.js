@@ -7,18 +7,27 @@ export type ResolverRecord = {
   resolver: Function,
 }
 
+type ResolverTuple = [Function, string[]]
+
+type FilterSchemaByField = (
+  validationSchema: Object,
+) => (fieldProps: Object) => ResolverRecord[]
+
 const getRulesPaths = (fieldProps: Object) => [
   ['name', fieldProps.name],
   ['type', fieldProps.type],
 ]
 
-const createRuleRecord = ([resolver, keyPath]): ResolverRecord => ({
+const createResolverRecord = ([
+  resolver,
+  keyPath,
+]: ResolverTuple): ResolverRecord => ({
   keyPath,
   selector: R.head(keyPath),
   resolver,
 })
 
-const projectResolvers = ([resolver, keyPath]) => {
+const projectResolvers = ([resolver, keyPath]: ResolverTuple) => {
   if (typeof resolver === 'function') {
     return [[resolver, keyPath]]
   }
@@ -32,23 +41,20 @@ const projectResolvers = ([resolver, keyPath]) => {
  * Returns the list of resolver records from the given validation schema
  * applicable to the given field.
  */
-const filterSchemaByField = (
-  fieldProps: Object,
-  validationSchema: Object,
-): ResolverRecord[] =>
+const filterSchemaByField: FilterSchemaByField = (validationSchema) =>
   R.compose(
-    /* Create rule record from the list of resolvers */
-    R.map(createRuleRecord),
+    /* Create the list of resolver records from the list of resolvers */
+    R.map(createResolverRecord),
 
-    /* Handle and flat map multiple resolvers */
+    /* Flat map multiple resolvers */
     R.chain(projectResolvers),
 
-    /* Filter out selectors that have no rules */
+    /* Filter out selectors that have no resolvers */
     R.filter(R.head),
 
-    /* Grab resolvers based on paths from the schema */
+    /* Grab resolvers based on the paths from the schema */
     R.map((keyPath) => [R.path(keyPath, validationSchema), keyPath]),
     getRulesPaths,
-  )(fieldProps)
+  )
 
 export default filterSchemaByField

@@ -13,7 +13,7 @@ export default function createPropGetter(
   fields: Object,
   callback: CreatePropGetterCallback,
 ) {
-  return (propPath: PropPath) => {
+  return (propPath: PropPath): mixed => {
     const propValue = R.path(propPath, fields)
 
     if (callback) {
