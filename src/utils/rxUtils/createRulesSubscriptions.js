@@ -10,9 +10,9 @@ import flushFieldRefs from '../flushFieldRefs'
 
 const shouldObserve = R.allPass([R.complement(R.isNil), R.is(Function)])
 
-const createRuleObservable = R.curry((resolverArgs, rule) => {
+const createRuleObservable = R.curry((resolverArgs, ruleRecord) => {
   const { fieldProps, form } = resolverArgs
-  const { refs, resolver } = rule
+  const { refs, resolver } = ruleRecord
 
   if (refs.length > 0) {
     /**
@@ -65,9 +65,12 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     form,
   })
 
-  const fieldRules = filterSchemaByField(fieldProps, validationSchema)
-  const nextFieldRules = getRulesRefs(resolverArgs, fieldRules)
-  nextFieldRules.forEach(createRuleObservable(resolverArgs))
+  const fieldRules = R.compose(
+    getRulesRefs(resolverArgs),
+    filterSchemaByField(validationSchema),
+  )(fieldProps)
+
+  fieldRules.forEach(createRuleObservable(resolverArgs))
 
   /* Add "Field.props.rule" in case the latter has fields references */
   const { rule } = fieldProps
@@ -83,7 +86,7 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
   const stitchedRules = stitchWith(
     (entry, keyPath, acc) => R.append(entry, R.pathOr([], keyPath, acc)),
     ['keyPath'],
-    nextFieldRules,
+    fieldRules,
   )
 
   /* Merge field-related rules with the applicable rules */
