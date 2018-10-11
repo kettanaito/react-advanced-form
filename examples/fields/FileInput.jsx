@@ -12,10 +12,10 @@ class FieldInput extends React.Component {
     const { fieldState, fieldProps } = this.props
 
     return (
-      <div className="form-group custom-file">
+      <div className="form-group">
         <input
           {...fieldProps}
-          className="form-control custom-input-file"
+          className="form-control"
           onChange={this.handleChange}
         />
       </div>
