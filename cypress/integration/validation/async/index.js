@@ -8,6 +8,7 @@ describe('Asynchronous validation', function() {
 
   afterEach(() => {
     this.form.reset()
+    cy.wait(50)
   })
 
   it('Bypasses async validation for empty optional field with async rule', () => {

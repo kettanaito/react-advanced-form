@@ -8,6 +8,7 @@ describe('Async extra param', function() {
 
   afterEach(() => {
     this.form.reset()
+    cy.wait(50)
   })
 
   it('Displays error message with "extra" params from response', () => {

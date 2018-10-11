@@ -84,6 +84,7 @@ describe('Submit', () => {
 
     afterEach(() => {
       this.form.reset()
+      cy.wait(50)
       callbacksCalled = resetCallbackCalls(callbacksCalled)
     })
 
