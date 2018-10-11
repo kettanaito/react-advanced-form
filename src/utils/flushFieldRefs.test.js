@@ -1,4 +1,3 @@
-import { expect } from 'chai'
 import * as recordUtils from './recordUtils'
 import flushFieldRefs from './flushFieldRefs'
 
@@ -21,8 +20,8 @@ const fields = recordUtils.updateCollectionWith(
 )
 
 const method = ({ a, get }) => {
-  expect(a).to.equal('value')
-  expect(get).to.be.an.instanceOf(Function)
+  expect(a).toEqual('value')
+  expect(get).toBeInstanceOf(Function)
 
   const valueOne = get(['fieldOne', 'value'])
   const valueTwo = get(['groupTwo', 'fieldTwo', 'value'])
@@ -44,16 +43,13 @@ const methodArgs = {
 test('Returns proper collection of field refs', () => {
   const { refs } = flushFieldRefs(method, methodArgs)
 
-  expect(refs)
-    .to.be.an.instanceOf(Array)
-    .with.lengthOf(2)
-    .that.deep.equals([
-      ['fieldOne', 'value'],
-      ['groupTwo', 'fieldTwo', 'value'],
-    ])
+  expect(refs).toEqual([
+    ['fieldOne', 'value'],
+    ['groupTwo', 'fieldTwo', 'value'],
+  ])
 })
 
 test('Returns proper initial value', () => {
   const { initialValue } = flushFieldRefs(method, methodArgs)
-  expect(initialValue).to.equal('foobar')
+  expect(initialValue).toEqual('foobar')
 })
