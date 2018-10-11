@@ -3,7 +3,7 @@ import { Form } from '@lib'
 import { Input } from '@fields'
 import Button from '@shared/Button'
 
-export const timeoutDuration = 1200
+export const timeoutDuration = 500
 
 export default class AjaxPrefilling extends React.Component {
   state = {
