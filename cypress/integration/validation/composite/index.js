@@ -9,6 +9,7 @@ describe('Composite validation', function() {
 
   afterEach(() => {
     this.form.reset()
+    cy.wait(50)
   })
 
   it('Bypasses async validation when preceding sync validation rejects', () => {

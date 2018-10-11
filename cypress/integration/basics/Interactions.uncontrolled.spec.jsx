@@ -9,6 +9,7 @@ describe('Uncontrolled fields interactions', function() {
 
   afterEach(() => {
     this.form.reset()
+    cy.wait(50)
   })
 
   it('Mounts with proper initial state', () => {

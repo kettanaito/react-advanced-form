@@ -8,6 +8,7 @@ describe('Field rules', function() {
 
   afterEach(() => {
     this.form.reset()
+    cy.wait(50)
   })
 
   it('Resolves empty optional field with sync rule', () => {

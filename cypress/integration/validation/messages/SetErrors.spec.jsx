@@ -12,6 +12,7 @@ describe('Form-wide errors', function() {
 
   afterEach(() => {
     this.form.reset()
+    cy.wait(50)
   })
 
   it('Sets error messages for fields using form ref', () => {

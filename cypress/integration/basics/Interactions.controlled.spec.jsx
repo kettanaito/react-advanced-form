@@ -6,7 +6,10 @@ describe('Controlled fields interactions', function() {
   before(() => {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
-  afterEach(() => this.form.reset())
+  afterEach(() => {
+    this.form.reset()
+    cy.wait(50)
+  })
 
   it('Mounts with proper initial state', () => {
     cy.get('#form').should(() => {
