@@ -3,28 +3,28 @@ export type TRuleSelector = 'type' | 'name'
 export type TRuleName = string | void
 
 export type TRejectedRule = {
-  errorType: string,
+  name: TRuleName,
   selector: TRuleSelector,
-  ruleName: TRuleName,
+  errorType: string,
 }
 
 type TCreateRejectedRuleArgs = {
-  errorType: string,
+  name: TRuleName,
   selector: TRuleSelector,
-  ruleName: TRuleName,
+  errorType: string,
 }
 
 /**
  * Creates a rejected rule with the standardized shape.
  */
 export default function createRejectedRule({
-  errorType,
+  name,
   selector,
-  ruleName,
+  errorType,
 }: TCreateRejectedRuleArgs) {
   return {
-    errorType,
+    name,
     selector,
-    ruleName,
+    errorType,
   }
 }

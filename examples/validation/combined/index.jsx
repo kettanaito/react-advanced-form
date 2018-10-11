@@ -2,6 +2,16 @@ import React from 'react'
 import { Form } from '@lib'
 import { Input } from '@fields'
 
+const validationRules = {
+  type: {
+    email: {
+      oneNumber: ({ value }) => /[0-9]/.test(value),
+      capitalLetter: ({ value }) => /[A-Z]/.test(value),
+      minLength: ({ value }) => value.length > 5,
+    },
+  },
+}
+
 export default class CombinedValidation extends React.Component {
   validateAsync = ({ value }) => {
     return new Promise((resolve) => {
@@ -15,7 +25,7 @@ export default class CombinedValidation extends React.Component {
 
   render() {
     return (
-      <Form ref={this.props.getRef}>
+      <Form ref={this.props.getRef} rules={validationRules}>
         <Input
           name="fieldOne"
           rule={/^\d+$/}
@@ -23,6 +33,7 @@ export default class CombinedValidation extends React.Component {
           label="Field one"
           hint="Numbers only (sync), not equal to 123 (async)"
         />
+        <Input name="userPassword" type="email" label="Password" required />
       </Form>
     )
   }

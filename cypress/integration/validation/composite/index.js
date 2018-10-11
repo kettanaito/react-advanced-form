@@ -51,4 +51,26 @@ describe('Composite validation', function() {
       .validSync()
       .validAsync()
   })
+
+  it('Supports multiple resolvers for a single selector', () => {
+    cy.getField('userPassword')
+      /* Asserting invalid when empty */
+      .focus()
+      .blur({ force: true })
+      .invalid()
+      /* Asserting none rules passed */
+      .focus()
+      .type('completely wrong value')
+      .expected(false)
+      .clear('')
+      /* Asserting the first rule passed */
+      .type('P')
+      .expected(false)
+      /* Asserting the second rule passed */
+      .type('roper')
+      .expected(false)
+      /* Asserting all rules passed */
+      .type('123')
+      .expected(true)
+  })
 })

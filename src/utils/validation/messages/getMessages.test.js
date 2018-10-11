@@ -45,7 +45,7 @@ test('Resolvers type-specific named rejected rules', () => {
     createRejectedRule({
       selector: 'type',
       errorType: 'invalid',
-      ruleName: 'customRule',
+      name: 'customRule',
     }),
   ]
 
@@ -84,7 +84,7 @@ test('Multiple rejected rules of different resolvers length', () => {
     createRejectedRule({
       selector: 'name',
       errorType: 'invalid',
-      ruleName: 'customRule',
+      name: 'customRule',
     }),
     createRejectedRule({
       errorType: 'invalid',
@@ -110,7 +110,7 @@ test('Resolvers name-specific named rejected rules', () => {
     createRejectedRule({
       selector: 'name',
       errorType: 'invalid',
-      ruleName: 'customRule',
+      name: 'customRule',
     }),
   ]
 
@@ -160,7 +160,7 @@ test('Fallbacks to the general invalid message when no specific ones found', () 
     createRejectedRule({
       selector: 'type',
       errorType: 'invalid',
-      ruleName: 'customRule',
+      name: 'customRule',
     }),
   ]
 
@@ -181,7 +181,7 @@ test('Fallbacks to the general missing message when no specific ones found', () 
     createRejectedRule({
       selector: 'type',
       errorType: 'missing',
-      ruleName: 'customRule',
+      name: 'customRule',
     }),
   ]
 

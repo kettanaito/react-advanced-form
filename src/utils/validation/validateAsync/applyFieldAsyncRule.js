@@ -15,7 +15,9 @@ export default async function applyFieldAsyncRule(resolverArgs) {
    * Set pending async request reference on field props to be able
    * to cancel request upon field value change.
    */
-  form.updateFieldsWith(R.assoc('pendingAsyncValidation', pendingRequest, fieldProps))
+  form.updateFieldsWith(
+    R.assoc('pendingAsyncValidation', pendingRequest, fieldProps),
+  )
 
   const result = await pendingRequest.itself
 
@@ -24,7 +26,7 @@ export default async function applyFieldAsyncRule(resolverArgs) {
     ? undefined
     : createRejectedRule({
         selector: 'name',
-        ruleName: 'async',
+        name: 'async',
         errorType: errorTypes.invalid,
       })
 
