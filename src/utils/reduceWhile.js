@@ -1,3 +1,5 @@
+import * as R from 'ramda'
+
 export const returnsExpected = async (validationResult) => {
   const resolvedResult = await validationResult
 
@@ -20,9 +22,11 @@ const getInitialState = () => ({
 const createReducer = (...args) => async (pendingResults, func) => {
   const accResults = await pendingResults
   const {
+    expected: prevExpected,
     rejectedRules: prevRejectedRules,
     validators: prevValidators,
   } = accResults
+
   const validatorResult = await func(...args)
 
   if (!validatorResult) {
@@ -33,14 +37,23 @@ const createReducer = (...args) => async (pendingResults, func) => {
   const nextValidators = name ? prevValidators.concat(name) : prevValidators
 
   /**
-   * Inherit previous value when the next "expected" is "null",
-   * which reads "no validation necessary". This handles concurrent
-   * validation results of multiple validators properly.
+   * If the previous "expected" was false, all succeeding validators have
+   * no effect over the end "expected" value, it will be "false".
+   * @todo This conditional assignment is ugly. Rewrite it.
    */
-  const nextExpected = expected !== null ? expected : accResults.expected
+  let nextExpected = prevExpected !== null ? prevExpected && expected : expected
   const nextRejectedRules = rejectedRules
     ? prevRejectedRules.concat(rejectedRules)
     : prevRejectedRules
+
+  /**
+   * When current validator result has explicit "null" as the value of "expected"
+   * field, that implies that no validation was necessary. Thus, the previous
+   * "expected" value from the accumulated result must be taken.
+   */
+  if (expected === null) {
+    nextExpected = prevExpected
+  }
 
   return {
     expected: nextExpected,
@@ -65,7 +78,7 @@ export const reduceResults = (funcs) => {
  * into accumulated validation result while each function satisfies
  * the given predicate.
  */
-export const reduceResultsWhile = (predicate, validatorsList) => {
+export const reduceResultsWhile = R.curry((predicate, validatorsList) => {
   return (...args) => {
     return validatorsList.reduce(async (acc, validatorFunc) => {
       return (await predicate(acc))
@@ -73,8 +86,6 @@ export const reduceResultsWhile = (predicate, validatorsList) => {
         : acc
     }, getInitialState())
   }
-}
+})
 
-export const reduceWhileExpected = (validatorsList) => {
-  return reduceResultsWhile(returnsExpected, validatorsList)
-}
+export const reduceWhileExpected = reduceResultsWhile(returnsExpected)

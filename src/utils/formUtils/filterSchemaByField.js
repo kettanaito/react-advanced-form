@@ -2,12 +2,13 @@
 import * as R from 'ramda'
 
 export type ResolverRecord = {
+  name?: string,
   keyPath: string[],
   selector: string,
   resolver: Function,
 }
 
-type ResolverTuple = [Function, string[]]
+type ResolverTuple = [Function, string[], string]
 
 const getRulesPaths = (fieldProps: Object) => [
   ['name', fieldProps.name],
@@ -17,7 +18,9 @@ const getRulesPaths = (fieldProps: Object) => [
 const createResolverRecord = ([
   resolver,
   keyPath,
+  ruleName,
 ]: ResolverTuple): ResolverRecord => ({
+  name: ruleName,
   keyPath,
   selector: R.head(keyPath),
   resolver,
@@ -28,8 +31,8 @@ const projectResolvers = ([resolver, keyPath]: ResolverTuple) => {
     return [[resolver, keyPath]]
   }
 
-  return Object.entries(resolver).map(([ruleName, resolver]) => {
-    return [resolver, keyPath]
+  return Object.entries(resolver).map(([ruleName, namedResolver]) => {
+    return [namedResolver, keyPath, ruleName]
   })
 }
 

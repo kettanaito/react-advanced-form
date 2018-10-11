@@ -11,7 +11,7 @@ const namedRuleResolver = (rejectedRule: TRejectedRule, fieldProps) => [
   rejectedRule.selector,
   fieldProps[rejectedRule.selector],
   'rule',
-  rejectedRule.ruleName,
+  rejectedRule.name,
 ]
 
 const commonKeyPathGetters: KeyResolver[] = [
@@ -27,7 +27,7 @@ const commonKeyPathGetters: KeyResolver[] = [
 ]
 
 const isNamedRule = (rejectedRule: TRejectedRule) => {
-  return () => !!rejectedRule.ruleName
+  return () => !!rejectedRule.name
 }
 
 /**

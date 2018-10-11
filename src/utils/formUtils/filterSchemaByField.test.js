@@ -118,11 +118,13 @@ test('Handles multiple resolvers on a single relevant selector', () => {
 
   expect(res).toEqual([
     {
+      name: 'ruleOne',
       selector: 'name',
       keyPath: ['name', 'fieldOne'],
       resolver: ruleOne,
     },
     {
+      name: 'ruleTwo',
       selector: 'name',
       keyPath: ['name', 'fieldOne'],
       resolver: ruleTwo,

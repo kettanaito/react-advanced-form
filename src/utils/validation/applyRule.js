@@ -15,9 +15,9 @@ export default function applyRule(rule, resolverArgs) {
   const rejectedRules = isFieldExpected
     ? undefined
     : createRejectedRule({
-        errorType: errorType || errorTypes.invalid,
-        ruleName: name,
+        name,
         selector,
+        errorType: errorType || errorTypes.invalid,
       })
 
   return createValidationResult(isFieldExpected, rejectedRules)
