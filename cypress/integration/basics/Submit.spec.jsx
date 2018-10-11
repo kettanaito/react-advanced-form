@@ -22,8 +22,12 @@ describe('Submit', () => {
     cy.loadStory(<Scenario onSubmitStart={() => submitCount++} />)
   })
 
+  afterEach(() => {
+    submitCount = 0
+  })
+
   it('Prevents form submit unless all fields are expected', () => {
-    cy.wait(20)
+    cy.wait(100)
     submit()
     cy.getField('email').valid(false)
     cy.getField('password').valid(false)
@@ -43,6 +47,7 @@ describe('Submit', () => {
       .typeIn('bar')
       .valid()
     submit()
+
     cy.getField('termsAndConditions').valid(false)
     expect(submitCount).to.equal(0)
 
@@ -50,11 +55,9 @@ describe('Submit', () => {
       .markChecked()
       .valid()
 
-    cy.get('button[type="submit"]')
-      .click()
-      .then(() => {
-        expect(submitCount).to.equal(1)
-      })
+    submit().then(() => {
+      expect(submitCount).to.equal(1)
+    })
   })
 
   describe('Callback methods', function() {
