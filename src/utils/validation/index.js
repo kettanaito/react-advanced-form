@@ -3,7 +3,7 @@ import createRuleResolverArgs from './createRuleResolverArgs'
 import validateSync from './validateSync'
 import validateAsync from './validateAsync'
 
-const defaultValidatorsChain = [validateSync, validateAsync]
+const defaultValidatorsList = [validateSync, validateAsync]
 
 /**
  * Performs validation of the given field with the given parameters.
@@ -12,7 +12,7 @@ const defaultValidatorsChain = [validateSync, validateAsync]
 export default async function validate(args) {
   const { force, chain } = args
   const resolverArgs = createRuleResolverArgs(args)
-  const validatorsChain = chain || defaultValidatorsChain
+  const validatorsList = chain || defaultValidatorsList
 
-  return reduceWhileExpected(validatorsChain)(resolverArgs, force)
+  return reduceWhileExpected(validatorsList)(resolverArgs, force)
 }

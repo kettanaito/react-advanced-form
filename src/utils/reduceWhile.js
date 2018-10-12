@@ -1,7 +1,34 @@
+// @flow
 import * as R from 'ramda'
 
+type ReduceWhilePredicate = (acc: any, entry: any) => Promise<boolean>
+type ReduceWhileReducer = (acc: any, entry: any) => any
+
+/**
+ * Reduces the list applying the given reducer function as long as
+ * the predicate function resolves to true. Basically, a simple reducer
+ * function that accepts promise as a predicate.
+ */
+const reduceWhile = R.curry(
+  (
+    predicate: ReduceWhilePredicate,
+    reducer: ReduceWhileReducer,
+    initialValue: any,
+    list: any[],
+  ) => {
+    return (...args) => {
+      return list.reduce(async (acc, entry) => {
+        const resolvedAcc = await acc
+        return (await predicate(resolvedAcc, entry))
+          ? reducer(resolvedAcc, entry, ...args)
+          : resolvedAcc
+      }, initialValue)
+    }
+  },
+)
+
 export const returnsExpected = async (validationResult) => {
-  const resolvedResult = await validationResult
+  const { expected } = await validationResult
 
   /**
    * "expected" may obtain the next values:
@@ -9,25 +36,24 @@ export const returnsExpected = async (validationResult) => {
    * - false, when the field is unexpected (invalid)
    * - undefined, when no validation is necessary
    */
-  return resolvedResult.expected !== false
+  return expected !== false
 }
 
-const getInitialState = () => ({
+const initialState = {
   expected: null,
   validators: [],
   rejectedRules: [],
   extra: null,
-})
+}
 
-const createReducer = (...args) => async (pendingResults, func) => {
-  const accResults = await pendingResults
+const validationReducer = async (accResults, validatorFunc, ...args) => {
   const {
     expected: prevExpected,
     rejectedRules: prevRejectedRules,
     validators: prevValidators,
   } = accResults
 
-  const validatorResult = await func(...args)
+  const validatorResult = await validatorFunc(...args)
 
   if (!validatorResult) {
     return accResults
@@ -64,28 +90,19 @@ const createReducer = (...args) => async (pendingResults, func) => {
 }
 
 /**
- * Reduces the given list of functions that return validation result
- * into accumulated validation result.
+ * Reduces the list of validator functions into accumulated validation result.
+ * Reduces the entire list, as its predicate always returns "true".
  */
-export const reduceResults = (funcs) => {
-  return (...args) => {
-    return funcs.reduce(createReducer(...args), getInitialState())
-  }
-}
+export const reduceResults = reduceWhile(R.T, validationReducer, initialState)
 
 /**
- * Reduces the list of functions that return validation result
- * into accumulated validation result while each function satisfies
- * the given predicate.
+ * Reduces the list of validator functions while they return expected validation
+ * result. Breaks as soon as a validator returns unexpected result.
  */
-export const reduceResultsWhile = R.curry((predicate, validatorsList) => {
-  return (...args) => {
-    return validatorsList.reduce(async (acc, validatorFunc) => {
-      return (await predicate(acc))
-        ? createReducer(...args)(acc, validatorFunc)
-        : acc
-    }, getInitialState())
-  }
-})
+export const reduceWhileExpected = reduceWhile(
+  returnsExpected,
+  validationReducer,
+  initialState,
+)
 
-export const reduceWhileExpected = reduceResultsWhile(returnsExpected)
+export default reduceWhile
