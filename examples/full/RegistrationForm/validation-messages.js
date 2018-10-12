@@ -21,6 +21,13 @@ export default {
   },
 
   name: {
+    birthDate: {
+      rule: {
+        day: 'Please provide a valid day',
+        month: 'Please provide a valid month',
+        year: 'Please provide a valid year',
+      },
+    },
     confirmPassword: {
       rule: {
         matches: 'The provided passwords do not match',

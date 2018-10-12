@@ -11,6 +11,11 @@ export default {
   },
 
   name: {
+    birthDate: {
+      day: ({ date: { day } }) => day.length > 0 && day <= 31,
+      month: ({ date: { month } }) => month.length > 0 && month <= 12,
+      year: ({ date: { year } }) => year.length === 4,
+    },
     confirmPassword: {
       matches: ({ value, get }) => {
         return value === get(['userPassword', 'value'])

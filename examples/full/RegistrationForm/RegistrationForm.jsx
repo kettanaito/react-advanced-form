@@ -1,6 +1,7 @@
 import React from 'react'
 import { Form, Field } from '@lib'
 import { Input } from '@fields'
+import BirthDate from '../../fields/BirthDate'
 import Button from '@shared/Button'
 
 export default class RegistrationForm extends React.Component {
@@ -13,10 +14,13 @@ export default class RegistrationForm extends React.Component {
     return (
       <React.Fragment>
         <h1>Registration form</h1>
+
         <Form action={this.registerUser}>
           <Field.Group name="primaryInfo">
             <Input name="userEmail" type="email" label="E-mail" required />
           </Field.Group>
+
+          <BirthDate name="birthDate" label="Birth date" required />
 
           <Input
             name="userPassword"
