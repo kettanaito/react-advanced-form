@@ -52,9 +52,9 @@ class Input extends React.Component {
         )}
 
         <input
+          {...fieldProps}
           id={id || name}
           className={inputClassNames}
-          {...fieldProps}
           autoComplete="off"
         />
 
