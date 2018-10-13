@@ -28,6 +28,7 @@ export const createField = (initialState) => {
     [valuePropName]: value,
     valuePropName,
     focused: false,
+    touched: false,
     skip: false,
 
     /* Validation */
@@ -49,7 +50,7 @@ export const createField = (initialState) => {
 
     reactiveProps: null,
 
-    /* Event callbacks/handlers */
+    /* Event handlers */
     onFocus: null,
     onChange: null,
     onBlur: null,
@@ -193,6 +194,7 @@ export const reset = R.curry((nextValueGetter, fieldProps) => {
     // Beware that this will set value to "undefined" when no "initialValue" is found
     setValue(fieldProps.mapValue(nextValueGetter(fieldProps))),
     setErrors(null),
+    setTouched(false),
     resetValidationState,
     resetValidityState,
   )(fieldProps)
@@ -205,3 +207,5 @@ export const reset = R.curry((nextValueGetter, fieldProps) => {
  * @returns {Object}
  */
 export const setFocus = R.assoc('focused')
+
+export const setTouched = R.assoc('touched')
