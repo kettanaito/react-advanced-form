@@ -1,9 +1,17 @@
+import * as R from 'ramda'
 import dispatch from '../dispatch'
 import * as recordUtils from '../recordUtils'
 import validateField from './validateField'
 
-export default async function handleFieldBlur({ event, fieldProps }, fields, form) {
-  const updatedFieldProps = recordUtils.setFocus(false, fieldProps)
+export default async function handleFieldBlur(
+  { event, fieldProps },
+  fields,
+  form,
+) {
+  const updatedFieldProps = R.compose(
+    recordUtils.setTouched(true),
+    recordUtils.setFocus(false),
+  )(fieldProps)
 
   const validatedFieldProps = await validateField({
     fieldProps: updatedFieldProps,
@@ -11,7 +19,10 @@ export default async function handleFieldBlur({ event, fieldProps }, fields, for
     form,
   })
 
-  const nextFields = recordUtils.updateCollectionWith(validatedFieldProps, fields)
+  const nextFields = recordUtils.updateCollectionWith(
+    validatedFieldProps,
+    fields,
+  )
 
   dispatch(fieldProps.onBlur, {
     event,
