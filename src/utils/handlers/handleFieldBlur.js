@@ -10,7 +10,7 @@ export default async function handleFieldBlur(
 ) {
   const updatedFieldProps = R.compose(
     recordUtils.setTouched(true),
-    recordUtils.setFocus(false),
+    recordUtils.setFocused(false),
   )(fieldProps)
 
   const validatedFieldProps = await validateField({
