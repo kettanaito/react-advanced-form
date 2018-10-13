@@ -49,10 +49,10 @@ describe('recordUtils', () => {
   })
 
   it('setFocus', () => {
-    const focusedRecord = recordUtils.setFocus(true, inputField)
+    const focusedRecord = recordUtils.setFocused(true, inputField)
     expect(focusedRecord.focused).toEqual(true)
 
-    const unfocusedRecord = recordUtils.setFocus(false, focusedRecord)
+    const unfocusedRecord = recordUtils.setFocused(false, focusedRecord)
     expect(unfocusedRecord.focused).toEqual(false)
   })
 
