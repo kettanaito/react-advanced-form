@@ -2,7 +2,7 @@ import dispatch from '../dispatch'
 import * as recordUtils from '../recordUtils'
 
 export default function handleFieldFocus({ event, fieldProps }, fields, form) {
-  const nextFieldProps = recordUtils.setFocus(true, fieldProps)
+  const nextFieldProps = recordUtils.setFocused(true, fieldProps)
   const nextFields = recordUtils.updateCollectionWith(nextFieldProps, fields)
 
   dispatch(fieldProps.onFocus, {

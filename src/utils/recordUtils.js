@@ -206,6 +206,6 @@ export const reset = R.curry((nextValueGetter, fieldProps) => {
  * @param {Object} fieldProps
  * @returns {Object}
  */
-export const setFocus = R.assoc('focused')
+export const setFocused = R.assoc('focused')
 
 export const setTouched = R.assoc('touched')
