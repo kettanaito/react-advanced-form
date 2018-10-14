@@ -31,6 +31,11 @@ describe('recordUtils', () => {
     expect(checkboxField.initialValue).toEqual(true)
   })
 
+  it('New fields are not touched by default', () => {
+    expect(inputField).toHaveProperty('touched', false)
+    expect(checkboxField).toHaveProperty('touched', false)
+  })
+
   it('updateCollectionWith', () => {
     const nextCollection = recordUtils.updateCollectionWith(inputField, {})
     expect(R.path(inputField.fieldPath, nextCollection)).toEqual(inputField)
