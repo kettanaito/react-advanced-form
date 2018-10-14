@@ -208,4 +208,10 @@ export const reset = R.curry((nextValueGetter, fieldProps) => {
  */
 export const setFocused = R.assoc('focused')
 
+/**
+ * Marks the given field as touched.
+ * @param {boolean} touched
+ * @param {Object} fieldProps
+ * @returns {Object}
+ */
 export const setTouched = R.assoc('touched')
