@@ -42,7 +42,9 @@ export default class FormProvider extends React.Component {
 
     if (this.props.hasOwnProperty('withImmutable')) {
       console.warn(
-        'FormProvider: `withImmutable` prop has been deprecated. Please remove it and treat exposed library instances as plain JavaScript data types. See more details: https://goo.gl/h5YUiS',
+        'FormProvider: `withImmutable` prop has been deprecated. Please remove it ' +
+          'and treat exposed library instances as plain JavaScript data types. ' +
+          'See more details: https://goo.gl/h5YUiS',
       )
     }
 

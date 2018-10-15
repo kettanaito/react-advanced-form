@@ -18,6 +18,7 @@ class Input extends React.Component {
   render() {
     const { fieldProps, fieldState, id, name, label, hint } = this.props
     const {
+      touched,
       required,
       validating,
       validatedSync,
@@ -31,6 +32,7 @@ class Input extends React.Component {
 
     const inputClassNames = [
       'form-control',
+      touched && 'is-touched',
       validating && 'is-validating',
       validatedSync && 'validated-sync',
       validatedAsync && 'validated-async',
@@ -60,7 +62,8 @@ class Input extends React.Component {
 
         {hint && <small className="form-text text-muted">{hint}</small>}
 
-        {errors &&
+        {touched &&
+          errors &&
           errors.map((error, index) => (
             <div key={index} className="invalid-feedback">
               {error}
