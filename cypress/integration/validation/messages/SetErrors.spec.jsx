@@ -1,5 +1,4 @@
 import React from 'react'
-import { expect } from 'chai'
 import Scenario from '@examples/validation/messages/SetErrors'
 
 const firstButtonClick = () => cy.get('#btn-first').click()
@@ -15,32 +14,41 @@ describe('Form-wide errors', function() {
     cy.wait(50)
   })
 
-  it('Sets error messages for fields using form ref', () => {
+  it('Sets error messages for fields', () => {
     cy.wait(100)
     firstButtonClick()
     cy.wait(100)
 
     cy.getField('fieldOne')
+      .touched()
       .invalid()
       .hasError('foo')
     cy.getField('firstName')
+      .touched()
       .invalid()
       .hasError('bar')
   })
 
   it('Preserves validity state when setting explicit "null"', () => {
     cy.getField('fieldOne')
+      .touched(false)
       .typeIn('123')
       .blur()
+      .touched()
       .valid()
 
     firstButtonClick()
     cy.getField('fieldOne')
+      .touched()
       .invalid()
       .hasError('foo')
 
     secondButtonClick()
-    cy.getField('fieldOne').valid()
-    cy.getField('firstName').invalid()
+    cy.getField('fieldOne')
+      .valid()
+      .touched(false)
+    cy.getField('firstName')
+      .touched()
+      .invalid()
   })
 })

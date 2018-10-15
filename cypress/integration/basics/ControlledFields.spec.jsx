@@ -1,12 +1,11 @@
 import React from 'react'
 import { expect } from 'chai'
-import Scenario from '@examples/basics/UncontrolledFields'
+import Scenario from '@examples/basics/ControlledFields'
 
-describe('Uncontrolled fields interactions', function() {
+describe('Controlled fields', function() {
   before(() => {
     cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
   })
-
   afterEach(() => {
     this.form.reset()
     cy.wait(50)
@@ -15,6 +14,7 @@ describe('Uncontrolled fields interactions', function() {
   it('Mounts with proper initial state', () => {
     cy.get('#form').should(() => {
       const serialized = this.form.serialize()
+
       expect(serialized).to.deep.equal({
         inputTwo: 'foo',
         select: 'two',
@@ -27,12 +27,16 @@ describe('Uncontrolled fields interactions', function() {
   })
 
   it('Updates form state on field change', () => {
-    cy.get('#inputOne').type('first value')
+    cy.get('#inputOne').typeIn('first value')
     cy.get('#inputTwo')
       .clear()
       .typeIn('second value')
-    cy.get('#radio3').markChecked()
-    cy.get('#checkbox1').markChecked()
+    cy.get('#radio3')
+      .markChecked()
+      .should('be.checked')
+    cy.get('#checkbox1')
+      .markChecked()
+      .should('be.checked')
     cy.get('#checkbox2').markUnchecked()
     cy.get('#select').select('three')
     cy.get('#textareaOne')
@@ -44,7 +48,8 @@ describe('Uncontrolled fields interactions', function() {
 
     cy.then(() => {
       const serialized = this.form.serialize()
-      expect(serialized).to.deep.equal({
+
+      return expect(serialized).to.deep.equal({
         inputOne: 'first value',
         inputTwo: 'second value',
         radio: 'cucumber',

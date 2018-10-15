@@ -2,26 +2,46 @@ import React from 'react'
 import { mount } from 'cypress-react-unit-test'
 import StoryContainer from './StoryContainer'
 
+Cypress.Commands.add('loadStory', (story) => {
+  mount(<StoryContainer>{story}</StoryContainer>)
+})
+
 Cypress.Commands.add('getField', (fieldName) => {
-  return cy.get(`[name="${fieldName}"]`)
+  return cy.log('Get a field').get(`[name="${fieldName}"]`)
 })
 
 Cypress.Commands.add(
   'hasValue',
   { prevSubject: true },
   (subject, expectedValue) => {
-    cy.wrap(subject).should('have.value', expectedValue)
+    cy.log(`Assert value "${expectedValue}"`)
+      .wrap(subject)
+      .should('have.value', expectedValue)
   },
 )
 
-Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, text) => {
-  cy.wrap(subject)
-    .type(text, { delay: 50 })
-    .hasValue(text)
+Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, nextText) => {
+  cy.log(`Type "${nextText}"`)
+    .wrap(subject)
+    .focus()
+    .type(nextText)
+    .should('have.value', nextText)
 })
 
+Cypress.Commands.add(
+  'touched',
+  { prevSubject: true },
+  (subject, expectedValue = true) => {
+    cy.wrap(subject).should(
+      [!expectedValue && 'not', 'have', 'class'].filter(Boolean).join('.'),
+      'is-touched',
+    )
+  },
+)
+
 Cypress.Commands.add('markChecked', { prevSubject: true }, (subject, text) => {
-  cy.wrap(subject)
+  cy.log('Check')
+    .wrap(subject)
     .check({ force: true })
     .should('be.checked')
     .blur({ force: true })
@@ -31,16 +51,13 @@ Cypress.Commands.add(
   'markUnchecked',
   { prevSubject: true },
   (subject, text) => {
-    cy.wrap(subject)
+    cy.log('Uncheck')
+      .wrap(subject)
       .uncheck({ force: true })
       .should('not.be.checked')
       .blur({ force: true })
   },
 )
-
-Cypress.Commands.add('loadStory', (story) => {
-  mount(<StoryContainer>{story}</StoryContainer>)
-})
 
 /**
  * Asserts the given subject as expected field.
@@ -52,7 +69,8 @@ Cypress.Commands.add(
   'expected',
   { prevSubject: true },
   (subject, expected = true) => {
-    cy.wrap(subject)
+    cy.log('Assert expected')
+      .wrap(subject)
       .should('have.class', expected ? 'is-valid' : 'is-invalid')
       .should('not.have.class', expected ? 'is-invalid' : 'is-valid')
   },
@@ -66,7 +84,9 @@ Cypress.Commands.add(
   { prevSubject: true },
   (subject, expected = true) => {
     const prefix = expected ? '' : 'not.'
-    cy.wrap(subject).should(`${prefix}have.class`, 'is-valid')
+    cy.log('Assert valid')
+      .wrap(subject)
+      .should(`${prefix}have.class`, 'is-valid')
   },
 )
 
@@ -104,6 +124,7 @@ Cypress.Commands.add(
   (subject, validationType, expected = true) => {
     const prefix = expected ? '' : 'not.'
     return cy
+      .log('Assert validated')
       .wrap(subject)
       .should(`${prefix}have.class`, `validated-${validationType}`)
   },
@@ -118,7 +139,8 @@ Cypress.Commands.add(
   { prevSubject: true },
   (subject, expected = true) => {
     const prefix = expected ? '' : 'not.'
-    cy.wrap(subject)
+    cy.log('Assert valid sync')
+      .wrap(subject)
       .should('have.class', 'validated-sync')
       .should(`${prefix}have.class`, 'valid-sync')
   },
@@ -133,7 +155,8 @@ Cypress.Commands.add(
   { prevSubject: true },
   (subject, expected = true) => {
     const prefix = expected ? '' : 'not.'
-    cy.wrap(subject)
+    cy.log('Assert valid async')
+      .wrap(subject)
       .should('have.class', 'validated-async')
       .should(`${prefix}have.class`, 'valid-async')
   },
