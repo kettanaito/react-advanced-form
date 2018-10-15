@@ -9,10 +9,12 @@ describe('Serialization', function() {
 
   const submit = () => cy.get('button[type="submit"]').click()
 
-  it('Applies custom serialized fields transformer, when specified', () => {
+  it('Applies custom serialization transformer, when specified', () => {
     cy.get('form').should(() => {
       const { fields } = this.form.state
-      const { street, houseNumber } = formatAddress(fields.billingAddress.address.value)
+      const { street, houseNumber } = formatAddress(
+        fields.billingAddress.address.value,
+      )
       const serialized = this.form.serialize()
 
       expect(serialized).to.deep.equal({

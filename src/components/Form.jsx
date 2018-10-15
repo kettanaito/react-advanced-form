@@ -550,6 +550,7 @@ export default class Form extends React.Component {
         R.compose(
           recordUtils.setErrors(errors),
           recordUtils.updateValidityState(true),
+          recordUtils.setTouched(!!errors),
           R.assoc('expected', !errors),
           R.assoc('validated', true),
         ),
