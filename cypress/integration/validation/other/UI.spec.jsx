@@ -6,6 +6,7 @@ describe('UI behavior', function() {
   before(() => {
     cy.loadStory(<Scenario />)
   })
+
   afterEach(() => {
     cy.getField('fieldOne').clear()
     cy.getField('fieldTwo').clear()

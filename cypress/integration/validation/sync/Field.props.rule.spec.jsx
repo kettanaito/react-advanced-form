@@ -17,8 +17,6 @@ describe('Field rules', function() {
       .blur({ force: true })
       .valid(false)
       .invalid(false)
-    // .should('not.have.class', 'is-valid')
-    // .should('not.have.class', 'is-invalid')
   })
 
   it('Rejects empty required field with sync rule', () => {

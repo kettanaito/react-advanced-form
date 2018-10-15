@@ -16,10 +16,11 @@ class Radio extends React.Component {
 
   render() {
     const { fieldProps, fieldState, id, className, label } = this.props
-    const { valid, invalid } = fieldState
+    const { touched, valid, invalid } = fieldState
 
     const inputClassNames = [
       'custom-control-input',
+      touched && 'is-touched',
       valid && 'is-valid',
       invalid && 'is-invalid',
       className,
