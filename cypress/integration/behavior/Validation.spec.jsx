@@ -2,7 +2,7 @@ import React from 'react'
 import Scenario from '@examples/validation/misc/UI'
 import { defaultDebounceTime } from '@root/src/components/FormProvider'
 
-describe('UI behavior', function() {
+describe('Validation', function() {
   before(() => {
     cy.loadStory(<Scenario />)
   })
