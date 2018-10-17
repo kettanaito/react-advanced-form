@@ -1,5 +1,6 @@
 require('./components')
 require('./basics')
+require('./behavior')
 require('./field-grouping')
 require('./validation')
 require('./reactive-props')
