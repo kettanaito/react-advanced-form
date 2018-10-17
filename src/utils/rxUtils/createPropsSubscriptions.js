@@ -28,8 +28,8 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
       subscribe({ nextTargetRecord, shouldValidate = true }) {
         const { fields } = form.state
         const { fieldPath: targetFieldPath } = nextTargetRecord
+        const prevSubscriberState = R.path(subscriberFieldPath, fields)
 
-        const currentSubscriberRecord = R.path(subscriberFieldPath, fields)
         const nextFields = R.assocPath(
           targetFieldPath,
           nextTargetRecord,
@@ -49,14 +49,14 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         const nextPropValue = dispatch(resolver, nextResolverArgs)
 
         /* Set the next value of reactive prop on the respective field record */
-        const nextSubscriberRecord = R.compose(
+        const nextSubscriberState = R.compose(
           recordUtils.resetValidityState,
           R.assoc(propName, nextPropValue),
-        )(currentSubscriberRecord)
+        )(prevSubscriberState)
 
-        const updatedFields = R.assocPath(
+        const fieldsWithSubscriber = R.assocPath(
           subscriberFieldPath,
-          nextSubscriberRecord,
+          nextSubscriberState,
           nextFields,
         )
 
@@ -64,13 +64,13 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
           return form.validateField({
             force: true,
             forceProps: true,
-            fieldProps: nextSubscriberRecord,
-            fields: updatedFields,
+            fieldProps: nextSubscriberState,
+            fields: fieldsWithSubscriber,
             form,
           })
         }
 
-        return form.updateFieldsWith(nextSubscriberRecord)
+        return form.updateFieldsWith(nextSubscriberState)
       },
     })
   })
