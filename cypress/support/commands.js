@@ -23,8 +23,7 @@ Cypress.Commands.add(
 Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, nextText) => {
   cy.log(`Type "${nextText}"`)
     .wrap(subject)
-    .focus()
-    .type(nextText)
+    .type(nextText, { delay: 50 })
     .should('have.value', nextText)
 })
 

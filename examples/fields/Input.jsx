@@ -62,8 +62,7 @@ class Input extends React.Component {
 
         {hint && <small className="form-text text-muted">{hint}</small>}
 
-        {touched &&
-          errors &&
+        {errors &&
           errors.map((error, index) => (
             <div key={index} className="invalid-feedback">
               {error}
