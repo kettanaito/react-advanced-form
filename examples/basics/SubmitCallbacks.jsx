@@ -100,15 +100,6 @@ export default class Submit extends React.Component {
           />
 
           <Button type="submit">Submit</Button>
-          <Button
-            type="reset"
-            onClick={(event) => {
-              event.preventDefault()
-              window.form.reset()
-            }}
-          >
-            Reset
-          </Button>
 
           {isInvalid && <p id="invalid">Form is invalid</p>}
           {isSubmitStart && <p id="submit-start">Starting submit...</p>}

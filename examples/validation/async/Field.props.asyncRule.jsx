@@ -58,16 +58,6 @@ export default class FieldPropsAsyncRule extends React.Component {
             asyncRule={this.validateAsync}
             required
           />
-
-          <Button
-            type="reset"
-            onClick={(event) => {
-              event.preventDefault()
-              window.form.reset()
-            }}
-          >
-            Reset
-          </Button>
         </Form>
       </React.Fragment>
     )

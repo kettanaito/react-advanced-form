@@ -1,14 +1,9 @@
-const resetForm = () => cy.get('[type="reset"]').click()
 const setBothErrors = () => cy.get('#set-both').click()
 const setExplicitNull = () => cy.get('#set-null').click()
 
 describe('Form-wide errors', function() {
-  before(() => {
+  beforeEach(() => {
     cy._loadStory(['Validation', 'Messages', 'Set errors'])
-  })
-
-  afterEach(() => {
-    resetForm()
   })
 
   it('Sets error messages for fields', () => {
