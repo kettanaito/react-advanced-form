@@ -1,6 +1,7 @@
 import React from 'react'
 import { Form } from '@lib'
 import { Input } from '@fields'
+import Button from '@shared/Button'
 
 const messages = {
   type: {
@@ -24,7 +25,8 @@ export default class FieldPropsAsyncRule extends React.Component {
     return new Promise((resolve) => {
       setTimeout(resolve, 500)
     }).then(() => ({
-      valid: fieldProps.name === 'fieldThree' ? value !== '123' : value !== 'foo',
+      valid:
+        fieldProps.name === 'fieldThree' ? value !== '123' : value !== 'foo',
       extra: fieldProps.name === 'fieldFour' && 'Data from async response',
     }))
   }
@@ -33,7 +35,7 @@ export default class FieldPropsAsyncRule extends React.Component {
     return (
       <React.Fragment>
         <h1>Field async rule</h1>
-        <Form ref={this.props.getRef} messages={messages}>
+        <Form ref={(form) => (window.form = form)} messages={messages}>
           <Input
             name="fieldOne"
             label="Field one"
@@ -56,6 +58,16 @@ export default class FieldPropsAsyncRule extends React.Component {
             asyncRule={this.validateAsync}
             required
           />
+
+          <Button
+            type="reset"
+            onClick={(event) => {
+              event.preventDefault()
+              window.form.reset()
+            }}
+          >
+            Reset
+          </Button>
         </Form>
       </React.Fragment>
     )

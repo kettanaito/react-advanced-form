@@ -16,6 +16,9 @@ const rules = {
     fieldTwo: ({ value, get }) => {
       return value === get(['fieldOne', 'value'])
     },
+    fieldThree: ({ value }) => {
+      return value !== 'foo'
+    },
   },
 }
 
@@ -35,9 +38,9 @@ export default class FormPropsRules extends React.Component {
     return (
       <React.Fragment>
         <h1>Form rules</h1>
+
         <Form rules={rules} messages={messages}>
           <Input
-            {...this.props}
             name="fieldOne"
             label="Field one"
             hint="Must be more than 2 characters and not equal to `foo`"
@@ -47,6 +50,7 @@ export default class FormPropsRules extends React.Component {
             label="Field two"
             hint="Valid when equals to `fieldOne` value"
           />
+          <Input name="fieldThree" label="Field three" required />
         </Form>
       </React.Fragment>
     )

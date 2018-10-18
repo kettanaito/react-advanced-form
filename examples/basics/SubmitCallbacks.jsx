@@ -101,7 +101,7 @@ export default class Submit extends React.Component {
 
           <Button type="submit">Submit</Button>
           <Button
-            type="clear"
+            type="reset"
             onClick={(event) => {
               event.preventDefault()
               window.form.reset()
