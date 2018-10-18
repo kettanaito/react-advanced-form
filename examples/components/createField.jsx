@@ -28,7 +28,7 @@ const EnhancedField = createField()(CustomField)
 export default class CreateFieldScenario extends React.Component {
   render() {
     return (
-      <Form ref={this.props.getRef}>
+      <Form ref={(form) => (window.form = form)}>
         <EnhancedField name="fieldOne" />
       </Form>
     )
