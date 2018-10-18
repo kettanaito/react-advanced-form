@@ -1,4 +1,3 @@
-import React from 'react'
 import { initialValues } from '@examples/basics/InitialValues'
 
 describe('Initial values', function() {

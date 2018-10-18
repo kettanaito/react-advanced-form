@@ -1,12 +1,6 @@
-const resetForm = () => cy.get('[type="reset"]').click()
-
 describe('Field rules', function() {
   before(() => {
     cy._loadStory(['Validation', 'Synchronous validation', 'Field rules'])
-  })
-
-  afterEach(() => {
-    resetForm()
   })
 
   it('Resolves empty optional field with sync rule', () => {
@@ -33,6 +27,7 @@ describe('Field rules', function() {
 
   it('Rejects filled optional field with unmatching value', () => {
     cy.getField('fieldOne')
+      .clear()
       .typeIn('foo')
       .blur({ force: true })
       .validSync(false)
@@ -40,6 +35,7 @@ describe('Field rules', function() {
 
   it('Resolves filled required field with matching value', () => {
     cy.getField('fieldTwo')
+      .clear()
       .typeIn('foo')
       .blur({ force: true })
       .validSync()
@@ -47,6 +43,7 @@ describe('Field rules', function() {
 
   it('Rejects filled required field with unmatching value', () => {
     cy.getField('fieldTwo')
+      .clear()
       .typeIn('123')
       .blur({ force: true })
       .validSync(false)

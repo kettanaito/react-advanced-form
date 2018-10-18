@@ -1,4 +1,4 @@
 describe('UI Behavior', () => {
-  require('./Touched')
-  require('./Validation')
+  require('./Touched.spec')
+  require('./Validation.spec')
 })

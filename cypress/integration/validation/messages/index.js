@@ -1,4 +1,4 @@
 describe('Messages', function() {
-  require('./AsyncExtraParam')
-  require('./SetErrors')
+  require('./AsyncExtraParam.spec')
+  require('./SetErrors.spec')
 })

@@ -44,16 +44,6 @@ export default class SetErrors extends React.Component {
         <Button id="set-null" onClick={this.handleSecondButtonClick}>
           Set explicit "null"
         </Button>
-
-        <Button
-          type="reset"
-          onClick={(event) => {
-            event.preventDefault()
-            window.form.reset()
-          }}
-        >
-          Reset
-        </Button>
       </Form>
     )
   }

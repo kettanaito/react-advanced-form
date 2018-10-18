@@ -1,4 +1,3 @@
-import React from 'react'
 import { expect } from 'chai'
 import { formatAddress } from '@examples/basics/Serialize'
 

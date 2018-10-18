@@ -1,5 +1,3 @@
-import React from 'react'
-
 const reset = () => cy.get('button[type="reset"]').click()
 
 describe('Reset', function() {
