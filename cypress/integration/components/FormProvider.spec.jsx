@@ -4,7 +4,7 @@ import { defaultDebounceTime } from '@root/src/components/FormProvider'
 
 describe('FormProvider', function() {
   before(() => {
-    cy.loadStory(<Scenario />)
+    cy._loadStory(['Components', 'FormProvider'])
   })
 
   it('Propagates the default value of "debounceTime"', () => {
