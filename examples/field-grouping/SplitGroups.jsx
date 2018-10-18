@@ -9,7 +9,7 @@ export default class SplitGroups extends React.Component {
       <React.Fragment>
         <h1>Split field groups</h1>
 
-        <Form ref={this.props.getRef} onSubmitStart={this.props.onSubmitStart}>
+        <Form ref={(form) => (window.form = form)}>
           <div className="row">
             <div className="col-6">
               <Input

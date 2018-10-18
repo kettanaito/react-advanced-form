@@ -9,7 +9,7 @@ export default class NestedGroups extends React.Component {
       <React.Fragment>
         <h1>Nested field groups</h1>
 
-        <Form ref={this.props.getRef} onSubmitStart={this.props.onSubmitStart}>
+        <Form ref={(form) => (window.form = form)}>
           <Input
             name="fieldOne"
             hint={<code>fieldOne</code>}
