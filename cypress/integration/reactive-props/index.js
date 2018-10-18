@@ -1,13 +1,6 @@
-import React from 'react'
-import DynamicRequired from '@examples/reactive-props/DynamicRequired'
-import DelegatedScenario from '@examples/reactive-props/DelegatedSubscription'
-import InterdependentScenario from '@examples/reactive-props/Interdependent'
-import SingleTargetScenario from '@examples/reactive-props/SingleTarget'
-import FieldReactiveField from '@examples/reactive-props/FieldReactiveRule'
-
 describe('Reactive props', function() {
   it('Supports direct field subscription', () => {
-    cy.loadStory(<DynamicRequired />)
+    cy._loadStory(['Advanced', 'Reactive props', 'Dynamic required'])
 
     cy.getField('lastName').should('have.attr', 'required')
     cy.getField('lastName')
@@ -22,7 +15,7 @@ describe('Reactive props', function() {
   })
 
   it('Supports delegated field subscription', () => {
-    cy.loadStory(<DelegatedScenario />)
+    cy._loadStory(['Advanced', 'Reactive props', 'Delegated subscription'])
 
     cy.getField('firstName').should('have.attr', 'required')
     cy.getField('firstName')
@@ -35,7 +28,7 @@ describe('Reactive props', function() {
   })
 
   it('Supports inter-dependent fields', () => {
-    cy.loadStory(<InterdependentScenario />)
+    cy._loadStory(['Advanced', 'Reactive props', 'Interdependent fields'])
 
     cy.getField('firstName').should('not.have.attr', 'required')
     cy.getField('lastName').should('not.have.attr', 'required')
@@ -62,7 +55,7 @@ describe('Reactive props', function() {
   })
 
   it('Supports multiple fields depending on one target', () => {
-    cy.loadStory(<SingleTargetScenario />)
+    cy._loadStory(['Advanced', 'Reactive props', 'Single field target'])
 
     cy.getField('firstName').should('not.have.attr', 'required')
     cy.getField('fieldThree').should('not.have.attr', 'required')
@@ -97,7 +90,7 @@ describe('Reactive props', function() {
   })
 
   it('Supports field "rule" as a reactive prop', () => {
-    cy.loadStory(<FieldReactiveField />)
+    cy._loadStory(['Advanced', 'Reactive props', 'Reactive field rule'])
 
     /**
      * Properly validates the reactive field when its value changes.
