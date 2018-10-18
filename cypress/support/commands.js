@@ -1,11 +1,4 @@
 import url from 'url'
-import React from 'react'
-import { mount } from 'cypress-react-unit-test'
-import StoryContainer from './StoryContainer'
-
-Cypress.Commands.add('loadStory', (story) => {
-  mount(<StoryContainer>{story}</StoryContainer>)
-})
 
 Cypress.Commands.add('_loadStory', (storyPath) => {
   const selectedStory = storyPath.pop()
@@ -43,7 +36,8 @@ Cypress.Commands.add(
 Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, nextText) => {
   cy.log(`Type "${nextText}"`)
     .wrap(subject)
-    .type(nextText)
+    .type(nextText, { delay: 50 })
+    .wait(50)
     .should('have.value', nextText)
 })
 

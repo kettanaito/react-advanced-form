@@ -35,16 +35,6 @@ export default class CombinedValidation extends React.Component {
           hint="Numbers only (sync), not equal to 123 (async)"
         />
         <Input name="userPassword" type="email" label="Password" required />
-
-        <Button
-          type="reset"
-          onClick={(event) => {
-            event.preventDefault()
-            window.form.reset()
-          }}
-        >
-          Reset
-        </Button>
       </Form>
     )
   }
