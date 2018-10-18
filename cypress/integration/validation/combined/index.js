@@ -1,12 +1,6 @@
-const resetForm = () => cy.get('[type="reset"]').click()
-
 describe('Combined validation', function() {
   before(() => {
     cy._loadStory(['Validation', 'Combined validation', 'Combined validation'])
-  })
-
-  afterEach(() => {
-    resetForm()
   })
 
   it('Bypasses async validation when preceding sync validation rejects', () => {
@@ -26,6 +20,7 @@ describe('Combined validation', function() {
   it('Rejects async validation that does not satisfy the predicate', () => {
     cy.getField('fieldOne')
       .focus()
+      .clear()
       .typeIn('123')
       .validSync()
       .blur({ force: true })
@@ -39,6 +34,7 @@ describe('Combined validation', function() {
   it('Resolves async validation that satisfies the predicate', () => {
     cy.getField('fieldOne')
       .focus()
+      .clear()
       .typeIn('456')
       .validSync()
       .blur({ force: true })
@@ -68,6 +64,6 @@ describe('Combined validation', function() {
       .expected(false)
       /* Asserting all rules passed */
       .type('123')
-      .expected(true)
+      .expected()
   })
 })

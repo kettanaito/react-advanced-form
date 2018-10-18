@@ -1,9 +1,7 @@
-import React from 'react'
 import { assert, expect } from 'chai'
 import { submitTimeout } from '@examples/basics/SubmitCallbacks'
 
-const submit = () => cy.get('button[type="submit"]').click()
-const reset = () => cy.get('button[type="reset"]').click()
+const submitForm = () => cy.get('button[type="submit"]').click()
 
 describe('Submit', () => {
   before(() => {
@@ -11,7 +9,7 @@ describe('Submit', () => {
   })
 
   it('Prevents form submit unless all fields are expected', () => {
-    submit()
+    submitForm()
     cy.getField('email').valid(false)
     cy.getField('password').valid(false)
     cy.getField('termsAndConditions').valid(false)
@@ -21,7 +19,7 @@ describe('Submit', () => {
       .typeIn('foo')
       .valid()
 
-    submit()
+    submitForm()
     cy.getField('password').valid(false)
     cy.getField('termsAndConditions').valid(false)
     cy.get('#submitting').should('not.be.visible')
@@ -29,7 +27,7 @@ describe('Submit', () => {
     cy.getField('password')
       .typeIn('bar')
       .valid()
-    submit()
+    submitForm()
 
     cy.getField('termsAndConditions').valid(false)
     cy.get('#submitting').should('not.be.visible')
@@ -38,18 +36,14 @@ describe('Submit', () => {
       .markChecked()
       .valid()
 
-    submit().then(() => {
+    submitForm().then(() => {
       cy.get('#submitting').should('be.visible')
     })
   })
 
   describe('Callback methods', function() {
-    before(() => {
+    beforeEach(() => {
       cy._loadStory(['Basics', 'Interaction', 'Submit callbacks'])
-    })
-
-    afterEach(() => {
-      reset()
     })
 
     it('Calls "onInvalid" when invalid fields prevent form submit', () => {
@@ -59,7 +53,7 @@ describe('Submit', () => {
         .blur()
         .valid(false)
 
-      submit().then(() => {
+      submitForm().then(() => {
         assert(
           cy.get('#submit-start').should('not.be.visible'),
           'should not call "onSubmitStart"',
@@ -69,13 +63,13 @@ describe('Submit', () => {
     })
 
     it('Calls "onSubmitStart" when successful submit starts', () => {
-      submit().then(() => {
+      submitForm().then(() => {
         assert(cy.get('#submit-start'), 'should call "onSubmitStart"')
       })
     })
 
     it('Calls "onSubmitted" when "action" Promise resolves', () => {
-      submit()
+      submitForm()
         .wait(submitTimeout)
         .then(() => {
           assert(cy.get('#submitted'), 'should call "onSubmitted"')
@@ -89,7 +83,7 @@ describe('Submit', () => {
         .blur()
         .valid(true)
 
-      submit()
+      submitForm()
         .wait(submitTimeout)
         .then(() => {
           assert(
@@ -101,7 +95,7 @@ describe('Submit', () => {
     })
 
     it('Calls "onSubmitEnd" when submit ends, regardless of status', () => {
-      submit()
+      submitForm()
         .wait(submitTimeout)
         .then(() => {
           assert(cy.get('#submit-end'), 'should call "onSubmitEnd"')

@@ -1,5 +1,5 @@
 describe('Field grouping', function() {
-  require('./SimpleGroup')
-  require('./NestedGroups')
-  require('./SplitGroups')
+  require('./SimpleGroup.spec')
+  require('./NestedGroups.spec')
+  require('./SplitGroups.spec')
 })

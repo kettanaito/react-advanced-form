@@ -1,20 +1,14 @@
-const resetForm = () => cy.get('[type="reset"]').click()
-
 describe('Asynchronous validation', function() {
   before(() => {
     cy._loadStory(['Validation', 'Asynchronous validation', 'Field async rule'])
-  })
-
-  afterEach(() => {
-    resetForm()
   })
 
   it('Bypasses async validation for empty optional field with async rule', () => {
     cy.getField('fieldOne')
       .focus()
       .blur({ force: true })
-      .should('not.have.class', 'is-valid')
-      .should('not.have.class', 'is-invalid')
+      .valid(false)
+      .invalid(false)
   })
 
   it('Rejects empty required field with unsatisfied async rule', () => {
@@ -34,6 +28,7 @@ describe('Asynchronous validation', function() {
 
   it('Rejects field that does not satisfy async rule', () => {
     cy.getField('fieldOne')
+      .clear()
       .typeIn('foo')
       .blur({ force: true })
       .wait(500)

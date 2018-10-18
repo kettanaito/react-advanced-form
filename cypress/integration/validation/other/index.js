@@ -1,3 +1,3 @@
 describe('Misc', () => {
-  require('./AjaxPrefilling')
+  require('./AjaxPrefilling.spec')
 })

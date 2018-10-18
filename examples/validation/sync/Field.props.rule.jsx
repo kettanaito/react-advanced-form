@@ -35,16 +35,6 @@ export default class FieldPropsRule extends React.Component {
             rule={/^[a-z]+$/}
             required
           />
-
-          <Button
-            type="reset"
-            onClick={(event) => {
-              event.preventDefault()
-              window.form.reset()
-            }}
-          >
-            Reset
-          </Button>
         </Form>
       </React.Fragment>
     )
