@@ -1,25 +1,19 @@
-import * as R from 'ramda'
-import React from 'react'
-import Scenario from '@examples/field-grouping/NestedGroups'
+import { expect } from 'chai'
 
-describe('Nested groups', function() {
-  before(() => {
-    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
-  })
+it('Serializes nested field groups properly', () => {
+  cy._loadStory(['Advanced', 'Field grouping', 'Nested groups'])
 
-  it('Serializes nested field groups properly', () => {
-    cy.get('form').should(() => {
-      const serialized = this.form.serialize()
+  cy.window().should(($window) => {
+    const serialized = $window.form.serialize()
 
-      expect(serialized).to.deep.equal({
-        fieldOne: 'foo',
-        groupName: {
-          fieldOne: 'bar',
-          nestedGroup: {
-            fieldOne: 'poo',
-          },
+    expect(serialized).to.deep.equal({
+      fieldOne: 'foo',
+      groupName: {
+        fieldOne: 'bar',
+        nestedGroup: {
+          fieldOne: 'poo',
         },
-      })
+      },
     })
   })
 })
