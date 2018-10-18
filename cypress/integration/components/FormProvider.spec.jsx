@@ -1,10 +1,8 @@
-import React from 'react'
-import Scenario from '@examples/components/FormProvider/DebounceTime'
 import { defaultDebounceTime } from '@lib/src/components/FormProvider'
 
 describe('FormProvider', function() {
   before(() => {
-    cy.loadStory(<Scenario />)
+    cy._loadStory(['Components', 'FormProvider'])
   })
 
   it('Propagates the default value of "debounceTime"', () => {

@@ -23,7 +23,7 @@ Cypress.Commands.add('_loadStory', (storyPath) => {
     },
   })
 
-  return cy.log(`Open "${selectedStory}" in "${selectedKind}`).visit(storyUrl)
+  return cy.log(`Open "${selectedStory}" in "${selectedKind}"`).visit(storyUrl)
 })
 
 Cypress.Commands.add('getField', (fieldName) => {

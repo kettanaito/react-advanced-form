@@ -56,6 +56,11 @@ import ReactSelect from './third-party/react-select'
 import ReactSlider from './third-party/react-slider'
 import ReactDatepicker from './third-party/react-datepicker'
 
+/* Components */
+storiesOf('Components', module)
+  .add('createField', addComponent(<CreateField />))
+  .add('FormProvider', addComponent(<FormProvider />))
+
 /* Basics */
 storiesOf('Basics|Interaction', module)
   .add('Initial values', addComponent(<InitialValues />))
@@ -65,10 +70,6 @@ storiesOf('Basics|Interaction', module)
   .add('Controlled fields', addComponent(<ControlledFields />))
   .add('Form submit', addComponent(<Submit />))
   .add('Submit callbacks', addComponent(<SubmitCallbacks />))
-
-storiesOf('Basics|Components', module)
-  .add('createField', addComponent(<CreateField />))
-  .add('FormProvider', addComponent(<FormProvider />))
 
 /* Validation */
 storiesOf('Validation|Synchronous validation', module)
