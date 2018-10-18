@@ -4,7 +4,7 @@ import { defaultDebounceTime } from '@root/src/components/FormProvider'
 
 describe('Validation', function() {
   before(() => {
-    cy.loadStory(<Scenario />)
+    cy._loadStory(['Validation', 'Misc', 'Validation UI'])
   })
 
   afterEach(() => {
@@ -32,17 +32,17 @@ describe('Validation', function() {
 
   it('Transitions from invalid to valid state', () => {
     cy.getField('fieldTwo')
-      .typeIn('foo')
+      .typeIn('som')
       .wait(defaultDebounceTime)
       .validSync(false)
-      .type('o')
+      .type('e')
       .wait(defaultDebounceTime)
       .validSync()
   })
 
   it('Transitions from valid to invalid state', () => {
     cy.getField('fieldTwo')
-      .type('fooo')
+      .typeIn('some')
       .wait(defaultDebounceTime)
       .validSync()
       .type('{backspace}')
