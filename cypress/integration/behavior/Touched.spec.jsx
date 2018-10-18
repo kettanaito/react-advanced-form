@@ -11,13 +11,13 @@ describe('Touched', () => {
       .touched(false)
       .focus()
       .touched(false)
+      .blur()
   })
 
   it('A field becomes touched after focus and blur', () => {
     cy.getField('fieldOne')
       .focus()
       .blur()
-      .wait(50)
       .touched()
   })
 })
