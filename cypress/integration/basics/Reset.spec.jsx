@@ -1,13 +1,10 @@
 import React from 'react'
-import Scenario from '@examples/basics/Reset'
 
-const reset = () => {
-  cy.get('button[type="reset"]').click()
-}
+const reset = () => cy.get('button[type="reset"]').click()
 
 describe('Reset', function() {
   before(() => {
-    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+    cy._loadStory(['Basics', 'Interaction', 'Reset'])
 
     cy.getField('username')
       .clear()

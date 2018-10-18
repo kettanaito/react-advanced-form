@@ -1,47 +1,30 @@
 import React from 'react'
 import { assert, expect } from 'chai'
-import Scenario from '@examples/basics/Submit'
-import CallbacksScenario, {
-  submitTimeout,
-} from '@examples/basics/SubmitCallbacks'
+import { submitTimeout } from '@examples/basics/SubmitCallbacks'
 
-const resetCallbackCalls = (callbacks) => {
-  return Object.keys(callbacks).reduce((obj, callbackName) => {
-    return {
-      ...obj,
-      [callbackName]: false,
-    }
-  }, {})
-}
+const submit = () => cy.get('button[type="submit"]').click()
+const reset = () => cy.get('button[type="clear"]').click()
 
 describe('Submit', () => {
-  let submitCount = 0
-  const submit = () => cy.get('button[type="submit"]').click()
-
   before(() => {
-    cy.loadStory(<Scenario onSubmitStart={() => submitCount++} />)
-  })
-
-  afterEach(() => {
-    submitCount = 0
+    cy._loadStory(['Basics', 'Interaction', 'Form submit'])
   })
 
   it('Prevents form submit unless all fields are expected', () => {
-    cy.wait(100)
     submit()
     cy.getField('email').valid(false)
     cy.getField('password').valid(false)
     cy.getField('termsAndConditions').valid(false)
-    expect(submitCount).to.equal(0)
+    cy.get('#submitting').should('not.be.visible')
 
     cy.getField('email')
-      .type(' foo') // FIXME Cypress omits the first character due to whatever reason
+      .typeIn('foo')
       .valid()
 
     submit()
     cy.getField('password').valid(false)
     cy.getField('termsAndConditions').valid(false)
-    expect(submitCount).to.equal(0)
+    cy.get('#submitting').should('not.be.visible')
 
     cy.getField('password')
       .typeIn('bar')
@@ -49,64 +32,45 @@ describe('Submit', () => {
     submit()
 
     cy.getField('termsAndConditions').valid(false)
-    expect(submitCount).to.equal(0)
+    cy.get('#submitting').should('not.be.visible')
 
     cy.getField('termsAndConditions')
       .markChecked()
       .valid()
 
     submit().then(() => {
-      expect(submitCount).to.equal(1)
+      cy.get('#submitting').should('be.visible')
     })
   })
 
   describe('Callback methods', function() {
-    let callbacksCalled = {
-      onInvalid: true,
-      onSubmitStart: false,
-      onSubmitted: false,
-      onSubmitFailed: false,
-      onSubmitEnd: false,
-    }
-
     before(() => {
-      cy.loadStory(
-        <CallbacksScenario
-          getRef={(formRef) => (this.form = formRef)}
-          onInvalid={() => (callbacksCalled.onInvalid = true)}
-          onSubmitStart={() => (callbacksCalled.onSubmitStart = true)}
-          onSubmitted={() => (callbacksCalled.onSubmitted = true)}
-          onSubmitFailed={() => (callbacksCalled.onSubmitFailed = true)}
-          onSubmitEnd={() => (callbacksCalled.onSubmitEnd = true)}
-        />,
-      )
+      cy._loadStory(['Basics', 'Interaction', 'Submit callbacks'])
     })
 
     afterEach(() => {
-      this.form.reset()
-      cy.wait(50)
-      callbacksCalled = resetCallbackCalls(callbacksCalled)
+      reset()
     })
 
     it('Calls "onInvalid" when invalid fields prevent form submit', () => {
       cy.getField('email')
         .clear()
-        .type(' invalid email')
+        .typeIn('foo')
         .blur()
         .valid(false)
 
       submit().then(() => {
         assert(
-          !callbacksCalled.onSubmitStart,
+          cy.get('#submit-start').should('not.be.visible'),
           'should not call "onSubmitStart"',
         )
-        assert(callbacksCalled.onInvalid, 'should call "onInvalid"')
+        assert(cy.get('#invalid'), 'should call "onInvalid"')
       })
     })
 
     it('Calls "onSubmitStart" when successful submit starts', () => {
       submit().then(() => {
-        assert(callbacksCalled.onSubmitStart, 'should call "onSubmitStart"')
+        assert(cy.get('#submit-start'), 'should call "onSubmitStart"')
       })
     })
 
@@ -114,22 +78,25 @@ describe('Submit', () => {
       submit()
         .wait(submitTimeout)
         .then(() => {
-          assert(callbacksCalled.onSubmitted, 'should call "onSubmitted"')
+          assert(cy.get('#submitted'), 'should call "onSubmitted"')
         })
     })
 
     it('Calls "onSubmitFailed" when "action" Promise rejects', () => {
       cy.getField('email')
         .clear()
-        .type(' incorrect@email.example')
+        .typeIn('incorrect@email.example')
         .blur()
         .valid(true)
 
       submit()
         .wait(submitTimeout)
         .then(() => {
-          assert(!callbacksCalled.onSubmitted, 'should not call "onSubmitted"')
-          assert(callbacksCalled.onSubmitFailed, 'should call "onSubmitFailed"')
+          assert(
+            cy.get('#submitted').should('not.be.visible'),
+            'should not call "onSubmitted"',
+          )
+          assert(cy.get('#submit-failed'), 'should call "onSubmitFailed"')
         })
     })
 
@@ -137,7 +104,7 @@ describe('Submit', () => {
       submit()
         .wait(submitTimeout)
         .then(() => {
-          assert(callbacksCalled.onSubmitEnd, 'should call "onSubmitEnd"')
+          assert(cy.get('#submit-end'), 'should call "onSubmitEnd"')
         })
     })
   })

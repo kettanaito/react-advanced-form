@@ -1,20 +1,9 @@
 import React from 'react'
-import Scenario from '@examples/basics/InitialValues'
+import { initialValues } from '@examples/basics/InitialValues'
 
 describe('Initial values', function() {
-  const initialValues = {
-    firstName: 'Kate',
-    username: 'admin',
-    billingAddress: {
-      street: 'Baker st.',
-    },
-    deliveryAddress: {
-      street: 'Sunwell ave.',
-    },
-  }
-
   before(() => {
-    cy.loadStory(<Scenario initialValues={initialValues} />)
+    cy._loadStory(['Basics', 'Interaction', 'Initial values'])
   })
 
   it('Takes "fieldProps.initialValue" as the highest priority', () => {

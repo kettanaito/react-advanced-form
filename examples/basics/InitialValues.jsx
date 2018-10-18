@@ -3,6 +3,17 @@ import { fieldPresets, createField, Form, Field } from 'react-advanced-form'
 import { Input, Select } from '@examples/fields'
 import Button from '@examples/shared/Button'
 
+export const initialValues = {
+  firstName: 'Kate',
+  username: 'admin',
+  billingAddress: {
+    street: 'Baker st.',
+  },
+  deliveryAddress: {
+    street: 'Sunwell ave.',
+  },
+}
+
 /**
  * Create a field class where "initialValue" is set
  * for all instances of that class.
@@ -17,7 +28,7 @@ export default class InitialValues extends React.Component {
     return (
       <React.Fragment>
         <h1>Initial values</h1>
-        <Form {...this.props}>
+        <Form initialValues={initialValues}>
           <Input name="firstName" label="First name" initialValue="John" />
           <Input name="username" label="Username" required />
 

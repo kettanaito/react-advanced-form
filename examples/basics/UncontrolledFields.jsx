@@ -11,7 +11,7 @@ export default class UncontrolledFields extends React.Component {
 
         <Form
           id="form"
-          ref={this.props.getRef}
+          ref={(form) => (window.form = form)}
           onSubmitStart={this.props.onSubmitStart}
         >
           {/* Inputs */}

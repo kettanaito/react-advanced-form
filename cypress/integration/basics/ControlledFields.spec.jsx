@@ -1,19 +1,14 @@
 import React from 'react'
 import { expect } from 'chai'
-import Scenario from '@examples/basics/ControlledFields'
 
 describe('Controlled fields', function() {
   before(() => {
-    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
-  })
-  afterEach(() => {
-    this.form.reset()
-    cy.wait(50)
+    cy._loadStory(['Basics', 'Interaction', 'Controlled fields'])
   })
 
   it('Mounts with proper initial state', () => {
-    cy.get('#form').should(() => {
-      const serialized = this.form.serialize()
+    cy.window().should(($window) => {
+      const serialized = $window.form.serialize()
 
       expect(serialized).to.deep.equal({
         inputTwo: 'foo',
@@ -46,8 +41,8 @@ describe('Controlled fields', function() {
       .clear()
       .typeIn('another')
 
-    cy.then(() => {
-      const serialized = this.form.serialize()
+    cy.window().then(($window) => {
+      const serialized = $window.form.serialize()
 
       return expect(serialized).to.deep.equal({
         inputOne: 'first value',
