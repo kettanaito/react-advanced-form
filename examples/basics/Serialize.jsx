@@ -9,6 +9,15 @@ export const formatAddress = (address) => {
 }
 
 export default class Serialize extends React.Component {
+  mapBillingAddress = (fields) => {
+    const { street, houseNumber } = formatAddress(fields.address)
+
+    return {
+      street,
+      houseNumber,
+    }
+  }
+
   mapSerialized = ({ serialized }) => {
     const { password, billingAddress } = serialized
 
@@ -19,20 +28,14 @@ export default class Serialize extends React.Component {
     }
   }
 
-  mapBillingAddress = (fields) => {
-    const { street, houseNumber } = formatAddress(fields.address)
-
-    return {
-      street,
-      houseNumber,
-    }
-  }
-
   render() {
     return (
       <React.Fragment>
         <h1>Serialization</h1>
-        <Form ref={this.props.getRef} onSerialize={this.mapSerialized}>
+        <Form
+          ref={(form) => (window.form = form)}
+          onSerialize={this.mapSerialized}
+        >
           <Input
             name="email"
             type="email"

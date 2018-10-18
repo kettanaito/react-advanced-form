@@ -4,6 +4,17 @@ import { Input } from '@fields'
 import { Select } from '@examples/fields/Select'
 import Button from '@shared/Button'
 
+export const initialValues = {
+  firstName: 'Kate',
+  username: 'admin',
+  billingAddress: {
+    street: 'Baker st.',
+  },
+  deliveryAddress: {
+    street: 'Sunwell ave.',
+  },
+}
+
 /**
  * Create a field class where "initialValue" is set
  * for all instances of that class.
@@ -18,7 +29,7 @@ export default class InitialValues extends React.Component {
     return (
       <React.Fragment>
         <h1>Initial values</h1>
-        <Form {...this.props}>
+        <Form initialValues={initialValues}>
           <Input name="firstName" label="First name" initialValue="John" />
           <Input name="username" label="Username" required />
 
@@ -34,7 +45,11 @@ export default class InitialValues extends React.Component {
           </Field.Group>
 
           <Field.Group name="deliveryAddress">
-            <Input id="delivery-street" name="street" label="Street (delivery)" />
+            <Input
+              id="delivery-street"
+              name="street"
+              label="Street (delivery)"
+            />
           </Field.Group>
         </Form>
       </React.Fragment>

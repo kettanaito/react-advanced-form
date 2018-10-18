@@ -3,12 +3,29 @@ import { Form } from '@lib'
 import { Input, Checkbox } from '@fields'
 import Button from '@shared/Button'
 
-export default class Submit extends React.Component {
+export default class FormSubmit extends React.Component {
+  state = {
+    isSubmitting: false,
+  }
+
+  handleSubmit = () => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, 2000)
+    })
+  }
+
+  handleSubmitStart = () => {
+    this.setState({ isSubmitting: true })
+  }
+
   render() {
+    const { isSubmitting } = this.state
+
     return (
       <React.Fragment>
-        <h1>Form submit</h1>
-        <Form onSubmitStart={this.props.onSubmitStart}>
+        <h1>Submit</h1>
+
+        <Form action={this.handleSubmit} onSubmitStart={this.handleSubmitStart}>
           <Input name="email" type="email" label="E-mail" required />
           <Input name="password" type="password" label="Password" required />
           <Checkbox
@@ -18,6 +35,8 @@ export default class Submit extends React.Component {
           />
 
           <Button type="submit">Submit</Button>
+
+          {isSubmitting && <span id="submitting">Submitting...</span>}
         </Form>
       </React.Fragment>
     )

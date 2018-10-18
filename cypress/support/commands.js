@@ -1,3 +1,4 @@
+import url from 'url'
 import React from 'react'
 import { mount } from 'cypress-react-unit-test'
 import StoryContainer from './StoryContainer'
@@ -6,8 +7,27 @@ Cypress.Commands.add('loadStory', (story) => {
   mount(<StoryContainer>{story}</StoryContainer>)
 })
 
+Cypress.Commands.add('_loadStory', (storyPath) => {
+  const selectedStory = storyPath.pop()
+  const selectedKind = storyPath.join('|')
+
+  const storyUrl = url.format({
+    pathname: '/iframe.html',
+    query: {
+      selectedKind,
+      selectedStory,
+      full: 1,
+      stories: 0,
+      addons: 0,
+      panelRight: 0,
+    },
+  })
+
+  return cy.log(`Open "${selectedStory}" in "${selectedKind}`).visit(storyUrl)
+})
+
 Cypress.Commands.add('getField', (fieldName) => {
-  return cy.log('Get a field').get(`[name="${fieldName}"]`)
+  return cy.log(`Get field "${fieldName}"`).get(`[name="${fieldName}"]`)
 })
 
 Cypress.Commands.add(
@@ -23,7 +43,7 @@ Cypress.Commands.add(
 Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, nextText) => {
   cy.log(`Type "${nextText}"`)
     .wrap(subject)
-    .type(nextText, { delay: 50 })
+    .type(nextText)
     .should('have.value', nextText)
 })
 

@@ -1,20 +1,14 @@
 import React from 'react'
 import { expect } from 'chai'
-import Scenario from '@examples/basics/UncontrolledFields'
 
 describe('Uncontrolled fields', function() {
   before(() => {
-    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
-  })
-
-  afterEach(() => {
-    this.form.reset()
-    cy.wait(50)
+    cy._loadStory(['Basics', 'Interaction', 'Uncontrolled fields'])
   })
 
   it('Mounts with proper initial state', () => {
-    cy.get('#form').should(() => {
-      const serialized = this.form.serialize()
+    cy.window().should(($window) => {
+      const serialized = $window.form.serialize()
       expect(serialized).to.deep.equal({
         inputTwo: 'foo',
         select: 'two',
@@ -42,8 +36,8 @@ describe('Uncontrolled fields', function() {
       .clear()
       .typeIn('another')
 
-    cy.then(() => {
-      const serialized = this.form.serialize()
+    cy.window(($window) => {
+      const serialized = $window.form.serialize()
       expect(serialized).to.deep.equal({
         inputOne: 'first value',
         inputTwo: 'second value',
