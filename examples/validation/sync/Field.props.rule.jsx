@@ -1,6 +1,7 @@
 import React from 'react'
 import { Form } from 'react-advanced-form'
 import { Input } from '@examples/fields'
+import Button from '@shared/Button'
 
 const formMessages = {
   name: {
@@ -19,7 +20,8 @@ export default class FieldPropsRule extends React.Component {
     return (
       <React.Fragment>
         <h1>Field rules</h1>
-        <Form ref={this.props.getRef} messages={formMessages}>
+
+        <Form ref={(form) => (window.form = form)} messages={formMessages}>
           <Input
             name="fieldOne"
             label="Field one"
@@ -33,6 +35,16 @@ export default class FieldPropsRule extends React.Component {
             rule={/^[a-z]+$/}
             required
           />
+
+          <Button
+            type="reset"
+            onClick={(event) => {
+              event.preventDefault()
+              window.form.reset()
+            }}
+          >
+            Reset
+          </Button>
         </Form>
       </React.Fragment>
     )

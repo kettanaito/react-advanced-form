@@ -1,14 +1,12 @@
-import React from 'react'
-import Scenario from '@examples/validation/async/Field.props.asyncRule'
+const resetForm = () => cy.get('[type="reset"]').click()
 
 describe('Asynchronous validation', function() {
   before(() => {
-    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+    cy._loadStory(['Validation', 'Asynchronous validation', 'Field async rule'])
   })
 
   afterEach(() => {
-    this.form.reset()
-    cy.wait(50)
+    resetForm()
   })
 
   it('Bypasses async validation for empty optional field with async rule', () => {
@@ -30,9 +28,7 @@ describe('Asynchronous validation', function() {
     cy.getField('fieldOne')
       .typeIn('expected value')
       .blur({ force: true })
-      // .validating()
       .wait(500)
-      // .validating(false)
       .expected()
   })
 
@@ -40,9 +36,7 @@ describe('Asynchronous validation', function() {
     cy.getField('fieldOne')
       .typeIn('foo')
       .blur({ force: true })
-      // .validating()
       .wait(500)
-      // .validating(false)
       .expected(false)
   })
 
@@ -50,17 +44,13 @@ describe('Asynchronous validation', function() {
     cy.getField('fieldFour')
       .typeIn('foo')
       .blur({ force: true })
-      // .validating()
       .wait(200)
       .clear()
       .typeIn('bar')
-      // .validating(false)
       .wait(300)
       .should('not.have.class', 'is-invalid')
       .blur({ force: true })
-      // .validating()
       .wait(500)
-      // .validating(false)
       .expected()
   })
 })

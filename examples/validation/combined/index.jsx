@@ -1,6 +1,7 @@
 import React from 'react'
 import { Form } from 'react-advanced-form'
 import { Input } from '@examples/fields'
+import Button from '@shared/Button'
 
 const validationRules = {
   type: {
@@ -25,7 +26,7 @@ export default class CombinedValidation extends React.Component {
 
   render() {
     return (
-      <Form ref={this.props.getRef} rules={validationRules}>
+      <Form ref={(form) => (window.form = form)} rules={validationRules}>
         <Input
           name="fieldOne"
           rule={/^\d+$/}
@@ -34,6 +35,16 @@ export default class CombinedValidation extends React.Component {
           hint="Numbers only (sync), not equal to 123 (async)"
         />
         <Input name="userPassword" type="email" label="Password" required />
+
+        <Button
+          type="reset"
+          onClick={(event) => {
+            event.preventDefault()
+            window.form.reset()
+          }}
+        >
+          Reset
+        </Button>
       </Form>
     )
   }

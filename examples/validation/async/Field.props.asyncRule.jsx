@@ -1,6 +1,7 @@
 import React from 'react'
 import { Form } from 'react-advanced-form'
 import { Input } from '@examples/fields'
+import Button from '@shared/Button'
 
 const messages = {
   type: {
@@ -34,7 +35,7 @@ export default class FieldPropsAsyncRule extends React.Component {
     return (
       <React.Fragment>
         <h1>Field async rule</h1>
-        <Form ref={this.props.getRef} messages={messages}>
+        <Form ref={(form) => (window.form = form)} messages={messages}>
           <Input
             name="fieldOne"
             label="Field one"
@@ -57,6 +58,16 @@ export default class FieldPropsAsyncRule extends React.Component {
             asyncRule={this.validateAsync}
             required
           />
+
+          <Button
+            type="reset"
+            onClick={(event) => {
+              event.preventDefault()
+              window.form.reset()
+            }}
+          >
+            Reset
+          </Button>
         </Form>
       </React.Fragment>
     )

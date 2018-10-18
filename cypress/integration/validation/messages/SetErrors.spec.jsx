@@ -1,23 +1,18 @@
-import React from 'react'
-import Scenario from '@examples/validation/messages/SetErrors'
-
-const firstButtonClick = () => cy.get('#btn-first').click()
-const secondButtonClick = () => cy.get('#btn-second').click()
+const resetForm = () => cy.get('[type="reset"]').click()
+const setBothErrors = () => cy.get('#set-both').click()
+const setExplicitNull = () => cy.get('#set-null').click()
 
 describe('Form-wide errors', function() {
   before(() => {
-    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+    cy._loadStory(['Validation', 'Messages', 'Set errors'])
   })
 
   afterEach(() => {
-    this.form.reset()
-    cy.wait(50)
+    resetForm()
   })
 
   it('Sets error messages for fields', () => {
-    cy.wait(100)
-    firstButtonClick()
-    cy.wait(100)
+    setBothErrors()
 
     cy.getField('fieldOne')
       .invalid()
@@ -33,12 +28,12 @@ describe('Form-wide errors', function() {
       .blur()
       .valid()
 
-    firstButtonClick()
+    setBothErrors()
     cy.getField('fieldOne')
       .invalid()
       .hasError('foo')
 
-    secondButtonClick()
+    setExplicitNull()
     cy.getField('fieldOne').valid()
     cy.getField('firstName').invalid()
   })
