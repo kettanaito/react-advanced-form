@@ -103,7 +103,7 @@ storiesOf('Advanced|Field grouping', module)
 
 storiesOf('Advanced|Reactive props', module)
   .add('Reactive field rule', addComponent(<RxPropsFieldReactiveRule />))
-  .add('Dynamic require', addComponent(<RxPropsDynamicRequired />))
+  .add('Dynamic required', addComponent(<RxPropsDynamicRequired />))
   .add('Single field target', addComponent(<RxPropsSingleTarget />))
   .add('Interdependent fields', addComponent(<RxPropsInterdependent />))
   .add('Delegated subscription', addComponent(<RxPropsDelegatedSubscription />))
