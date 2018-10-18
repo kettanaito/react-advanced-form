@@ -63,6 +63,11 @@ storiesOf('Components', module)
   .add('createField', addComponent(<CreateField />))
   .add('FormProvider', addComponent(<FormProvider />))
 
+storiesOf('Behavior', module).add(
+  'Validation UI',
+  addComponent(<ValidationUI />),
+)
+
 /* Basics */
 storiesOf('Basics|Interaction', module)
   .add('Initial values', addComponent(<InitialValues />))
@@ -92,9 +97,10 @@ storiesOf('Validation|Messages', module)
   .add('Validation message', addComponent(<ValidationMessages />))
   .add('Set errors', addComponent(<SetErrors />))
 
-storiesOf('Validation|Misc', module)
-  .add('Validation UI', addComponent(<ValidationUI />))
-  .add('AJAX Pre-filling', addComponent(<AjaxPrefilling />))
+storiesOf('Validation|Misc', module).add(
+  'AJAX pre-filling',
+  addComponent(<AjaxPrefilling />),
+)
 
 /* Advanced */
 storiesOf('Advanced|Field grouping', module)

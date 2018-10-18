@@ -1,9 +1,9 @@
-import React from 'react'
-import Scenario, { timeoutDuration } from '@examples/validation/misc/AjaxPrefilling'
+import { timeoutDuration } from '@examples/validation/misc/AjaxPrefilling'
 
 describe('AJAX Pre-filling', function() {
   before(() => {
-    cy.loadStory(<Scenario />)
+    cy._loadStory(['Validation', 'Misc', 'AJAX pre-filling'])
+
     cy.get('#ajax')
       .click()
       .wait(timeoutDuration)

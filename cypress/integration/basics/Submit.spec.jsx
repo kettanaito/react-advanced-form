@@ -3,7 +3,7 @@ import { assert, expect } from 'chai'
 import { submitTimeout } from '@examples/basics/SubmitCallbacks'
 
 const submit = () => cy.get('button[type="submit"]').click()
-const reset = () => cy.get('button[type="clear"]').click()
+const reset = () => cy.get('button[type="reset"]').click()
 
 describe('Submit', () => {
   before(() => {
