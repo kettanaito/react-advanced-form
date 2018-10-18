@@ -7,7 +7,7 @@ export default class SetErrors extends React.Component {
   handleFirstButtonClick = (event) => {
     event.preventDefault()
 
-    this.form.setErrors({
+    window.form.setErrors({
       fieldOne: 'foo',
       billingAddress: {
         firstName: 'bar',
@@ -18,7 +18,7 @@ export default class SetErrors extends React.Component {
   handleSecondButtonClick = (event) => {
     event.preventDefault()
 
-    this.form.setErrors({
+    window.form.setErrors({
       fieldOne: null,
     })
   }
@@ -27,12 +27,7 @@ export default class SetErrors extends React.Component {
     const { getRef } = this.props
 
     return (
-      <Form
-        ref={(form) => {
-          this.form = form
-          return getRef && getRef(form)
-        }}
-      >
+      <Form ref={(form) => (window.form = form)}>
         <Input
           name="fieldOne"
           rule={/^\d+$/}
@@ -43,11 +38,21 @@ export default class SetErrors extends React.Component {
           <Input name="firstName" required />
         </Field.Group>
 
-        <Button id="btn-first" onClick={this.handleFirstButtonClick}>
+        <Button id="set-both" onClick={this.handleFirstButtonClick}>
           Set both errors
         </Button>
-        <Button id="btn-second" onClick={this.handleSecondButtonClick}>
+        <Button id="set-null" onClick={this.handleSecondButtonClick}>
           Set explicit "null"
+        </Button>
+
+        <Button
+          type="reset"
+          onClick={(event) => {
+            event.preventDefault()
+            window.form.reset()
+          }}
+        >
+          Reset
         </Button>
       </Form>
     )

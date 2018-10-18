@@ -1,9 +1,6 @@
-import React from 'react'
-import Scenario from '@examples/validation/sync/Form.props.rules'
-
 describe('Form rules', function() {
   before(() => {
-    cy.loadStory(<Scenario />)
+    cy._loadStory(['Validation', 'Synchronous validation', 'Form rules'])
   })
 
   it('Resolves empty optional field with relevant form rules', () => {
@@ -26,9 +23,7 @@ describe('Form rules', function() {
   })
 
   it('Retains validation status after clearing required unexpected field', () => {
-    cy.loadStory(<Scenario required />)
-
-    cy.getField('fieldOne')
+    cy.getField('fieldThree')
       .clear()
       .typeIn('foo')
       .validSync(false)
@@ -66,18 +61,14 @@ describe('Form rules', function() {
   })
 
   it('Resolves required field with name-specific matching value', () => {
-    cy.loadStory(<Scenario required />)
-
-    cy.getField('fieldOne')
+    cy.getField('fieldThree')
       .clear()
       .typeIn('some')
       .validSync()
   })
 
   it('Rejects required field with name-specific unmatching value', () => {
-    cy.loadStory(<Scenario required />)
-
-    cy.getField('fieldOne')
+    cy.getField('fieldThree')
       .clear()
       .typeIn('foo')
       .validSync(false)

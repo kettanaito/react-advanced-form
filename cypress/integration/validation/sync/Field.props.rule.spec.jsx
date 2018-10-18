@@ -1,14 +1,12 @@
-import React from 'react'
-import Scenario from '@examples/validation/sync/Field.props.rule'
+const resetForm = () => cy.get('[type="reset"]').click()
 
 describe('Field rules', function() {
   before(() => {
-    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
+    cy._loadStory(['Validation', 'Synchronous validation', 'Field rules'])
   })
 
   afterEach(() => {
-    this.form.reset()
-    cy.wait(50)
+    resetForm()
   })
 
   it('Resolves empty optional field with sync rule', () => {

@@ -1,15 +1,12 @@
-import React from 'react'
-import Scenario from '@examples/validation/combined'
+const resetForm = () => cy.get('[type="reset"]').click()
 
-describe('Composite validation', function() {
+describe('Combined validation', function() {
   before(() => {
-    cy.loadStory(<Scenario getRef={(form) => (this.form = form)} />)
-    cy.wait(200)
+    cy._loadStory(['Validation', 'Combined validation', 'Combined validation'])
   })
 
   afterEach(() => {
-    this.form.reset()
-    cy.wait(50)
+    resetForm()
   })
 
   it('Bypasses async validation when preceding sync validation rejects', () => {
