@@ -38,6 +38,7 @@ import FieldPropsAsyncRule from './validation/async/Field.props.asyncRule'
 
 import CombinedValidation from './validation/combined'
 import SetErrors from './validation/messages/SetErrors'
+import ValidationUI from './validation/misc/UI'
 import AjaxPrefilling from './validation/misc/AjaxPrefilling'
 
 /* Reactive props */
@@ -89,10 +90,9 @@ storiesOf('Validation|Messages', module).add(
   addComponent(<SetErrors />),
 )
 
-storiesOf('Validation|Misc', module).add(
-  'AJAX Pre-filling',
-  addComponent(<AjaxPrefilling />),
-)
+storiesOf('Validation|Misc', module)
+  .add('Validation UI', addComponent(<ValidationUI />))
+  .add('AJAX Pre-filling', addComponent(<AjaxPrefilling />))
 
 /* Advanced */
 storiesOf('Advanced|Field grouping', module)
