@@ -37,7 +37,6 @@ Cypress.Commands.add('typeIn', { prevSubject: true }, (subject, nextText) => {
   cy.log(`Type "${nextText}"`)
     .wrap(subject)
     .type(nextText, { delay: 50 })
-    .wait(50)
     .should('have.value', nextText)
 })
 
