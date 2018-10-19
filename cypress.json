@@ -1,4 +1,5 @@
 {
   "baseUrl": "http://localhost:6009",
+  "defaultCommandTimeout": 10000,
   "viewportWidth": 500
 }
