@@ -1,6 +1,6 @@
 describe('Reactive props', function() {
   it('Supports direct field subscription', () => {
-    cy._loadStory(['Advanced', 'Reactive props', 'Dynamic required'])
+    cy.loadStory(['Advanced', 'Reactive props', 'Dynamic required'])
 
     cy.getField('lastName').should('have.attr', 'required')
     cy.getField('lastName')
@@ -15,7 +15,7 @@ describe('Reactive props', function() {
   })
 
   it('Supports delegated field subscription', () => {
-    cy._loadStory(['Advanced', 'Reactive props', 'Delegated subscription'])
+    cy.loadStory(['Advanced', 'Reactive props', 'Delegated subscription'])
 
     cy.getField('firstName').should('have.attr', 'required')
     cy.getField('firstName')
@@ -28,7 +28,7 @@ describe('Reactive props', function() {
   })
 
   it('Supports inter-dependent fields', () => {
-    cy._loadStory(['Advanced', 'Reactive props', 'Interdependent fields'])
+    cy.loadStory(['Advanced', 'Reactive props', 'Interdependent fields'])
 
     cy.getField('firstName').should('not.have.attr', 'required')
     cy.getField('lastName').should('not.have.attr', 'required')
@@ -55,7 +55,7 @@ describe('Reactive props', function() {
   })
 
   it('Supports multiple fields depending on one target', () => {
-    cy._loadStory(['Advanced', 'Reactive props', 'Single field target'])
+    cy.loadStory(['Advanced', 'Reactive props', 'Single field target'])
 
     cy.getField('firstName').should('not.have.attr', 'required')
     cy.getField('fieldThree').should('not.have.attr', 'required')
@@ -90,7 +90,7 @@ describe('Reactive props', function() {
   })
 
   it('Supports field "rule" as a reactive prop', () => {
-    cy._loadStory(['Advanced', 'Reactive props', 'Reactive field rule'])
+    cy.loadStory(['Advanced', 'Reactive props', 'Reactive field rule'])
 
     /**
      * Properly validates the reactive field when its value changes.

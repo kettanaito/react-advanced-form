@@ -5,7 +5,7 @@ const submitForm = () => cy.get('button[type="submit"]').click()
 
 describe('Submit', () => {
   before(() => {
-    cy._loadStory(['Basics', 'Interaction', 'Form submit'])
+    cy.loadStory(['Basics', 'Interaction', 'Form submit'])
   })
 
   it('Prevents form submit unless all fields are expected', () => {
@@ -36,14 +36,13 @@ describe('Submit', () => {
       .markChecked()
       .valid()
 
-    submitForm().then(() => {
-      cy.get('#submitting').should('be.visible')
-    })
+    submitForm()
+    cy.get('#submitting').should('be.visible')
   })
 
   describe('Callback methods', function() {
     beforeEach(() => {
-      cy._loadStory(['Basics', 'Interaction', 'Submit callbacks'])
+      cy.loadStory(['Basics', 'Interaction', 'Submit callbacks'])
     })
 
     it('Calls "onInvalid" when invalid fields prevent form submit', () => {

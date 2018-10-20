@@ -2,7 +2,7 @@ import { expect } from 'chai'
 
 describe('Uncontrolled fields', function() {
   before(() => {
-    cy._loadStory(['Basics', 'Interaction', 'Uncontrolled fields'])
+    cy.loadStory(['Basics', 'Interaction', 'Uncontrolled fields'])
   })
 
   it('Mounts with proper initial state', () => {

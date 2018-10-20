@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:6009",
-  "defaultCommandTimeout": 10000,
-  "viewportWidth": 500
+  "fileServerFolder": "storybook-static",
+  "viewportWidth": 500,
+  "video": false
 }

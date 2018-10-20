@@ -2,7 +2,7 @@ import { defaultDebounceTime } from '@lib/src/components/FormProvider'
 
 describe('Validation', function() {
   before(() => {
-    cy._loadStory(['Behavior', 'Validation UI'])
+    cy.loadStory(['Behavior', 'Validation UI'])
   })
 
   afterEach(() => {

@@ -35,26 +35,23 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=development npm run storybook",
-    "dev": "NODE_ENV=development webpack -w",
+    "start": "NODE_ENV=development webpack -w",
     "flow": "flow",
     "prettify": "prettier src/**/*.js cypress/integration/**/*.{js,jsx} examples/**/*.{js,jsx} --write",
-    "cypress": "node_modules/.bin/cypress open",
-    "cypress:cli": "node_modules/.bin/cypress run --spec cypress/integration/index.js --browser chrome",
     "clean": "rm -rf ./lib && exit 0",
     "build": "npm run clean && npm run build:dev && npm run build:prod",
     "build:prod": "NODE_ENV=production webpack",
     "build:dev": "NODE_ENV=development webpack",
     "storybook": "start-storybook -p 6009 -s ./",
-    "build:storybook": "build-storybook",
+    "build:storybook": "NODE_ENV=production build-storybook",
     "test:unit": "NODE_ENV=production jest",
-    "test:integration": "NODE_ENV=production server-test storybook http-get://localhost:6009 cypress:cli",
+    "cypress": "$(npm bin)/cypress open",
+    "cypress:cli": "$(npm bin)/cypress run --spec cypress/integration/index.js --browser chrome",
+    "test:integration:dev": "$(npm bin)/cypress run -e envName=dev --spec cypress/integration/index.js --headed --no-exit",
+    "test:integration": "npm run cypress:cli",
     "test": "npm run test:unit && npm run test:integration",
     "prepublishOnly": "npm run build && npm test"
   },
-  "pre-push": [
-    "prettify"
-  ],
   "peerDependencies": {
     "react": "^15.0.0"
   },

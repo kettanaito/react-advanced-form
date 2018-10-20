@@ -1,6 +1,6 @@
 describe('Async extra param', function() {
   before(() => {
-    cy._loadStory(['Validation', 'Asynchronous validation', 'Field async rule'])
+    cy.loadStory(['Validation', 'Asynchronous validation', 'Field async rule'])
   })
 
   it('Displays error message with "extra" params from response', () => {
