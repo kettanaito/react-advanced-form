@@ -1,6 +1,6 @@
 describe('createField', function() {
   before(() => {
-    cy._loadStory(['Components', 'createField'])
+    cy.loadStory(['Components', 'createField'])
   })
 
   it('Supports custom field event handlers', () => {

@@ -1,6 +1,6 @@
 describe('Touched', () => {
   before(() => {
-    cy._loadStory(['Basics', 'Interaction', 'Form submit'])
+    cy.loadStory(['Basics', 'Interaction', 'Form submit'])
   })
 
   it('Asserts a field is untouched by default', () => {

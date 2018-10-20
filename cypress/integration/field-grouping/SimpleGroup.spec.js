@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 
 it('Serializes grouped fields properly', () => {
-  cy._loadStory(['Advanced', 'Field grouping', 'Simple group'])
+  cy.loadStory(['Advanced', 'Field grouping', 'Simple group'])
 
   cy.window().should(($window) => {
     const serialized = $window.form.serialize()

@@ -1,6 +1,6 @@
 describe('Combined validation', function() {
   before(() => {
-    cy._loadStory(['Validation', 'Combined validation', 'Combined validation'])
+    cy.loadStory(['Validation', 'Combined validation', 'Combined validation'])
   })
 
   it('Bypasses async validation when preceding sync validation rejects', () => {

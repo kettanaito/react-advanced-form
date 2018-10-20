@@ -1,10 +1,22 @@
+import * as R from 'ramda'
 import url from 'url'
 
-Cypress.Commands.add('_loadStory', (storyPath) => {
-  const selectedStory = storyPath.pop()
-  const selectedKind = storyPath.join('|')
+/**
+ * Opens a Storybook story based on the given story path.
+ * Based on the stories path, so name- and case-sensitive.
+ */
+Cypress.Commands.add('loadStory', (storyPath) => {
+  const selectedKind = R.compose(
+    R.join('|'),
+    R.dropLast(1),
+  )(storyPath)
+  const selectedStory = R.last(storyPath)
 
   const storyUrl = url.format({
+    /**
+     * Open the iframe document, since Cypress will not be able
+     * to propagate events to an iframe.
+     */
     pathname: '/iframe.html',
     query: {
       selectedKind,
