@@ -1,6 +1,6 @@
 describe('Asynchronous validation', function() {
   before(() => {
-    cy._loadStory(['Validation', 'Asynchronous validation', 'Field async rule'])
+    cy.loadStory(['Validation', 'Asynchronous validation', 'Field async rule'])
   })
 
   it('Bypasses async validation for empty optional field with async rule', () => {

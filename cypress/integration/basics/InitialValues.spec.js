@@ -2,7 +2,7 @@ import { initialValues } from '@examples/basics/InitialValues'
 
 describe('Initial values', function() {
   before(() => {
-    cy._loadStory(['Basics', 'Interaction', 'Initial values'])
+    cy.loadStory(['Basics', 'Interaction', 'Initial values'])
   })
 
   it('Takes "fieldProps.initialValue" as the highest priority', () => {

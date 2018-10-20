@@ -12,7 +12,7 @@ export default class FieldReactiveRule extends React.Component {
           <Input
             name="fieldTwo"
             label="Field two"
-            hint="Valid when equals to `fieldOne` value"
+            hint="Valid when equals to `fieldOne`"
             rule={({ get, value }) => {
               return value === get(['fieldOne', 'value'])
             }}

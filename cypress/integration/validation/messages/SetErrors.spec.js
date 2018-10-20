@@ -3,7 +3,7 @@ const setExplicitNull = () => cy.get('#set-null').click()
 
 describe('Form-wide errors', function() {
   beforeEach(() => {
-    cy._loadStory(['Validation', 'Messages', 'Set errors'])
+    cy.loadStory(['Validation', 'Messages', 'Set errors'])
   })
 
   it('Sets error messages for fields', () => {

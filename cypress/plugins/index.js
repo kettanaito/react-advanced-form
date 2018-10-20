@@ -1,3 +1,5 @@
+const fs = require('fs-extra')
+const path = require('path')
 const webpack = require('webpack')
 const webpackPreprocessor = require('@cypress/webpack-preprocessor')
 const storybookWebpackConfig = require('../../.storybook/webpack.config')
@@ -25,11 +27,21 @@ const webpackOptions = {
   },
 }
 
-const options = {
-  webpackOptions,
-  watchOptions: {},
+const getConfigFile = (envName) => {
+  const configFilename = ['cypress', envName, 'json'].filter(Boolean).join('.')
+  console.log(`Cypress: Loading config "${configFilename}"`)
+  return fs.readJson(path.resolve(__dirname, '..', '..', configFilename))
 }
 
-module.exports = (on) => {
-  on('file:preprocessor', webpackPreprocessor(options))
+module.exports = (on, config) => {
+  on(
+    'file:preprocessor',
+    webpackPreprocessor({
+      webpackOptions,
+      watchOptions: {},
+    }),
+  )
+
+  const { envName } = config.env || ''
+  return getConfigFile(envName)
 }
