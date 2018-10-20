@@ -43,5 +43,9 @@ jobs:
           command: npm run build:prod
 
       - run:
+          name: Building Storybook
+          command: npm run build:storybook
+
+      - run:
           name: Running integration tests
           command: npm run test:integration

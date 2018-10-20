@@ -50,9 +50,6 @@
     "test": "npm run test:unit && npm run test:integration",
     "prepublishOnly": "npm run build && npm test"
   },
-  "pre-push": [
-    "prettify"
-  ],
   "peerDependencies": {
     "react": "^15.0.0"
   },

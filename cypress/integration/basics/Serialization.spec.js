@@ -3,7 +3,7 @@ import { formatAddress } from '@examples/basics/Serialize'
 
 describe('Serialization', function() {
   before(() => {
-    cy._loadStory(['Basics', 'Interaction', 'Serialize'])
+    cy.loadStory(['Basics', 'Interaction', 'Serialize'])
   })
 
   const submit = () => cy.get('button[type="submit"]').click()

@@ -1,6 +1,6 @@
 describe('Field rules', function() {
   before(() => {
-    cy._loadStory(['Validation', 'Synchronous validation', 'Field rules'])
+    cy.loadStory(['Validation', 'Synchronous validation', 'Field rules'])
   })
 
   it('Resolves empty optional field with sync rule', () => {

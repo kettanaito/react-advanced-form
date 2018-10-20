@@ -2,7 +2,7 @@ const reset = () => cy.get('button[type="reset"]').click()
 
 describe('Reset', function() {
   before(() => {
-    cy._loadStory(['Basics', 'Interaction', 'Reset'])
+    cy.loadStory(['Basics', 'Interaction', 'Reset'])
 
     cy.getField('username')
       .clear()
