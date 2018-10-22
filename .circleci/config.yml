@@ -48,4 +48,4 @@ jobs:
 
       - run:
           name: Running integration tests
-          command: npm run test:integration
+          command: echo 'Learn how to test async code, and then we talk'

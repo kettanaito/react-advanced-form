@@ -1,5 +1,3 @@
-import React from 'react'
-import Scenario from '@examples/validation/misc/UI'
 import { defaultDebounceTime } from '@root/src/components/FormProvider'
 
 describe('Validation', function() {
