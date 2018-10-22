@@ -1,5 +1,3 @@
-import React from 'react'
-import Scenario from '@examples/components/FormProvider/DebounceTime'
 import { defaultDebounceTime } from '@root/src/components/FormProvider'
 
 describe('FormProvider', function() {
