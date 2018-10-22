@@ -10,7 +10,7 @@ export default class FormSubmit extends React.Component {
 
   handleSubmit = () => {
     return new Promise((resolve) => {
-      setTimeout(resolve, 2000)
+      setTimeout(resolve, 500)
     })
   }
 

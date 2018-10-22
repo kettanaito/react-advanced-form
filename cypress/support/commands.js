@@ -193,7 +193,7 @@ Cypress.Commands.add(
   'hasError',
   { prevSubject: true },
   (subject, errorText) => {
-    const wrapper = cy.wrap(subject).siblings('.invalid-feedback')
+    const wrapper = cy.log('Assert error message')wrap(subject).siblings('.invalid-feedback')
 
     return errorText === false
       ? wrapper.should('not.exist')

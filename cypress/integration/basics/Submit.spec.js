@@ -9,6 +9,8 @@ describe('Submit', () => {
   })
 
   it('Prevents form submit unless all fields are expected', () => {
+    cy.getField('email')
+
     submitForm()
     cy.getField('email').valid(false)
     cy.getField('password').valid(false)
@@ -28,7 +30,6 @@ describe('Submit', () => {
       .typeIn('bar')
       .valid()
     submitForm()
-
     cy.getField('termsAndConditions').valid(false)
     cy.get('#submitting').should('not.be.visible')
 
@@ -52,53 +53,42 @@ describe('Submit', () => {
         .blur()
         .valid(false)
 
-      submitForm().then(() => {
-        assert(
-          cy.get('#submit-start').should('not.be.visible'),
-          'should not call "onSubmitStart"',
-        )
-        assert(cy.get('#invalid'), 'should call "onInvalid"')
-      })
+      submitForm()
+      cy.get('#submit-start').should('not.be.visible')
+      cy.get('#invalid').should('be.visible')
     })
 
     it('Calls "onSubmitStart" when successful submit starts', () => {
-      submitForm().then(() => {
-        assert(cy.get('#submit-start'), 'should call "onSubmitStart"')
-      })
+      submitForm()
+      cy.get('#submit-start').should('be.visible')
     })
 
     it('Calls "onSubmitted" when "action" Promise resolves', () => {
+      /* Assert exact value accepted by moked async submit action */
+      cy.getField('email').hasValue('expected@email.example')
       submitForm()
         .wait(submitTimeout)
         .then(() => {
-          assert(cy.get('#submitted'), 'should call "onSubmitted"')
+          cy.get('#submitted').should('be.visible')
         })
     })
 
     it('Calls "onSubmitFailed" when "action" Promise rejects', () => {
       cy.getField('email')
         .clear()
-        .typeIn('incorrect@email.example')
+        .typeIn('inexpected@email.example')
         .blur()
         .valid(true)
 
       submitForm()
-        .wait(submitTimeout)
-        .then(() => {
-          assert(
-            cy.get('#submitted').should('not.be.visible'),
-            'should not call "onSubmitted"',
-          )
-          assert(cy.get('#submit-failed'), 'should call "onSubmitFailed"')
-        })
+      cy.wait(submitTimeout)
+      cy.get('#submitted').should('not.be.visible')
+      cy.get('#submit-failed').should('be.visible')
     })
 
-    it('Calls "onSubmitEnd" when submit ends, regardless of status', () => {
-      submitForm()
-        .wait(submitTimeout)
-        .then(() => {
-          assert(cy.get('#submit-end'), 'should call "onSubmitEnd"')
-        })
+    it('Calls "onSubmitEnd" upon submit end', () => {
+      submitForm().wait(submitTimeout)
+      cy.get('#submit-end').should('be.visible')
     })
   })
 })

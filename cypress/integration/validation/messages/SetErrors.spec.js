@@ -8,11 +8,12 @@ describe('Form-wide errors', function() {
 
   it('Sets error messages for fields', () => {
     setBothErrors()
-
     cy.getField('fieldOne')
+      .touched()
       .invalid()
       .hasError('foo')
     cy.getField('firstName')
+      .touched()
       .invalid()
       .hasError('bar')
   })
