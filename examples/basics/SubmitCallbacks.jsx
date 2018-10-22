@@ -1,11 +1,13 @@
 import React from 'react'
-import { Form } from '@lib'
+import { Form } from 'react-advanced-form'
 import { Input } from '@fields'
 import Button from '@shared/Button'
 import isEmail from 'validator/lib/isEmail'
 
-export const submitTimeout = 1000
+export const submitTimeout = 500
+
 const initialState = {
+  message: null,
   isInvalid: false,
   isSubmitStart: false,
   isSubmitting: false,
@@ -22,13 +24,15 @@ export default class Submit extends React.Component {
   }
 
   handleInvalidForm = () => {
-    this.setState({ isInvalid: true })
+    this.setState({
+      ...initialState,
+      isInvalid: true,
+    })
   }
 
   handleSubmitStart = () => {
     this.setState({
-      isSubmitted: false,
-      isInvalid: false,
+      ...initialState,
       isSubmitStart: true,
     })
   }
@@ -57,9 +61,12 @@ export default class Submit extends React.Component {
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (email === 'correct@email.example') {
+        if (email === 'expected@email.example') {
           return resolve()
         }
+
+        const message = `Wrong email. Expected: "expected@email.example", got: "${email}".`
+        this.setState({ message })
 
         return reject()
       }, submitTimeout)
@@ -68,6 +75,7 @@ export default class Submit extends React.Component {
 
   render() {
     const {
+      message,
       isInvalid,
       isSubmitStart,
       isSubmitting,
@@ -95,7 +103,7 @@ export default class Submit extends React.Component {
             type="email"
             label="E-mail"
             rule={({ value }) => isEmail(value)}
-            initialValue="correct@email.example"
+            initialValue="expected@email.example"
             required
           />
 
@@ -107,6 +115,7 @@ export default class Submit extends React.Component {
           {isSubmitted && <p id="submitted">Submitted!</p>}
           {isSubmitFailed && <p id="submit-failed">Failed!</p>}
           {isSubmitEnd && <p id="submit-end">Submit ended</p>}
+          {message && <p>{message}</p>}
         </Form>
       </React.Fragment>
     )

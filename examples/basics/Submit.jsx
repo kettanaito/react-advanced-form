@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form } from '@lib'
+import { Form } from 'react-advanced-form'
 import { Input, Checkbox } from '@fields'
 import Button from '@shared/Button'
 
@@ -10,7 +10,7 @@ export default class FormSubmit extends React.Component {
 
   handleSubmit = () => {
     return new Promise((resolve) => {
-      setTimeout(resolve, 2000)
+      setTimeout(resolve, 500)
     })
   }
 

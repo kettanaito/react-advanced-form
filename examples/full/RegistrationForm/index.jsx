@@ -1,5 +1,5 @@
 import React from 'react'
-import { FormProvider } from '@lib'
+import { FormProvider } from 'react-advanced-form'
 import rules from './validation-rules'
 import messages from './validation-messages'
 import RegistrationForm from './RegistrationForm'

@@ -1,4 +1,4 @@
-import { defaultDebounceTime } from '@lib/src/components/FormProvider'
+import { defaultDebounceTime } from '@root/src/components/FormProvider'
 
 describe('Validation', function() {
   before(() => {

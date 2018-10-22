@@ -196,6 +196,7 @@ Cypress.Commands.add(
     cy.log('Assert has error')
       .wrap(subject)
       .siblings('.invalid-feedback')
+      .should('be.visible')
       .should('have.text', errorText)
   },
 )

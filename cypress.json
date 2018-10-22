@@ -1,4 +1,5 @@
 {
+  "defaultCommandTimeout": 8000,
   "fileServerFolder": "storybook-static",
   "viewportWidth": 500,
   "video": false

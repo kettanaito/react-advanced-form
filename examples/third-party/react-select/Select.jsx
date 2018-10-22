@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { createField } from '@lib'
+import { createField } from 'react-advanced-form'
 import ReactSelect from 'react-select'
 // import 'react-select/dist/react-select.css'
 

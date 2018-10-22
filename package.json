@@ -46,7 +46,7 @@
     "build:storybook": "NODE_ENV=production build-storybook",
     "test:unit": "NODE_ENV=production jest",
     "cypress": "$(npm bin)/cypress open",
-    "cypress:cli": "$(npm bin)/cypress run --spec cypress/integration/index.js --browser chrome",
+    "cypress:cli": "$(npm bin)/cypress run --spec 'cypress/integration/index.js' --browser chrome",
     "test:integration:dev": "$(npm bin)/cypress run -e envName=dev --spec cypress/integration/index.js --headed --no-exit",
     "test:integration": "npm run cypress:cli",
     "test": "npm run test:unit && npm run test:integration",

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form } from '@lib'
+import { Form } from 'react-advanced-form'
 import { Input } from '@fields'
 
 export default class FieldReactiveRule extends React.Component {

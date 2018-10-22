@@ -1,5 +1,5 @@
 import React from 'react'
-import { createField } from '@lib'
+import { createField } from 'react-advanced-form'
 import moment from 'moment'
 import ReactDatepicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'

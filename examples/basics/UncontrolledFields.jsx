@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form } from '@lib'
+import { Form } from 'react-advanced-form'
 import { Input, Radio, Checkbox, Select, Textarea } from '@fields'
 import Button from '@shared/Button'
 

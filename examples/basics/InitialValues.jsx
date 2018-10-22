@@ -1,5 +1,5 @@
 import React from 'react'
-import { fieldPresets, createField, Form, Field } from '@lib'
+import { fieldPresets, createField, Form, Field } from 'react-advanced-form'
 import { Input } from '@fields'
 import { Select } from '@examples/fields/Select'
 import Button from '@shared/Button'

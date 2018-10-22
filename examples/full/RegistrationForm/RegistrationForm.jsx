@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Field } from '@lib'
+import { Form, Field } from 'react-advanced-form'
 import { Input } from '@fields'
 import BirthDate from '../../fields/BirthDate'
 import Button from '@shared/Button'
