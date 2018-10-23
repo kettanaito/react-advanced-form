@@ -284,9 +284,17 @@ export default class Form extends React.Component {
    * @param {Object} fieldProps
    */
   unregisterField = (fieldProps) => {
-    this.setState((prevState) => ({
-      fields: prevState.fields.deleteIn(fieldProps.fieldPath),
-    }))
+    /**
+     * @todo Consider as a performance optimization point
+     * in case any performance issues arise.
+     */
+    const nextFields = R.compose(
+      fieldUtils.stitchFields,
+      R.reject(R.propEq('fieldPath', fieldProps.fieldPath)),
+      fieldUtils.flattenFields,
+    )(this.state.fields)
+
+    this.setState({ fields: nextFields })
   }
 
   /**
