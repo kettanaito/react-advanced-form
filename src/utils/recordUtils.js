@@ -113,7 +113,7 @@ export const setValue = R.curry((nextValueGetter, fieldProps) => {
     fieldPath && fieldPath.join('.'),
   )
 
-  return R.assoc(valuePropName, nextValue, fieldProps)
+  return R.assoc(valuePropName, fieldProps.onSetValue(nextValue), fieldProps)
 })
 
 /**
