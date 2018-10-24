@@ -258,6 +258,32 @@ export default class Form extends React.Component {
     )
   }
 
+  updateFields = async (fieldsPatch) => {
+    const nextFields = await R.compose(
+      async (pendingFields) => {
+        return fieldUtils.stitchFields(await Promise.all(pendingFields))
+      },
+      R.map(async (fieldProps) => {
+        const fieldPatch = R.path(fieldProps.fieldPath, fieldsPatch)
+
+        if (fieldPatch) {
+          const nextFieldProps = R.mergeDeepRight(fieldProps, fieldPatch)
+          const validatedFieldProps = await this.validateField({
+            fieldProps: nextFieldProps,
+            forceProps: true,
+          })
+
+          return validatedFieldProps
+        }
+
+        return fieldProps
+      }),
+      fieldUtils.flattenFields,
+    )(this.state.fields)
+
+    this.setState({ fields: nextFields })
+  }
+
   /**
    * Updates the fields with the given field record and returns
    * the updated state of the fields.
