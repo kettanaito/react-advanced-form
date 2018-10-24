@@ -258,35 +258,23 @@ export default class Form extends React.Component {
     )
   }
 
-  updateFields = async (fieldsPatch) => {
-    const nextFields = await R.compose(
-      async (pendingFields) => {
-        return fieldUtils.stitchFields(await Promise.all(pendingFields))
-      },
-      R.map(async (fieldProps) => {
-        const fieldPatch = R.path(fieldProps.fieldPath, fieldsPatch)
+  setValues = async (fieldsPatch) => {
+    const { fields } = this.state
+    const transformers = deriveDeepWith(
+      (_, nextValue) => recordUtils.setValue(nextValue),
+      fieldsPatch,
+      fields,
+    )
+    const nextFields = R.evolve(transformers, fields)
 
-        if (fieldPatch) {
-          const nextFieldProps = R.mergeDeepRight(fieldProps, fieldPatch)
-          const validatedFieldProps = await this.validateField({
-            fieldProps: nextFieldProps,
-            forceProps: true,
-          })
-
-          return validatedFieldProps
-        }
-
-        return fieldProps
-      }),
-      fieldUtils.flattenFields,
-    )(this.state.fields)
-
-    this.setState({ fields: nextFields })
+    this.setState({ fields: nextFields }, () => {
+      this.validate((fieldProps) => R.path(fieldProps.fieldPath, fields))
+    })
   }
 
   /**
    * Updates the fields with the given field record and returns
-   * the updated state of the fields.
+   * the updated fields.
    * @param {Object} fieldProps
    * @returns {Promise}
    */
@@ -438,6 +426,8 @@ export default class Form extends React.Component {
   /**
    * Performs the validation of each field in parallel, awaiting for all the pending
    * validations to be completed.
+   * When an optional predicate function is supplied, validates only the fields that
+   * match the given predicate.
    */
   validate = async (predicate = R.T) => {
     const { fields } = this.state
