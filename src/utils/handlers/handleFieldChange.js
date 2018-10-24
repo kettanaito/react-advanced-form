@@ -6,11 +6,14 @@ import validateSync from '../validation/validateSync'
 import validateField from './validateField'
 
 export default async function handleFieldChange(
-  { event, prevValue, nextValue, fieldProps },
+  payload,
   fields,
   form,
   { onUpdateValue },
 ) {
+  const { isForcedUpdate, prevValue, nextValue, fieldProps } = payload
+  const { controlled, onChange } = fieldProps
+
   /**
    * Handle "onChange" events dispatched by the controlled field.
    * Controlled field must execute its custom "CustomField.props.onChange" handler since
@@ -18,12 +21,19 @@ export default async function handleFieldChange(
    * RAF change handling must be omitted in that scenario, as it will be bubbled to
    * eventually via "createField.Field.componentReceiveProps()", when comparing previous
    * and next values of controlled fields.
+   *
+   * The value change flow for controlled fields is as follows:
+   * 1. Change triggers "createField.handleChange"
+   * 2. Emits default (not forced) "fieldChange" event
+   * 3. Propagates to "handleFieldChange" (here)
+   * 4. Dispatches custom "onChange" handlers ("CustomField.props.onChange")
+   * 5. Handler updates the value, next value propagates to a field via cWRP.
+   * 6. On cWRP emits FORCED "fieldChange" event for controlled fields.
+   * 7. Bubbles again to "handleFieldChange" (here)
+   * 8. Since event is forced, bypasses the controlled check and updates the field.
+   * 9. Updated state of the controlled field is preset in the form's state.
    */
-  const eventInstance = event && (event.nativeEvent || event)
-  const { isForcedUpdate } = eventInstance || {}
-  const { controlled: isControlled, onChange } = fieldProps
-
-  if (!isForcedUpdate && isControlled) {
+  if (!isForcedUpdate && controlled) {
     invariant(
       onChange,
       'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
@@ -32,10 +42,13 @@ export default async function handleFieldChange(
       onChange,
     )
 
-    return dispatch(
+    console.log(
+      '(!) handleFieldChange: is NOT forced, and IS controlled: returning...',
+    )
+
+    dispatch(
       onChange,
       {
-        event,
         nextValue,
         prevValue,
         fieldProps,
@@ -44,7 +57,11 @@ export default async function handleFieldChange(
       },
       form.context,
     )
+
+    return null
   }
+
+  console.log('handleFieldChange: proceeding by default...')
 
   /* Update field's value */
   const updatedFieldProps = compose(
@@ -117,11 +134,10 @@ export default async function handleFieldChange(
    * "onChange" handler at the beginning of this method. There is no need to
    * dispatch the handler method once more.
    */
-  if (!isControlled) {
+  if (!controlled) {
     dispatch(
       onChange,
       {
-        event,
         nextValue,
         prevValue,
         fieldProps: validatedFieldProps,
@@ -132,7 +148,5 @@ export default async function handleFieldChange(
     )
   }
 
-  return {
-    nextFieldProps: validatedFieldProps,
-  }
+  return validatedFieldProps
 }

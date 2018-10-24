@@ -6,6 +6,7 @@ import { EventEmitter } from 'events'
 import { Observable } from 'rxjs/internal/Observable'
 import { fromEvent } from 'rxjs/internal/observable/fromEvent'
 import { bufferTime } from 'rxjs/internal/operators/bufferTime'
+import * as rxJs from 'rxjs/internal/operators'
 
 /* Internal modules */
 import {
@@ -124,12 +125,52 @@ export default class Form extends React.Component {
     /* Field events observerables */
     fromEvent(eventEmitter, 'fieldRegister')
       .pipe(bufferTime(50))
+      /**
+       * @todo @performance
+       * Iterative state updates have no reason. Once the register events are buffered,
+       * perform a single state update with all the pending fields.
+       */
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
     fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
-    fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
+
+    fromEvent(eventEmitter, 'fieldChange')
+      .pipe(
+        rxJs.bufferTime(50),
+        rxJs.filter(R.complement(R.isEmpty)),
+        rxJs.tap((e) => console.log('buffered:', e)),
+        rxJs.map(R.map(this.handleFieldChange)),
+        rxJs.tap((e) => console.log('mapped:', e)),
+      )
+      .subscribe(async (pendingUpdates) => {
+        console.log({ pendingUpdates })
+
+        const fieldsList = await Promise.all(pendingUpdates)
+        console.log({ fieldsList })
+
+        const updatedFields = fieldsList.filter(Boolean)
+        console.log({ updatedFields })
+
+        if (updatedFields.length === 0) {
+          return
+        }
+
+        const fieldsDelta = fieldUtils.stitchFields(updatedFields)
+        console.log({ fieldsDelta })
+
+        const nextFields = R.mergeDeepRight(this.state.fields, fieldsDelta)
+        console.log('next fields:', nextFields)
+
+        return this.setState({ fields: nextFields })
+      })
+
     fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
-    fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField)
     fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
+
+    /**
+     * @todo @performance
+     * Buffer incoming unregister events and dispatch a single state update.
+     */
+    fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField)
   }
 
   /**
@@ -362,24 +403,28 @@ export default class Form extends React.Component {
    * @param {mixed} nextValue
    */
   handleFieldChange = this.withRegisteredField(async (args) => {
+    console.log('handleFieldChange called with', args)
+
     const { fields, dirty } = this.state
 
     const changePayload = await handlers.handleFieldChange(args, fields, this, {
       onUpdateValue: this.updateFieldsWith,
     })
 
-    /**
-     * Change handler for controlled fields does not return the next field props
-     * record, therefore, need to explicitly ensure the payload was returned.
-     */
-    if (changePayload) {
-      await this.updateFieldsWith(changePayload.nextFieldProps)
-    }
+    return changePayload
 
-    /* Mark form as dirty if it's not already */
-    if (!dirty) {
-      this.handleFirstChange(args)
-    }
+    // /**
+    //  * Change handler for controlled fields does not return the next field props
+    //  * record, therefore, need to explicitly ensure the payload was returned.
+    //  */
+    // if (changePayload) {
+    //   await this.updateFieldsWith(changePayload.nextFieldProps)
+    // }
+
+    // /* Mark form as dirty if it's not already */
+    // if (!dirty) {
+    //   this.handleFirstChange(args)
+    // }
   })
 
   /**

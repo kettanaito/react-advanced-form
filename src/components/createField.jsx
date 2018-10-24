@@ -227,14 +227,11 @@ export default function connectField(options) {
         })
 
         if (controlled && shouldUpdateRecord) {
+          console.warn('(2) cWRP: emitting (controlled) "fieldChange" event...')
           this.context.form.eventEmitter.emit('fieldChange', {
-            event: {
-              nativeEvent: {
-                isForcedUpdate: true,
-              },
-            },
-            nextValue,
+            isForcedUpdate: true,
             prevValue,
+            nextValue,
             fieldProps: contextProps,
           })
         }
@@ -244,14 +241,17 @@ export default function connectField(options) {
        * Ensure "this.contextProps" reference is updated according to the context updates.
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
-        /* Bypass scenarios when field is being updated, but not yet registred within the Form */
         const nextContextProps = R.path(this.__fieldPath, nextContext.fields)
 
+        /**
+         * Bypass the scenarios when field is being updated, but not yet registred
+         * within the Form.
+         */
         if (!nextContextProps) {
           return
         }
 
-        /* Update the internal reference to contextProps */
+        /* Update the internal field's reference to contextProps */
         const { props: prevProps, contextProps: prevContextProps } = this
         this.contextProps = nextContextProps
 
@@ -334,6 +334,7 @@ export default function connectField(options) {
           nextValue: customNextValue,
           prevValue: customPrevValue,
         } = args
+
         const {
           contextProps,
           context: { form },
@@ -347,10 +348,12 @@ export default function connectField(options) {
           ? customPrevValue
           : contextProps[valuePropName]
 
+        console.warn(
+          '(1) handleChange: emitting regular "fieldChange" event...',
+        )
         form.eventEmitter.emit('fieldChange', {
-          event,
-          nextValue,
           prevValue,
+          nextValue,
           fieldProps: contextProps,
         })
       }

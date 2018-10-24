@@ -19,6 +19,7 @@ import Reset from './basics/Reset'
 import Serialize from './basics/Serialize'
 import UncontrolledFields from './basics/UncontrolledFields'
 import ControlledFields from './basics/ControlledFields'
+import ControlledUpdates from './basics/ControlledUpdates'
 import SubmitCallbacks from './basics/SubmitCallbacks'
 import Submit from './basics/Submit'
 
@@ -78,6 +79,7 @@ storiesOf('Basics|Interaction', module)
   .add('Serialize', addComponent(<Serialize />))
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
   .add('Controlled fields', addComponent(<ControlledFields />))
+  .add('Controlled updates', addComponent(<ControlledUpdates />))
   .add('Form submit', addComponent(<Submit />))
   .add('Submit callbacks', addComponent(<SubmitCallbacks />))
 
