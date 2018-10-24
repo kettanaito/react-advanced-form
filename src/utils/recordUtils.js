@@ -53,6 +53,7 @@ export const createField = (initialState) => {
     onFocus: null,
     onChange: null,
     onBlur: null,
+    mapValue: (nextValue) => nextValue,
 
     ...initialState,
   }
@@ -113,7 +114,7 @@ export const setValue = R.curry((nextValueGetter, fieldProps) => {
     fieldPath && fieldPath.join('.'),
   )
 
-  return R.assoc(valuePropName, fieldProps.onSetValue(nextValue), fieldProps)
+  return R.assoc(valuePropName, fieldProps.mapValue(nextValue), fieldProps)
 })
 
 /**
