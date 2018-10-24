@@ -9,6 +9,7 @@ SUMMARY.md
 # Configurations
 .github
 .babelrc
+babel.config.js
 .eslintrc*
 .circleci
 book.json
@@ -18,6 +19,7 @@ webpack*
 jest*
 
 # Misc
+__*
 .storybook
 favicon.*
 logo.*
