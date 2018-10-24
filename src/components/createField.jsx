@@ -37,6 +37,9 @@ const defaultOptions = {
   enforceProps() {
     return {}
   },
+  mapValue(nextValue) {
+    return nextValue
+  },
 }
 
 /**
@@ -124,17 +127,16 @@ export default function connectField(options) {
           name: prunedProps.name,
           type: prunedProps.type,
           valuePropName,
-          [valuePropName]: registeredValue,
-          initialValue,
+          [valuePropName]: hocOptions.mapValue(registeredValue),
+          initialValue: hocOptions.mapValue(initialValue),
           controlled: prunedProps.hasOwnProperty('value'), // TODO Checkboxes are always uncontrolled
           required: prunedProps.required,
           reactiveProps,
 
-          //
-          // TODO
-          // Debounce an isolate validateField method to handle formless fields
-          //
           /**
+           * @todo
+           * Debounce an isolate validateField method to handle formless fields.
+           *
            * When the validate method is debounced on the form level, different
            * calls to it from different fields are going to overlap and conflict
            * with each other. Wrapping the validate method for each field means
@@ -149,6 +151,7 @@ export default function connectField(options) {
           onFocus: prunedProps.onFocus,
           onChange: prunedProps.onChange,
           onBlur: prunedProps.onBlur,
+          mapValue: hocOptions.mapValue,
         }
 
         /* (Optional) Alter the field record using HOC options */
