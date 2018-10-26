@@ -268,7 +268,7 @@ export default class Form extends React.Component {
     const { fields } = this.state
     const transformers = deriveDeepWith(
       (_, nextValue, fieldProps) =>
-        recordUtils.setValue(fieldProps.getInitialValue(nextValue)),
+        recordUtils.setValue(fieldProps.mapValue(nextValue)),
       fieldsPatch,
       fields,
     )

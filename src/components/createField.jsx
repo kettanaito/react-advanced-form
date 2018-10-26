@@ -37,11 +37,11 @@ const defaultOptions = {
   enforceProps() {
     return {}
   },
+  mapValue(nextValue) {
+    return nextValue
+  },
   serialize(value) {
     return value
-  },
-  getInitialValue(nextValue) {
-    return nextValue
   },
 }
 
@@ -130,7 +130,7 @@ export default function connectField(options) {
           name: prunedProps.name,
           type: prunedProps.type,
           valuePropName,
-          [valuePropName]: hocOptions.getInitialValue(registeredValue),
+          [valuePropName]: hocOptions.mapValue(registeredValue),
           /**
            * Store the pristine initial value to assign it
            * on reseting the field. "getInitialValue" will be
@@ -164,7 +164,7 @@ export default function connectField(options) {
           onBlur: prunedProps.onBlur,
 
           /* Internal methods */
-          getInitialValue: hocOptions.getInitialValue,
+          mapValue: hocOptions.mapValue,
           serialize: hocOptions.serialize,
         }
 

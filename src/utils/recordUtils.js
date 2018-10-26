@@ -53,7 +53,7 @@ export const createField = (initialState) => {
     onFocus: null,
     onChange: null,
     onBlur: null,
-    getInitialValue: R.always,
+    mapValue: R.always,
     serialize: R.always,
 
     ...initialState,
@@ -189,7 +189,7 @@ export const resetValidationState = R.mergeDeepLeft({
 export const reset = R.curry((nextValueGetter, fieldProps) => {
   return R.compose(
     // Beware that this will set value to "undefined" when no "initialValue" is found
-    setValue(fieldProps.getInitialValue(nextValueGetter(fieldProps))),
+    setValue(fieldProps.mapValue(nextValueGetter(fieldProps))),
     setErrors(null),
     resetValidationState,
     resetValidityState,
