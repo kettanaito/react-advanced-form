@@ -76,18 +76,12 @@ export default createField({
   shouldValidateOnMount: ({ fieldRecord: { date } }) => {
     return date.year || date.month || date.day
   },
-  mapPropsToField: ({ valuePropName, props, fieldRecord }) => {
-    const date = props.date || ''
-    const splitDate = date.split('-')
-    const day = splitDate[0] || ''
-    const month = splitDate[1] || ''
-    const year = splitDate[2] || ''
-    const initialValue = { day, month, year }
-
+  getInitialValue(value) {
+    const parsedDate = value.split('-')
     return {
-      ...fieldRecord,
-      [valuePropName]: initialValue,
-      initialValue,
+      year: parsedDate[0] || '',
+      month: parsedDate[1] || '',
+      day: parsedDate[2] || '',
     }
   },
   onSerialize(date) {

@@ -465,7 +465,9 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Clears the fields matching the given predicate.
+   * Clears the fields.
+   * If an optional predicate function is provided, clears
+   * only the fields that match the given predicate.
    */
   clear = (predicate = Boolean) => {
     const nextFields = R.compose(
