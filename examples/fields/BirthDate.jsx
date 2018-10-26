@@ -74,7 +74,7 @@ export default createField({
   shouldValidateOnMount: ({ fieldRecord: { date } }) => {
     return date.year || date.month || date.day
   },
-  getInitialValue(value) {
+  mapValue(value) {
     const parsedDate = value.split('-')
     return {
       year: parsedDate[0] || '',
