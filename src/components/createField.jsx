@@ -131,8 +131,10 @@ export default function connectField(options) {
           type: prunedProps.type,
           valuePropName,
           [valuePropName]: hocOptions.getInitialValue(registeredValue),
-          initialValue: hocOptions.getInitialValue(initialValue),
-          controlled: prunedProps.hasOwnProperty('value'), // TODO Checkboxes are always uncontrolled
+          initialValue: initialValue || registeredValue,
+          controlled: prunedProps.hasOwnProperty(
+            'value',
+          ) /** @todo Checkboxes are always uncontrolled */,
           required: prunedProps.required,
           reactiveProps,
 
@@ -154,13 +156,15 @@ export default function connectField(options) {
           onFocus: prunedProps.onFocus,
           onChange: prunedProps.onChange,
           onBlur: prunedProps.onBlur,
+
+          /* Internal methods */
           getInitialValue: hocOptions.getInitialValue,
           onSerialize: hocOptions.onSerialize,
         }
 
         /* (Optional) Alter the field record using HOC options */
         const mappedFieldProps = hocOptions.mapPropsToField({
-          fieldRecord: initialFieldProps, // TODO Align naming
+          fieldRecord: initialFieldProps /** @todo Adopt "fieldState" namespace */,
           props: prunedProps,
           valuePropName,
           context,

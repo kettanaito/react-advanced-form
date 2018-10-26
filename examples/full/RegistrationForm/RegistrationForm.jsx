@@ -15,7 +15,7 @@ export default class RegistrationForm extends React.Component {
       <React.Fragment>
         <h1>Registration form</h1>
 
-        <Form action={this.registerUser}>
+        <Form ref={(form) => (this.form = form)} action={this.registerUser}>
           <Field.Group name="primaryInfo">
             <Input name="userEmail" type="email" label="E-mail" required />
           </Field.Group>
@@ -58,6 +58,9 @@ export default class RegistrationForm extends React.Component {
           </Field.Group>
 
           <Button>Register</Button>
+          <button type="reset" onClick={() => this.form.clear()}>
+            Clear
+          </button>
         </Form>
       </React.Fragment>
     )

@@ -189,7 +189,7 @@ export const resetValidationState = R.mergeDeepLeft({
 export const reset = R.curry((nextValueGetter, fieldProps) => {
   return R.compose(
     // Beware that this will set value to "undefined" when no "initialValue" is found
-    setValue(nextValueGetter(fieldProps)),
+    setValue(fieldProps.getInitialValue(nextValueGetter(fieldProps))),
     setErrors(null),
     resetValidationState,
     resetValidityState,
