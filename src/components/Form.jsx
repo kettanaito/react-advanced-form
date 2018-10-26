@@ -258,7 +258,13 @@ export default class Form extends React.Component {
     )
   }
 
-  setValues = async (fieldsPatch) => {
+  /**
+   * Accepts the given fields patch and updates the fields
+   * with that patch. Performs validation for the fields
+   * present in the patch.
+   * @param {Object<fieldPath: nextValue>} fieldsPatch
+   */
+  setValues = (fieldsPatch) => {
     const { fields } = this.state
     const transformers = deriveDeepWith(
       (_, nextValue, fieldProps) =>
