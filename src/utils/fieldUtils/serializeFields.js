@@ -33,7 +33,14 @@ const shouldSerializeField = (fieldProps) => {
  */
 const serializeFields = R.compose(
   R.reduce((acc, fieldProps) => {
-    return R.assocPath(fieldProps.fieldPath, recordUtils.getValue(fieldProps), acc)
+    return R.assocPath(
+      fieldProps.fieldPath,
+      R.compose(
+        fieldProps.onSerialize,
+        recordUtils.getValue,
+      )(fieldProps),
+      acc,
+    )
   }, {}),
   R.filter(shouldSerializeField),
   flattenFields,

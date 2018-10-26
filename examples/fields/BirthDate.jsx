@@ -58,7 +58,8 @@ class BirthDate extends React.Component {
           />
         </div>
 
-        {errors &&
+        {invalid &&
+          errors &&
           errors.map((error, index) => (
             <div key={index} className="invalid-feedback d-block">
               {error}
@@ -73,7 +74,7 @@ export default createField({
   allowMultiple: true,
   valuePropName: 'date',
   shouldValidateOnMount: ({ fieldRecord: { date } }) => {
-    return date.day || date.month || date.year
+    return date.year || date.month || date.day
   },
   mapPropsToField: ({ valuePropName, props, fieldRecord }) => {
     const date = props.date || ''
@@ -88,5 +89,8 @@ export default createField({
       [valuePropName]: initialValue,
       initialValue,
     }
+  },
+  onSerialize(date) {
+    return [date.year, date.month, date.day].join('-')
   },
 })(BirthDate)
