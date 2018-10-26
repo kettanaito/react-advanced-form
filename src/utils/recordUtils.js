@@ -54,7 +54,7 @@ export const createField = (initialState) => {
     onChange: null,
     onBlur: null,
     getInitialValue: R.always,
-    onSerialize: R.always,
+    serialize: R.always,
 
     ...initialState,
   }

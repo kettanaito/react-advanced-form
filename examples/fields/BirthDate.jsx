@@ -82,7 +82,7 @@ export default createField({
       day: parsedDate[2] || '',
     }
   },
-  onSerialize(date) {
+  serialize(date) {
     return [date.year, date.month, date.day].join('-')
   },
 })(BirthDate)
