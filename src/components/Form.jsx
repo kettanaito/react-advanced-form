@@ -472,7 +472,7 @@ export default class Form extends React.Component {
       fieldUtils.stitchFields,
       R.map(recordUtils.reset(R.always(''))),
       R.filter(predicate),
-      fieldUtils.flattenedFields,
+      fieldUtils.flattenFields,
     )(this.state.fields)
 
     this.setState({ fields: nextFields }, () => {
