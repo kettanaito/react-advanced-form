@@ -18,8 +18,6 @@ class BirthDate extends React.Component {
     const { fieldProps, fieldState, id, label } = this.props
     const { valid, invalid, errors, required } = fieldState
 
-    console.log({ errors })
-
     const inputClassNames = [
       'form-control',
       valid && 'is-valid',
