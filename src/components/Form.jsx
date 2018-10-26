@@ -261,14 +261,21 @@ export default class Form extends React.Component {
   setValues = async (fieldsPatch) => {
     const { fields } = this.state
     const transformers = deriveDeepWith(
-      (_, nextValue) => recordUtils.setValue(nextValue),
+      (_, nextValue, fieldProps) =>
+        recordUtils.setValue(fieldProps.getInitialValue(nextValue)),
       fieldsPatch,
       fields,
     )
     const nextFields = R.evolve(transformers, fields)
 
     this.setState({ fields: nextFields }, () => {
-      this.validate((fieldProps) => R.path(fieldProps.fieldPath, fields))
+      this.validate((fieldProps) => {
+        return R.pathSatisfies(
+          R.complement(R.isNil),
+          fieldProps.fieldPath,
+          fieldsPatch,
+        )
+      })
     })
   }
 

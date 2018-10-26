@@ -131,6 +131,12 @@ export default function connectField(options) {
           type: prunedProps.type,
           valuePropName,
           [valuePropName]: hocOptions.getInitialValue(registeredValue),
+          /**
+           * Store the pristine initial value to assign it
+           * on reseting the field. "getInitialValue" will be
+           * invoked with the prisine initialValue during reset
+           * inside "recordUtils.reset()".
+           */
           initialValue: initialValue || registeredValue,
           controlled: prunedProps.hasOwnProperty(
             'value',
