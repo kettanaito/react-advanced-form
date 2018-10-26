@@ -37,7 +37,7 @@ const defaultOptions = {
   enforceProps() {
     return {}
   },
-  onSerialize(value) {
+  serialize(value) {
     return value
   },
   getInitialValue(nextValue) {
@@ -165,7 +165,7 @@ export default function connectField(options) {
 
           /* Internal methods */
           getInitialValue: hocOptions.getInitialValue,
-          onSerialize: hocOptions.onSerialize,
+          serialize: hocOptions.serialize,
         }
 
         /* (Optional) Alter the field record using HOC options */

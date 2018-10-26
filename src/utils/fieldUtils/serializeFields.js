@@ -2,6 +2,10 @@ import * as R from 'ramda'
 import * as recordUtils from '../recordUtils'
 import flattenFields from './flattenFields'
 
+/**
+ * @todo
+ * Re-write this using functions chain, instead of a single ugly function.
+ */
 const shouldSerializeField = (fieldProps) => {
   if (!fieldProps.fieldPath) {
     return
@@ -36,7 +40,7 @@ const serializeFields = R.compose(
     return R.assocPath(
       fieldProps.fieldPath,
       R.compose(
-        fieldProps.onSerialize,
+        fieldProps.serialize,
         recordUtils.getValue,
       )(fieldProps),
       acc,
