@@ -40,7 +40,7 @@ const defaultOptions = {
   onSerialize(value) {
     return value
   },
-  mapValue(nextValue) {
+  getInitialValue(nextValue) {
     return nextValue
   },
 }
@@ -130,8 +130,8 @@ export default function connectField(options) {
           name: prunedProps.name,
           type: prunedProps.type,
           valuePropName,
-          [valuePropName]: hocOptions.mapValue(registeredValue),
-          initialValue: hocOptions.mapValue(initialValue),
+          [valuePropName]: hocOptions.getInitialValue(registeredValue),
+          initialValue: hocOptions.getInitialValue(initialValue),
           controlled: prunedProps.hasOwnProperty('value'), // TODO Checkboxes are always uncontrolled
           required: prunedProps.required,
           reactiveProps,
@@ -154,7 +154,7 @@ export default function connectField(options) {
           onFocus: prunedProps.onFocus,
           onChange: prunedProps.onChange,
           onBlur: prunedProps.onBlur,
-          mapValue: hocOptions.mapValue,
+          getInitialValue: hocOptions.getInitialValue,
           onSerialize: hocOptions.onSerialize,
         }
 

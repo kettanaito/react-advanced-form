@@ -20,7 +20,12 @@ export default class RegistrationForm extends React.Component {
             <Input name="userEmail" type="email" label="E-mail" required />
           </Field.Group>
 
-          <BirthDate name="birthDate" label="Birth date" required />
+          <BirthDate
+            name="birthDate"
+            label="Birth date"
+            date="1980-12-10"
+            required
+          />
 
           <Input
             name="userPassword"
