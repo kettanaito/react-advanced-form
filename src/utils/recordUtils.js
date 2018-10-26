@@ -53,7 +53,8 @@ export const createField = (initialState) => {
     onFocus: null,
     onChange: null,
     onBlur: null,
-    mapValue: (nextValue) => nextValue,
+    mapValue: R.always,
+    onSerialize: R.always,
 
     ...initialState,
   }

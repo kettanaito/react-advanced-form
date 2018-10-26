@@ -37,6 +37,9 @@ const defaultOptions = {
   enforceProps() {
     return {}
   },
+  onSerialize(value) {
+    return value
+  },
   mapValue(nextValue) {
     return nextValue
   },
@@ -152,6 +155,7 @@ export default function connectField(options) {
           onChange: prunedProps.onChange,
           onBlur: prunedProps.onBlur,
           mapValue: hocOptions.mapValue,
+          onSerialize: hocOptions.onSerialize,
         }
 
         /* (Optional) Alter the field record using HOC options */
