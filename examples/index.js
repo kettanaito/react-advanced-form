@@ -40,6 +40,8 @@ import CombinedValidation from './validation/combined'
 import SetErrors from './validation/messages/SetErrors'
 import AjaxPrefilling from './validation/misc/AjaxPrefilling'
 
+import ValidationMessages from './validation/messages/ValidationMessages'
+
 /* Reactive props */
 import RxPropsFieldReactiveRule from './reactive-props/FieldReactiveRule'
 import RxPropsDynamicRequired from './reactive-props/DynamicRequired'
@@ -84,10 +86,9 @@ storiesOf('Validation|Combined validation', module).add(
   addComponent(<CombinedValidation />),
 )
 
-storiesOf('Validation|Messages', module).add(
-  'Set errors',
-  addComponent(<SetErrors />),
-)
+storiesOf('Validation|Messages', module)
+  .add('Validation message', addComponent(<ValidationMessages />))
+  .add('Set errors', addComponent(<SetErrors />))
 
 storiesOf('Validation|Misc', module).add(
   'AJAX Pre-filling',
