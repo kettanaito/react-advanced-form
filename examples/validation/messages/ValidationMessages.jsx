@@ -21,7 +21,7 @@ export const messages = {
   type: {
     email: {
       missing: 'Please provide an email',
-      invalid: 'The providede email is invalid',
+      invalid: 'The provided email is invalid',
     },
   },
   name: {
@@ -42,9 +42,9 @@ export default class ValidationMessages extends React.Component {
         <h1>Validation messages</h1>
 
         <Form rules={rules} messages={messages}>
-          <h4>General</h4>
+          {/* General */}
+          <h5>General</h5>
           <div className="row">
-            {/* General */}
             <div className="col">
               <Input
                 name="generalOne"
@@ -63,7 +63,7 @@ export default class ValidationMessages extends React.Component {
           </div>
 
           {/* Type-specific */}
-          <h4>Type</h4>
+          <h5>Type-specific</h5>
           <div className="row">
             <div className="col">
               <Input type="email" name="typeOne" label="Type one" />
@@ -74,7 +74,7 @@ export default class ValidationMessages extends React.Component {
           </div>
 
           {/* Name-specific */}
-          <h4>Name</h4>
+          <h5>Name-specific</h5>
           <div className="row">
             <div className="col">
               <Input name="nameOne" label="Name one" />
