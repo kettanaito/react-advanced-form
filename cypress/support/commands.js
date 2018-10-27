@@ -146,8 +146,10 @@ Cypress.Commands.add(
   'hasError',
   { prevSubject: true },
   (subject, errorText) => {
-    cy.wrap(subject)
-      .siblings('.invalid-feedback')
-      .should('have.text', errorText)
+    const wrapper = cy.wrap(subject).siblings('.invalid-feedback')
+
+    return errorText === false
+      ? wrapper.should('not.exist')
+      : wrapper.should('have.text', errorText)
   },
 )
