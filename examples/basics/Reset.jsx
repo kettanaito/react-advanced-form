@@ -1,7 +1,7 @@
 import React from 'react'
-import { Form, Field } from '@lib'
-import { Input, Checkbox } from '@fields'
-import Button from '@shared/Button'
+import { Form, Field } from 'react-advanced-form'
+import { Input, Checkbox } from '@examples/fields'
+import Button from '@examples/shared/Button'
 
 export default class Reset extends React.Component {
   resetForm = () => {

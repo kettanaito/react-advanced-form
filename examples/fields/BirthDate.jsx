@@ -1,5 +1,5 @@
 import React from 'react'
-import { createField } from '@lib'
+import { createField } from 'react-advanced-form'
 
 class BirthDate extends React.Component {
   handleChange = (event, fieldName) => {

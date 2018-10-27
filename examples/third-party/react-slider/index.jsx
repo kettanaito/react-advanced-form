@@ -1,6 +1,6 @@
 import React from 'react'
-import { Form } from '@lib'
-import Button from '@shared/Button'
+import { Form } from 'react-advanced-form'
+import Button from '@examples/shared/Button'
 import Slider from './Slider'
 
 export default class SliderExample extends React.Component {
@@ -10,7 +10,12 @@ export default class SliderExample extends React.Component {
         <h1>react-slider</h1>
 
         <Form onSubmitStart={this.props.onSubmitStart}>
-          <Slider name="singleValue" label="Select a single value" max={100} defaultValue={50} />
+          <Slider
+            name="singleValue"
+            label="Select a single value"
+            max={100}
+            defaultValue={50}
+          />
           <Slider
             name="priceRange"
             label="Select price range"

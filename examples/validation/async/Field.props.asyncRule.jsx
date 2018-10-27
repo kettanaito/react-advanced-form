@@ -1,6 +1,6 @@
 import React from 'react'
-import { Form } from '@lib'
-import { Input } from '@fields'
+import { Form } from 'react-advanced-form'
+import { Input } from '@examples/fields'
 
 const messages = {
   type: {
@@ -24,7 +24,8 @@ export default class FieldPropsAsyncRule extends React.Component {
     return new Promise((resolve) => {
       setTimeout(resolve, 500)
     }).then(() => ({
-      valid: fieldProps.name === 'fieldThree' ? value !== '123' : value !== 'foo',
+      valid:
+        fieldProps.name === 'fieldThree' ? value !== '123' : value !== 'foo',
       extra: fieldProps.name === 'fieldFour' && 'Data from async response',
     }))
   }

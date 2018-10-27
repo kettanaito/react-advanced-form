@@ -1,5 +1,5 @@
 import React from 'react'
-import { createField } from '../../'
+import { createField } from 'react-advanced-form'
 
 class FieldInput extends React.Component {
   handleChange = (event) => {

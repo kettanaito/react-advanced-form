@@ -1,5 +1,5 @@
 import React from 'react'
-import { createField, Form } from '@lib'
+import { createField, Form } from 'react-advanced-form'
 
 class CustomField extends React.Component {
   state = {

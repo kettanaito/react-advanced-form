@@ -1,7 +1,7 @@
 import React from 'react'
-import { Form } from '@lib'
-import { Input, Radio, Checkbox, Select, Textarea } from '@fields'
-import Button from '@shared/Button'
+import { Form } from 'react-advanced-form'
+import { Input, Radio, Checkbox, Select, Textarea } from '@examples/fields'
+import Button from '@examples/shared/Button'
 
 export default class UncontrolledFields extends React.Component {
   render() {

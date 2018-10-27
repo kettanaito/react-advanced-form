@@ -21,10 +21,9 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@lib': path.resolve(cwd, './'),
-      '@examples': path.resolve(cwd, './examples'),
-      '@shared': path.resolve(cwd, './examples/shared'),
-      '@fields': path.resolve(cwd, './examples/fields'),
+      'react-advanced-form': path.resolve(__dirname, '../'),
+      '@root': path.resolve(__dirname, '../'),
+      '@examples': path.resolve(__dirname, '../examples'),
     },
   },
 }

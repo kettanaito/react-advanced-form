@@ -1,12 +1,12 @@
 import React from 'react'
-import { createField } from '@lib'
+import { createField } from 'react-advanced-form'
 import moment from 'moment'
 import ReactDatepicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
 class Datepicker extends React.Component {
-  handleChange = nextValue => {
-    /* Dispatch "react-advanced-form" method to update the field record */
+  handleChange = (nextValue) => {
+    /* Dispatch "react-advanced-form" method to update the field state */
     this.props.handleFieldChange({ nextValue })
   }
 
@@ -15,7 +15,11 @@ class Datepicker extends React.Component {
 
     return (
       <div className="form-group">
-        <ReactDatepicker {...fieldProps} className="form-control" onChange={this.handleChange} />
+        <ReactDatepicker
+          {...fieldProps}
+          className="form-control"
+          onChange={this.handleChange}
+        />
       </div>
     )
   }

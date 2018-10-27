@@ -1,6 +1,6 @@
 import React from 'react'
 import Scenario from '@examples/validation/misc/UI'
-import { defaultDebounceTime } from '@lib/src/components/FormProvider'
+import { defaultDebounceTime } from '@root/src/components/FormProvider'
 
 describe('UI behavior', function() {
   before(() => {

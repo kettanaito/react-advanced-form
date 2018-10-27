@@ -1,7 +1,7 @@
 import React from 'react'
-import { Form } from '@lib'
-import { Input, Radio, Checkbox, Select, Textarea } from '@fields'
-import Button from '@shared/Button'
+import { Form } from 'react-advanced-form'
+import { Input, Radio, Checkbox, Select, Textarea } from '@examples/fields'
+import Button from '@examples/shared/Button'
 
 export default class ControlledFields extends React.Component {
   state = {
@@ -37,7 +37,11 @@ export default class ControlledFields extends React.Component {
       <React.Fragment>
         <h1>Controlled fields</h1>
 
-        <Form id="form" ref={this.props.getRef} onSubmitStart={this.props.onSubmitStart}>
+        <Form
+          id="form"
+          ref={this.props.getRef}
+          onSubmitStart={this.props.onSubmitStart}
+        >
           {/* Inputs */}
           <Input
             id="inputOne"

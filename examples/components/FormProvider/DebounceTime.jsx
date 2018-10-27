@@ -1,6 +1,6 @@
 import React from 'react'
-import { FormProvider, Form } from '@lib'
-import { Input } from '@fields'
+import { FormProvider, Form } from 'react-advanced-form'
+import { Input } from '@examples/fields'
 
 export default class DebounceTime extends React.Component {
   render() {
