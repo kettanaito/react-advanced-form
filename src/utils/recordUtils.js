@@ -152,13 +152,15 @@ export const updateValidityState = R.curry((shouldValidate, fieldProps) => {
     return resetValidityState(fieldProps)
   }
 
-  const { validated, expected } = fieldProps
+  const { validated, expected, errors } = fieldProps
   const value = getValue(fieldProps)
   const nextValid = !!value && validated && expected
   const nextInvalid = validated && !expected
+  const nextErrors = !expected && errors
 
   return R.mergeDeepLeft(
     {
+      errors: nextErrors,
       valid: nextValid,
       invalid: nextInvalid,
     },
