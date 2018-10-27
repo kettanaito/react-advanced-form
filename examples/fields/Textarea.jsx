@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { createField, fieldPresets } from '../../'
+import { createField, fieldPresets } from 'react-advanced-form'
 
 class Textarea extends React.Component {
   static propTypes = {

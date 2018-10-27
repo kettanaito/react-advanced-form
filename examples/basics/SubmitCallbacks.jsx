@@ -1,7 +1,7 @@
 import React from 'react'
-import { Form } from '@lib'
-import { Input } from '@fields'
-import Button from '@shared/Button'
+import { Form } from 'react-advanced-form'
+import { Input } from '@examples/fields'
+import Button from '@examples/shared/Button'
 import isEmail from 'validator/lib/isEmail'
 
 export const submitTimeout = 1000

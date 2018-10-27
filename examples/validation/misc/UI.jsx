@@ -1,6 +1,6 @@
 import React from 'react'
-import { Form } from '@lib'
-import { Input } from '@fields'
+import { Form } from 'react-advanced-form'
+import { Input } from '@examples/fields'
 
 export default class UI extends React.Component {
   render() {

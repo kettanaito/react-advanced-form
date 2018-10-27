@@ -1,7 +1,7 @@
 import React from 'react'
-import { Form, Field } from '@lib'
-import { Input } from '@fields'
-import Button from '@shared/Button'
+import { Form, Field } from 'react-advanced-form'
+import { Input } from '@examples/fields'
+import Button from '@examples/shared/Button'
 
 export const formatAddress = (address) => {
   const [_, street, houseNumber] = address.match(/(.+)(\d.)/)

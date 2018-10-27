@@ -1,8 +1,7 @@
 import React from 'react'
-import { Form, Field } from '@lib'
-import { Input } from '@fields'
-import BirthDate from '../../fields/BirthDate'
-import Button from '@shared/Button'
+import { Form, Field } from 'react-advanced-form'
+import { Input, BirthDate } from '@examples/fields'
+import Button from '@examples/shared/Button'
 
 export default class RegistrationForm extends React.Component {
   registerUser = ({ serialized }) => {

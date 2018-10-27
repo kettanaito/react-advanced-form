@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { createField } from '@lib'
+import { createField } from 'react-advanced-form'
 import ReactSlider from 'react-slider'
 import './slider.css'
 
@@ -13,7 +13,7 @@ class Slider extends React.Component {
     label: PropTypes.string,
   }
 
-  handleChange = nextValue => {
+  handleChange = (nextValue) => {
     const { defaultValue } = this.props
 
     const mapNextValues =
@@ -59,7 +59,9 @@ export default createField({
 
     return fieldRecord
   },
-  enforceProps({ props: { min, max, step, defaultValue, withBars, minDistance } }) {
+  enforceProps({
+    props: { min, max, step, defaultValue, withBars, minDistance },
+  }) {
     return {
       min,
       max,

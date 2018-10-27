@@ -1,6 +1,6 @@
 import React from 'react'
-import { Form } from '@lib'
-import Button from '@shared/Button'
+import { Form } from 'react-advanced-form'
+import Button from '@examples/shared/Button'
 import Select from './Select'
 
 const options = [

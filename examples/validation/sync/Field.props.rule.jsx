@@ -1,6 +1,6 @@
 import React from 'react'
-import { Form } from '@lib'
-import { Input } from '@fields'
+import { Form } from 'react-advanced-form'
+import { Input } from '@examples/fields'
 
 const formMessages = {
   name: {
@@ -26,7 +26,6 @@ export default class FieldPropsRule extends React.Component {
             hint="Only numbers allowed"
             rule={/^\d+$/}
           />
-
           <Input
             name="fieldTwo"
             label="Field two"
