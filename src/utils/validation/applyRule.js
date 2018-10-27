@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import dispatch from '../dispatch'
 import errorTypes from './errorTypes'
 import createRejectedRule from './createRejectedRule'
@@ -7,12 +8,12 @@ import createValidationResult from './createValidationResult'
  * Executes the given resolver function with the given arguments
  * and returns the validation result.
  */
-export default function applyRule(rule, resolverArgs) {
+const applyRule = R.curry((rule, resolverArgs) => {
   const { name, selector, resolver, errorType } = rule
-  const isFieldExpected = dispatch(resolver, resolverArgs)
+  const nextExpected = dispatch(resolver, resolverArgs)
 
   /* Create rejected rules */
-  const rejectedRules = isFieldExpected
+  const rejectedRules = nextExpected
     ? undefined
     : createRejectedRule({
         name,
@@ -20,5 +21,7 @@ export default function applyRule(rule, resolverArgs) {
         errorType: errorType || errorTypes.invalid,
       })
 
-  return createValidationResult(isFieldExpected, rejectedRules)
-}
+  return createValidationResult(nextExpected, rejectedRules)
+})
+
+export default applyRule
