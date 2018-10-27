@@ -103,6 +103,12 @@ describe('Validation messages', function() {
         .typeIn('bar')
         .blur()
         .hasError(messages.name.nameTwo.invalid)
+
+      cy.getField('nameTwo')
+        .clear()
+        .typeIn('foo')
+        .blur()
+        .hasError(false)
     })
   })
 })
