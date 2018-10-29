@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form } from 'react-advanced-form'
 import { Input } from '@examples/fields'
-import Button from '@shared/Button'
+import Button from '@examples/shared/Button'
 
 const messages = {
   type: {
