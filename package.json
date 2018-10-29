@@ -102,11 +102,8 @@
     "recompose": "^0.30.0",
     "regenerator": "^0.13.2",
     "regenerator-runtime": "^0.12.1",
-<<<<<<< HEAD
     "rimraf": "^2.6.2",
-=======
     "start-server-and-test": "^1.7.4",
->>>>>>> Launches Storybook server prior to executing integration tests
     "storybook": "^1.0.0",
     "style-loader": "^0.23.0",
     "url": "^0.11.0",
