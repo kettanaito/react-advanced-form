@@ -190,6 +190,7 @@ export default function connectField(options) {
               props: directProps,
               context: this.context,
               valuePropName,
+              [valuePropName]: recordUtils.getValue(fieldRecord),
             }),
           },
         })
