@@ -56,8 +56,7 @@ class BirthDate extends React.Component {
           />
         </div>
 
-        {invalid &&
-          errors &&
+        {errors &&
           errors.map((error, index) => (
             <div key={index} className="invalid-feedback d-block">
               {error}
@@ -71,7 +70,11 @@ class BirthDate extends React.Component {
 export default createField({
   allowMultiple: true,
   valuePropName: 'date',
-  shouldValidateOnMount: ({ fieldRecord: { date } }) => {
+  mapPropsToField: ({ fieldRecord }) => ({
+    ...fieldRecord,
+    type: 'birth-date',
+  }),
+  shouldValidateOnMount: ({ date }) => {
     return date.year || date.month || date.day
   },
   mapValue(value) {
