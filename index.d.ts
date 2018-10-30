@@ -28,7 +28,9 @@ export interface Fields {
   [key: string]: Field | Fields
 }
 
-export interface ValidationSchema {}
+export interface ValidationSchema {
+  [key: string]: Rule | ValidationSchema;
+}
 
 export interface ValidationMessages {
   [key: string]: string | string[] | ValidationMessages
