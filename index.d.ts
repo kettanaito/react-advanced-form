@@ -35,6 +35,7 @@ export interface ValidationMessages {
 }
 
 type GenericFormEvent = (args: { fields: Fields; form: Form }) => void
+
 type SubmitFormEvent = (
   args: { serialized: SerializedForm; fields: Fields; form: Form },
 ) => void
@@ -110,31 +111,59 @@ export interface ChangeEvent extends Event {
   nextValue: any
 }
 
+export type Rule = RegExp | ((args: RuleParameters) => boolean)
+export type AsyncRule = RegExp | ((args: RuleParameters) => AsyncRulePayload)
+
+export type BlurFunction = (args: BlurEvent) => void
+export type ChangeFunction = (args: ChangeEvent) => void
+export type FocusFunction = (args: FocusEvent) => void
+
 export interface FieldProps {
-  rule?: RegExp | ((args: RuleParameters) => boolean)
-  asyncRule?: RegExp | ((args: RuleParameters) => AsyncRulePayload)
+  rule?: Rule
+  asyncRule?: AsyncRule
   required?: boolean
   skip?: boolean
-  onBlur?: (args: BlurEvent) => void
-  onChange?: (args: ChangeEvent) => void
-  onFocus?: (args: FocusEvent) => void
+  onBlur?: BlurFunction
+  onChange?: ChangeFunction
+  onFocus?: FocusFunction
 }
 
-export interface CreateFieldState {
-  required: boolean
-  validating: boolean
-  validatedSync: boolean
-  validatedAsync: boolean
-  valid: boolean
-  validSync: boolean
-  validAsync: boolean
+export interface FieldState {
+  asyncRule?: AsyncRule
+  controlled: boolean
+  debounceValidate: () => any // ?
+  errors: string[] | null
+  expected: boolean
+  fieldGroup?: string // ?
+  fieldPath: string[]
+  focused: boolean
+  getRef: any // ?
+  initialValue: string
   invalid: boolean
-  errors?: string[]
+  mapValue: () => any // ?
+  onBlur?: BlurFunction
+  onChange?: ChangeFunction
+  onFocus?: FocusFunction
+  pendingAsyncValidation?: boolean // ?
+  reactiveProps: any // ?
+  required: boolean
+  rule?: Rule
+  serialize: () => string
+  skip?: boolean
+  type: string
+  valid: boolean
+  validAsync: boolean
+  validatedAsync: boolean
+  validatedSync: boolean
+  validating: boolean
+  validSync: boolean
+  value: string | number
+  valuePropName: string
 }
 
 export interface CreateFieldProps {
   fieldProps: any
-  fieldState: CreateFieldState
+  fieldState: FieldState
 }
 
 type FieldPreset =
