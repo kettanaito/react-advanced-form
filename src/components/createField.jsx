@@ -40,6 +40,9 @@ const defaultOptions = {
   mapValue(nextValue) {
     return nextValue
   },
+  assertValue(value) {
+    return value !== ''
+  },
   serialize(value) {
     return value
   },
@@ -166,6 +169,7 @@ export default function connectField(options) {
 
           /* Internal methods */
           mapValue: hocOptions.mapValue,
+          assertValue: hocOptions.assertValue,
           serialize: hocOptions.serialize,
         }
 
