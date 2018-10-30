@@ -55,6 +55,7 @@ export const createField = (initialState) => {
     onChange: null,
     onBlur: null,
     mapValue: R.always,
+    assertValue: R.complement(R.isNil),
     serialize: R.always,
 
     ...initialState,
@@ -118,6 +119,14 @@ export const setValue = R.curry((nextValueGetter, fieldProps) => {
 
   return R.assoc(valuePropName, nextValue, fieldProps)
 })
+
+/**
+ * Returns boolean stating if the given field contains value.
+ * @param {Object} fieldProps
+ */
+export const hasValue = (fieldProps) => {
+  return fieldProps.assertValue(getValue(fieldProps))
+}
 
 /**
  * Sets the given error messages to the given field.

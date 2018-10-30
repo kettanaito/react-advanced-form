@@ -7,7 +7,7 @@ const isForced = (resolverArgs, rules, force) => {
 }
 
 const hasValue = ({ fieldProps }) => {
-  return !!recordUtils.getValue(fieldProps)
+  return !!recordUtils.hasValue(fieldProps)
 }
 
 const notValidatedSync = ({ fieldProps }) => {

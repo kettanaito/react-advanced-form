@@ -2,7 +2,7 @@ import React from 'react'
 import { createField } from 'react-advanced-form'
 
 class BirthDate extends React.Component {
-  handleChange = (event, fieldName) => {
+  handleChange = (fieldName) => (event) => {
     const { fieldState } = this.props
     const { value } = event.target
 
@@ -40,19 +40,19 @@ class BirthDate extends React.Component {
             {...fieldProps}
             className={inputClassNames}
             value={fieldState.date.day}
-            onChange={(event) => this.handleChange(event, 'day')}
+            onChange={this.handleChange('day')}
           />
           <input
             {...fieldProps}
             className={inputClassNames}
             value={fieldState.date.month}
-            onChange={(event) => this.handleChange(event, 'month')}
+            onChange={this.handleChange('month')}
           />
           <input
             {...fieldProps}
             className={inputClassNames}
             value={fieldState.date.year}
-            onChange={(event) => this.handleChange(event, 'year')}
+            onChange={this.handleChange('year')}
           />
         </div>
 
@@ -84,6 +84,9 @@ export default createField({
       month: parsedDate[1] || '',
       day: parsedDate[2] || '',
     }
+  },
+  assertValue(date) {
+    return date.year || date.month || date.day
   },
   serialize(date) {
     return [date.year, date.month, date.day].join('-')

@@ -21,9 +21,9 @@ const shouldSerializeField = (fieldProps) => {
 
   /* Bypass checkboxes with no value */
   const isCheckbox = fieldProps.type === 'checkbox'
-  const hasEmptyValue = value === ''
+  const hasValue = recordUtils.hasValue(fieldProps)
 
-  if (!isCheckbox && hasEmptyValue) {
+  if (!isCheckbox && !hasValue) {
     return false
   }
 

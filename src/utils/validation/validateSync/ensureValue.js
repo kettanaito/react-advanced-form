@@ -12,7 +12,7 @@ const ensureValue = R.always(
      */
     selector: 'name',
     errorType: errorTypes.missing,
-    resolver: ({ fieldProps }) => !!recordUtils.getValue(fieldProps),
+    resolver: ({ fieldProps }) => recordUtils.hasValue(fieldProps),
   }),
 )
 
