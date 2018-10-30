@@ -42,7 +42,7 @@ type SubmitFormEvent = (
 
 export interface FormProps {
   innerRef?: () => void
-  action: () => void | Promise<void>
+  action: () => Promise<void>
   initialValues?: InitialValues
 
   /* Validation */
