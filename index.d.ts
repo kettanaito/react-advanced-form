@@ -41,6 +41,10 @@ type SubmitFormEvent = (
 ) => void
 
 export interface FormProps {
+  id?: string
+  className?: string
+  style?: React.StyleHTMLAttributes<HTMLStyleElement>
+
   innerRef?: () => void
   action: () => Promise<void>
   initialValues?: InitialValues
