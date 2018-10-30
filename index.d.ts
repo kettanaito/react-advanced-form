@@ -36,17 +36,20 @@ export interface ValidationMessages {
 
 type GenericFormEvent = (args: { fields: Fields; form: Form }) => void
 
-type SubmitFormEvent = (
-  args: { serialized: SerializedForm; fields: Fields; form: Form },
-) => void
+type FormSubmitState = {
+  serialized: SerializedForm;
+  fields: Fields;
+  form: Form
+}
+
+type SubmitFormEvent = (args: FormSubmitState) => void;
 
 export interface FormProps {
   id?: string
   className?: string
-  style?: React.StyleHTMLAttributes<HTMLStyleElement>
-
+  style?: React.CSSProperties;
   innerRef?: () => void
-  action: () => Promise<void>
+  action: (args: FormSubmitState) => Promise<void>;
   initialValues?: InitialValues
 
   /* Validation */
