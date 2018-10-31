@@ -28,8 +28,17 @@ export interface Fields {
   [key: string]: Field | Fields
 }
 
+export interface ValidationRuleGroup {
+  [key: string]: Rule
+}
+
 export interface ValidationSchema {
-  [key: string]: Rule | ValidationSchema
+  type?: {
+    [key: string]: Rule
+  }
+  name?: {
+    [key: string]: Rule | ValidationRuleGroup
+  }
 }
 
 export interface ValidationMessageSet {
