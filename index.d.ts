@@ -44,7 +44,7 @@ export interface ValidationSchema {
 export interface ValidationMessageSet {
   [key: string]: {
     invalid?: string
-    required?: string
+    missing?: string
     rule?: {
       [key: string]: string
     }
