@@ -29,29 +29,45 @@ export interface Fields {
 }
 
 export interface ValidationSchema {
-  [key: string]: Rule | ValidationSchema;
+  [key: string]: Rule | ValidationSchema
+}
+
+export interface ValidationMessage {
+  [key: string]: {
+    invalid?: string
+    required?: string
+    rule?: {
+      [key: string]: string
+    }
+  }
+}
+
+export interface ValidationMessageGroup {
+  [key: string]: ValidationMessage
 }
 
 export interface ValidationMessages {
-  [key: string]: string | string[] | ValidationMessages
+  type?: ValidationMessage
+  name?: ValidationMessage | ValidationMessageGroup
+  general?: ValidationMessage
 }
 
 type GenericFormEvent = (args: { fields: Fields; form: Form }) => void
 
 type FormSubmitState = {
-  serialized: SerializedForm;
-  fields: Fields;
+  serialized: SerializedForm
+  fields: Fields
   form: Form
 }
 
-type SubmitFormEvent = (args: FormSubmitState) => void;
+type SubmitFormEvent = (args: FormSubmitState) => void
 
 export interface FormProps {
   id?: string
   className?: string
-  style?: React.CSSProperties;
+  style?: React.CSSProperties
   innerRef?: () => void
-  action: (args: FormSubmitState) => Promise<void>;
+  action: (args: FormSubmitState) => Promise<void>
   initialValues?: InitialValues
 
   /* Validation */
