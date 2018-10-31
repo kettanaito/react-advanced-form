@@ -32,7 +32,7 @@ export interface ValidationSchema {
   [key: string]: Rule | ValidationSchema
 }
 
-export interface ValidationMessage {
+export interface ValidationMessageSet {
   [key: string]: {
     invalid?: string
     required?: string
@@ -43,13 +43,13 @@ export interface ValidationMessage {
 }
 
 export interface ValidationMessageGroup {
-  [key: string]: ValidationMessage
+  [key: string]: ValidationMessageSet
 }
 
 export interface ValidationMessages {
-  type?: ValidationMessage
-  name?: ValidationMessage | ValidationMessageGroup
-  general?: ValidationMessage
+  type?: ValidationMessageSet
+  name?: ValidationMessageSet | ValidationMessageGroup
+  general?: ValidationMessageSet
 }
 
 type GenericFormEvent = (args: { fields: Fields; form: Form }) => void
@@ -69,18 +69,16 @@ export interface FormProps {
   innerRef?: () => void
   action: (args: FormSubmitState) => Promise<void>
   initialValues?: InitialValues
-
   /* Validation */
   rules?: ValidationSchema
   messages?: ValidationMessages
-
   /* Callbacks */
   onFirstChange?: (
     args: {
       event: React.FormEvent
       nextValue: string
       prevValue: string
-      fieldProps: object
+      fieldProps: React.InputHTMLAttributes<HTMLInputElement>
       fields: Fields
       form: Form
     },
@@ -107,8 +105,8 @@ export class Form extends React.Component<FormProps> {
 
 export interface RuleParameters {
   get: (path: string[]) => string | undefined
-  value: any
-  fieldProps: any
+  value: string
+  fieldProps: React.InputHTMLAttributes<HTMLInputElement>
   fields: Fields
   form: Form
 }
@@ -116,13 +114,13 @@ export interface RuleParameters {
 export type AsyncRulePayload = {
   valid: boolean
   extra?: {
-    [exraKey: string]: any
+    [exraKey: string]: any // ?
   }
 }
 
 interface Event {
   event: React.FormEvent<HTMLInputElement>
-  fieldProps: any
+  fieldProps: React.InputHTMLAttributes<HTMLInputElement>
   fields: Fields
   form: Form
 }
@@ -132,8 +130,8 @@ export interface FocusEvent extends Event {}
 
 export interface ChangeEvent extends Event {
   event: React.FormEvent<HTMLInputElement>
-  prevValue: any
-  nextValue: any
+  prevValue: string
+  nextValue: string
 }
 
 export type Rule = RegExp | ((args: RuleParameters) => boolean)
@@ -153,7 +151,7 @@ export interface FieldProps {
   onFocus?: FocusFunction
 }
 
-export interface FieldState {
+export interface CreateFieldState {
   asyncRule?: AsyncRule
   controlled: boolean
   debounceValidate: () => any // ?
@@ -187,8 +185,8 @@ export interface FieldState {
 }
 
 export interface CreateFieldProps {
-  fieldProps: any
-  fieldState: FieldState
+  fieldProps: React.InputHTMLAttributes<HTMLInputElement>
+  fieldState: CreateFieldState
 }
 
 type FieldPreset =
