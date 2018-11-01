@@ -94,7 +94,7 @@ storiesOf('Validation|Combined validation', module).add(
 )
 
 storiesOf('Validation|Messages', module)
-  .add('Validation message', addComponent(<ValidationMessages />))
+  .add('Validation messages', addComponent(<ValidationMessages />))
   .add('Set errors', addComponent(<SetErrors />))
 
 storiesOf('Validation|Misc', module).add(
