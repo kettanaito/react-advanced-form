@@ -1,8 +1,8 @@
 import { timeoutDuration } from '@examples/validation/misc/AjaxPrefilling'
 
-describe('AJAX Pre-filling', function() {
+describe('Ajax Pre-filling', function() {
   before(() => {
-    cy.loadStory(['Validation', 'Misc', 'AJAX pre-filling'])
+    cy.loadStory(['Validation', 'Misc', 'Ajax pre-filling'])
 
     cy.get('#ajax')
       .click()
@@ -15,9 +15,20 @@ describe('AJAX Pre-filling', function() {
       .expected()
   })
 
+  it('Pre-fills value of nested groupped field properly', () => {
+    cy.getField('firstName')
+      .hasValue('John')
+      .valid(false)
+      .invalid(false)
+    cy.getField('lastName')
+      .hasValue('Maverick')
+      .valid(false)
+      .invalid(false)
+  })
+
   it('Validates pre-filled value properly', () => {
-    cy.getField('streetRule')
-      .hasValue('Baker')
+    cy.getField('houseNumber')
+      .hasValue('error')
       .expected(false)
   })
 })
