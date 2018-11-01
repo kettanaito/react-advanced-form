@@ -1,6 +1,5 @@
 import React from 'react'
 import { messages } from '@examples/validation/messages/ValidationMessages'
-import { messages as formMessages } from '@examples/validation/sync/Form.props.rules'
 
 describe('Validation messages', function() {
   before(() => {
@@ -108,70 +107,6 @@ describe('Validation messages', function() {
         .typeIn('foo')
         .blur()
         .hasError(false)
-    })
-  })
-
-  describe('Named messages', function() {
-    before(() => {
-      cy.loadStory(['Validation', 'Synchronous validation', 'Form rules'])
-    })
-
-    it('Field with custom value instance', () => {
-      const assertError = (errorText) => {
-        return cy
-          .getField('birthDate')
-          .parent()
-          .hasError(errorText)
-      }
-
-      /* Invaid day */
-      cy.getField('birthDate')
-        .eq(0)
-        .typeIn('90')
-      assertError(
-        formMessages.name.birthDate.rule.year +
-          formMessages.name.birthDate.rule.month +
-          formMessages.name.birthDate.rule.day,
-      )
-
-      /* Valid day */
-      cy.getField('birthDate')
-        .eq(0)
-        .clear()
-        .typeIn('24')
-      assertError(
-        formMessages.name.birthDate.rule.year +
-          formMessages.name.birthDate.rule.month,
-      )
-
-      /* Invalid month */
-      cy.getField('birthDate')
-        .eq(1)
-        .typeIn('13')
-      assertError(
-        formMessages.name.birthDate.rule.year +
-          formMessages.name.birthDate.rule.month,
-      )
-
-      /* Valid month */
-      cy.getField('birthDate')
-        .eq(1)
-        .clear()
-        .typeIn('12')
-      assertError(formMessages.name.birthDate.rule.year)
-
-      /* Invalid year */
-      cy.getField('birthDate')
-        .eq(2)
-        .typeIn('900')
-      assertError(formMessages.name.birthDate.rule.year)
-
-      /* Valid year */
-      cy.getField('birthDate')
-        .eq(2)
-        .clear()
-        .typeIn('2018')
-      assertError(false)
     })
   })
 })

@@ -50,6 +50,9 @@ import RxPropsSingleTarget from './reactive-props/SingleTarget'
 import RxPropsInterdependent from './reactive-props/Interdependent'
 import RxPropsDelegatedSubscription from './reactive-props/DelegatedSubscription'
 
+/* Custom fields */
+import BirthDateExample from './custom-fields/BirthDate'
+
 /* Full examples */
 import RegistrationForm from './full/RegistrationForm'
 
@@ -103,6 +106,11 @@ storiesOf('Validation|Misc', module).add(
 )
 
 /* Advanced */
+storiesOf('Advanced|Custom fields', module).add(
+  'BirthDate',
+  addComponent(<BirthDateExample />),
+)
+
 storiesOf('Advanced|Field grouping', module)
   .add('Simple group', addComponent(<SimpleGroup />))
   .add('Nested groups', addComponent(<NestedGroups />))
