@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form } from 'react-advanced-form'
-import { Input, BirthDate } from '@examples/fields'
+import { Input } from '@examples/fields'
 
 const rules = {
   type: {
@@ -35,13 +35,6 @@ export const messages = {
     fieldOne: {
       invalid: 'Must not equal to "foo"!',
     },
-    birthDate: {
-      rule: {
-        year: 'Invalid year',
-        month: 'Invalid month',
-        day: 'Invalid day',
-      },
-    },
   },
 }
 
@@ -63,7 +56,6 @@ export default class FormPropsRules extends React.Component {
             hint="Valid when equals to `fieldOne` value"
           />
           <Input name="fieldThree" label="Field three" required />
-          <BirthDate name="birthDate" label="Birth date" />
         </Form>
       </React.Fragment>
     )
