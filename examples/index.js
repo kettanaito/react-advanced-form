@@ -101,7 +101,7 @@ storiesOf('Validation|Messages', module)
   .add('Set errors', addComponent(<SetErrors />))
 
 storiesOf('Validation|Misc', module).add(
-  'AJAX pre-filling',
+  'Ajax pre-filling',
   addComponent(<AjaxPrefilling />),
 )
 
