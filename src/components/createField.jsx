@@ -41,7 +41,7 @@ const defaultOptions = {
     return nextValue
   },
   assertValue(value) {
-    return value !== ''
+    return !!value
   },
   serialize(value) {
     return value
