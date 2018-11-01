@@ -1,11 +1,9 @@
 import React from 'react'
-import Scenario, {
-  messages,
-} from '@examples/validation/messages/ValidationMessages'
+import { messages } from '@examples/validation/messages/ValidationMessages'
 
 describe('Validation messages', function() {
   before(() => {
-    cy.loadStory(<Scenario />)
+    cy.loadStory(['Validation', 'Messages', 'Validation messages'])
   })
 
   describe('General', function() {
