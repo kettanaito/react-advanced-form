@@ -22,18 +22,25 @@ const rules = {
     birthDate: {
       year: ({ date }) => date.year.length === 4,
       month: ({ date }) => date.month >= 1 && date.month <= 12,
-      year: ({ date }) => date.day >= 1 && date.day <= 31,
+      day: ({ date }) => date.day >= 1 && date.day <= 31,
     },
   },
 }
 
-const messages = {
+export const messages = {
   general: {
     invalid: 'General invalid',
   },
   name: {
     fieldOne: {
       invalid: 'Must not equal to "foo"!',
+    },
+    birthDate: {
+      rule: {
+        year: 'Invalid year',
+        month: 'Invalid month',
+        day: 'Invalid day',
+      },
     },
   },
 }
