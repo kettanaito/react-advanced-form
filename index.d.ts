@@ -61,6 +61,16 @@ export interface ValidationMessages {
   general?: ValidationMessageSet
 }
 
+export type Errors = string[] | string | null
+
+export interface FieldErrors {
+  [key: string]:
+    | Errors
+    | {
+        [key: string]: Errors
+      }
+}
+
 type GenericFormEvent = (args: { fields: Fields; form: Form }) => void
 
 type FormSubmitState = {
@@ -87,7 +97,7 @@ export interface FormProps {
       event: React.FormEvent
       nextValue: string
       prevValue: string
-      fieldProps: React.InputHTMLAttributes<HTMLInputElement>
+      fieldProps: FieldProps
       fields: Fields
       form: Form
     },
@@ -107,7 +117,7 @@ export interface FormProps {
 export class Form extends React.Component<FormProps> {
   reset: () => void
   serialize: () => SerializedForm
-  setErrors: FormErrors
+  setErrors: (errors: FieldErrors) => void
   submit: () => Promise<void>
   validate: () => Promise<void>
 }
@@ -115,7 +125,7 @@ export class Form extends React.Component<FormProps> {
 export interface RuleParameters {
   get: (path: string[]) => string | undefined
   value: string
-  fieldProps: React.InputHTMLAttributes<HTMLInputElement>
+  fieldProps: FieldProps
   fields: Fields
   form: Form
 }
@@ -129,7 +139,7 @@ export type AsyncRulePayload = {
 
 interface Event {
   event: React.FormEvent<HTMLInputElement>
-  fieldProps: React.InputHTMLAttributes<HTMLInputElement>
+  fieldProps: FieldProps
   fields: Fields
   form: Form
 }
@@ -160,7 +170,7 @@ export interface FieldProps {
   onFocus?: FocusFunction
 }
 
-export interface CreateFieldState {
+export interface FieldState {
   asyncRule?: AsyncRule
   controlled: boolean
   debounceValidate: () => any // ?
@@ -193,11 +203,6 @@ export interface CreateFieldState {
   valuePropName: string
 }
 
-export interface CreateFieldProps {
-  fieldProps: React.InputHTMLAttributes<HTMLInputElement>
-  fieldState: CreateFieldState
-}
-
 type FieldPreset =
   | React.InputHTMLAttributes<HTMLInputElement>
   | React.InputHTMLAttributes<HTMLSelectElement>
@@ -211,10 +216,18 @@ export const fieldPresets: {
   textarea: React.TextareaHTMLAttributes<HTMLTextAreaElement>
 }
 
+export interface CreateFieldProps {
+  fieldProps: FieldProps
+  fieldState: FieldState
+}
+
 export function createField<P>(
   preset: FieldPreset,
 ): (
   component: (
-    props: CreateFieldProps & P,
-  ) => React.ReactElement<FieldProps & P>,
-) => React.ComponentClass<FieldProps & P>
+    props: P & {
+      fieldProps: React.InputHTMLAttributes<HTMLInputElement>
+      fieldState: FieldState
+    },
+  ) => React.ReactElement<P & FieldProps>,
+) => React.ComponentClass<P & FieldProps>
