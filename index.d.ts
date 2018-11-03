@@ -8,16 +8,23 @@ export interface FormProviderProps {
 
 export class FormProvider extends React.Component<FormProviderProps> {}
 
+/**
+ * Field.Group
+ */
+export interface FieldGroupProps {
+  name: string
+}
+
 export interface Field {
-  Group: React.ComponentClass<{ name: string }>
+  Group: React.ComponentClass<FieldGroupProps>
 }
 
 export interface InitialValues {
   [key: string]: string | InitialValues
 }
 
-export interface SerializedForm {
-  [key: string]: string | SerializedForm
+export interface SerializedFields {
+  [key: string]: string | SerializedFields
 }
 
 export interface FormErrors {
@@ -25,28 +32,60 @@ export interface FormErrors {
 }
 
 export interface Fields {
-  [key: string]: Field | Fields
+  [fieldPath: string]: FieldState<string> | Fields
 }
 
-export interface ValidationRuleGroup {
-  [key: string]: Rule
+/**
+ * Validation schema
+ */
+export interface ResolverArgs {
+  get: (fieldPath: string[]) => any
+  value: string
+  fieldProps: FieldState<string>
+  fields: Fields
+  form: Form
+}
+
+export type Resolver = (args: ResolverArgs) => boolean
+
+export type AsyncRulePayload = {
+  valid: boolean
+  extra?: {
+    [exraKey: string]: any
+  }
+}
+
+export interface ResolverGroup {
+  [ruleName: string]: Resolver
 }
 
 export interface ValidationSchema {
   type?: {
-    [key: string]: Rule
+    [key: string]: Resolver | ResolverGroup
   }
   name?: {
-    [key: string]: Rule | ValidationRuleGroup
+    [key: string]: Resolver | ResolverGroup
   }
 }
 
+/**
+ * Validation messages
+ */
+export interface MessageResolverArgs {
+  extra?: Object
+  fieldProps: FieldState<string>
+  fields: Fields
+  form: Form
+}
+
+export type MessageResolver = (args: MessageResolverArgs) => string | string
+
 export interface ValidationMessageSet {
   [key: string]: {
-    invalid?: string
-    missing?: string
+    invalid?: MessageResolver
+    missing?: MessageResolver
     rule?: {
-      [key: string]: string
+      [ruleName: string]: MessageResolver
     }
   }
 }
@@ -56,9 +95,9 @@ export interface ValidationMessageGroup {
 }
 
 export interface ValidationMessages {
+  general?: ValidationMessageSet
   type?: ValidationMessageSet
   name?: ValidationMessageSet | ValidationMessageGroup
-  general?: ValidationMessageSet
 }
 
 export type Errors = string[] | string | null
@@ -71,75 +110,85 @@ export interface FieldErrors {
       }
 }
 
-type GenericFormEvent = (args: { fields: Fields; form: Form }) => void
+type GenericFormPayload = (args: { fields: Fields; form: Form }) => void
 
-type FormSubmitState = {
-  serialized: SerializedForm
+type FormSubmitPayload = {
+  serialized: SerializedFields
   fields: Fields
   form: Form
 }
 
-type SubmitFormEvent = (args: FormSubmitState) => void
+type SubmitFormEvent = (args: FormSubmitPayload) => void
 
 export interface FormProps {
   id?: string
   className?: string
   style?: React.CSSProperties
-  innerRef?: () => void
-  action: (args: FormSubmitState) => Promise<void>
+  innerRef?: (ref: Form) => void
+  action: (args: FormSubmitPayload) => Promise<void> /** @todo */
   initialValues?: InitialValues
+
   /* Validation */
   rules?: ValidationSchema
   messages?: ValidationMessages
+
   /* Callbacks */
-  onFirstChange?: (
-    args: {
-      event: React.FormEvent
-      nextValue: string
-      prevValue: string
-      fieldProps: FieldProps
+  onFirstChange?(args: {
+    event: React.FormEvent
+    nextValue: any /** @todo Field value generics */
+    prevValue: any
+    fieldProps: FieldState<string> /** @todo */
+    fields: Fields
+    form: Form
+  }): void
+  onClear?: GenericFormPayload
+  onReset?: GenericFormPayload
+  onSerialize?(
+    args: GenericFormPayload & { serialized: SerializedFields },
+  ): void
+  onInvalid?(
+    args: GenericFormPayload & {
+      invalidFields: Fields
       fields: Fields
       form: Form
     },
-  ) => void
-  onClear?: GenericFormEvent
-  onReset?: GenericFormEvent
-  onSerialize?: (args: { serialized: SerializedForm }) => void
-  onInvalid?: (
-    args: { invalidFields: Fields; fields: Fields; form: Form },
-  ) => void
+  ): void
   onSubmitStart?: SubmitFormEvent
   onSubmitted?: SubmitFormEvent
   onSubmitFailed?: SubmitFormEvent
   onSubmitEnd?: SubmitFormEvent
 }
 
-export class Form extends React.Component<FormProps> {
-  reset: () => void
-  serialize: () => SerializedForm
-  setErrors: (errors: FieldErrors) => void
-  submit: () => Promise<void>
-  validate: () => Promise<void>
-}
-
-export interface RuleParameters {
-  get: (path: string[]) => string | undefined
-  value: string
-  fieldProps: FieldProps
+export interface FormState {
   fields: Fields
-  form: Form
+  applicableRules: Object /** @todo */
+  dirty: boolean
 }
 
-export type AsyncRulePayload = {
-  valid: boolean
-  extra?: {
-    [exraKey: string]: any // ?
-  }
+export class Form extends React.Component<FormProps, FormState> {
+  /* Private */
+  private withRegisteredField
+  private registerField
+  private updateFieldsWith
+  private unregisterField
+  private handleFieldFocus
+  private handleFieldChange
+  private handleFieldBlur
+  private validateField
+
+  /* Public */
+  clear(predicate?: (fieldState: Field) => boolean): void
+  reset(predicate?: (fieldState: Field) => boolean): void
+  validate(predicate?: (fieldState: Field) => boolean): Promise<boolean>
+  serialize(): SerializedFields
+  setValues(fieldsPatch: SerializedFields): void
+  setErrors(errors: FieldErrors): void
+  submit(): Promise<void> /** @todo */
 }
 
 interface Event {
   event: React.FormEvent<HTMLInputElement>
-  fieldProps: FieldProps
+  fieldProps: FieldState<string>
   fields: Fields
   form: Form
 }
@@ -153,8 +202,8 @@ export interface ChangeEvent extends Event {
   nextValue: string
 }
 
-export type Rule = RegExp | ((args: RuleParameters) => boolean)
-export type AsyncRule = RegExp | ((args: RuleParameters) => AsyncRulePayload)
+export type Rule = RegExp | ((args: ResolverArgs) => boolean)
+export type AsyncRule = RegExp | ((args: ResolverArgs) => AsyncRulePayload)
 
 export type BlurFunction = (args: BlurEvent) => void
 export type ChangeFunction = (args: ChangeEvent) => void
@@ -170,27 +219,28 @@ export interface FieldProps {
   onFocus?: FocusFunction
 }
 
-export interface FieldState {
+/** @todo Value generic */
+export interface FieldState<V> {
   asyncRule?: AsyncRule
   controlled: boolean
-  debounceValidate: () => any // ?
+  debounceValidate: () => any /** @todo */
   errors: string[] | null
   expected: boolean
-  fieldGroup?: string // ?
+  fieldGroup?: string /** @todo */
   fieldPath: string[]
   focused: boolean
-  getRef: any // ?
+  getRef: any /** @todo */
   initialValue: string
   invalid: boolean
-  mapValue: () => any // ?
+  mapValue: (value: V) => any
   onBlur?: BlurFunction
   onChange?: ChangeFunction
   onFocus?: FocusFunction
-  pendingAsyncValidation?: boolean // ?
-  reactiveProps: any // ?
+  pendingAsyncValidation?: boolean /** @todo */
+  reactiveProps: any /** @todo */
   required: boolean
   rule?: Rule
-  serialize: () => string
+  serialize: (value: V) => string
   skip?: boolean
   type: string
   valid: boolean
@@ -199,35 +249,44 @@ export interface FieldState {
   validatedSync: boolean
   validating: boolean
   validSync: boolean
-  value: string | number
+  value: V
   valuePropName: string
 }
 
-type FieldPreset =
-  | React.InputHTMLAttributes<HTMLInputElement>
-  | React.InputHTMLAttributes<HTMLSelectElement>
-  | React.TextareaHTMLAttributes<HTMLTextAreaElement>
-
 export const fieldPresets: {
-  checkbox: React.InputHTMLAttributes<HTMLInputElement>
-  input: React.InputHTMLAttributes<HTMLInputElement>
-  radio: React.InputHTMLAttributes<HTMLInputElement>
-  select: React.InputHTMLAttributes<HTMLSelectElement>
-  textarea: React.TextareaHTMLAttributes<HTMLTextAreaElement>
+  checkbox: CreateFieldOptions<boolean, 'checked'>
+  input: CreateFieldOptions<string>
+  radio: CreateFieldOptions<string>
+  select: CreateFieldOptions<string>
+  textarea: CreateFieldOptions<string>
 }
 
-export interface CreateFieldProps {
-  fieldProps: FieldProps
-  fieldState: FieldState
+export interface CreateFieldOptions<V, ValuePropName = 'value'> {
+  allowMultiple?: boolean
+  valuePropName?: ValuePropName
+  initialValue?: any
+  beforeRegister: () => any /** @todo */
+  shouldValidateOnMount: (
+    args: {
+      valuePropName: ValuePropName /** @todo [valuePropName] dynamic property */
+      fieldRecord: any
+      context: any
+    },
+  ) => boolean
+  mapPropsToField: () => any /** @todo */
+  enforceProps: () => Object /** @todo */
+  assertValue: (value: V) => boolean
+  mapValue: (value: any) => any
+  serialize: (value: V) => any
 }
 
 export function createField<P>(
-  preset: FieldPreset,
+  options: CreateFieldOptions<string>,
 ): (
   component: (
     props: P & {
       fieldProps: React.InputHTMLAttributes<HTMLInputElement>
-      fieldState: FieldState
+      fieldState: FieldState<string>
     },
   ) => React.ReactElement<P & FieldProps>,
 ) => React.ComponentClass<P & FieldProps>
