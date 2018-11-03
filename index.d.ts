@@ -242,6 +242,7 @@ export interface FieldState<V> {
   rule?: Rule
   serialize: (value: V) => string
   skip?: boolean
+  touched: boolean
   type: string
   valid: boolean
   validAsync: boolean
