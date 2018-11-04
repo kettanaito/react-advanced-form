@@ -19,8 +19,8 @@ const fields = recordUtils.updateCollectionWith(
   recordUtils.updateCollectionWith(fieldTwo, {}),
 )
 
-const method = ({ a, get }) => {
-  expect(a).toEqual('value')
+const method = ({ value, get }) => {
+  expect(value).toEqual('foo')
   expect(get).toBeInstanceOf(Function)
 
   const valueOne = get(['fieldOne', 'value'])
@@ -30,7 +30,7 @@ const method = ({ a, get }) => {
 }
 
 const methodArgs = {
-  a: 'value',
+  fieldProps: fieldOne,
   fields,
   form: {
     state: {

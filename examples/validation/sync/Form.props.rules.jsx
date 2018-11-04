@@ -22,7 +22,7 @@ const rules = {
   },
 }
 
-const messages = {
+export const messages = {
   general: {
     invalid: 'General invalid',
   },

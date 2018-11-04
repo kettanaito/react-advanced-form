@@ -1,6 +1,7 @@
 import React from 'react'
 import { fieldPresets, createField, Form, Field } from 'react-advanced-form'
-import { Input, Select } from '@examples/fields'
+import { Input } from '@examples/fields'
+import { Select } from '@examples/fields/Select'
 import Button from '@examples/shared/Button'
 
 export const initialValues = {
@@ -18,7 +19,7 @@ export const initialValues = {
  * Create a field class where "initialValue" is set
  * for all instances of that class.
  */
-const OccupattionSelect = createField({
+const Occupation = createField({
   ...fieldPresets.select,
   initialValue: 'developer',
 })(Select)
@@ -32,11 +33,11 @@ export default class InitialValues extends React.Component {
           <Input name="firstName" label="First name" initialValue="John" />
           <Input name="username" label="Username" required />
 
-          <OccupattionSelect name="occupation">
+          <Occupation name="occupation">
             <option value="doctor">Doctor</option>
             <option value="developer">Developer</option>
             <option value="designer">Designer</option>
-          </OccupattionSelect>
+          </Occupation>
 
           <Field.Group name="billingAddress">
             <Input id="billing-street" name="street" label="Street (billing)" />

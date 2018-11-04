@@ -18,9 +18,9 @@ import {
 
 /* Default options for `connectField()` HOC */
 const defaultOptions = {
+  allowMultiple: false,
   valuePropName: 'value',
   initialValue: '',
-  allowMultiple: false,
   mapPropsToField({ fieldRecord }) {
     return fieldRecord
   },
@@ -28,8 +28,7 @@ const defaultOptions = {
     return fieldProps
   },
   shouldValidateOnMount({ valuePropName, fieldRecord }) {
-    const fieldValue = fieldRecord[valuePropName]
-    return isset(fieldValue) && fieldValue !== ''
+    return this.assertValue(fieldRecord[valuePropName])
   },
   shouldUpdateRecord({ prevValue, nextValue }) {
     return prevValue !== nextValue
@@ -39,6 +38,9 @@ const defaultOptions = {
   },
   mapValue(nextValue) {
     return nextValue
+  },
+  assertValue(value) {
+    return !!value
   },
   serialize(value) {
     return value
@@ -166,6 +168,7 @@ export default function connectField(options) {
 
           /* Internal methods */
           mapValue: hocOptions.mapValue,
+          assertValue: hocOptions.assertValue,
           serialize: hocOptions.serialize,
         }
 
@@ -190,6 +193,7 @@ export default function connectField(options) {
               props: directProps,
               context: this.context,
               valuePropName,
+              [valuePropName]: recordUtils.getValue(fieldRecord),
             }),
           },
         })

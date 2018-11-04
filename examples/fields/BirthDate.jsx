@@ -2,7 +2,7 @@ import React from 'react'
 import { createField } from 'react-advanced-form'
 
 class BirthDate extends React.Component {
-  handleChange = (event, fieldName) => {
+  handleChange = (fieldName) => (event) => {
     const { fieldState } = this.props
     const { value } = event.target
 
@@ -40,24 +40,23 @@ class BirthDate extends React.Component {
             {...fieldProps}
             className={inputClassNames}
             value={fieldState.date.day}
-            onChange={(event) => this.handleChange(event, 'day')}
+            onChange={this.handleChange('day')}
           />
           <input
             {...fieldProps}
             className={inputClassNames}
             value={fieldState.date.month}
-            onChange={(event) => this.handleChange(event, 'month')}
+            onChange={this.handleChange('month')}
           />
           <input
             {...fieldProps}
             className={inputClassNames}
             value={fieldState.date.year}
-            onChange={(event) => this.handleChange(event, 'year')}
+            onChange={this.handleChange('year')}
           />
         </div>
 
-        {invalid &&
-          errors &&
+        {errors &&
           errors.map((error, index) => (
             <div key={index} className="invalid-feedback d-block">
               {error}
@@ -69,11 +68,25 @@ class BirthDate extends React.Component {
 }
 
 export default createField({
+  /**
+   * Allow multiple instances of a field with the same name
+   * because "birthDate" contains three children input fields.
+   */
   allowMultiple: true,
   valuePropName: 'date',
-  shouldValidateOnMount: ({ fieldRecord: { date } }) => {
-    return date.year || date.month || date.day
-  },
+  /**
+   * Modifies the field's state to include custom type.
+   * This prevents children inputs to listen to "type: text"
+   * validation rules.
+   */
+  mapPropsToField: ({ fieldRecord }) => ({
+    ...fieldRecord,
+    type: 'birthDate',
+  }),
+  /**
+   * Execute mapping function each time a "raw" value ("1999-12-10")
+   * comes into the field. Has no effect over internal field value handling.
+   */
   mapValue(value) {
     const parsedDate = value.split('-')
     return {
@@ -82,6 +95,18 @@ export default createField({
       day: parsedDate[2] || '',
     }
   },
+  /**
+   * A predicate function that describes when the field has value.
+   * Useful for the fields with complex internal value instance,
+   * like this one, where the value is stored as an Object.
+   */
+  assertValue(date) {
+    return date.year || date.month || date.day
+  },
+  /**
+   * Custom serialization function that executes upon the
+   * field's serialization. Joins Object values into a string.
+   */
   serialize(date) {
     return [date.year, date.month, date.day].join('-')
   },
