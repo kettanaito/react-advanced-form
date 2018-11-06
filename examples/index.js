@@ -28,9 +28,6 @@ import FormProvider from './components/FormProvider/DebounceTime'
 
 /* Field grouping */
 import FieldGrouping from './field-grouping/FieldGrouping'
-import SimpleGroup from './field-grouping/SimpleGroup'
-import NestedGroups from './field-grouping/NestedGroups'
-import SplitGroups from './field-grouping/SplitGroups'
 
 /* Validation */
 import FieldPropsRule from './validation/sync/Field.props.rule'
@@ -112,11 +109,10 @@ storiesOf('Advanced|Custom fields', module).add(
   addComponent(<BirthDateExample />),
 )
 
-storiesOf('Advanced|Field grouping', module)
-  .add('Field grouping', addComponent(<FieldGrouping />))
-  .add('Simple group', addComponent(<SimpleGroup />))
-  .add('Nested groups', addComponent(<NestedGroups />))
-  .add('Split groups', addComponent(<SplitGroups />))
+storiesOf('Advanced|Field grouping', module).add(
+  'Field grouping',
+  addComponent(<FieldGrouping />),
+)
 
 storiesOf('Advanced|Reactive props', module)
   .add('Reactive field rule', addComponent(<RxPropsFieldReactiveRule />))
