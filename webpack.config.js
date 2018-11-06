@@ -24,6 +24,8 @@ module.exports = {
     library: 'reactAdvancedForm',
     libraryTarget: 'umd',
     umdNamedDefine: true,
+    /** @see https://github.com/webpack/webpack/issues/6522 */
+    globalObject: `typeof self !== 'undefined' ? self : this`,
   },
   plugins: [
     new webpack.DefinePlugin({
