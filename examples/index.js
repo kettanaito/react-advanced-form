@@ -27,6 +27,7 @@ import CreateField from './components/createField'
 import FormProvider from './components/FormProvider/DebounceTime'
 
 /* Field grouping */
+import FieldGrouping from './field-grouping/FieldGrouping'
 import SimpleGroup from './field-grouping/SimpleGroup'
 import NestedGroups from './field-grouping/NestedGroups'
 import SplitGroups from './field-grouping/SplitGroups'
@@ -112,6 +113,7 @@ storiesOf('Advanced|Custom fields', module).add(
 )
 
 storiesOf('Advanced|Field grouping', module)
+  .add('Field grouping', addComponent(<FieldGrouping />))
   .add('Simple group', addComponent(<SimpleGroup />))
   .add('Nested groups', addComponent(<NestedGroups />))
   .add('Split groups', addComponent(<SplitGroups />))
