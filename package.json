@@ -49,7 +49,7 @@
     "cypress:cli": "$(npm bin)/cypress run --spec 'cypress/integration/index.js' --browser chrome",
     "test:integration:dev": "$(npm bin)/cypress run -e envName=dev --spec cypress/integration/index.js --headed --no-exit",
     "test:integration": "npm run cypress:cli",
-    "test": "npm run test:unit && npm run test:integration",
+    "test": "npm run test:unit",
     "prepublishOnly": "npm run build && npm test"
   },
   "peerDependencies": {
