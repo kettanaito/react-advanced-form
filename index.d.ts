@@ -13,6 +13,7 @@ export class FormProvider extends React.Component<FormProviderProps> {}
  */
 export interface FieldGroupProps {
   name: string
+  exact?: boolean
 }
 
 export interface Field {
@@ -38,33 +39,46 @@ export interface Fields {
 /**
  * Validation schema
  */
-export interface ResolverArgs {
-  get: (fieldPath: string[]) => any
+export interface RuleResolverArgs {
+  /**
+   * Reactive field prop getter.
+   * Subscribes to the given field's prop path and resolves
+   * each time the prop value has changed.
+   */
+  get: (fieldPropPath: string[]) => any
   value: string
   fieldProps: FieldState<string>
   fields: Fields
   form: Form
 }
 
-export type Resolver = (args: ResolverArgs) => boolean
+export type RuleResolver = (args: RuleResolverArgs) => boolean
 
 export type AsyncRulePayload = {
+  /**
+   * Determines whether a field is valid based on the
+   * asynchronous validation result.
+   */
   valid: boolean
+  /**
+   * Map of extra parameters returned from the asynchronous validation.
+   * Accessible under validation messages resolvers.
+   */
   extra?: {
     [exraKey: string]: any
   }
 }
 
-export interface ResolverGroup {
-  [ruleName: string]: Resolver
+export interface RuleResolverGroup {
+  [ruleName: string]: RuleResolver
 }
 
 export interface ValidationSchema {
   type?: {
-    [key: string]: Resolver | ResolverGroup
+    [rulePath: string]: RuleResolver | RuleResolverGroup
   }
   name?: {
-    [key: string]: Resolver | ResolverGroup
+    [rulePath: string]: RuleResolver | RuleResolverGroup
   }
 }
 
@@ -78,9 +92,9 @@ export interface MessageResolverArgs {
   form: Form
 }
 
-export type MessageResolver = (args: MessageResolverArgs) => string | string
+export type MessageResolver = string | ((args: MessageResolverArgs) => string)
 
-export interface ValidationMessageSet {
+export interface ValidationMessagesTypes {
   [key: string]: {
     invalid?: MessageResolver
     missing?: MessageResolver
@@ -90,14 +104,14 @@ export interface ValidationMessageSet {
   }
 }
 
-export interface ValidationMessageGroup {
-  [key: string]: ValidationMessageSet
+export interface ValidationMessagesGroup {
+  [messagePath: string]: ValidationMessagesTypes
 }
 
 export interface ValidationMessages {
-  general?: ValidationMessageSet
-  type?: ValidationMessageSet
-  name?: ValidationMessageSet | ValidationMessageGroup
+  general?: ValidationMessagesTypes
+  type?: ValidationMessagesTypes
+  name?: ValidationMessagesTypes | ValidationMessagesGroup
 }
 
 export type Errors = string[] | string | null
@@ -110,7 +124,7 @@ export interface FieldErrors {
       }
 }
 
-type GenericFormPayload = (args: { fields: Fields; form: Form }) => void
+type FormGenericPayload = (args: { fields: Fields; form: Form }) => void
 
 type FormSubmitPayload = {
   serialized: SerializedFields
@@ -141,13 +155,13 @@ export interface FormProps {
     fields: Fields
     form: Form
   }): void
-  onClear?: GenericFormPayload
-  onReset?: GenericFormPayload
+  onClear?: FormGenericPayload
+  onReset?: FormGenericPayload
   onSerialize?(
-    args: GenericFormPayload & { serialized: SerializedFields },
+    args: FormGenericPayload & { serialized: SerializedFields },
   ): void
   onInvalid?(
-    args: GenericFormPayload & {
+    args: FormGenericPayload & {
       invalidFields: Fields
       fields: Fields
       form: Form
@@ -186,61 +200,82 @@ export class Form extends React.Component<FormProps, FormState> {
   submit(): Promise<void> /** @todo */
 }
 
-interface Event {
+interface FormGenericEvent {
   event: React.FormEvent<HTMLInputElement>
   fieldProps: FieldState<string>
   fields: Fields
   form: Form
 }
 
-export interface BlurEvent extends Event {}
-export interface FocusEvent extends Event {}
+export interface BlurEvent extends FormGenericEvent {}
+export interface FocusEvent extends FormGenericEvent {}
 
-export interface ChangeEvent extends Event {
+export interface ChangeEvent extends FormGenericEvent {
   event: React.FormEvent<HTMLInputElement>
   prevValue: string
   nextValue: string
 }
 
-export type Rule = RegExp | ((args: ResolverArgs) => boolean)
-export type AsyncRule = RegExp | ((args: ResolverArgs) => AsyncRulePayload)
+export type Rule = RegExp | ((args: RuleResolverArgs) => boolean)
+export type AsyncRule = RegExp | ((args: RuleResolverArgs) => AsyncRulePayload)
 
-export type BlurFunction = (args: BlurEvent) => void
-export type ChangeFunction = (args: ChangeEvent) => void
-export type FocusFunction = (args: FocusEvent) => void
+export type BlurHandler = (args: BlurEvent) => void
+export type ChangeHandler = (args: ChangeEvent) => void
+export type FocusHandler = (args: FocusEvent) => void
 
+/**
+ * Map derived from the field's state, that is being assigned to the
+ * field element (i.e. input, select, etc.).
+ */
 export interface FieldProps {
-  rule?: Rule
-  asyncRule?: AsyncRule
+  rule?: Rule /** @todo shouldn't be here */
+  asyncRule?: AsyncRule /** @todo shouldn't be here */
   required?: boolean
-  skip?: boolean
-  onBlur?: BlurFunction
-  onChange?: ChangeFunction
-  onFocus?: FocusFunction
+  skip?: boolean /** @todo shouldn't be here */
+  onBlur?: BlurHandler
+  onChange?: ChangeHandler
+  onFocus?: FocusHandler
 }
 
 /** @todo Value generic */
 export interface FieldState<V> {
+  /**
+   * Asynchronous field rule resolver.
+   */
   asyncRule?: AsyncRule
   controlled: boolean
   debounceValidate: () => any /** @todo */
+  /**
+   * List of the applicable error messages.
+   */
   errors: string[] | null
+  /**
+   * Determines whether the current value of this field
+   * is expected by the relevant validation rules.
+   */
   expected: boolean
   fieldGroup?: string /** @todo */
   fieldPath: string[]
   focused: boolean
-  getRef: any /** @todo */
+  getRef: () => any /** @todo */
   initialValue: string
   invalid: boolean
   mapValue: (value: V) => any
-  onBlur?: BlurFunction
-  onChange?: ChangeFunction
-  onFocus?: FocusFunction
+  onBlur?: BlurHandler
+  onChange?: ChangeHandler
+  onFocus?: FocusHandler
   pendingAsyncValidation?: boolean /** @todo */
   reactiveProps: any /** @todo */
   required: boolean
+  /**
+   * Synchornous field rule resolver.
+   */
   rule?: Rule
   serialize: (value: V) => string
+  /**
+   * Determines whether to skip this field during the fields serialization
+   * regardless of its validity or value.
+   */
   skip?: boolean
   touched: boolean
   type: string
@@ -263,10 +298,27 @@ export const fieldPresets: {
 }
 
 export interface CreateFieldOptions<V, ValuePropName = 'value'> {
+  /**
+   * Allows multiple instance of this field to be registered
+   * with the same name within a single form context (Form, Field.Group).
+   */
   allowMultiple?: boolean
+
+  /**
+   * Property name that stores the value of this field.
+   */
   valuePropName?: ValuePropName
+
+  /**
+   * Initial value of all the instances of this field.
+   * This has lower priority than "MyField.props.initialValue"
+   */
   initialValue?: any
   beforeRegister: () => any /** @todo */
+
+  /**
+   * Determines whether a field must be validated upon mounting.
+   */
   shouldValidateOnMount: (
     args: {
       valuePropName: ValuePropName /** @todo [valuePropName] dynamic property */
@@ -274,10 +326,25 @@ export interface CreateFieldOptions<V, ValuePropName = 'value'> {
       context: any
     },
   ) => boolean
-  mapPropsToField: () => any /** @todo */
+  mapPropsToField: () => Object /** @todo */
   enforceProps: () => Object /** @todo */
+
+  /**
+   * A predicate function that determines whether a field contains any value.
+   * Useful for the fields with the custom value instance (i.e. Object).
+   */
   assertValue: (value: V) => boolean
+
+  /**
+   * Custom mapping function applied whenever a field receives a "raw" value.
+   * Useful when the internal value instance of a field has a different data type
+   * than its initial value. This has no effect over the internal value updates.
+   */
   mapValue: (value: any) => any
+
+  /**
+   * Custom transformer function applied to the serialized field's value.
+   */
   serialize: (value: V) => any
 }
 
