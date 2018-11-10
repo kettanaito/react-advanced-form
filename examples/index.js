@@ -15,6 +15,7 @@ function addComponent(Component) {
 
 /* Basics */
 import InitialValues from './basics/InitialValues'
+import SetValues from './basics/SetValues'
 import Reset from './basics/Reset'
 import Serialize from './basics/Serialize'
 import UncontrolledFields from './basics/UncontrolledFields'
@@ -72,6 +73,7 @@ storiesOf('Behavior', module).add(
 /* Basics */
 storiesOf('Basics|Interaction', module)
   .add('Initial values', addComponent(<InitialValues />))
+  .add('Set values', addComponent(<SetValues />))
   .add('Reset', addComponent(<Reset />))
   .add('Serialize', addComponent(<Serialize />))
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))

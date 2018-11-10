@@ -17,6 +17,7 @@ import {
   isset,
   camelize,
   dispatch,
+  evolveP,
   recordUtils,
   fieldUtils,
   formUtils,
@@ -258,30 +259,31 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Accepts the given fields patch and updates the fields
-   * with that patch. Performs validation for the fields
-   * present in the patch.
+   * Updates the fields with the given patch, which includes field's path
+   * and its next "raw" value. Any additional "mapValue" transformations
+   * are applied to the next value.
    * @param {Object<fieldPath: nextValue>} fieldsPatch
    */
-  setValues = (fieldsPatch) => {
+  setValues = async (fieldsPatch) => {
     const { fields } = this.state
     const transformers = deriveDeepWith(
       (_, nextValue, fieldProps) =>
-        recordUtils.setValue(fieldProps.mapValue(nextValue)),
+        R.compose(
+          (fieldProps) =>
+            validate({
+              fieldProps,
+              fields,
+              form: this,
+            }),
+          recordUtils.setValue(fieldProps.mapValue(nextValue)),
+          recordUtils.resetValidityState,
+        ),
       fieldsPatch,
       fields,
     )
-    const nextFields = R.evolve(transformers, fields)
 
-    this.setState({ fields: nextFields }, () => {
-      this.validate((fieldProps) => {
-        return R.pathSatisfies(
-          R.complement(R.isNil),
-          fieldProps.fieldPath,
-          fieldsPatch,
-        )
-      })
-    })
+    const nextFields = await evolveP(transformers, fields)
+    this.setState({ fields: nextFields })
   }
 
   /**
