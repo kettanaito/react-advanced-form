@@ -118,5 +118,6 @@
     "invariant": "^2.2.4",
     "ramda": "^0.25.0",
     "rxjs": "^6.3.2"
-  }
+  },
+  "typings": "index.d.ts"
 }
