@@ -2,14 +2,19 @@
   "name": "react-advanced-form",
   "version": "1.5.8",
   "description": "Tailor advanced real-world forms in a matter of minutes. Multi-layer validation, field grouping, reactive props, and much more.",
-  "author": {
-    "name": "Artem Zakharchenko",
-    "email": "kettanaito@gmail.com"
-  },
+  "main": "lib/index.js",
   "license": "MIT",
+  "engines": {
+    "node": ">=6"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kettanaito/react-advanced-form.git"
+  },
+  "author": {
+    "name": "Artem Zakharchenko",
+    "email": "kettanaito@gmail.com",
+    "url": "https://github.com/kettanaito"
   },
   "keywords": [
     "react",
@@ -30,19 +35,13 @@
     "async validation",
     "multi-level validation"
   ],
-  "engines": {
-    "node": ">=6"
-  },
-  "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack -w",
     "storybook": "cross-env NODE_ENV=development start-storybook -p 6009 -s ./",
     "flow": "flow",
     "prettify": "prettier src/**/*.js cypress/integration/**/*.{js,jsx} examples/**/*.{js,jsx} --write",
     "clean": "rimraf ./lib && exit 0",
-    "build": "npm run clean && npm run build:dev && npm run build:prod",
-    "build:prod": "cross-env NODE_ENV=production webpack",
-    "build:dev": "cross-env NODE_ENV=development webpack",
+    "build": "npm run clean && cross-env NODE_ENV=production webpack",
     "build:storybook": "cross-env NODE_ENV=production build-storybook",
     "test:unit": "cross-env NODE_ENV=production jest",
     "cypress": "$(npm bin)/cypress open -e envName=dev",
@@ -76,7 +75,6 @@
     "babel-eslint": "^9.0.0",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.2",
-    "babel-minify-webpack-plugin": "^0.3.1",
     "babel-plugin-ramda": "^1.6.3",
     "bootstrap": "^4.1.3",
     "chai": "^4.1.2",
