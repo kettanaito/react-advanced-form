@@ -14,6 +14,7 @@ function addComponent(Component) {
 }
 
 /* Basics */
+import FieldUnmounting from './basics/FieldUnmounting'
 import InitialValues from './basics/InitialValues'
 import SetValues from './basics/SetValues'
 import Reset from './basics/Reset'
@@ -72,6 +73,7 @@ storiesOf('Behavior', module).add(
 
 /* Basics */
 storiesOf('Basics|Interaction', module)
+  .add('Field unmounting', addComponent(<FieldUnmounting />))
   .add('Initial values', addComponent(<InitialValues />))
   .add('Set values', addComponent(<SetValues />))
   .add('Reset', addComponent(<Reset />))

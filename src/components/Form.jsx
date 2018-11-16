@@ -6,6 +6,7 @@ import { EventEmitter } from 'events'
 import { Observable } from 'rxjs/internal/Observable'
 import { fromEvent } from 'rxjs/internal/observable/fromEvent'
 import { bufferTime } from 'rxjs/internal/operators/bufferTime'
+import { filter } from 'rxjs/internal/operators/filter'
 
 /* Internal modules */
 import {
@@ -126,10 +127,16 @@ export default class Form extends React.Component {
     fromEvent(eventEmitter, 'fieldRegister')
       .pipe(bufferTime(50))
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
+    fromEvent(eventEmitter, 'fieldUnregister')
+      .pipe(
+        bufferTime(50),
+        filter(R.complement(R.isEmpty)),
+      )
+      .subscribe(this.unregisterFields)
+
     fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
     fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
     fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
-    fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField)
     fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
   }
 
@@ -308,17 +315,14 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Deletes the field record from the state.
-   * @param {Object} fieldProps
+   * Deletes the list of fields from the state.
+   * @param {FieldState[]} fieldsList
    */
-  unregisterField = (fieldProps) => {
-    /**
-     * @todo Consider as a performance optimization point
-     * in case any performance issues arise.
-     */
+  unregisterFields = (fieldsList) => {
+    const stitchedFields = fieldUtils.stitchFields(fieldsList)
     const nextFields = R.compose(
       fieldUtils.stitchFields,
-      R.reject(R.propEq('fieldPath', fieldProps.fieldPath)),
+      R.reject((fieldState) => R.path(fieldState.fieldPath, stitchedFields)),
       fieldUtils.flattenFields,
     )(this.state.fields)
 
