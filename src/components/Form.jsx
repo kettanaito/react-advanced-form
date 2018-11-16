@@ -140,6 +140,10 @@ export default class Form extends React.Component {
     fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
   }
 
+  componentWillUnmount() {
+    this.eventEmitter.removeAllListeners()
+  }
+
   /**
    * Wraps a given function, ensuring its invocation only when the payload
    * of that function has a field that is a part of the form's fields.
