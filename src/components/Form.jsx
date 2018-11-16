@@ -496,8 +496,7 @@ export default class Form extends React.Component {
   clear = (predicate = Boolean) => {
     const nextFields = R.compose(
       fieldUtils.stitchFields,
-      R.map(recordUtils.reset(R.always(''))),
-      R.filter(predicate),
+      R.map(R.when(predicate, recordUtils.reset(R.always('')))),
       fieldUtils.flattenFields,
     )(this.state.fields)
 
