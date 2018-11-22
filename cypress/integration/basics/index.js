@@ -1,5 +1,7 @@
 describe('Basics', function() {
+  require('./FieldUnmounting.spec')
   require('./InitialValues.spec')
+  require('./SetValues.spec')
   require('./Reset.spec')
   require('./Serialization.spec')
   require('./ControlledFields.spec')

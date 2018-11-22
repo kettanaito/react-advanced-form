@@ -1,6 +1,5 @@
 const path = require('path')
 const webpack = require('webpack')
-const BabelMinifyPlugin = require('babel-minify-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin
 
@@ -20,35 +19,23 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'lib'),
-    filename: `index.${nodeEnv}.js`,
+    filename: `index.js`,
     library: 'reactAdvancedForm',
     libraryTarget: 'umd',
     umdNamedDefine: true,
-    /** @see https://github.com/webpack/webpack/issues/6522 */
+    /**
+     * UMD modules refer to "window", which breaks SSR.
+     * @see https://github.com/webpack/webpack/issues/6522
+     */
     globalObject: `typeof self !== 'undefined' ? self : this`,
+  },
+  optimization: {
+    minimize: false,
   },
   plugins: [
     new webpack.DefinePlugin({
-      // 'process.env.NODE_ENV': JSON.stringify(nodeEnv),
       'process.env.BABEL_ENV': JSON.stringify(nodeEnv),
     }),
-
-    // PRODUCTION &&
-    //   new BabelMinifyPlugin({
-    //     removeDebugger: true,
-    //     removeConsole: true,
-    //     mangle: {
-    //       topLevel: true,
-    //       exclude: {
-    //         connectField: true,
-    //         createField: true,
-    //         FormProvider: true,
-    //         Form: true,
-    //         Field: true,
-    //       },
-    //     },
-    //   }),
-
     // new BundleAnalyzerPlugin(),
   ].filter(Boolean),
   module: {
@@ -71,7 +58,7 @@ module.exports = {
       },
     ],
   },
-  devtool: DEVELOPMENT && 'source-map',
+  devtool: 'source-map',
   resolve: {
     extensions: ['.js', '.jsx'],
   },

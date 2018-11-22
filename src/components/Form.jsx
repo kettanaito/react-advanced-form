@@ -6,6 +6,7 @@ import { EventEmitter } from 'events'
 import { Observable } from 'rxjs/internal/Observable'
 import { fromEvent } from 'rxjs/internal/observable/fromEvent'
 import { bufferTime } from 'rxjs/internal/operators/bufferTime'
+import { filter } from 'rxjs/internal/operators/filter'
 
 /* Internal modules */
 import {
@@ -17,6 +18,7 @@ import {
   isset,
   camelize,
   dispatch,
+  evolveP,
   recordUtils,
   fieldUtils,
   formUtils,
@@ -125,11 +127,21 @@ export default class Form extends React.Component {
     fromEvent(eventEmitter, 'fieldRegister')
       .pipe(bufferTime(50))
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
+    fromEvent(eventEmitter, 'fieldUnregister')
+      .pipe(
+        bufferTime(50),
+        filter(R.complement(R.isEmpty)),
+      )
+      .subscribe(this.unregisterFields)
+
     fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
     fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
     fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
-    fromEvent(eventEmitter, 'fieldUnregister').subscribe(this.unregisterField)
     fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
+  }
+
+  componentWillUnmount() {
+    this.eventEmitter.removeAllListeners()
   }
 
   /**
@@ -258,30 +270,31 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Accepts the given fields patch and updates the fields
-   * with that patch. Performs validation for the fields
-   * present in the patch.
+   * Updates the fields with the given patch, which includes field's path
+   * and its next "raw" value. Any additional "mapValue" transformations
+   * are applied to the next value.
    * @param {Object<fieldPath: nextValue>} fieldsPatch
    */
-  setValues = (fieldsPatch) => {
+  setValues = async (fieldsPatch) => {
     const { fields } = this.state
     const transformers = deriveDeepWith(
       (_, nextValue, fieldProps) =>
-        recordUtils.setValue(fieldProps.mapValue(nextValue)),
+        R.compose(
+          (fieldProps) =>
+            validate({
+              fieldProps,
+              fields,
+              form: this,
+            }),
+          recordUtils.setValue(fieldProps.mapValue(nextValue)),
+          recordUtils.resetValidityState,
+        ),
       fieldsPatch,
       fields,
     )
-    const nextFields = R.evolve(transformers, fields)
 
-    this.setState({ fields: nextFields }, () => {
-      this.validate((fieldProps) => {
-        return R.pathSatisfies(
-          R.complement(R.isNil),
-          fieldProps.fieldPath,
-          fieldsPatch,
-        )
-      })
-    })
+    const nextFields = await evolveP(transformers, fields)
+    this.setState({ fields: nextFields })
   }
 
   /**
@@ -306,17 +319,14 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Deletes the field record from the state.
-   * @param {Object} fieldProps
+   * Deletes the list of fields from the state.
+   * @param {FieldState[]} fieldsList
    */
-  unregisterField = (fieldProps) => {
-    /**
-     * @todo Consider as a performance optimization point
-     * in case any performance issues arise.
-     */
+  unregisterFields = (fieldsList) => {
+    const stitchedFields = fieldUtils.stitchFields(fieldsList)
     const nextFields = R.compose(
       fieldUtils.stitchFields,
-      R.reject(R.propEq('fieldPath', fieldProps.fieldPath)),
+      R.reject((fieldState) => R.path(fieldState.fieldPath, stitchedFields)),
       fieldUtils.flattenFields,
     )(this.state.fields)
 
@@ -486,8 +496,7 @@ export default class Form extends React.Component {
   clear = (predicate = Boolean) => {
     const nextFields = R.compose(
       fieldUtils.stitchFields,
-      R.map(recordUtils.reset(R.always(''))),
-      R.filter(predicate),
+      R.map(R.when(predicate, recordUtils.reset(R.always('')))),
       fieldUtils.flattenFields,
     )(this.state.fields)
 

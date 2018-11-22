@@ -9,11 +9,13 @@ SUMMARY.md
 # Configurations
 .github
 .babelrc
+.prettierrc
+.flowconfig
 babel.config.js
 .eslintrc*
 .circleci
 book.json
-cypress.json
+cypress.*
 npm-*
 webpack*
 jest*
@@ -21,6 +23,8 @@ jest*
 # Misc
 __*
 .storybook
+storybook-static
+.vscode
 favicon.*
 logo.*
 internal

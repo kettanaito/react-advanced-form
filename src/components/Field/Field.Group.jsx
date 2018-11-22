@@ -12,6 +12,7 @@ export default class Group extends React.Component {
 
   static propTypes = {
     name: PropTypes.string.isRequired,
+    exact: PropTypes.bool,
   }
 
   static contextTypes = {
@@ -23,10 +24,11 @@ export default class Group extends React.Component {
   }
 
   getChildContext() {
+    const { name, exact } = this.props
     const parentGroupName = this.context.fieldGroup || []
 
     return {
-      fieldGroup: parentGroupName.concat(this.props.name),
+      fieldGroup: exact ? [name] : parentGroupName.concat(name),
     }
   }
 

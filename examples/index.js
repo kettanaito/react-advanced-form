@@ -14,7 +14,9 @@ function addComponent(Component) {
 }
 
 /* Basics */
+import FieldUnmounting from './basics/FieldUnmounting'
 import InitialValues from './basics/InitialValues'
+import SetValues from './basics/SetValues'
 import Reset from './basics/Reset'
 import Serialize from './basics/Serialize'
 import UncontrolledFields from './basics/UncontrolledFields'
@@ -27,9 +29,7 @@ import CreateField from './components/createField'
 import FormProvider from './components/FormProvider/DebounceTime'
 
 /* Field grouping */
-import SimpleGroup from './field-grouping/SimpleGroup'
-import NestedGroups from './field-grouping/NestedGroups'
-import SplitGroups from './field-grouping/SplitGroups'
+import FieldGrouping from './field-grouping/FieldGrouping'
 
 /* Validation */
 import FieldPropsRule from './validation/sync/Field.props.rule'
@@ -73,7 +73,9 @@ storiesOf('Behavior', module).add(
 
 /* Basics */
 storiesOf('Basics|Interaction', module)
+  .add('Field unmounting', addComponent(<FieldUnmounting />))
   .add('Initial values', addComponent(<InitialValues />))
+  .add('Set values', addComponent(<SetValues />))
   .add('Reset', addComponent(<Reset />))
   .add('Serialize', addComponent(<Serialize />))
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
@@ -111,10 +113,10 @@ storiesOf('Advanced|Custom fields', module).add(
   addComponent(<BirthDateExample />),
 )
 
-storiesOf('Advanced|Field grouping', module)
-  .add('Simple group', addComponent(<SimpleGroup />))
-  .add('Nested groups', addComponent(<NestedGroups />))
-  .add('Split groups', addComponent(<SplitGroups />))
+storiesOf('Advanced|Field grouping', module).add(
+  'Field grouping',
+  addComponent(<FieldGrouping />),
+)
 
 storiesOf('Advanced|Reactive props', module)
   .add('Reactive field rule', addComponent(<RxPropsFieldReactiveRule />))
