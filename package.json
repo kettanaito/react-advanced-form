@@ -110,9 +110,9 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "hoist-non-react-statics": "^3.0.1",
+    "hoist-non-react-statics": "^3.1.0",
     "invariant": "^2.2.4",
-    "ramda": "^0.25.0",
-    "rxjs": "^6.3.2"
+    "ramda": "^0.26.0",
+    "rxjs": "^6.3.3"
   }
 }
