@@ -5,6 +5,7 @@ bower_components
 jspm_packages
 
 # Build
+.cache
 storybook-static
 lib
 
