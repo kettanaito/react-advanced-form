@@ -41,14 +41,14 @@ export default class UncontrolledFields extends React.Component {
 
           {/* Checkboxes */}
           <Checkbox
-            id="checkbox1"
-            name="checkbox1"
+            id="checkboxOne"
+            name="checkboxOne"
             label="Checkbox one"
             checked={false}
           />
           <Checkbox
-            id="checkbox2"
-            name="checkbox2"
+            id="checkboxTwo"
+            name="checkboxTwo"
             label="Checkbox two"
             checked
           />

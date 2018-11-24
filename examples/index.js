@@ -132,6 +132,6 @@ storiesOf('Other|Third-party fields', module)
   .add('react-datepicker', addComponent(<ReactDatepicker />))
 
 storiesOf('Other|Full examples', module).add(
-  'Registration Form',
+  'Registration form',
   addComponent(<RegistrationForm />),
 )
