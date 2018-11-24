@@ -23,7 +23,6 @@ export const createField = (initialState) => {
     fieldPath: null,
 
     /* Basic */
-    type: 'text',
     initialValue: value,
     [valuePropName]: value,
     valuePropName,

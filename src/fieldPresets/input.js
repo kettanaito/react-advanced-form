@@ -1,4 +1,8 @@
 export default {
+  mapPropsToField: ({ props, fieldRecord }) => ({
+    ...fieldRecord,
+    type: props.type || 'text',
+  }),
   enforceProps: ({ props }) => ({
     accept: props.accept,
     placeholder: props.placeholder,
