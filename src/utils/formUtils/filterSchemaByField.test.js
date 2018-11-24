@@ -3,6 +3,7 @@ import filterSchemaByField from './filterSchemaByField'
 
 const fieldOne = recordUtils.createField({
   name: 'fieldOne',
+  type: 'text',
 })
 
 test('Returns empty list when no applicable rules are found', () => {

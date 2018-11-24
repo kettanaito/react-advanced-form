@@ -25,6 +25,7 @@ test('Reduces validators while they resolve to expected', (done) => {
   const validatorsList = [validateSync]
   const fieldProps = recordUtils.createField({
     name: 'fieldOne',
+    type: 'text',
     fieldPath: ['fieldOne'],
     value: 'foo',
   })
