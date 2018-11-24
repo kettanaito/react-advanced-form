@@ -83,6 +83,9 @@ export default createField({
     ...fieldRecord,
     type: 'birthDate',
   }),
+  enforceProps: () => ({
+    type: 'text',
+  }),
   /**
    * Execute mapping function each time a "raw" value ("1999-12-10")
    * comes into the field. Has no effect over internal field value handling.

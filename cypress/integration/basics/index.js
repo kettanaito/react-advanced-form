@@ -1,4 +1,5 @@
 describe('Basics', function() {
+  require('./Types.spec')
   require('./FieldUnmounting.spec')
   require('./InitialValues.spec')
   require('./SetValues.spec')
