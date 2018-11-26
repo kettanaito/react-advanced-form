@@ -10,10 +10,23 @@ export type ResolverRecord = {
 
 type ResolverTuple = [Function, string[], string]
 
-const getRulesPaths = (fieldProps: Object) => [
-  ['name', fieldProps.name],
-  ['type', fieldProps.type],
-]
+export const getRulesPaths = (fieldProps: Object) =>
+  [
+    fieldProps.fieldGroup && [
+      'fieldPath',
+      ...fieldProps.fieldGroup,
+      'name',
+      fieldProps.name,
+    ],
+    fieldProps.fieldGroup && [
+      'fieldPath',
+      ...fieldProps.fieldGroup,
+      'type',
+      fieldProps.type,
+    ],
+    ['name', fieldProps.name],
+    ['type', fieldProps.type],
+  ].filter(Boolean)
 
 const createResolverRecord = ([
   resolver,
