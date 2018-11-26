@@ -87,7 +87,6 @@
     "eslint-plugin-react": "^7.11.1",
     "flow": "^0.2.3",
     "jest": "^23.6.0",
-    "moment": "^2.22.2",
     "ncp": "^2.0.0",
     "prop-types": "^15.6.2",
     "raw-loader": "^0.5.1",
