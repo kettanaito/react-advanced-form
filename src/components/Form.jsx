@@ -151,17 +151,32 @@ export default class Form extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     const { rules: prevRules } = this.props
     const { rules: nextRules } = nextProps
 
     if (!R.equals(prevRules, nextRules)) {
       const updatedRules = formUtils.mergeRules(nextRules, this.context.rules)
 
-      console.warn('Rules has been updated!')
-      console.log(updatedRules)
+      /**
+       * Reset the validity and validation status of all fields
+       * to null those which rules are no longer present in the
+       * schema received in the nextProps.
+       * @todo A good optimization place. May be refined.
+       */
+      const resetFields = R.compose(
+        fieldUtils.stitchFields,
+        R.map(
+          R.compose(
+            recordUtils.resetValidationState,
+            recordUtils.resetValidityState,
+          ),
+        ),
+        fieldUtils.flattenFields,
+      )(this.state.fields)
 
       this.setState({
+        fields: resetFields,
         rules: updatedRules,
       })
     }

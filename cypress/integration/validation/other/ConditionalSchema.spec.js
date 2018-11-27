@@ -1,4 +1,5 @@
-const toggleSchema = () => cy.get('button').click()
+const useFirstSchema = () => cy.get('#btn-one').click()
+const useSecondSchema = () => cy.get('#btn-two').click()
 
 describe('Conditional schema', function() {
   before(() => {
@@ -16,17 +17,28 @@ describe('Conditional schema', function() {
       .clear()
       .type('bar')
       .expected(false)
+
+    cy.getField('fieldTwo')
+      .hasValue('bar')
+      .expected(false)
   })
 
   it('Properly validates after schema is changed on runtime', () => {
-    toggleSchema()
+    useSecondSchema()
     cy.getField('fieldOne')
       .expected()
       .clear()
       .type('foo')
       .expected(false)
 
-    toggleSchema()
+    useFirstSchema()
     cy.getField('fieldOne').expected()
+  })
+
+  it('Resets validation state of fields not present in next schema', () => {
+    useSecondSchema()
+    cy.getField('fieldTwo')
+      .valid(false)
+      .invalid(false)
   })
 })

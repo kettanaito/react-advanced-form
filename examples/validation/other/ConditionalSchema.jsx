@@ -6,6 +6,7 @@ import Button from '@examples/shared/Button'
 const schemaOne = {
   name: {
     fieldOne: ({ value }) => value === 'foo',
+    fieldTwo: ({ value }) => value !== 'bar',
   },
 }
 
@@ -40,10 +41,19 @@ export default class ConditionalSchema extends React.Component {
             required
           />
 
+          <Input name="fieldTwo" initialValue="bar" />
+
           <Button
-            onClick={() => this.setState(({ flag }) => ({ flag: !flag }))}
+            id="btn-one"
+            onClick={() => this.setState(({ flag }) => ({ flag: true }))}
           >
-            Toggle rules
+            Use first schema
+          </Button>
+          <Button
+            id="btn-two"
+            onClick={() => this.setState(({ flag }) => ({ flag: false }))}
+          >
+            Use second schema
           </Button>
         </Form>
       </React.Fragment>
