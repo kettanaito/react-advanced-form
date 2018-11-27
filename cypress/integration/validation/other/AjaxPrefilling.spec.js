@@ -1,8 +1,8 @@
-import { timeoutDuration } from '@examples/validation/misc/AjaxPrefilling'
+import { timeoutDuration } from '@examples/validation/other/AjaxPrefilling'
 
 describe('AJAX Pre-filling', function() {
   before(() => {
-    cy.loadStory(['Validation', 'Misc', 'AJAX pre-filling'])
+    cy.loadStory(['Validation', 'Other', 'Ajax pre-filling'])
 
     cy.get('#ajax')
       .click()
