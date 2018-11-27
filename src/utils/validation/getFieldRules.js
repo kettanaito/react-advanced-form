@@ -15,7 +15,7 @@ import { getRulesPaths } from '../formUtils/filterSchemaByField'
  *  name: [ValidationRule],
  * }
  */
-export default function getFieldRules(fieldProps, applicableRules) {
+export default function getFieldRules(fieldProps, rules) {
   const rulesPaths = getRulesPaths(fieldProps)
 
   return rulesPaths.reduce((acc, ruleKeyPath) => {
@@ -27,7 +27,7 @@ export default function getFieldRules(fieldProps, applicableRules) {
         ? [selector, ruleKeyPath[ruleKeyPath.length - 2]]
         : [selector]
 
-    const ruleGroups = R.path(ruleKeyPath, applicableRules)
+    const ruleGroups = R.path(ruleKeyPath, rules)
     return ruleGroups ? R.assocPath(keyPath, ruleGroups, acc) : acc
   }, {})
 }

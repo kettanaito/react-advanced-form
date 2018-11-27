@@ -97,7 +97,7 @@
     "react-select": "^2.1.2",
     "react-slider": "^0.11.2",
     "recompose": "^0.30.0",
-    "regenerator-runtime": "^0.13.1",
+    "regenerator-runtime": "^0.12.1",
     "rimraf": "^2.6.2",
     "start-server-and-test": "^1.7.11",
     "storybook": "^1.0.0",

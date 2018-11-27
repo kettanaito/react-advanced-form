@@ -22,44 +22,48 @@ test('Reduces the list while predicate returns true', (done) => {
 })
 
 test('Reduces validators while they resolve to expected', (done) => {
-  const validatorsList = [validateSync]
   const fieldProps = recordUtils.createField({
     name: 'fieldOne',
     type: 'text',
     fieldPath: ['fieldOne'],
     value: 'foo',
   })
+
   const resolverArgs = createRuleResolverArgs({
     fieldProps,
     form: {
       state: {
-        applicableRules: {
-          type: {
-            text: [
-              {
-                keyPath: ['type', 'text'],
-                selector: 'type',
-                resolver: ({ value }) => value !== 'foo',
-              },
-            ],
-          },
-          name: {
-            fieldOne: [
-              {
-                keyPath: ['name', 'fieldOne'],
-                selector: 'name',
-                resolver: ({ value }) => value.length > 2,
-              },
-            ],
-          },
+        fields: {
+          fieldOne: fieldProps,
         },
       },
     },
   })
 
-  const validate = reduceWhileExpected(validatorsList)
+  const rules = {
+    type: {
+      text: [
+        {
+          keyPath: ['type', 'text'],
+          selector: 'type',
+          resolver: ({ value }) => value !== 'foo',
+        },
+      ],
+    },
+    name: {
+      fieldOne: [
+        {
+          keyPath: ['name', 'fieldOne'],
+          selector: 'name',
+          resolver: ({ value }) => value.length > 2,
+        },
+      ],
+    },
+  }
 
-  validate(resolverArgs).then((res) => {
+  const validate = reduceWhileExpected([validateSync])
+
+  validate(resolverArgs, rules).then((res) => {
     expect(res).toEqual({
       expected: false,
       validators: ['sync'],

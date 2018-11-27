@@ -16,10 +16,9 @@ import applyFormRules from './applyFormRules'
  */
 const hasFormRules = R.allPass([R.complement(R.isNil), R.keys])
 
-export default async function validateSync(resolverArgs, force) {
+export default async function validateSync(resolverArgs, rules, force) {
   const { fieldProps, form } = resolverArgs
-  const { applicableRules } = form.state
-  const relevantFormRules = getFieldRules(fieldProps, applicableRules)
+  const relevantFormRules = getFieldRules(fieldProps, rules)
 
   /**
    * @todo Share output between getRulesSeq and shouldValidate.

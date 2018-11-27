@@ -53,12 +53,12 @@ const createRuleObservable = R.curry((resolverArgs, ruleRecord) => {
  * @param {Object} form
  * @returns {Object}
  */
-export default function createRulesSubscriptions({ fieldProps, fields, form }) {
-  const {
-    validationSchema,
-    state: { applicableRules },
-  } = form
-
+export default function createRulesSubscriptions({
+  fieldProps,
+  fields,
+  rules,
+  form,
+}) {
   const resolverArgs = createRuleResolverArgs({
     fieldProps,
     fields,
@@ -67,7 +67,7 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
 
   const fieldRules = R.compose(
     getRulesRefs(resolverArgs),
-    filterSchemaByField(validationSchema),
+    filterSchemaByField(rules),
   )(fieldProps)
 
   fieldRules.forEach(createRuleObservable(resolverArgs))
@@ -88,7 +88,4 @@ export default function createRulesSubscriptions({ fieldProps, fields, form }) {
     ['keyPath'],
     fieldRules,
   )
-
-  /* Merge field-related rules with the applicable rules */
-  return R.mergeDeepRight(applicableRules, stitchedRules)
 }
