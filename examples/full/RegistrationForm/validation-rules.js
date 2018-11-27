@@ -1,7 +1,7 @@
 import isEmail from 'validator/lib/isEmail'
 
 export default {
-  fieldPath: {
+  fieldGroup: {
     primaryInfo: {
       type: {
         email: ({ value }) => {

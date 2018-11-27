@@ -13,13 +13,13 @@ type ResolverTuple = [Function, string[], string]
 export const getRulesPaths = (fieldProps: Object) =>
   [
     fieldProps.fieldGroup && [
-      'fieldPath',
+      'fieldGroup',
       ...fieldProps.fieldGroup,
       'name',
       fieldProps.name,
     ],
     fieldProps.fieldGroup && [
-      'fieldPath',
+      'fieldGroup',
       ...fieldProps.fieldGroup,
       'type',
       fieldProps.type,

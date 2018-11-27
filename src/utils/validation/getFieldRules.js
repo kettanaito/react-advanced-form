@@ -23,7 +23,7 @@ export default function getFieldRules(fieldProps, applicableRules) {
 
     /** @todo This is weird */
     const keyPath =
-      selector === 'fieldPath'
+      selector === 'fieldGroup'
         ? [selector, ruleKeyPath[ruleKeyPath.length - 2]]
         : [selector]
 
