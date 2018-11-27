@@ -70,12 +70,6 @@ export default class Form extends React.Component {
     action: () => new Promise((resolve) => resolve()),
   }
 
-  state = {
-    fields: {},
-    applicableRules: {},
-    dirty: false,
-  }
-
   /* Context accepted by the Form */
   static contextTypes = {
     rules: PropTypes.object,
@@ -96,6 +90,19 @@ export default class Form extends React.Component {
     }
   }
 
+  // static getDerivedStateFromProps(props, state) {
+  //   const { rule: prevRules } = state
+  //   const { rules: nextRules } = props
+
+  //   if (prevRules !== nextRules) {
+  //     return {
+  //       validationSchema: formUtils.mergeRules(nextRules, contextRules),
+  //     }
+  //   }
+
+  //   return null
+  // }
+
   constructor(props, context) {
     super(props, context)
     const { rules: explicitRules, messages: explicitMessages } = props
@@ -110,9 +117,6 @@ export default class Form extends React.Component {
 
     /* Set the validation debounce duration */
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime
-
-    /* Set validation rules */
-    this.validationSchema = formUtils.mergeRules(explicitRules, contextRules)
 
     /**
      * @todo Consider moving this to the form's state.
@@ -138,6 +142,44 @@ export default class Form extends React.Component {
     fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
     fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
     fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
+
+    this.state = {
+      dirty: false,
+      fields: {},
+      // replacement for "this.validationSchema"
+      rules: formUtils.mergeRules(explicitRules, contextRules),
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { rules: prevRules } = this.props
+    const { rules: nextRules } = nextProps
+
+    if (!R.equals(prevRules, nextRules)) {
+      const updatedRules = formUtils.mergeRules(nextRules, this.context.rules)
+
+      /**
+       * Reset the validity and validation status of all fields
+       * to null those which rules are no longer present in the
+       * schema received in the nextProps.
+       * @todo A good optimization place. May be refined.
+       */
+      const resetFields = R.compose(
+        fieldUtils.stitchFields,
+        R.map(
+          R.compose(
+            recordUtils.resetValidationState,
+            recordUtils.resetValidityState,
+          ),
+        ),
+        fieldUtils.flattenFields,
+      )(this.state.fields)
+
+      this.setState({
+        fields: resetFields,
+        rules: updatedRules,
+      })
+    }
   }
 
   componentWillUnmount() {
@@ -225,48 +267,42 @@ export default class Form extends React.Component {
       })
 
     /**
-     * Analyze the rules relevant to the registered field and create
-     * reactive subscriptions to resolve them once their dependencies
-     * update. Returns the Map of the recorded formatted rules.
-     * That Map is later used during the sync validation as the rules source.
+     * Create observables for each reactive rule applicable to the
+     * currently registered field.
+     * @todo Flush obsolete observables to prevent memory leak.
      */
-    const nextApplicableRules = rxUtils.createRulesSubscriptions({
+    rxUtils.createRulesSubscriptions({
       fieldProps,
       fields,
+      rules: this.state.rules,
       form: this,
     })
 
-    this.setState(
-      {
-        fields: nextFields,
-        applicableRules: nextApplicableRules,
-      },
-      () => {
-        const fieldRegisteredEvent = camelize(...fieldPath, 'registered')
-        eventEmitter.emit(fieldRegisteredEvent, fieldProps)
+    this.setState({ fields: nextFields }, () => {
+      const fieldRegisteredEvent = camelize(...fieldPath, 'registered')
+      eventEmitter.emit(fieldRegisteredEvent, fieldProps)
 
-        if (fieldOptions.shouldValidateOnMount) {
-          this.validateField({
-            fieldProps,
-
-            /**
-             * Enforce the validation function to use the "fieldProps"
-             * provided directly. By default, it will try to grab the
-             * field record from the state, which does not exist at
-             * the point of new field mounting.
-             */
-            forceProps: true,
-          })
-        }
-
-        /* Create reactive props subscriptions */
-        rxUtils.createPropsSubscriptions({
+      if (fieldOptions.shouldValidateOnMount) {
+        this.validateField({
           fieldProps,
-          fields: nextFields,
-          form: this,
+
+          /**
+           * Enforce the validation function to use the "fieldProps"
+           * provided directly. By default, it will try to grab the
+           * field record from the state, which does not exist at
+           * the point of new field mounting.
+           */
+          forceProps: true,
         })
-      },
-    )
+      }
+
+      /* Create reactive props subscriptions */
+      rxUtils.createPropsSubscriptions({
+        fieldProps,
+        fields: nextFields,
+        form: this,
+      })
+    })
   }
 
   /**

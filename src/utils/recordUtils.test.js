@@ -4,6 +4,7 @@ import * as recordUtils from './recordUtils'
 const inputField = recordUtils.createField({
   name: 'fieldOne',
   fieldPath: ['fieldOne'],
+  type: 'text',
   value: 'foo',
 })
 

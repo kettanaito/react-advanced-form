@@ -19,11 +19,6 @@ const rules = {
     fieldThree: ({ value }) => {
       return value !== 'foo'
     },
-    birthDate: {
-      year: ({ date }) => date.year.length === 4,
-      month: ({ date }) => date.month >= 1 && date.month <= 12,
-      day: ({ date }) => date.day >= 1 && date.day <= 31,
-    },
   },
 }
 

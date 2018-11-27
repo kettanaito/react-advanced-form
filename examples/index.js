@@ -38,8 +38,10 @@ import FieldPropsAsyncRule from './validation/async/Field.props.asyncRule'
 
 import CombinedValidation from './validation/combined'
 import SetErrors from './validation/messages/SetErrors'
-import ValidationUI from './validation/misc/UI'
-import AjaxPrefilling from './validation/misc/AjaxPrefilling'
+import ValidationUI from './validation/other/UI'
+
+import ConditionalSchema from './validation/other/ConditionalSchema'
+import AjaxPrefilling from './validation/other/AjaxPrefilling'
 
 import ValidationMessages from './validation/messages/ValidationMessages'
 
@@ -102,10 +104,9 @@ storiesOf('Validation|Messages', module)
   .add('Validation messages', addComponent(<ValidationMessages />))
   .add('Set errors', addComponent(<SetErrors />))
 
-storiesOf('Validation|Misc', module).add(
-  'Ajax pre-filling',
-  addComponent(<AjaxPrefilling />),
-)
+storiesOf('Validation|Other', module)
+  .add('Conditional schema', addComponent(<ConditionalSchema />))
+  .add('Ajax pre-filling', addComponent(<AjaxPrefilling />))
 
 /* Advanced */
 storiesOf('Advanced|Custom fields', module).add(
@@ -132,6 +133,6 @@ storiesOf('Other|Third-party fields', module)
   .add('react-datepicker', addComponent(<ReactDatepicker />))
 
 storiesOf('Other|Full examples', module).add(
-  'Registration Form',
+  'Registration form',
   addComponent(<RegistrationForm />),
 )

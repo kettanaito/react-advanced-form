@@ -1,6 +1,21 @@
 import isEmail from 'validator/lib/isEmail'
 
 export default {
+  fieldGroup: {
+    primaryInfo: {
+      type: {
+        email: ({ value }) => {
+          return !value.startsWith('foo')
+        },
+      },
+      name: {
+        userEmail: ({ value }) => {
+          return !value.startsWith('bar')
+        },
+      },
+    },
+  },
+
   type: {
     email: ({ value }) => isEmail(value),
     password: {

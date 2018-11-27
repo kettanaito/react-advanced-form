@@ -12,26 +12,26 @@ describe('Uncontrolled fields', function() {
         inputTwo: 'foo',
         select: 'two',
         radio: 'potato',
-        checkbox1: false,
-        checkbox2: true,
+        checkboxOne: false,
+        checkboxTwo: true,
         textareaTwo: 'something',
       })
     })
   })
 
   it('Updates form state on field change', () => {
-    cy.get('#inputOne').type('first value')
-    cy.get('#inputTwo')
+    cy.getField('inputOne').type('first value')
+    cy.getField('inputTwo')
       .clear()
       .typeIn('second value')
     cy.get('#radio3').markChecked()
-    cy.get('#checkbox1').markChecked()
-    cy.get('#checkbox2').markUnchecked()
-    cy.get('#select').select('three')
-    cy.get('#textareaOne')
+    cy.getField('checkboxOne').markChecked()
+    cy.getField('checkboxTwo').markUnchecked()
+    cy.getField('select').select('three')
+    cy.getField('textareaOne')
       .clear()
       .typeIn('foo')
-    cy.get('#textareaTwo')
+    cy.getField('textareaTwo')
       .clear()
       .typeIn('another')
 
@@ -41,8 +41,8 @@ describe('Uncontrolled fields', function() {
         inputOne: 'first value',
         inputTwo: 'second value',
         radio: 'cucumber',
-        checkbox1: true,
-        checkbox2: false,
+        checkboxOne: true,
+        checkboxTwo: false,
         select: 'three',
         textareaOne: 'foo',
         textareaTwo: 'another',

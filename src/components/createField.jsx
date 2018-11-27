@@ -77,7 +77,6 @@ export default function connectField(options) {
       }
 
       static defaultProps = {
-        type: 'text',
         disabled: false,
         required: false,
       }
@@ -130,8 +129,6 @@ export default function connectField(options) {
           getRef: () => this,
           fieldGroup,
           fieldPath: __fieldPath,
-          // name: prunedProps.name,
-          // type: prunedProps.type,
           valuePropName,
           [valuePropName]: hocOptions.mapValue(registeredValue),
           /**
