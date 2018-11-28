@@ -23,6 +23,7 @@ import UncontrolledFields from './basics/UncontrolledFields'
 import ControlledFields from './basics/ControlledFields'
 import SubmitCallbacks from './basics/SubmitCallbacks'
 import Submit from './basics/Submit'
+import DebouncedChange from './basics/DebouncedChange'
 
 /* Components */
 import CreateField from './components/createField'
@@ -84,6 +85,7 @@ storiesOf('Basics|Interaction', module)
   .add('Controlled fields', addComponent(<ControlledFields />))
   .add('Form submit', addComponent(<Submit />))
   .add('Submit callbacks', addComponent(<SubmitCallbacks />))
+  .add('Debounced change', addComponent(<DebouncedChange />))
 
 /* Validation */
 storiesOf('Validation|Synchronous validation', module)

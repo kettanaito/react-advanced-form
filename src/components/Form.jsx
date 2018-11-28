@@ -90,19 +90,6 @@ export default class Form extends React.Component {
     }
   }
 
-  // static getDerivedStateFromProps(props, state) {
-  //   const { rule: prevRules } = state
-  //   const { rules: nextRules } = props
-
-  //   if (prevRules !== nextRules) {
-  //     return {
-  //       validationSchema: formUtils.mergeRules(nextRules, contextRules),
-  //     }
-  //   }
-
-  //   return null
-  // }
-
   constructor(props, context) {
     super(props, context)
     const { rules: explicitRules, messages: explicitMessages } = props
@@ -345,6 +332,23 @@ export default class Form extends React.Component {
       this.state.fields,
     )
 
+    const prevValue = R.compose(
+      recordUtils.getValue,
+      R.path(fieldProps.fieldPath),
+    )(this.state.fields)
+
+    const nextValue = recordUtils.getValue(fieldProps)
+
+    if (!R.equals(prevValue, nextValue)) {
+      dispatch(fieldProps.onChange, {
+        prevValue,
+        nextValue,
+        fieldProps,
+        fields: nextFields,
+        form: this,
+      })
+    }
+
     return new Promise((resolve, reject) => {
       try {
         this.setState({ fields: nextFields }, resolve.bind(this, nextFields))
@@ -410,16 +414,21 @@ export default class Form extends React.Component {
   handleFieldChange = this.withRegisteredField(async (args) => {
     const { fields, dirty } = this.state
 
-    const changePayload = await handlers.handleFieldChange(args, fields, this, {
-      onUpdateValue: this.updateFieldsWith,
-    })
+    const nextFieldProps = await handlers.handleFieldChange(
+      args,
+      fields,
+      this,
+      {
+        onUpdateValue: this.updateFieldsWith,
+      },
+    )
 
     /**
      * Change handler for controlled fields does not return the next field props
      * record, therefore, need to explicitly ensure the payload was returned.
      */
-    if (changePayload) {
-      await this.updateFieldsWith(changePayload.nextFieldProps)
+    if (nextFieldProps) {
+      await this.updateFieldsWith(nextFieldProps)
     }
 
     /* Mark form as dirty if it's not already */

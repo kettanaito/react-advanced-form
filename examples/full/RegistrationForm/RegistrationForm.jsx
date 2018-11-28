@@ -40,7 +40,7 @@ export default class RegistrationForm extends React.Component {
           <BirthDate
             name="birthDate"
             label="Birth date"
-            date="1980-12-10"
+            // date="1980-12-10"
             required
           />
 
@@ -55,6 +55,7 @@ export default class RegistrationForm extends React.Component {
             type="password"
             label="Confirm password"
             required
+            skip
           />
 
           <Field.Group name="primaryInfo">
