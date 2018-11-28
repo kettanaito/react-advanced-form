@@ -117,22 +117,6 @@ export default async function handleFieldChange(
    * "onChange" handler at the beginning of this method. There is no need to
    * dispatch the handler method once more.
    */
-  if (!isControlled) {
-    dispatch(
-      onChange,
-      {
-        event,
-        nextValue,
-        prevValue,
-        fieldProps: validatedFieldProps,
-        fields: form.state.fields,
-        form,
-      },
-      form.context,
-    )
-  }
 
-  return {
-    nextFieldProps: validatedFieldProps,
-  }
+  return validatedFieldProps
 }
