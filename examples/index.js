@@ -18,6 +18,7 @@ import FieldUnmounting from './basics/FieldUnmounting'
 import InitialValues from './basics/InitialValues'
 import SetValues from './basics/SetValues'
 import Reset from './basics/Reset'
+import Clear from './basics/Clear'
 import Serialize from './basics/Serialize'
 import UncontrolledFields from './basics/UncontrolledFields'
 import ControlledFields from './basics/ControlledFields'
@@ -80,6 +81,7 @@ storiesOf('Basics|Interaction', module)
   .add('Initial values', addComponent(<InitialValues />))
   .add('Set values', addComponent(<SetValues />))
   .add('Reset', addComponent(<Reset />))
+  .add('Clear', addComponent(<Clear />))
   .add('Serialize', addComponent(<Serialize />))
   .add('Uncontrolled fields', addComponent(<UncontrolledFields />))
   .add('Controlled fields', addComponent(<ControlledFields />))
