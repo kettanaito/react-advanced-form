@@ -321,37 +321,36 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Updates the fields with the given field record and returns
-   * the updated fields.
-   * @param {Object} fieldProps
-   * @returns {Promise}
+   * Updates the fields with the given next state of a field.
+   * @param {Object} nextFieldState
+   * @returns {Promise<Fields>} Updated fields
    */
-  updateFieldsWith = (fieldProps) => {
+  updateFieldsWith = (nextFieldState) => {
+    const prevFieldState = R.path(nextFieldState.fieldPath, this.state.fields)
     const nextFields = recordUtils.updateCollectionWith(
-      fieldProps,
+      nextFieldState,
       this.state.fields,
     )
 
-    const prevValue = R.compose(
-      recordUtils.getValue,
-      R.path(fieldProps.fieldPath),
-    )(this.state.fields)
-
-    const nextValue = recordUtils.getValue(fieldProps)
-
-    if (!R.equals(prevValue, nextValue)) {
-      dispatch(fieldProps.onChange, {
-        prevValue,
-        nextValue,
-        fieldProps,
-        fields: nextFields,
-        form: this,
-      })
-    }
-
     return new Promise((resolve, reject) => {
       try {
-        this.setState({ fields: nextFields }, resolve.bind(this, nextFields))
+        this.setState({ fields: nextFields }, () => {
+          const { fields: updatedFields } = this.state
+          const prevValue = recordUtils.getValue(prevFieldState)
+          const nextValue = recordUtils.getValue(nextFieldState)
+
+          if (!R.equals(prevValue, nextValue)) {
+            dispatch(nextFieldState.onChange, {
+              prevValue,
+              nextValue,
+              fieldProps: R.path(nextFieldState.fieldPath, updatedFields),
+              fields: updatedFields,
+              form: this,
+            })
+          }
+
+          resolve(updatedFields)
+        })
       } catch (error) {
         reject(error)
       }
