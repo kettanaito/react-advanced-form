@@ -76,7 +76,7 @@ describe('Submit', () => {
     it('Calls "onSubmitFailed" when "action" Promise rejects', () => {
       cy.getField('email')
         .clear()
-        .typeIn('inexpected@email.example')
+        .typeIn('unexpected@email.example')
         .blur()
         .valid(true)
 

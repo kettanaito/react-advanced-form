@@ -129,6 +129,7 @@ export default class Form extends React.Component {
     fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
     fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
     fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
+    fromEvent(eventEmitter, 'fieldsUpdate').subscribe(this.afterFieldsUpdate)
 
     this.state = {
       dirty: false,
@@ -326,28 +327,24 @@ export default class Form extends React.Component {
    * @returns {Promise<Fields>} Updated fields
    */
   updateFieldsWith = (nextFieldState) => {
-    const prevFieldState = R.path(nextFieldState.fieldPath, this.state.fields)
+    const { fields: prevFields } = this.state
+    const prevFieldState = R.path(nextFieldState.fieldPath, prevFields)
     const nextFields = recordUtils.updateCollectionWith(
       nextFieldState,
-      this.state.fields,
+      prevFields,
     )
 
     return new Promise((resolve, reject) => {
       try {
         this.setState({ fields: nextFields }, () => {
           const { fields: updatedFields } = this.state
-          const prevValue = recordUtils.getValue(prevFieldState)
-          const nextValue = recordUtils.getValue(nextFieldState)
 
-          if (!R.equals(prevValue, nextValue)) {
-            dispatch(nextFieldState.onChange, {
-              prevValue,
-              nextValue,
-              fieldProps: R.path(nextFieldState.fieldPath, updatedFields),
-              fields: updatedFields,
-              form: this,
-            })
-          }
+          this.eventEmitter.emit('fieldsUpdate', {
+            prevFieldState,
+            nextFieldState,
+            prevFields,
+            nextFields: updatedFields,
+          })
 
           resolve(updatedFields)
         })
@@ -355,6 +352,21 @@ export default class Form extends React.Component {
         reject(error)
       }
     })
+  }
+
+  afterFieldsUpdate = ({ prevFieldState, nextFieldState, nextFields }) => {
+    const prevValue = recordUtils.getValue(prevFieldState)
+    const nextValue = recordUtils.getValue(nextFieldState)
+
+    if (!R.equals(prevValue, nextValue)) {
+      dispatch(nextFieldState.onChange, {
+        prevValue,
+        nextValue,
+        fieldProps: R.path(nextFieldState.fieldPath, nextFields),
+        fields: nextFields,
+        form: this,
+      })
+    }
   }
 
   /**
