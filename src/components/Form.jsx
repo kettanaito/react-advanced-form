@@ -115,9 +115,15 @@ export default class Form extends React.Component {
     this.eventEmitter = eventEmitter
 
     /* Field events observerables */
+    fromEvent(eventEmitter, 'fieldsDidUpdate').subscribe(this.fieldsDidUpdate)
     fromEvent(eventEmitter, 'fieldRegister')
       .pipe(bufferTime(50))
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
+
+    fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
+    fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
+    fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
+    fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
     fromEvent(eventEmitter, 'fieldUnregister')
       .pipe(
         bufferTime(50),
@@ -125,16 +131,9 @@ export default class Form extends React.Component {
       )
       .subscribe(this.unregisterFields)
 
-    fromEvent(eventEmitter, 'fieldFocus').subscribe(this.handleFieldFocus)
-    fromEvent(eventEmitter, 'fieldChange').subscribe(this.handleFieldChange)
-    fromEvent(eventEmitter, 'fieldBlur').subscribe(this.handleFieldBlur)
-    fromEvent(eventEmitter, 'validateField').subscribe(this.validateField)
-    fromEvent(eventEmitter, 'fieldsUpdate').subscribe(this.afterFieldsUpdate)
-
     this.state = {
       dirty: false,
       fields: {},
-      // replacement for "this.validationSchema"
       rules: formUtils.mergeRules(explicitRules, contextRules),
     }
   }
@@ -147,9 +146,9 @@ export default class Form extends React.Component {
       const updatedRules = formUtils.mergeRules(nextRules, this.context.rules)
 
       /**
-       * Reset the validity and validation status of all fields
-       * to null those which rules are no longer present in the
-       * schema received in the nextProps.
+       * Reset the validity and validation state of all fields
+       * to reset those which rules are no longer present in the
+       * schema from the next props.
        * @todo A good optimization place. May be refined.
        */
       const resetFields = R.compose(
@@ -339,7 +338,12 @@ export default class Form extends React.Component {
         this.setState({ fields: nextFields }, () => {
           const { fields: updatedFields } = this.state
 
-          this.eventEmitter.emit('fieldsUpdate', {
+          /**
+           * Emit fields update event to notify the dedicated handler
+           * that introduces possible side-effects based on fields update.
+           * For example, a field's "onChange" callback.
+           */
+          this.eventEmitter.emit('fieldsDidUpdate', {
             prevFieldState,
             nextFieldState,
             prevFields,
@@ -354,15 +358,22 @@ export default class Form extends React.Component {
     })
   }
 
-  afterFieldsUpdate = ({ prevFieldState, nextFieldState, nextFields }) => {
+  /**
+   * A subscription handler method that is invoked whenever fields have updated.
+   * Designed to introduce any side-effects based on fields update (i.e. onChange).
+   * Note that each fields update has a reason (fieldState), therefore it's
+   * possible to diff required props and dispatch respective side-effects.
+   */
+  fieldsDidUpdate = ({ prevFieldState, nextFieldState, nextFields }) => {
     const prevValue = recordUtils.getValue(prevFieldState)
     const nextValue = recordUtils.getValue(nextFieldState)
 
     if (!R.equals(prevValue, nextValue)) {
-      dispatch(nextFieldState.onChange, {
+      const { fieldPath, onChange } = nextFieldState
+      dispatch(onChange, {
         prevValue,
         nextValue,
-        fieldProps: R.path(nextFieldState.fieldPath, nextFields),
+        fieldProps: R.path(fieldPath, nextFields),
         fields: nextFields,
         form: this,
       })
