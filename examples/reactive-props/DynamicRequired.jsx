@@ -3,13 +3,19 @@ import { Form } from 'react-advanced-form'
 import { Input } from '@examples/fields'
 import Button from '@examples/shared/Button'
 
+const rules = {
+  name: {
+    lastName: ({ value }) => value.startsWith('mr'),
+  },
+}
+
 export default class RxPropsDynamicRequired extends React.Component {
   render() {
     return (
       <React.Fragment>
         <h1>Dynamic required</h1>
 
-        <Form onSubmitStart={this.props.onSubmitStart}>
+        <Form rules={rules} onSubmitStart={this.props.onSubmitStart}>
           <Input name="firstName" label="First name" initialValue="John" />
           <Input
             name="lastName"
