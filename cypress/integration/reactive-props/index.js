@@ -12,6 +12,15 @@ describe('Reactive props', function() {
     cy.getField('lastName')
       .should('not.have.attr', 'required')
       .should('not.have.class', 'is-invalid')
+
+    cy.getField('firstName')
+      .clear()
+      .typeIn('foo')
+    cy.getField('lastName').expected(false)
+    cy.getField('firstName').clear()
+    cy.getField('lastName')
+      .valid(false)
+      .invalid(false)
   })
 
   it('Supports delegated field subscription', () => {

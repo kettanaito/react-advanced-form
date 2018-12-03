@@ -51,6 +51,7 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         /* Set the next value of reactive prop on the respective field record */
         const nextSubscriberState = R.compose(
           recordUtils.resetValidityState,
+          recordUtils.resetValidationState,
           R.assoc(propName, nextPropValue),
         )(prevSubscriberState)
 
@@ -62,7 +63,13 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
 
         if (shouldValidate) {
           return form.validateField({
-            force: true,
+            /**
+             * Forcing validation that originates from reactive subscription
+             * shouldn't be force if a field's validity and validation state are reset,
+             * and the reset field state is being validated.
+             * @see https://github.com/kettanaito/react-advanced-form/issues/344
+             */
+            // force: true,
             forceProps: true,
             fieldProps: nextSubscriberState,
             fields: fieldsWithSubscriber,
