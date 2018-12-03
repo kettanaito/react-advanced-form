@@ -1,7 +1,7 @@
 [![Package version](https://img.shields.io/npm/v/react-advanced-form.svg)](https://www.npmjs.com/package/react-advanced-form) [![Build status](https://img.shields.io/circleci/project/github/kettanaito/react-advanced-form/master.svg)](https://circleci.com/gh/kettanaito/react-advanced-form) [![Vulnerabilities](https://snyk.io/test/github/kettanaito/react-advanced-form/badge.svg)](https://snyk.io/test/github/kettanaito/react-advanced-form) [![Dependencies status](https://img.shields.io/david/kettanaito/react-advanced-form.svg)](https://david-dm.org/kettanaito/react-advanced-form) [![DevDepenencies status](https://img.shields.io/david/dev/kettanaito/react-advanced-form.svg)](https://david-dm.org/kettanaito/react-advanced-form?type=dev)
 
 <p align="center">
-   <img src="./logo.png" alt="React Advanced Form" />
+  <img src="./logo.png" alt="React Advanced Form" />
 </p>
 
 <h1 align="center">React Advanced Form</h1>
@@ -12,10 +12,38 @@
 
 # Features
 
-- **Expectations shift**. Trust and expect a form to do more than just rendering the fields. Our features are designed to handle cumbersome use cases with clean and performant code.
-- **Immutable**. Each interaction or update is a pure function that produces the next state of a field. Immutability is a must in any decent implementation.
-- [**Composite fields**](https://redd.gitbook.io/react-advanced-form/getting-started/creating-fields). React Advanced Form is _field-centric_. That means you define flexible fields composites and reuse them throughout the application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
-- [**Clean and fast**](https://redd.gitbook.io/react-advanced-form/getting-started/creating-form). Develop production-ready forms in a speed of a prototype.
+## Expectations shift
+
+Trust and expect a form to do more than just rendering the fields. Our features are designed to handle cumbersome use cases with clean and performant code
+
+## Immutable
+
+Each field interaction or update is a pure function that produces the next state of a field.
+
+## [Composite fields](https://redd.gitbook.io/react-advanced-form/getting-started/creating-fields)
+
+React Advanced Form is _field-centric_. That means you define flexible fields composites and reuse them throughout the application. Reflect even the most granular field state changes in the UI to achieve the outmost user experience.
+
+```jsx
+import React from 'react'
+import { createField, fieldPresets } from 'react-advanced-form'
+
+const Input = ({ fieldState, fieldProps }) => {
+  const { valid, invalid } = fieldState
+
+  const classNames = [valid && 'has-success', invalid && 'has-error'].filter(
+    Boolean,
+  )
+
+  return <input {...fieldProps} className={classNames.join(' ')} />
+}
+
+export default createField(fieldPresets.input)(Input)
+```
+
+## Clean and fast
+
+Develop production-ready forms in a speed of a prototype.
 
 ```jsx
 // This is not a diminished example, this is a finite form
@@ -25,9 +53,11 @@
 </Form>
 ```
 
-- [**Layered validation schema**](https://redd.gitbook.io/react-advanced-form/validation/getting-started). Declare validation rules of any complexity using pure single-line resolvers.
+## [Layered validation schema](https://redd.gitbook.io/react-advanced-form/validation/getting-started)
 
-```javascript
+Select fields and declare validation rules using resolver functions. Utilize the order and priority of their execution to craft validation logic of any complexity.
+
+```js
 export default {
   type: {
     password: {
@@ -47,9 +77,13 @@ export default {
 }
 ```
 
-Access the field's `value`, `fieldProps`, and the `form` as the parameters of each resolver function. Apply the rules application-wide via [`FormProvider`](https://redd.gitbook.io/react-advanced-form/components/form-provider), or extend/override them for a specific form. **Say goodbye to crowded** `validate` **functions, welcome clean validation schemas**!
+Each validation resolver can access respective field's `value`, `fieldProps`, and the `form` as the parameters. It can also reference other field's state via the `get` function, which creates a props subscription to re-evaluate the respective validation rule in real time.
 
-- [**Reactive props**](https://redd.gitbook.io/react-advanced-form/architecture/reactive-props). How much effort would it take you to make one field required based on another field\(s\)? Yes, the correct answer is—_one line of code_:
+**Say goodbye to crowded** `validate` **functions, welcome clean validation schema**!
+
+## [**Reactive props**](https://redd.gitbook.io/react-advanced-form/architecture/reactive-props)
+
+How much effort would it take you to make one field required based on another field\(s\)? Yes, the correct answer is—_one line of code_:
 
 ```jsx
 <Input
@@ -62,7 +96,9 @@ Access the field's `value`, `fieldProps`, and the `form` as the parameters of ea
 
 Get as many data from the sibling fields as needed, and build your logic around that. Rely on reactive programming that will re-evaluate a resolver function whenever the referenced field props update.
 
-- [**Field grouping**](https://redd.gitbook.io/react-advanced-form/components/field-group). Control the serialized data structure on the layout level by grouping the fields. Take advantage of nested and split groups.
+## [Field grouping](https://redd.gitbook.io/react-advanced-form/components/field-group)
+
+Control the serialized data structure on the layout level by grouping the fields. Take advantage of nested and split groups.
 
 ```jsx
 <Input name="companyName" value="Google" />
@@ -80,9 +116,9 @@ Get as many data from the sibling fields as needed, and build your logic around 
 </Field.Group>
 ```
 
-The layout above serializes into the following JSON:
+The form above serializes into the following JSON:
 
-```javascript
+```json
 {
   "companyName": "Google",
   "billingAddress": {
@@ -97,7 +133,9 @@ The layout above serializes into the following JSON:
 }
 ```
 
-- **Third-party fields support**. React Advanced Form can be used with **any** third-party fields library by using powerful [`createField`](https://redd.gitbook.io/react-advanced-form/hoc/create-field) API.
+## Third-party integration
+
+React Advanced Form can be used with **any** third-party fields library by using powerful [`createField`](https://redd.gitbook.io/react-advanced-form/hoc/create-field) API. It also allows to create custom fields from literally any component.
 
 ---
 
@@ -119,8 +157,8 @@ Starting with something new may appear challenging. We have prepared step-by-ste
 
 # Materials
 
-- [Documentation](https://redd.gitbook.io/react-advanced-form)
-- [Advanced forms in React made easy](https://medium.com/@kettanaito/advanced-forms-in-react-made-easy-92a6e208f017) \(Medium\)
+- [**Documentation**](https://redd.gitbook.io/react-advanced-form)
+- ["Advanced forms in React made easy"](https://medium.com/@kettanaito/advanced-forms-in-react-made-easy-92a6e208f017) — Artem Zakharchenko \(Medium\)
 
 ---
 

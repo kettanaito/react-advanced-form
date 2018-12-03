@@ -1,7 +1,7 @@
 {
   "name": "react-advanced-form",
   "version": "1.6.1",
-  "description": "Tailor advanced real-world forms in a matter of minutes. Multi-layer validation, field grouping, reactive props, and much more.",
+  "description": "Functional reactive forms in React. Multi-layer validation, field grouping, reactive props, and much more.",
   "main": "lib/index.js",
   "license": "MIT",
   "engines": {
