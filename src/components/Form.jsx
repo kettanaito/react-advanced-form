@@ -586,8 +586,7 @@ export default class Form extends React.Component {
   reset = (predicate = Boolean) => {
     const nextFields = R.compose(
       fieldUtils.stitchFields,
-      R.map(recordUtils.reset(R.prop('initialValue'))),
-      R.filter(predicate),
+      R.map(R.when(predicate, recordUtils.reset(R.prop('initialValue')))),
       fieldUtils.flattenFields,
     )(this.state.fields)
 

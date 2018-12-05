@@ -5,7 +5,13 @@ import Button from '@examples/shared/Button'
 
 export default class Reset extends React.Component {
   resetForm = () => {
-    this.form.reset()
+    window.form.reset()
+  }
+
+  resetWithPredicate = () => {
+    window.form.reset((fieldProps) =>
+      fieldProps.fieldPath.includes('billingAddress'),
+    )
   }
 
   render() {
@@ -16,7 +22,7 @@ export default class Reset extends React.Component {
         <h1>Reset</h1>
         <Form
           ref={(form) => {
-            this.form = form
+            window.form = form
             getRef && getRef(form)
           }}
         >
@@ -37,8 +43,15 @@ export default class Reset extends React.Component {
             required
           />
 
-          <Button type="reset" onClick={this.resetForm}>
-            Reset fields
+          <Button id="default-reset" type="reset" onClick={this.resetForm}>
+            Reset
+          </Button>
+          <Button
+            id="with-predicate"
+            type="reset"
+            onClick={this.resetWithPredicate}
+          >
+            Reset with predicate
           </Button>
         </Form>
       </React.Fragment>
