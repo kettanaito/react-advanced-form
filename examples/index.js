@@ -68,6 +68,7 @@ import BirthDateExample from './custom-fields/BirthDate'
 
 /* Full examples */
 import RegistrationForm from './full/RegistrationForm'
+import ReactiveFields from './full/ReactiveFields'
 
 /* Third-party fields integration */
 import ReactSelect from './third-party/react-select'
@@ -146,7 +147,6 @@ storiesOf('Other|Third-party fields', module)
   .add('react-rangeslider', addComponent(<ReactSlider />))
   .add('react-datepicker', addComponent(<ReactDatepicker />))
 
-storiesOf('Other|Full examples', module).add(
-  'Registration form',
-  addComponent(<RegistrationForm />),
-)
+storiesOf('Other|Full examples', module)
+  .add('Registration form', addComponent(<RegistrationForm />))
+  .add('Reactive fields', addComponent(<ReactiveFields />))
