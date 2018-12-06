@@ -1,5 +1,5 @@
 import invariant from 'invariant'
-import compose from 'ramda/src/compose'
+import * as R from 'ramda'
 import dispatch from '../dispatch'
 import * as recordUtils from '../recordUtils'
 import validateSync from '../validation/validateSync'
@@ -47,7 +47,8 @@ export default async function handleFieldChange(
   }
 
   /* Update field's value */
-  const updatedFieldProps = compose(
+  const updatedFieldProps = R.compose(
+    recordUtils.setPristine(false),
     recordUtils.setValue(nextValue),
     recordUtils.resetValidityState,
     recordUtils.resetValidationState,

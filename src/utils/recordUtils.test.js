@@ -19,17 +19,21 @@ const checkboxField = recordUtils.createField({
 describe('recordUtils', () => {
   it('createField', () => {
     expect(inputField).toBeInstanceOf(Object)
-    expect(inputField.name).toEqual('fieldOne')
-    expect(inputField.type).toEqual('text')
-    expect(inputField.value).toEqual('foo')
-    expect(inputField.valuePropName).toEqual('value')
-    expect(inputField.initialValue).toEqual('foo')
+    expect(inputField).toHaveProperty('name', 'fieldOne')
+    expect(inputField).toHaveProperty('type', 'text')
+    expect(inputField).toHaveProperty('value', 'foo')
+    expect(inputField).toHaveProperty('valuePropName', 'value')
+    expect(inputField).toHaveProperty('initialValue', 'foo')
+    expect(inputField).toHaveProperty('touched', false)
+    expect(inputField).toHaveProperty('pristine', true)
 
     expect(checkboxField).toBeInstanceOf(Object)
-    expect(checkboxField.name).toEqual('checkboxOne')
-    expect(checkboxField.type).toEqual('checkbox')
-    expect(checkboxField.checked).toEqual(true)
-    expect(checkboxField.initialValue).toEqual(true)
+    expect(checkboxField).toHaveProperty('name', 'checkboxOne')
+    expect(checkboxField).toHaveProperty('type', 'checkbox')
+    expect(checkboxField).toHaveProperty('checked', true)
+    expect(checkboxField).toHaveProperty('initialValue', true)
+    expect(checkboxField).toHaveProperty('touched', false)
+    expect(checkboxField).toHaveProperty('pristine', true)
   })
 
   it('New fields are not touched by default', () => {
@@ -45,21 +49,21 @@ describe('recordUtils', () => {
   it('getValue', () => {
     const value = recordUtils.getValue(inputField)
     expect(value).toEqual('foo')
-    expect(inputField.value).toEqual('foo')
+    expect(inputField).toHaveProperty('value', 'foo')
   })
 
   it('setValue', () => {
     const nextValue = 'bar'
     const nextRecord = recordUtils.setValue(nextValue, inputField)
-    expect(nextRecord.value).toEqual(nextValue)
+    expect(nextRecord).toHaveProperty('value', nextValue)
   })
 
   it('setFocus', () => {
     const focusedRecord = recordUtils.setFocused(true, inputField)
-    expect(focusedRecord.focused).toEqual(true)
+    expect(focusedRecord).toHaveProperty('focused', true)
 
     const unfocusedRecord = recordUtils.setFocused(false, focusedRecord)
-    expect(unfocusedRecord.focused).toEqual(false)
+    expect(unfocusedRecord).toHaveProperty('focused', false)
   })
 
   it('setErrors', () => {
@@ -74,10 +78,10 @@ describe('recordUtils', () => {
 
   it('reset', () => {
     const nextInput = recordUtils.setValue('bar', inputField)
-    expect(nextInput.value).toEqual('bar')
+    expect(nextInput).toHaveProperty('value', 'bar')
 
     const resetInput = recordUtils.reset(R.prop('initialValue'), nextInput)
-    expect(resetInput.value).toEqual(resetInput.initialValue)
+    expect(resetInput).toHaveProperty('value', resetInput.initialValue)
   })
 
   it('resetValidityState', () => {
@@ -88,8 +92,8 @@ describe('recordUtils', () => {
       )(inputField),
     )
 
-    expect(nextRecord.valid).toEqual(false)
-    expect(nextRecord.invalid).toEqual(false)
+    expect(nextRecord).toHaveProperty('valid', false)
+    expect(nextRecord).toHaveProperty('invalid', false)
   })
 
   it('resetValidationState', () => {
@@ -104,11 +108,21 @@ describe('recordUtils', () => {
       )(inputField),
     )
 
-    expect(nextRecord.validating).toEqual(false)
-    expect(nextRecord.validated).toEqual(false)
-    expect(nextRecord.validatedSync).toEqual(false)
-    expect(nextRecord.validatedAsync).toEqual(false)
-    expect(nextRecord.validSync).toEqual(false)
-    expect(nextRecord.validAsync).toEqual(false)
+    expect(nextRecord).toHaveProperty('validating', false)
+    expect(nextRecord).toHaveProperty('validated', false)
+    expect(nextRecord).toHaveProperty('validatedSync', false)
+    expect(nextRecord).toHaveProperty('validatedAsync', false)
+    expect(nextRecord).toHaveProperty('validSync', false)
+    expect(nextRecord).toHaveProperty('validAsync', false)
+  })
+
+  it('setTouched', () => {
+    const nextFieldState = recordUtils.setTouched(true, inputField)
+    expect(nextFieldState).toHaveProperty('touched', true)
+  })
+
+  it('setPristine', () => {
+    const nextFieldState = recordUtils.setPristine(false, inputField)
+    expect(nextFieldState).toHaveProperty('pristine', false)
   })
 })
