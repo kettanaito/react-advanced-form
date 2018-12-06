@@ -542,7 +542,10 @@ export default class Form extends React.Component {
       const { fields: nextFields } = this.state
 
       /* Get a map of invalid fields */
-      const invalidFields = R.reject(R.propEq('expected'), validatedFields)
+      const invalidFields = R.filter(
+        R.propEq('expected', false),
+        validatedFields,
+      )
 
       /* Call custom callback */
       dispatch(onInvalid, {
