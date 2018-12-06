@@ -19,6 +19,7 @@ class Input extends React.Component {
     const { fieldProps, fieldState, id, name, label, hint } = this.props
     const {
       touched,
+      pristine,
       required,
       validating,
       validatedSync,
@@ -33,6 +34,7 @@ class Input extends React.Component {
     const inputClassNames = [
       'form-control',
       touched && 'is-touched',
+      pristine && 'is-pristine',
       validating && 'is-validating',
       validatedSync && 'validated-sync',
       validatedAsync && 'validated-async',

@@ -17,6 +17,7 @@ function addComponent(Component) {
 import FieldUnmounting from './basics/FieldUnmounting'
 import InitialValues from './basics/InitialValues'
 import SetValues from './basics/SetValues'
+import Pristine from './basics/Pristine'
 import Reset from './basics/Reset'
 import Clear from './basics/Clear'
 import Serialize from './basics/Serialize'
@@ -80,6 +81,7 @@ storiesOf('Basics|Interaction', module)
   .add('Field unmounting', addComponent(<FieldUnmounting />))
   .add('Initial values', addComponent(<InitialValues />))
   .add('Set values', addComponent(<SetValues />))
+  .add('Pristine', addComponent(<Pristine />))
   .add('Reset', addComponent(<Reset />))
   .add('Clear', addComponent(<Clear />))
   .add('Serialize', addComponent(<Serialize />))

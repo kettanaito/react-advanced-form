@@ -16,10 +16,12 @@ class Textarea extends React.Component {
 
   render() {
     const { fieldProps, fieldState, id, name, className, label } = this.props
-    const { valid, invalid, errors } = fieldState
+    const { touched, pristine, valid, invalid, errors } = fieldState
 
     const textareaClassNames = [
       'form-control',
+      touched && 'is-touched',
+      pristine && 'is-pristine',
       valid && 'is-valid',
       invalid && 'is-invalid',
       className,

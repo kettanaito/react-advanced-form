@@ -24,11 +24,12 @@ class Checkbox extends React.Component {
       label,
       hint,
     } = this.props
-    const { touched, valid, invalid, errors } = fieldState
+    const { touched, pristine, valid, invalid, errors } = fieldState
 
     const inputClassNames = [
       'custom-control-input',
       touched && 'is-touched',
+      pristine && 'is-pristine',
       valid && 'is-valid',
       invalid && 'is-invalid',
       className,
