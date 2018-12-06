@@ -27,6 +27,7 @@ export const createField = (initialState) => {
     [valuePropName]: value,
     valuePropName,
     focused: false,
+    pristine: true,
     touched: false,
     skip: false,
 
@@ -202,6 +203,7 @@ export const reset = R.curry((nextValueGetter, fieldProps) => {
     // Beware that this will set value to "undefined" when no "initialValue" is found
     setValue(fieldProps.mapValue(nextValueGetter(fieldProps))),
     setErrors(null),
+    setPristine(true),
     setTouched(false),
     resetValidationState,
     resetValidityState,
@@ -223,3 +225,11 @@ export const setFocused = R.assoc('focused')
  * @returns {Object}
  */
 export const setTouched = R.assoc('touched')
+
+/**
+ * Sets the next value of a field's "pristine" property.
+ * @param {boolean} pristine
+ * @param {Object} fieldState
+ * @returns {Object}
+ */
+export const setPristine = R.assoc('pristine')
