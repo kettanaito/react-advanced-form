@@ -83,6 +83,19 @@ Cypress.Commands.add(
   },
 )
 
+Cypress.Commands.add(
+  'pristine',
+  { prevSubject: true },
+  (subject, expected = true) => {
+    cy.log('Assert pristine')
+      .wrap(subject)
+      .should(
+        [!expected && 'not', 'have', 'class'].filter(Boolean).join('.'),
+        'is-pristine',
+      )
+  },
+)
+
 /**
  * Asserts the given subject as expected field.
  * Expected implies mutually excluding behavior of validity props.

@@ -21,17 +21,23 @@ export const createField = (initialState) => {
     /* Internal */
     fieldGroup: null,
     fieldPath: null,
+    mapValue: R.always,
+    assertValue: R.complement(R.isNil),
+    serialize: R.always,
 
     /* Basic */
     initialValue: value,
     [valuePropName]: value,
     valuePropName,
+
+    /* Interaction state */
     focused: false,
     pristine: true,
     touched: false,
-    skip: false,
 
     /* Validation */
+    required: false,
+    skip: false,
     rule: null,
     asyncRule: null,
     pendingAsyncValidation: null,
@@ -46,7 +52,6 @@ export const createField = (initialState) => {
     validSync: false,
     validatedAsync: false,
     validAsync: false,
-    required: false,
 
     reactiveProps: null,
 
@@ -54,9 +59,6 @@ export const createField = (initialState) => {
     onFocus: null,
     onChange: null,
     onBlur: null,
-    mapValue: R.always,
-    assertValue: R.complement(R.isNil),
-    serialize: R.always,
 
     ...initialState,
   }
