@@ -24,7 +24,7 @@ class Checkbox extends React.Component {
       label,
       hint,
     } = this.props
-    const { touched, pristine, valid, invalid, errors } = fieldState
+    const { touched, pristine, required, valid, invalid, errors } = fieldState
 
     const inputClassNames = [
       'custom-control-input',
@@ -43,6 +43,7 @@ class Checkbox extends React.Component {
           <input {...fieldProps} id={id || name} className={inputClassNames} />
           <label className="custom-control-label" htmlFor={id || name}>
             {label}
+            {required && ' *'}
           </label>
 
           {hint && <small className="form-text text-muted">{hint}</small>}
