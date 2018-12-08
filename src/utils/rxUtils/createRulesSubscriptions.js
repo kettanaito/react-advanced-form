@@ -84,8 +84,8 @@ export default function createRulesSubscriptions({
 
   /* Stitch the list of field-related rules into an object */
   const stitchedRules = stitchWith(
+    R.prop('keyPath'),
     (entry, keyPath, acc) => R.append(entry, R.pathOr([], keyPath, acc)),
-    ['keyPath'],
     fieldRules,
   )
 }

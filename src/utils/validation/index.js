@@ -30,11 +30,11 @@ export default async function validate(args) {
    * where each "keyPath" of the rule is associated with the rule.
    * @example
    * [{ keyPath: ['type', 'email'], resolver: f() }]
-   * -> { type: { email: [{ keyPath: ['type', 'email'], resolver: f() }] }}
+   * // { type: { email: [{ keyPath: ['type', 'email'], resolver: f() }] }}
    */
   const stitchedRules = stitchWith(
+    R.prop('keyPath'),
     (entry, keyPath, acc) => R.append(entry, R.pathOr([], keyPath, acc)),
-    ['keyPath'],
     relevantRules,
   )
 

@@ -1,5 +1,6 @@
+import * as R from 'ramda'
 import stitchWith from '../stitchWith'
 
-const stitchFields = stitchWith((fieldProps) => fieldProps, ['fieldPath'])
+const stitchFields = stitchWith(R.prop('fieldPath'), R.identity)
 
 export default stitchFields

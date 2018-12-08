@@ -20,11 +20,11 @@ test('Stitches the given list into an object', () => {
     value: 2,
   }
 
-  const res = stitchWith(
-    (a) => a,
-    ['fieldPath'],
-    [fieldOne, fieldTwo, fieldThree],
-  )
+  const res = stitchWith(R.prop('fieldPath'), R.identity, [
+    fieldOne,
+    fieldTwo,
+    fieldThree,
+  ])
 
   expect(res).toEqual({
     fieldOne,
@@ -37,8 +37,8 @@ test('Stitches the given list into an object', () => {
 
 test('Stitches the given list using custom needle function', () => {
   const res = stitchWith(
+    R.prop('k'),
     (entry, keyPath, acc) => R.append(entry, R.pathOr([], keyPath, acc)),
-    ['k'],
     [
       {
         k: 'a',

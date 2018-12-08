@@ -1,28 +1,23 @@
 // @flow
 import * as R from 'ramda'
 
-type Needle = (entry: any, keyPath: string[], acc: Object) => mixed
+type Needle = (entry: mixed, keyPath: string[], acc: Object) => mixed
+type ThreadPath = (entry: mixed, acc: Object) => string[]
 
 /**
- * Accepts a needle, its thread path, and a list of objects.
- * Returns a stitched object, where each entry is added by
- * the thread path using the needle function.
- * @param {Function} needle
- * @param {string[]} threadPath
- * @param {Object[]} list
- * @returns {Object}
+ * Takes a list and produces an Object, where each needle (entry)
+ * is deeply merged using the thread path as the key path.
  */
-const stitchWith = R.curry(
-  (needle: Needle, threadPath: string[], list: any[]) => {
-    return R.reduce(
+const stitchWith = R.curry<ThreadPath, Needle, mixed[]>(
+  (threadPath, needle, list) =>
+    R.reduce(
       (acc, entry) => {
-        const keyPath = R.path(threadPath, entry)
+        const keyPath = threadPath(entry, acc)
         return R.assocPath(keyPath, needle(entry, keyPath, acc), acc)
       },
       {},
       list,
-    )
-  },
+    ),
 )
 
 export default stitchWith
