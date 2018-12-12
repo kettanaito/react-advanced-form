@@ -15,6 +15,6 @@ export default function mergeRules(formRules, contextRules = {}) {
   const closestRules = formRules || contextRules
 
   return closestRules.extend && contextRules
-    ? R.mergeDeepRight(closestRules, contextRules)
+    ? R.mergeDeepRight(contextRules, closestRules)
     : closestRules
 }

@@ -19,6 +19,9 @@ export default class ReactiveFields extends React.Component {
               Required when <code>checkboxOne</code> is checked
             </span>
           }
+          onChange={(args) => console.log('! Change', args)}
+          onFocus={(args) => console.log('! Focus', args)}
+          onBlur={(args) => console.log('! Blur', args)}
           required={({ get }) => get(['checkboxOne', 'checked'])}
         />
         <Input

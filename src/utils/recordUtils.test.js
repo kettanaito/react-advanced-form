@@ -54,7 +54,7 @@ describe('recordUtils', () => {
 
   it('setValue', () => {
     const nextValue = 'bar'
-    const nextRecord = recordUtils.setValue(nextValue, inputField)
+    const nextRecord = recordUtils.setValue(nextValue, inputField, {})
     expect(nextRecord).toHaveProperty('value', nextValue)
   })
 
@@ -68,19 +68,25 @@ describe('recordUtils', () => {
 
   it('setErrors', () => {
     const errors = ['foo', 'bar']
-    const nextRecord = recordUtils.setErrors(errors, inputField)
+    const nextRecord = recordUtils.setErrors(errors, inputField, {})
 
     expect(nextRecord.errors).toBeInstanceOf(Array)
     expect(nextRecord.errors).toHaveLength(2)
     expect(nextRecord.errors).toEqual(errors)
-    expect(recordUtils.setErrors(undefined, inputField).errors).toBeNull()
+    expect(recordUtils.setErrors(undefined, inputField, {}).errors).toBeNull()
   })
 
   it('reset', () => {
-    const nextInput = recordUtils.setValue('bar', inputField)
+    const nextInput = R.mergeDeepLeft(
+      recordUtils.setValue('bar', inputField, {}),
+      inputField,
+    )
     expect(nextInput).toHaveProperty('value', 'bar')
 
-    const resetInput = recordUtils.reset(R.prop('initialValue'), nextInput)
+    const resetInput = R.mergeDeepLeft(
+      recordUtils.reset(R.prop('initialValue'), nextInput),
+      nextInput,
+    )
     expect(resetInput).toHaveProperty('value', resetInput.initialValue)
   })
 

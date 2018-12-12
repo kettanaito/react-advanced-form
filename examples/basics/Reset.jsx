@@ -4,11 +4,13 @@ import { Input, Checkbox } from '@examples/fields'
 import Button from '@examples/shared/Button'
 
 export default class Reset extends React.Component {
-  resetForm = () => {
+  resetForm = (event) => {
+    event.preventDefault()
     window.form.reset()
   }
 
-  resetWithPredicate = () => {
+  resetWithPredicate = (event) => {
+    event.preventDefault()
     window.form.reset((fieldProps) =>
       fieldProps.fieldPath.includes('billingAddress'),
     )

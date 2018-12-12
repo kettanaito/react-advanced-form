@@ -19,7 +19,7 @@ export default async function validateField(resolverArgs) {
      * their validation necessity is defined by "validatedABC" props,
      * and will re-write the value of "expected" when needed.
      */
-    return R.assoc('expected', true, fieldProps)
+    return R.assoc('expected', true, {})
   }
 
   return reflectValidationResult(resolverArgs)(validationResult)

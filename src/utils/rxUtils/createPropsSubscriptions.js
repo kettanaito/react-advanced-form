@@ -47,13 +47,20 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
          * with the updated arguments.
          */
         const nextPropValue = dispatch(resolver, nextResolverArgs)
-
-        /* Set the next value of reactive prop on the respective field record */
-        const nextSubscriberState = R.compose(
+        const nextSubscriberStateChunk = R.compose(
+          /**
+           * Reset validity and validation state on the reactive fields
+           * so it triggers validation regardless of its previous status.
+           */
           recordUtils.resetValidityState,
           recordUtils.resetValidationState,
           R.assoc(propName, nextPropValue),
-        )(prevSubscriberState)
+        )({})
+
+        const nextSubscriberState = R.mergeDeepLeft(
+          nextSubscriberStateChunk,
+          prevSubscriberState,
+        )
 
         const fieldsWithSubscriber = R.assocPath(
           subscriberFieldPath,
@@ -61,8 +68,24 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
           nextFields,
         )
 
+        console.warn('prop subscription')
+        console.log(
+          'resolving prop subscription "%s"',
+          nextSubscriberState,
+          propName,
+          nextPropValue,
+        )
+        console.log({ nextSubscriberStateChunk })
+        console.log({ nextSubscriberState })
+
         if (shouldValidate) {
-          return form.validateField({
+          /**
+           * Dispatch field validation in parallel with reactive prop update
+           * because due to chunked nature of updates, the next field state chunks
+           * produces by these two actions do not intersect, and can be merged
+           * simultaneously.
+           */
+          form.validateField({
             /**
              * Forcing validation that originates from reactive subscription
              * shouldn't be force if a field's validity and validation state are reset,
@@ -72,12 +95,19 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
             // force: true,
             forceProps: true,
             fieldProps: nextSubscriberState,
+            /** @todo Is this explicit fields value needed? */
             fields: fieldsWithSubscriber,
             form,
           })
         }
 
-        return form.updateFieldsWith(nextSubscriberState)
+        form.eventEmitter.emit(
+          'updateStateChunk',
+          subscriberFieldPath,
+          nextSubscriberStateChunk,
+        )
+
+        // return form.updateFieldsWith(nextSubscriberState)
       },
     })
   })

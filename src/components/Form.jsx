@@ -7,6 +7,7 @@ import { Observable } from 'rxjs/internal/Observable'
 import { fromEvent } from 'rxjs/internal/observable/fromEvent'
 import { bufferTime } from 'rxjs/internal/operators/bufferTime'
 import { filter } from 'rxjs/internal/operators/filter'
+import { mergeAll } from 'rxjs/internal/operators/mergeAll'
 
 /* Internal modules */
 import {
@@ -28,6 +29,7 @@ import * as handlers from '../utils/handlers'
 import validate from '../utils/handlers/validateField'
 import getLeavesWhich from '../utils/getLeavesWhich'
 import deriveDeepWith from '../utils/deriveDeepWith'
+import stitchWith from '../utils/stitchWith'
 
 /**
  * Binds the component's reference to the function's context and calls
@@ -131,11 +133,68 @@ export default class Form extends React.Component {
       )
       .subscribe(this.unregisterFields)
 
+    fromEvent(eventEmitter, 'applyStatePatch')
+      .pipe(
+        bufferTime(50),
+        filter(R.complement(R.isEmpty)),
+      )
+      .subscribe(this.applyStatePatch)
+
     this.state = {
       dirty: false,
       fields: {},
       rules: formUtils.mergeRules(formRules, providerRules),
     }
+  }
+
+  /**
+   * Performs state update with the given patch.
+   * Each patch contains a keyPath where to merge, and update chunk Object.
+   * @param {[string[], Object]} statePatches
+   */
+  applyStatePatch = (statePatches) => {
+    const { fields: prevFields } = this.state
+
+    const nextFields = R.compose(
+      R.mergeDeepRight(prevFields),
+      /**
+       * Since state patch is a list of [fieldPath, updateChunk],
+       * take its head as the thread path, and tail as needle
+       * to stitch the list into Object.
+       * @see stitchWith
+       */
+      stitchWith(R.head, ([_, stateChunk], keyPath, existingChunks) =>
+        R.mergeDeepLeft(stateChunk, R.pathOr({}, keyPath, existingChunks)),
+      ),
+    )(statePatches)
+
+    console.warn('applyStatePatch')
+    console.log({ statePatches })
+    console.log({ nextFields })
+
+    return new Promise((resolve) => {
+      this.setState({ fields: nextFields }, () => {
+        statePatches.forEach(([fieldPath, _, callback]) => {
+          const nextFieldState = R.path(fieldPath, nextFields)
+
+          console.log({ prevFieldState: R.path(fieldPath, prevFields) })
+          console.log({ nextFieldState })
+
+          if (callback) {
+            callback(nextFieldState, nextFields)
+          }
+
+          // this.eventEmitter.emit('fieldsDidUpdate', {
+          //   prevFieldState: R.path(fieldPath, prevFields),
+          //   nextFieldState: R.path(fieldPath, nextFields),
+          //   prevFields,
+          //   nextFields,
+          // })
+        })
+
+        resolve(nextFields)
+      })
+    })
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -316,7 +375,7 @@ export default class Form extends React.Component {
               fields,
               form: this,
             }),
-          recordUtils.setValue(fieldProps.mapValue(nextValue)),
+          recordUtils.setValue(fieldProps.mapValue(nextValue), fieldProps),
           recordUtils.resetValidityState,
         ),
       fieldsPatch,
@@ -372,19 +431,16 @@ export default class Form extends React.Component {
    * possible to diff required props and dispatch respective side-effects.
    */
   fieldsDidUpdate = ({ prevFieldState, nextFieldState, nextFields }) => {
-    const prevValue = recordUtils.getValue(prevFieldState)
-    const nextValue = recordUtils.getValue(nextFieldState)
+    console.warn('fieldsDidUpdate')
+    console.log({ prevFieldState, nextFieldState, nextFields })
 
-    if (!R.equals(prevValue, nextValue)) {
-      const { fieldPath, onChange } = nextFieldState
-      dispatch(onChange, {
-        prevValue,
-        nextValue,
-        fieldProps: R.path(fieldPath, nextFields),
-        fields: nextFields,
-        form: this,
-      })
-    }
+    // if (prevFieldState.focused && !nextFieldState.focused) {
+    //   dispatch(nextFieldState.onBlur, {
+    //     fieldProps: nextFieldState,
+    //     fields: nextFields,
+    //     form: this,
+    //   })
+    // }
   }
 
   /**
@@ -428,9 +484,20 @@ export default class Form extends React.Component {
    * @param {Object} fieldProps
    */
   handleFieldFocus = this.withRegisteredField((args) => {
-    const { fields } = this.state
-    const { nextFields } = handlers.handleFieldFocus(args, fields, this)
-    this.setState({ fields: nextFields })
+    const { fieldProps } = args
+    const nextFieldPatch = recordUtils.setFocused(true, {})
+
+    this.eventEmitter.emit(
+      'applyStatePatch',
+      fieldProps.fieldPath,
+      nextFieldPatch,
+      (fieldState, nextFields) =>
+        dispatch(fieldState.onFocus, {
+          fieldProps: fieldProps,
+          fields: nextFields,
+          form: this,
+        }),
+    )
   })
 
   /**
@@ -441,14 +508,34 @@ export default class Form extends React.Component {
    * @param {mixed} nextValue
    */
   handleFieldChange = this.withRegisteredField(async (args) => {
+    const {
+      prevValue,
+      nextValue,
+      fieldProps: { fieldPath },
+    } = args
     const { fields, dirty } = this.state
 
-    const nextFieldProps = await handlers.handleFieldChange(
+    const fieldStatePatch = await handlers.handleFieldChange(
       args,
       fields,
       this,
       {
-        onUpdateValue: this.updateFieldsWith,
+        onUpdateValue: (intermediateStatePatch) => {
+          this.applyStatePatch([
+            [
+              fieldPath,
+              intermediateStatePatch,
+              (fieldState, nextFields) =>
+                dispatch(fieldState.onChange, {
+                  prevValue,
+                  nextValue,
+                  fieldProps: fieldState,
+                  fields: nextFields,
+                  form: this,
+                }),
+            ],
+          ])
+        },
       },
     )
 
@@ -456,8 +543,9 @@ export default class Form extends React.Component {
      * Change handler for controlled fields does not return the next field props
      * record, therefore, need to explicitly ensure the payload was returned.
      */
-    if (nextFieldProps) {
-      await this.updateFieldsWith(nextFieldProps)
+    if (fieldStatePatch) {
+      this.eventEmitter.emit('applyStatePatch', fieldPath, fieldStatePatch)
+      // await this.updateFieldsWith(fieldStatePatch)
     }
 
     /* Mark form as dirty if it's not already */
@@ -472,14 +560,31 @@ export default class Form extends React.Component {
    * @param {Object} fieldProps
    */
   handleFieldBlur = this.withRegisteredField(async (args) => {
+    const { fieldProps } = args
     const { fields } = this.state
-    const { nextFieldProps } = await handlers.handleFieldBlur(
-      args,
-      fields,
-      this,
-    )
+    const fieldStatePatch = await handlers.handleFieldBlur(args, fields, this)
 
-    this.updateFieldsWith(nextFieldProps)
+    /**
+     * @todo
+     * There are two events happening here:
+     * a) field blur (sets "focused" and "touched" next values),
+     * b) validates field.
+     * Right now there is a single call to "applyStatePatch" that
+     * includes the state chunk of field validation and blur together.
+     * Those two events should be dispatched separately.
+     */
+
+    this.eventEmitter.emit(
+      'applyStatePatch',
+      fieldProps.fieldPath,
+      fieldStatePatch,
+      (fieldState, nextFields) =>
+        dispatch(fieldState.onBlur, {
+          fieldProps: fieldState,
+          fields: nextFields,
+          form: this,
+        }),
+    )
   })
 
   /**
@@ -503,8 +608,11 @@ export default class Form extends React.Component {
 
     fieldProps = fieldProps || explicitFieldProps
 
+    console.log({ fieldProps })
+    console.log({ fields })
+
     /* Perform the validation */
-    const validatedField = await validate({
+    const fieldStatePatch = await validate({
       chain,
       force,
       fieldProps,
@@ -512,12 +620,21 @@ export default class Form extends React.Component {
       form: this,
     })
 
+    console.log('validateField')
+    console.log({ fieldStatePatch })
+
     /* Update the field in the state to reflect the changes */
     if (shouldUpdateFields) {
-      await this.updateFieldsWith(validatedField)
+      this.eventEmitter.emit(
+        'applyStatePatch',
+        fieldProps.fieldPath,
+        fieldStatePatch,
+      )
+      // await this.updateFieldsWith(validatedField)
     }
 
-    return validatedField
+    /* Return the whole next field state */
+    return R.mergeDeepLeft(fieldStatePatch, fieldProps)
   }
 
   /**
@@ -591,25 +708,39 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Resets all the fields to their initial state.
+   * Resets fields that match the given predicate.
+   * By default, resets all the fields.
    * @param {Function} predicate
+   * @returns {Promise<Fields>}
    */
   reset = (predicate = Boolean) => {
-    const nextFields = R.compose(
-      fieldUtils.stitchFields,
-      R.map(R.when(predicate, recordUtils.reset(R.prop('initialValue')))),
-      fieldUtils.flattenFields,
-    )(this.state.fields)
+    const { fields } = this.state
 
-    this.setState({ fields: nextFields }, () => {
-      /**
-       * Invoke form validation with the predicate that omits empty fields,
-       * regardless of their required status. That is to prevent having
-       * invalid empty required fields after reset.
-       */
-      this.validate(
-        R.allPass([R.has('value'), R.complement(R.propEq('value', ''))]),
-      )
+    console.warn('reset')
+
+    const fieldsPatch = R.compose(
+      R.map((fieldState) => {
+        return [
+          fieldState.fieldPath,
+          /**
+           * @todo Integrate validation for field whose "initialValue" is set.
+           * This would prevent validation dispatch after the reset, as with
+           * patches it can be done as a single operation.
+           */
+          R.compose(
+            // R.when(),
+            recordUtils.reset(R.prop('initialValue')),
+          )(fieldState),
+        ]
+      }),
+      R.filter(predicate),
+      fieldUtils.flattenFields,
+    )(fields)
+
+    console.log({ fieldsPatch })
+
+    return this.applyStatePatch(fieldsPatch).then((nextFields) => {
+      console.warn('Reset field patch applied!')
 
       /* Callback method to reset controlled fields */
       dispatch(this.props.onReset, {
@@ -617,6 +748,24 @@ export default class Form extends React.Component {
         form: this,
       })
     })
+
+    // this.setState({ fields: nextFields }, () => {
+    //   console.log('state has been updated! uncomment')
+
+    //   /**
+    //    * Validate fields with value.
+    //    * Prevent empty required fields marked as invalid after reset.
+    //    */
+    //   // this.validate(
+    //   //   R.allPass([R.has('value'), R.complement(R.propEq('value', ''))]),
+    //   // )
+
+    //   // /* Callback method to reset controlled fields */
+    //   // dispatch(this.props.onReset, {
+    //   //   fields: nextFields,
+    //   //   form: this,
+    //   // })
+    // })
   }
 
   /**
@@ -628,6 +777,12 @@ export default class Form extends React.Component {
     const { fields } = this.state
 
     /**
+     *
+     * @todo Adjust for state patch.
+     *
+     */
+
+    /**
      * Get transformers for fields in the following format:
      * [fieldPath]: fieldTransformer(fieldProps)
      */
@@ -635,7 +790,8 @@ export default class Form extends React.Component {
       (_, errors) =>
         R.compose(
           recordUtils.setErrors(errors),
-          recordUtils.updateValidityState(true),
+          /** @todo Field patch updates */
+          recordUtils.updateValidityState(true /* fieldProps */),
           recordUtils.setTouched(!!errors),
           R.assoc('expected', !errors),
           R.assoc('validated', true),

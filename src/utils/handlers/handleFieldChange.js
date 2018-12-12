@@ -1,5 +1,5 @@
-import invariant from 'invariant'
 import * as R from 'ramda'
+import invariant from 'invariant'
 import dispatch from '../dispatch'
 import * as recordUtils from '../recordUtils'
 import validateSync from '../validation/validateSync'
@@ -32,43 +32,39 @@ export default async function handleFieldChange(
       onChange,
     )
 
-    dispatch(
-      onChange,
-      {
-        event,
-        nextValue,
-        prevValue,
-        fieldProps,
-        fields,
-        form,
-      },
-      form.context,
-    )
+    dispatch(onChange, {
+      event,
+      nextValue,
+      prevValue,
+      fieldProps,
+      fields,
+      form,
+    })
 
     return
   }
 
   /* Update field's value */
-  const updatedFieldProps = R.compose(
+  const fieldStatePatch = R.compose(
     recordUtils.setPristine(false),
-    recordUtils.setValue(nextValue),
+    recordUtils.setValue(nextValue, fieldProps),
     recordUtils.resetValidityState,
     recordUtils.resetValidationState,
-  )(fieldProps)
+  )({})
+
+  console.log('handleFieldChange fieldStatePatch', fieldStatePatch)
+
+  const updatedFieldState = R.mergeDeepLeft(fieldStatePatch, fieldProps)
 
   /* Cancel any pending async validation */
-  const { pendingAsyncValidation } = updatedFieldProps
+  const { pendingAsyncValidation } = fieldProps
 
   if (pendingAsyncValidation) {
     pendingAsyncValidation.cancel()
   }
 
   if (onUpdateValue) {
-    // TODO
-    // Is this even needed?
-    // Maybe, instead return the field props at this point and handle
-    // callback call as a separate logic on top of each handler method.
-    await onUpdateValue(updatedFieldProps)
+    await onUpdateValue(fieldStatePatch)
   }
 
   /**
@@ -83,7 +79,7 @@ export default async function handleFieldChange(
 
   const validatedFieldProps = await appropriateValidation({
     chain: [validateSync],
-    fieldProps: updatedFieldProps,
+    fieldProps: updatedFieldState,
 
     /**
      * Explicitly force field props, since "Form.validateField" will grab

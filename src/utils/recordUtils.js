@@ -70,6 +70,7 @@ export const createField = (initialState) => {
  * @param {Object} collection
  */
 export const updateCollectionWith = R.curry((fieldProps, collection) => {
+  console.error('(recordUtils) Deprecate `updateCollectionWith`')
   return R.assocPath(fieldProps.fieldPath, fieldProps, collection)
 })
 
@@ -103,23 +104,23 @@ export const getValue = (fieldProps) => {
  * @param {Function|any} nextValueGetter
  * @param {Object} fieldProps
  */
-export const setValue = R.curry((nextValueGetter, fieldProps) => {
-  const { fieldPath, valuePropName } = fieldProps
+export const setValue = R.curry((nextValueOrGetter, fieldProps, acc) => {
+  const { valuePropName } = fieldProps
 
   /* Accept "nextValue" as a function to be able to make "setValue" composable */
   const nextValue =
-    typeof nextValueGetter === 'function'
-      ? nextValueGetter(fieldProps)
-      : nextValueGetter
+    typeof nextValueOrGetter === 'function'
+      ? nextValueOrGetter(fieldProps)
+      : nextValueOrGetter
 
   invariant(
     valuePropName,
     'Failed to set value to `%s` on `%s`: field has no `valuePropName` property.',
     nextValue,
-    fieldPath && fieldPath.join('.'),
+    fieldProps.fieldPath && fieldProps.fieldPath.join('.'),
   )
 
-  return R.assoc(valuePropName, nextValue, fieldProps)
+  return R.assoc(valuePropName, nextValue, acc || fieldProps)
 })
 
 /**
@@ -136,12 +137,55 @@ export const hasValue = (fieldProps) => {
  * @param {string[]} errors
  * @param {Object} fieldProps
  */
-export const setErrors = R.curry((errors, fieldProps) => {
-  /* Allow explicit "null" for empty "errors" value */
-  return typeof errors !== 'undefined'
-    ? R.assoc('errors', errors && enforceArray(errors), fieldProps)
-    : fieldProps
+export const setErrors = R.curry((errors, fieldProps, acc) => {
+  if (!!fieldProps) {
+    console.error('(recordUtils) Remove `fieldProps` from `setErrors`.')
+  }
+
+  return R.mergeDeepLeft(
+    {
+      errors:
+        typeof errors !== 'undefined'
+          ? errors && enforceArray(errors)
+          : fieldProps.errors,
+    },
+    acc,
+  )
+
+  // /* Allow explicit "null" for empty "errors" value */
+  // return typeof errors !== 'undefined'
+  //   ? R.assoc('errors', errors && enforceArray(errors), {})
+  //   : {}
 })
+
+/**
+ * Sets the validity state props (valid/invalid) on the given field.
+ * @param {boolean} shouldValidate
+ * @param {Object} fieldProps
+ * @returns {Object}
+ */
+export const updateValidityState = R.curry(
+  (shouldValidate, fieldProps, acc) => {
+    if (!shouldValidate) {
+      return resetValidityState({})
+    }
+
+    const { validated, expected, errors } = fieldProps
+    const value = getValue(fieldProps)
+    const nextValid = !!value && validated && expected
+    const nextInvalid = validated && !expected
+    const nextErrors = expected ? null : errors
+
+    return R.mergeDeepLeft(
+      {
+        errors: nextErrors,
+        valid: nextValid,
+        invalid: nextInvalid,
+      },
+      acc,
+    )
+  },
+)
 
 /**
  * Resets the validity state (valid/invalid) of the given field.
@@ -151,33 +195,6 @@ export const setErrors = R.curry((errors, fieldProps) => {
 export const resetValidityState = R.mergeDeepLeft({
   valid: false,
   invalid: false,
-})
-
-/**
- * Sets the validity state props (valid/invalid) on the given field.
- * @param {Object} fieldProps
- * @param {boolean} shouldValidate
- * @returns {Object}
- */
-export const updateValidityState = R.curry((shouldValidate, fieldProps) => {
-  if (!shouldValidate) {
-    return resetValidityState(fieldProps)
-  }
-
-  const { validated, expected, errors } = fieldProps
-  const value = getValue(fieldProps)
-  const nextValid = !!value && validated && expected
-  const nextInvalid = validated && !expected
-  const nextErrors = !expected && errors
-
-  return R.mergeDeepLeft(
-    {
-      errors: nextErrors,
-      valid: nextValid,
-      invalid: nextInvalid,
-    },
-    fieldProps,
-  )
 })
 
 /**
@@ -200,17 +217,17 @@ export const resetValidationState = R.mergeDeepLeft({
  * @param {Object} fieldProps
  * @returns {Object}
  */
-export const reset = R.curry((nextValueGetter, fieldProps) => {
-  return R.compose(
-    // Beware that this will set value to "undefined" when no "initialValue" is found
-    setValue(fieldProps.mapValue(nextValueGetter(fieldProps))),
-    setErrors(null),
+export const reset = R.curry((nextValueGetter, fieldProps) =>
+  R.compose(
+    // Beware that this sets value to "undefined" when no "initialValue" is found
+    setValue(fieldProps.mapValue(nextValueGetter(fieldProps)), fieldProps),
+    setErrors(null, fieldProps),
     setPristine(true),
     setTouched(false),
     resetValidationState,
     resetValidityState,
-  )(fieldProps)
-})
+  )({}),
+)
 
 /**
  * Sets the focus of the given field to the next value.
