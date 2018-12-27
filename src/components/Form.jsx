@@ -608,9 +608,6 @@ export default class Form extends React.Component {
 
     fieldProps = fieldProps || explicitFieldProps
 
-    console.log({ fieldProps })
-    console.log({ fields })
-
     /* Perform the validation */
     const fieldStatePatch = await validate({
       chain,
@@ -620,7 +617,6 @@ export default class Form extends React.Component {
       form: this,
     })
 
-    console.log('validateField')
     console.log({ fieldStatePatch })
 
     /* Update the field in the state to reflect the changes */
@@ -689,21 +685,20 @@ export default class Form extends React.Component {
    * @param {Function} predicate
    */
   clear = (predicate = Boolean) => {
-    const nextFields = R.compose(
-      fieldUtils.stitchFields,
-      R.map(R.when(predicate, recordUtils.reset(R.always('')))),
+    const fieldsPatch = R.compose(
+      R.map((fieldState) => [
+        fieldState.fieldPath,
+        recordUtils.reset(R.always(''), fieldState),
+      ]),
+      R.filter(predicate),
       fieldUtils.flattenFields,
     )(this.state.fields)
 
-    this.setState({ fields: nextFields }, () => {
-      dispatch(
-        this.props.onClear,
-        {
-          fields: nextFields,
-          form: this,
-        },
-        this.context,
-      )
+    return this.applyStatePatch(fieldsPatch).then((nextFields) => {
+      dispatch(this.props.onClear, {
+        fields: nextFields,
+        form: this,
+      })
     })
   }
 
@@ -714,8 +709,6 @@ export default class Form extends React.Component {
    * @returns {Promise<Fields>}
    */
   reset = (predicate = Boolean) => {
-    const { fields } = this.state
-
     const fieldsPatch = R.compose(
       R.map((fieldState) => [
         fieldState.fieldPath,
@@ -723,7 +716,7 @@ export default class Form extends React.Component {
       ]),
       R.filter(predicate),
       fieldUtils.flattenFields,
-    )(fields)
+    )(this.state.fields)
 
     return this.applyStatePatch(fieldsPatch).then((nextFields) => {
       this.validate(
