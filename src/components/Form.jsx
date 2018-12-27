@@ -716,31 +716,22 @@ export default class Form extends React.Component {
   reset = (predicate = Boolean) => {
     const { fields } = this.state
 
-    console.warn('reset')
-
     const fieldsPatch = R.compose(
-      R.map((fieldState) => {
-        return [
-          fieldState.fieldPath,
-          /**
-           * @todo Integrate validation for field whose "initialValue" is set.
-           * This would prevent validation dispatch after the reset, as with
-           * patches it can be done as a single operation.
-           */
-          R.compose(
-            // R.when(),
-            recordUtils.reset(R.prop('initialValue')),
-          )(fieldState),
-        ]
-      }),
+      R.map((fieldState) => [
+        fieldState.fieldPath,
+        recordUtils.reset(R.prop('initialValue'), fieldState),
+      ]),
       R.filter(predicate),
       fieldUtils.flattenFields,
     )(fields)
 
-    console.log({ fieldsPatch })
-
     return this.applyStatePatch(fieldsPatch).then((nextFields) => {
-      console.warn('Reset field patch applied!')
+      this.validate(
+        R.allPass([
+          (fieldState) =>
+            fieldState.assertValue(recordUtils.getValue(fieldState)),
+        ]),
+      )
 
       /* Callback method to reset controlled fields */
       dispatch(this.props.onReset, {
@@ -748,24 +739,6 @@ export default class Form extends React.Component {
         form: this,
       })
     })
-
-    // this.setState({ fields: nextFields }, () => {
-    //   console.log('state has been updated! uncomment')
-
-    //   /**
-    //    * Validate fields with value.
-    //    * Prevent empty required fields marked as invalid after reset.
-    //    */
-    //   // this.validate(
-    //   //   R.allPass([R.has('value'), R.complement(R.propEq('value', ''))]),
-    //   // )
-
-    //   // /* Callback method to reset controlled fields */
-    //   // dispatch(this.props.onReset, {
-    //   //   fields: nextFields,
-    //   //   form: this,
-    //   // })
-    // })
   }
 
   /**
