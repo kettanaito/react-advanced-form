@@ -52,8 +52,6 @@ export default async function handleFieldChange(
     recordUtils.resetValidationState,
   )({})
 
-  console.log('handleFieldChange fieldStatePatch', fieldStatePatch)
-
   const updatedFieldState = R.mergeDeepLeft(fieldStatePatch, fieldProps)
 
   /* Cancel any pending async validation */

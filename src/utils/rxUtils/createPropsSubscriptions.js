@@ -106,8 +106,6 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
           subscriberFieldPath,
           nextSubscriberStateChunk,
         )
-
-        // return form.updateFieldsWith(nextSubscriberState)
       },
     })
   })

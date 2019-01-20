@@ -117,7 +117,6 @@ export default class Form extends React.Component {
     this.eventEmitter = eventEmitter
 
     /* Field events observerables */
-    fromEvent(eventEmitter, 'fieldsDidUpdate').subscribe(this.fieldsDidUpdate)
     fromEvent(eventEmitter, 'fieldRegister')
       .pipe(bufferTime(50))
       .subscribe((pendingFields) => pendingFields.forEach(this.registerField))
@@ -150,7 +149,7 @@ export default class Form extends React.Component {
   /**
    * Performs state update with the given patch.
    * Each patch contains a keyPath where to merge, and update chunk Object.
-   * @param {[string[], Object]} statePatches
+   * @param {Array<[string[], Object]>} statePatches
    */
   applyStatePatch = (statePatches) => {
     const { fields: prevFields } = this.state
@@ -168,28 +167,14 @@ export default class Form extends React.Component {
       ),
     )(statePatches)
 
-    console.warn('applyStatePatch')
-    console.log({ statePatches })
-    console.log({ nextFields })
-
     return new Promise((resolve) => {
       this.setState({ fields: nextFields }, () => {
         statePatches.forEach(([fieldPath, _, callback]) => {
           const nextFieldState = R.path(fieldPath, nextFields)
 
-          console.log({ prevFieldState: R.path(fieldPath, prevFields) })
-          console.log({ nextFieldState })
-
           if (callback) {
             callback(nextFieldState, nextFields)
           }
-
-          // this.eventEmitter.emit('fieldsDidUpdate', {
-          //   prevFieldState: R.path(fieldPath, prevFields),
-          //   nextFieldState: R.path(fieldPath, nextFields),
-          //   prevFields,
-          //   nextFields,
-          // })
         })
 
         resolve(nextFields)
@@ -304,9 +289,10 @@ export default class Form extends React.Component {
       .subscribe(({ nextTargetRecord, changedProps }) => {
         /**
          * @todo Verify that this replaces the previous logic.
+         * Spoiler: After patched state updates it doesn't.
          */
         R.compose(
-          this.updateFieldsWith,
+          // this.updateFieldsWith, Use "applyStatePatch"?
           R.mergeDeepRight(nextTargetRecord),
         )(changedProps)
 
@@ -390,63 +376,6 @@ export default class Form extends React.Component {
     )
 
     R.evolve(transformers, fields)
-  }
-
-  /**
-   * Updates the fields with the given next state of a field.
-   * @param {Object} nextFieldState
-   * @returns {Promise<Fields>} Updated fields
-   */
-  updateFieldsWith = (nextFieldState) => {
-    const { fields: prevFields } = this.state
-    const prevFieldState = R.path(nextFieldState.fieldPath, prevFields)
-    const nextFields = recordUtils.updateCollectionWith(
-      nextFieldState,
-      prevFields,
-    )
-
-    return new Promise((resolve, reject) => {
-      try {
-        this.setState({ fields: nextFields }, () => {
-          const { fields: updatedFields } = this.state
-
-          /**
-           * Emit fields update event to notify the dedicated handler
-           * that introduces possible side-effects based on fields update.
-           * For example, a field's "onChange" callback.
-           */
-          this.eventEmitter.emit('fieldsDidUpdate', {
-            prevFieldState,
-            nextFieldState,
-            prevFields,
-            nextFields: updatedFields,
-          })
-
-          resolve(updatedFields)
-        })
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
-
-  /**
-   * A subscription handler method that is invoked whenever fields have updated.
-   * Designed to introduce any side-effects based on fields update (i.e. onChange).
-   * Note that each fields update has a reason (fieldState), therefore it's
-   * possible to diff required props and dispatch respective side-effects.
-   */
-  fieldsDidUpdate = ({ prevFieldState, nextFieldState, nextFields }) => {
-    console.warn('fieldsDidUpdate')
-    console.log({ prevFieldState, nextFieldState, nextFields })
-
-    // if (prevFieldState.focused && !nextFieldState.focused) {
-    //   dispatch(nextFieldState.onBlur, {
-    //     fieldProps: nextFieldState,
-    //     fields: nextFields,
-    //     form: this,
-    //   })
-    // }
   }
 
   /**
@@ -551,7 +480,6 @@ export default class Form extends React.Component {
      */
     if (fieldStatePatch) {
       this.eventEmitter.emit('applyStatePatch', fieldPath, fieldStatePatch)
-      // await this.updateFieldsWith(fieldStatePatch)
     }
 
     /* Mark form as dirty if it's not already */
@@ -623,8 +551,6 @@ export default class Form extends React.Component {
       form: this,
     })
 
-    console.log({ fieldStatePatch })
-
     /* Update the field in the state to reflect the changes */
     if (shouldUpdateFields) {
       this.eventEmitter.emit(
@@ -632,7 +558,6 @@ export default class Form extends React.Component {
         fieldProps.fieldPath,
         fieldStatePatch,
       )
-      // await this.updateFieldsWith(validatedField)
     }
 
     /* Return the whole next field state */

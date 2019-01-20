@@ -50,10 +50,6 @@ export default function reflectValidationResult(
       {},
     )
 
-    console.log({ tempStatePatch })
-    console.log({ nextFieldState })
-    console.log({ nextValidityState })
-
     const nextStateChunk = {
       ...tempStatePatch,
       ...nextValidityState,
