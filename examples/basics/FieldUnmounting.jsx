@@ -6,20 +6,23 @@ import Button from '@examples/shared/Button'
 export default class FieldUnmounting extends React.Component {
   state = {
     shouldDisplayInput: true,
+    shouldDisplayFirst: false,
+    shouldDisplaySecond: true,
   }
 
   componentDidMount() {
-    this.setState({ shouldDisplayInput: false })
+    this.setState({ shouldDisplaySecond: false })
   }
 
-  handleToggleField = () => {
-    this.setState(({ shouldDisplayInput }) => ({
-      shouldDisplayInput: !shouldDisplayInput,
+  toggleFields = () => {
+    this.setState(({ shouldDisplayFirst, shouldDisplaySecond }) => ({
+      shouldDisplayFirst: !shouldDisplayFirst,
+      shouldDisplaySecond: !shouldDisplaySecond,
     }))
   }
 
   render() {
-    const { shouldDisplayInput } = this.state
+    const { shouldDisplayFirst, shouldDisplaySecond } = this.state
 
     return (
       <React.Fragment>
@@ -28,14 +31,19 @@ export default class FieldUnmounting extends React.Component {
         <Form ref={(form) => (window.form = form)}>
           <Input name="fieldOne" initialValue="foo" required />
 
-          {shouldDisplayInput && (
+          {(shouldDisplayFirst || shouldDisplaySecond) && (
             <Field.Group name="groupName">
-              <Input name="fieldTwo" initialValue="bar" required />
-              <Input name="fieldThree" required />
+              {shouldDisplayFirst && (
+                <Input name="fieldTwo" initialValue="bar" required />
+              )}
+
+              {shouldDisplaySecond && <Input name="fieldThree" required />}
             </Field.Group>
           )}
 
-          <Button onClick={this.handleToggleField}>Toggle field</Button>
+          <Button type="button" onClick={this.toggleFields}>
+            Toggle fields
+          </Button>
         </Form>
       </React.Fragment>
     )

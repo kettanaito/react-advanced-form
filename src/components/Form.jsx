@@ -108,7 +108,8 @@ export default class Form extends React.Component {
     this.debounceTime = isset(debounceTime) ? debounceTime : defaultDebounceTime
 
     /**
-     * @todo Consider moving this to the form's state.
+     * @todo Consider moving this to the form's state so it corresponds
+     * to the "Form.props.messages" value updates.
      */
     this.messages = explicitMessages || messages
 
@@ -146,9 +147,25 @@ export default class Form extends React.Component {
     }
   }
 
+  emit = (...args) => {
+    this.eventEmitter.emit(...args)
+  }
+
+  promiseState = (nextState) => {
+    return new Promise((resolve, reject) => {
+      try {
+        this.setState(nextState, () => resolve(this.state))
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
   /**
-   * Performs state update with the given patch.
-   * Each patch contains a keyPath where to merge, and update chunk Object.
+   * Updates the form's state with the given fields patch of the shape
+   * [fieldPath, updateChunk].
+   * @note This method doesn't handle concurrency. Use event instead
+   * (`eventEmitter.emit('applyStatePatch')`) when you expect concurrent calls.
    * @param {Array<[string[], Object]>} statePatches
    */
   applyStatePatch = (statePatches) => {
@@ -167,17 +184,17 @@ export default class Form extends React.Component {
       ),
     )(statePatches)
 
-    return new Promise((resolve) => {
-      this.setState({ fields: nextFields }, () => {
-        statePatches.forEach(([fieldPath, _, callback]) => {
-          const nextFieldState = R.path(fieldPath, nextFields)
+    return this.promiseState({ fields: nextFields }).then((nextState) => {
+      const { fields: nextFields } = nextState
 
-          if (callback) {
-            callback(nextFieldState, nextFields)
-          }
-        })
-
-        resolve(nextFields)
+      /**
+       * A state patch may include a callback as the second argument.
+       * Dispatch that callback with the updated state of field and form.
+       */
+      statePatches.forEach(([fieldPath, _, callback]) => {
+        if (callback) {
+          callback(R.path(fieldPath, nextFields), nextFields)
+        }
       })
     })
   }
@@ -200,6 +217,7 @@ export default class Form extends React.Component {
        * Reset the validity and validation state of all fields
        * to reset those which rules are no longer present in the
        * schema from the next props.
+       *
        * @todo A good optimization place. May be refined.
        */
       const nextFields = R.compose(
@@ -228,11 +246,9 @@ export default class Form extends React.Component {
    * Wraps a given function, ensuring its invocation only when the payload
    * of that function has a field that is a part of the form's fields.
    */
-  withRegisteredField = (func) => {
-    return (args) => {
-      const includesField = R.path(args.fieldProps.fieldPath, this.state.fields)
-      return includesField && func(args)
-    }
+  withRegisteredField = (func) => (args) => {
+    const includesField = R.path(args.fieldProps.fieldPath, this.state.fields)
+    return includesField && func(args)
   }
 
   /**
@@ -247,7 +263,7 @@ export default class Form extends React.Component {
 
     invariant(
       !(fieldAlreadyExists && !fieldOptions.allowMultiple),
-      'Cannot register field `%s`, the field with ' +
+      'Cannot register field `%s`: the field with ' +
         'the provided name is already registered. Make sure the fields on the same level of `Form` ' +
         'or `Field.Group` have unique names.',
       fieldPath,
@@ -308,6 +324,7 @@ export default class Form extends React.Component {
     /**
      * Create observables for each reactive rule applicable to the
      * currently registered field.
+     *
      * @todo Flush obsolete observables to prevent memory leak.
      */
     rxUtils.createRulesSubscriptions({
@@ -345,6 +362,21 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Deletes the list of fields from the state.
+   * @param {Array<FieldState>} fieldsList
+   */
+  unregisterFields = (fieldsList) => {
+    const stitchedFields = fieldUtils.stitchFields(fieldsList)
+    const nextFields = R.compose(
+      fieldUtils.stitchFields,
+      R.reject((fieldState) => R.path(fieldState.fieldPath, stitchedFields)),
+      fieldUtils.flattenFields,
+    )(this.state.fields)
+
+    return this.promiseState({ fields: nextFields })
+  }
+
+  /**
    * Updates the fields with the given patch, which includes field's path
    * and its next "raw" value. Any additional "mapValue" transformations
    * are applied to the next value.
@@ -359,12 +391,12 @@ export default class Form extends React.Component {
           recordUtils.resetValidityState,
         )(fieldState)
 
-        this.eventEmitter.emit(
+        this.emit(
           'applyStatePatch',
           fieldState.fieldPath,
           fieldStatePatch,
           (nextFieldState) => {
-            this.eventEmitter.emit('validateField', {
+            this.emit('validateField', {
               fieldProps: nextFieldState,
               forceProps: true,
             })
@@ -376,21 +408,6 @@ export default class Form extends React.Component {
     )
 
     R.evolve(transformers, fields)
-  }
-
-  /**
-   * Deletes the list of fields from the state.
-   * @param {FieldState[]} fieldsList
-   */
-  unregisterFields = (fieldsList) => {
-    const stitchedFields = fieldUtils.stitchFields(fieldsList)
-    const nextFields = R.compose(
-      fieldUtils.stitchFields,
-      R.reject((fieldState) => R.path(fieldState.fieldPath, stitchedFields)),
-      fieldUtils.flattenFields,
-    )(this.state.fields)
-
-    this.setState({ fields: nextFields })
   }
 
   /**
@@ -410,7 +427,7 @@ export default class Form extends React.Component {
       form: this,
     })
 
-    this.setState({ dirty: true })
+    return this.promiseState({ dirty: true })
   }
 
   /**
@@ -422,7 +439,7 @@ export default class Form extends React.Component {
     const { fieldProps } = args
     const nextFieldPatch = recordUtils.setFocused(true, {})
 
-    this.eventEmitter.emit(
+    this.emit(
       'applyStatePatch',
       fieldProps.fieldPath,
       nextFieldPatch,
@@ -436,11 +453,11 @@ export default class Form extends React.Component {
   })
 
   /**
-   * Handles field change.
+   * Handles field value change.
    * @param {Event} event
    * @param {Object} fieldProps
-   * @param {mixed} prevValue
-   * @param {mixed} nextValue
+   * @param {any} prevValue
+   * @param {any} nextValue
    */
   handleFieldChange = this.withRegisteredField(async (args) => {
     const {
@@ -479,7 +496,7 @@ export default class Form extends React.Component {
      * record, therefore, need to explicitly ensure the payload was returned.
      */
     if (fieldStatePatch) {
-      this.eventEmitter.emit('applyStatePatch', fieldPath, fieldStatePatch)
+      this.emit('applyStatePatch', fieldPath, fieldStatePatch)
     }
 
     /* Mark form as dirty if it's not already */
@@ -505,10 +522,11 @@ export default class Form extends React.Component {
      * b) validates field.
      * Right now there is a single call to "applyStatePatch" that
      * includes the state chunk of field validation and blur together.
-     * Those two events should be dispatched separately.
+     * Those two events should be dispatched separately, taking
+     * concurrency into account.
      */
 
-    this.eventEmitter.emit(
+    this.emit(
       'applyStatePatch',
       fieldProps.fieldPath,
       fieldStatePatch,
@@ -523,6 +541,13 @@ export default class Form extends React.Component {
 
   /**
    * Validates the provided field with the additional options.
+   * @param {Array<ValidatorFunc>} chain Chain of validators to apply.
+   * @param {boolean} force Whether to validate even if validation is unnecessary.
+   * @param {Object} fieldProps Explicit field props to use.
+   * @param {Object} fields Explicit fields to use.
+   * @param {boolean} forceProps Forces given "fieldProps" instead of grabbing
+   * field props from the state by "fieldProps.fieldPath" key.
+   * @param {boolean} shouldUpdateFields Whether to update the state after validation.
    */
   validateField = async (args) => {
     const {
@@ -553,11 +578,7 @@ export default class Form extends React.Component {
 
     /* Update the field in the state to reflect the changes */
     if (shouldUpdateFields) {
-      this.eventEmitter.emit(
-        'applyStatePatch',
-        fieldProps.fieldPath,
-        fieldStatePatch,
-      )
+      this.emit('applyStatePatch', fieldProps.fieldPath, fieldStatePatch)
     }
 
     /* Return the whole next field state */
@@ -569,7 +590,8 @@ export default class Form extends React.Component {
    * validations to be completed.
    * When an optional predicate function is supplied, validates only the fields that
    * match the given predicate.
-   * @param {Function} predicate
+   * @param {Function} predicate Predicate function to apply to the fields before
+   * passing them to the validation. Fields not matching the predicate won't be validated.
    * @returns {boolean}
    */
   validate = async (predicate = R.T) => {
@@ -703,7 +725,7 @@ export default class Form extends React.Component {
      */
     const nextFields = R.evolve(transformers, fields)
 
-    this.setState({ fields: nextFields })
+    return this.promiseState({ fields: nextFields })
   }
 
   /**
@@ -748,6 +770,13 @@ export default class Form extends React.Component {
     const isFormValid = await this.validate()
 
     if (!isFormValid) {
+      /**
+       * In case form is invalid "Form.submit()" returns undefined.
+       * This makes it difficult to base "Form.submit().then()" logic
+       * since it doesn't return a Promise in invalid case.
+       *
+       * @todo Always return a Promise from "Form.submit()".
+       */
       return
     }
 
@@ -771,7 +800,8 @@ export default class Form extends React.Component {
 
     /**
      * Event: Submit has started.
-     * The submit is considered started immediately when the submit button is pressed.
+     * The submit is considered started immediately when the submit button is pressed,
+     * and the form is valid.
      */
     dispatch(onSubmitStart, callbackArgs)
 

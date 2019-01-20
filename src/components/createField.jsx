@@ -22,30 +22,16 @@ const defaultOptions = {
   allowMultiple: false,
   valuePropName: 'value',
   initialValue: '',
-  mapPropsToField({ fieldRecord }) {
-    return fieldRecord
-  },
-  beforeRegister({ fieldProps }) {
-    return fieldProps
-  },
+  mapPropsToField: ({ fieldRecord }) => fieldRecord,
+  beforeRegister: ({ fieldProps }) => fieldProps,
   shouldValidateOnMount({ valuePropName, fieldRecord }) {
     return this.assertValue(fieldRecord[valuePropName])
   },
-  shouldUpdateRecord({ prevValue, nextValue }) {
-    return prevValue !== nextValue
-  },
-  enforceProps() {
-    return {}
-  },
-  mapValue(nextValue) {
-    return nextValue
-  },
-  assertValue(value) {
-    return !!value
-  },
-  serialize(value) {
-    return value
-  },
+  shouldUpdateRecord: ({ prevValue, nextValue }) => prevValue !== nextValue,
+  enforceProps: () => ({}),
+  mapValue: (nextValue) => nextValue,
+  assertValue: (value) => !!value,
+  serialize: (value) => value,
 }
 
 /**
@@ -102,7 +88,7 @@ export default function connectField(options) {
          * are composed at this moment. There is no need to wait for the next
          * re-rendering to access them.
          */
-        this.contextProps = form && this.register()
+        this.fieldState = form && this.register()
       }
 
       /* Registers the current field within the parent form's state */
@@ -181,7 +167,7 @@ export default function connectField(options) {
         const fieldRecord = recordUtils.createField(mappedFieldProps)
 
         /* Notify the parent Form that a new field prompts to register */
-        form.eventEmitter.emit('fieldRegister', {
+        form.emit('fieldRegister', {
           fieldProps: fieldRecord,
           fieldOptions: {
             allowMultiple: hocOptions.allowMultiple,
@@ -200,8 +186,8 @@ export default function connectField(options) {
       }
 
       componentWillReceiveProps(nextProps) {
-        const { props: prevProps, contextProps } = this
-        if (!contextProps) {
+        const { props: prevProps, fieldState } = this
+        if (!fieldState) {
           return
         }
 
@@ -212,7 +198,7 @@ export default function connectField(options) {
          * should be propagated to the Form's state to guarantee the field's
          * internal record is updated respectively.
          */
-        const { controlled } = contextProps
+        const { controlled } = fieldState
         const nextValue = nextProps[valuePropName]
         const prevValue = prevProps[valuePropName]
 
@@ -221,11 +207,11 @@ export default function connectField(options) {
           prevValue,
           prevProps,
           nextProps,
-          contextProps,
+          contextProps: fieldState,
         })
 
         if (controlled && shouldUpdateRecord) {
-          this.context.form.eventEmitter.emit('fieldChange', {
+          this.context.form.emit('fieldChange', {
             event: {
               nativeEvent: {
                 isForcedUpdate: true,
@@ -233,37 +219,37 @@ export default function connectField(options) {
             },
             nextValue,
             prevValue,
-            fieldProps: contextProps,
+            fieldProps: fieldState,
           })
         }
       }
 
       /**
-       * Ensure "this.contextProps" reference is updated according to the context updates.
+       * Ensure "this.fieldState" reference is updated according to the context updates.
        */
       componentWillUpdate(nextProps, nextState, nextContext) {
         /* Bypass scenarios when field is being updated, but not yet registred within the Form */
-        const nextContextProps = R.path(this.__fieldPath, nextContext.fields)
+        const nextFieldState = R.path(this.__fieldPath, nextContext.fields)
 
-        if (!nextContextProps) {
+        if (!nextFieldState) {
           return
         }
 
-        /* Update the internal reference to contextProps */
-        const { props: prevProps, contextProps: prevContextProps } = this
-        this.contextProps = nextContextProps
+        /* Update the internal reference to field state */
+        const { props: prevProps, fieldState: prevFieldState } = this
+        this.fieldState = nextFieldState
 
         const propsChangeEvent = camelize(
-          ...nextContextProps.fieldPath,
+          ...nextFieldState.fieldPath,
           'props',
           'change',
         )
 
-        this.context.form.eventEmitter.emit(propsChangeEvent, {
+        this.context.form.emit(propsChangeEvent, {
           prevTargetProps: prevProps,
           nextTargetProps: nextProps,
-          prevTargetRecord: prevContextProps,
-          nextTargetRecord: nextContextProps,
+          prevTargetRecord: prevFieldState,
+          nextTargetRecord: nextFieldState,
         })
       }
 
@@ -271,10 +257,7 @@ export default function connectField(options) {
        * Deletes the field's record upon unmounting.
        */
       componentWillUnmount() {
-        this.context.form.eventEmitter.emit(
-          'fieldUnregister',
-          this.contextProps,
-        )
+        this.context.form.emit('fieldUnregister', this.fieldState)
       }
 
       /**
@@ -314,9 +297,9 @@ export default function connectField(options) {
        * @param {Event} event
        */
       handleFocus = (event) => {
-        this.context.form.eventEmitter.emit('fieldFocus', {
+        this.context.form.emit('fieldFocus', {
           event,
-          fieldProps: this.contextProps,
+          fieldProps: this.fieldState,
         })
       }
 
@@ -333,7 +316,7 @@ export default function connectField(options) {
           prevValue: customPrevValue,
         } = args
         const {
-          contextProps,
+          fieldState,
           context: { form },
         } = this
 
@@ -343,13 +326,13 @@ export default function connectField(options) {
 
         const prevValue = args.hasOwnProperty('prevValue')
           ? customPrevValue
-          : contextProps[valuePropName]
+          : fieldState[valuePropName]
 
-        form.eventEmitter.emit('fieldChange', {
+        form.emit('fieldChange', {
           event,
           nextValue,
           prevValue,
-          fieldProps: contextProps,
+          fieldProps: fieldState,
         })
       }
 
@@ -358,15 +341,15 @@ export default function connectField(options) {
        * @param {Event} event
        */
       handleBlur = (event) => {
-        this.context.form.eventEmitter.emit('fieldBlur', {
+        this.context.form.emit('fieldBlur', {
           event,
-          fieldProps: this.contextProps,
+          fieldProps: this.fieldState,
         })
       }
 
       render() {
-        const { props, contextProps } = this
-        
+        const { props, fieldState } = this
+
         /* Render null and log warning in case of formless field */
         if (!contextProps) {
           warning(
@@ -374,24 +357,27 @@ export default function connectField(options) {
             'Failed to render the field `%s`: expected to be a child ' +
               'of a Form component. Please render fields as children of ' +
               'Form, since formless fields are not currently supported.',
-              this.__fieldPath.join('.'),
+            this.__fieldPath.join('.'),
           )
           return null
         }
 
         /* Reference to the enforced props from the HOC options */
-        const enforcedProps = hocOptions.enforceProps({ props, contextProps })
-        const { valuePropName } = contextProps
-        const value = contextProps.controlled
+        const enforcedProps = hocOptions.enforceProps({
+          props,
+          contextProps: fieldState,
+        })
+        const { valuePropName } = fieldState
+        const value = fieldState.controlled
           ? props[valuePropName] || ''
-          : contextProps[valuePropName]
+          : fieldState[valuePropName]
 
         /* Props to assign to the field component directly (input, select, etc.) */
         const fieldProps = {
-          name: contextProps.name,
-          type: contextProps.type,
+          name: fieldState.name,
+          type: fieldState.type,
           [valuePropName]: value,
-          required: contextProps.required,
+          required: fieldState.required,
           disabled: this.props.disabled,
 
           /* Assign/override the props provided via {options.enforceProps()} */
@@ -410,7 +396,7 @@ export default function connectField(options) {
           <WrappedComponent
             {...props}
             fieldProps={fieldProps}
-            fieldState={contextProps}
+            fieldState={fieldState}
             handleFieldFocus={this.handleFocus}
             handleFieldChange={this.handleChange}
             handleFieldBlur={this.handleBlur}
