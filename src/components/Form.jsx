@@ -182,6 +182,15 @@ export default class Form extends React.Component {
       stitchWith(R.head, ([_, stateChunk], keyPath, existingChunks) =>
         R.mergeDeepLeft(stateChunk, R.pathOr({}, keyPath, existingChunks)),
       ),
+      /**
+       * Prevent state updates for the fields that no longer exist.
+       */
+      R.filter(
+        R.compose(
+          R.hasPath(R.__, prevFields),
+          R.head,
+        ),
+      ),
     )(statePatches)
 
     return this.promiseState({ fields: nextFields }).then((nextState) => {
@@ -190,6 +199,7 @@ export default class Form extends React.Component {
       /**
        * A state patch may include a callback as the second argument.
        * Dispatch that callback with the updated state of field and form.
+       * @todo Potentially unnecessary iteration.
        */
       statePatches.forEach(([fieldPath, _, callback]) => {
         if (callback) {
