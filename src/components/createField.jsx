@@ -3,6 +3,7 @@
  * component. Used for custom field styling, implementing fields with custom logic, and
  * third-party field components integration.
  */
+import invariant from 'invariant'
 import * as R from 'ramda'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -14,6 +15,7 @@ import {
   getComponentName,
   recordUtils,
   rxUtils,
+  warning,
 } from '../utils'
 
 /* Default options for `connectField()` HOC */
@@ -89,11 +91,17 @@ export default function connectField(options) {
 
       constructor(props, context) {
         super(props, context)
-        const { fieldGroup } = context
+        const { fieldGroup, form } = context
         const { name } = props
 
         /* Compose the field path */
         this.__fieldPath = fieldGroup ? [...fieldGroup, name] : [name]
+
+        invariant(
+          form,
+          'Failed to construct the field `%s`: field is not a child of the <Form> component.',
+          this.__fieldPath.join('.'),
+        )
 
         /**
          * Register the field in the parent Form's state and store its internal record

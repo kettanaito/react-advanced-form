@@ -8,10 +8,9 @@
 export default function warning(
   condition: mixed,
   message: string,
-  ...params: any[]
+  ...messageParams: any[]
 ) {
   if (!condition) {
-    let paramIndex = 0
-    console.warn(message.replace(/%s/g, () => params[paramIndex++]))
+    console.warn(message, ...messageParams)
   }
 }
