@@ -68,12 +68,15 @@ describe('recordUtils', () => {
 
   it('setErrors', () => {
     const errors = ['foo', 'bar']
-    const nextRecord = recordUtils.setErrors(errors, inputField, {})
+    const nextRecord = recordUtils.setErrors(errors, {})
 
     expect(nextRecord.errors).toBeInstanceOf(Array)
     expect(nextRecord.errors).toHaveLength(2)
     expect(nextRecord.errors).toEqual(errors)
-    expect(recordUtils.setErrors(undefined, inputField, {}).errors).toBeNull()
+    expect(recordUtils.setErrors(undefined, { errors: null })).toHaveProperty(
+      'errors',
+      null,
+    )
   })
 
   it('reset', () => {

@@ -387,40 +387,6 @@ export default class Form extends React.Component {
   }
 
   /**
-   * Updates the fields with the given patch, which includes field's path
-   * and its next "raw" value. Any additional "mapValue" transformations
-   * are applied to the next value.
-   * @param {Object<fieldPath: nextValue>} fieldsPatch
-   */
-  setValues = async (fieldsPatch) => {
-    const { fields } = this.state
-    const transformers = deriveDeepWith(
-      (_, nextValue, fieldState) => {
-        const fieldStatePatch = R.compose(
-          recordUtils.setValue(fieldState.mapValue(nextValue), fieldState),
-          recordUtils.resetValidityState,
-        )(fieldState)
-
-        this.emit(
-          'applyStatePatch',
-          fieldState.fieldPath,
-          fieldStatePatch,
-          (nextFieldState) => {
-            this.emit('validateField', {
-              fieldProps: nextFieldState,
-              forceProps: true,
-            })
-          },
-        )
-      },
-      fieldsPatch,
-      fields,
-    )
-
-    R.evolve(transformers, fields)
-  }
-
-  /**
    * Handles the first change of a field value.
    * @param {Event} event
    * @param {any} nextValue
@@ -698,44 +664,77 @@ export default class Form extends React.Component {
   }
 
   /**
+   * Updates the fields with the given patch, which includes field's path
+   * and its next "raw" value. Any additional "mapValue" transformations
+   * are applied to the next value.
+   * @param {Object<fieldPath: nextValue>} fieldsPatch
+   */
+  setValues = async (fieldsPatch) => {
+    const { fields: prevFields } = this.state
+
+    const transformers = deriveDeepWith(
+      (_, nextValue, fieldState) => {
+        const fieldStatePatch = R.compose(
+          recordUtils.setValue(fieldState.mapValue(nextValue), fieldState),
+          recordUtils.resetValidityState,
+        )(fieldState)
+
+        this.emit(
+          'applyStatePatch',
+          fieldState.fieldPath,
+          fieldStatePatch,
+          (nextFieldState) => {
+            this.emit('validateField', {
+              fieldProps: nextFieldState,
+              forceProps: true,
+            })
+          },
+        )
+      },
+      fieldsPatch,
+      prevFields,
+    )
+
+    R.evolve(transformers, prevFields)
+  }
+
+  /**
    * Sets the objects mapping field paths to error messages,
    * and applies the given messages to the form's fields.
    * @param {Object} fieldsDelta
    */
   setErrors = (fieldsDelta) => {
-    const { fields } = this.state
-
-    /**
-     *
-     * @todo Adjust for state patch.
-     *
-     */
+    const { fields: prevFields } = this.state
 
     /**
      * Get transformers for fields in the following format:
-     * [fieldPath]: fieldTransformer(fieldProps)
+     * [fieldPath]: transformerFunc(fieldState)
      */
     const transformers = deriveDeepWith(
-      (_, errors) =>
-        R.compose(
+      (_, errors, fieldState) => {
+        const fieldStatePatch = R.compose(
           recordUtils.setErrors(errors),
-          /** @todo Field patch updates */
-          recordUtils.updateValidityState(true /* fieldProps */),
+          recordUtils.updateValidityState(
+            true,
+            R.compose(
+              R.assoc('expected', !errors),
+              R.assoc('validated', true),
+            )(fieldState),
+          ),
           recordUtils.setTouched(!!errors),
-          R.assoc('expected', !errors),
-          R.assoc('validated', true),
-        ),
+        )({})
+
+        this.emit('applyStatePatch', fieldState.fieldPath, fieldStatePatch)
+      },
       fieldsDelta,
-      fields,
+      prevFields,
     )
 
     /**
      * Apply transformers object to the current fields.
-     * Fields not included in transformers are returned as-is.
+     * Return payload matters not, as state update happens in the transformer function.
      */
-    const nextFields = R.evolve(transformers, fields)
-
-    return this.promiseState({ fields: nextFields })
+    R.evolve(transformers, prevFields)
   }
 
   /**

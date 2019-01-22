@@ -14,26 +14,30 @@ export default function reflectValidationResult(
     } = resolverArgs
 
     const { validators, expected } = validationResult
-    const errorMessages = getMessages(validationResult, resolverArgs, messages)
+    const errors = getMessages(validationResult, resolverArgs, messages)
 
-    const validationProps = validators.reduce((props, validatorName) => {
-      const validPropName = camelize('valid', validatorName)
-      const validatedPropName = camelize('validated', validatorName)
+    const validationProps = validators.reduce(
+      (props, validatorName) => {
+        const validPropName = camelize('valid', validatorName)
+        const validatedPropName = camelize('validated', validatorName)
 
-      return {
-        ...props,
-        [validatedPropName]: true,
-        [validPropName]: expected,
-      }
-    }, {})
+        return {
+          ...props,
+          [validatedPropName]: true,
+          [validPropName]: expected,
+        }
+      },
+      {
+        expected,
+        validated: true,
+      },
+    )
 
     /**
      * @todo This intermediate state patch is annoying to construct.
      */
     const tempStatePatch = R.compose(
-      recordUtils.setErrors(errorMessages, fieldProps),
-      R.assoc('expected', expected),
-      R.assoc('validated', true),
+      recordUtils.setErrors(errors),
       R.mergeDeepLeft(validationProps),
     )({})
 
