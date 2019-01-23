@@ -32,7 +32,7 @@ export default async function handleFieldChange(
       onChange,
     )
 
-    return dispatch(
+    dispatch(
       onChange,
       {
         event,
@@ -44,6 +44,8 @@ export default async function handleFieldChange(
       },
       form.context,
     )
+
+    return
   }
 
   /* Update field's value */
