@@ -15,7 +15,7 @@ import {
   getComponentName,
   recordUtils,
   rxUtils,
-  warning,
+  error,
 } from '../utils'
 
 /* Default options for `connectField()` HOC */
@@ -84,8 +84,8 @@ export default function connectField(options) {
       }
 
       static contextTypes = {
-        form: PropTypes.object.isRequired,
-        fields: PropTypes.object.isRequired,
+        form: PropTypes.object,
+        fields: PropTypes.object,
         fieldGroup: PropTypes.arrayOf(PropTypes.string),
       }
 
@@ -96,8 +96,7 @@ export default function connectField(options) {
 
         /* Compose the field path */
         this.__fieldPath = fieldGroup ? [...fieldGroup, name] : [name]
-
-        invariant(
+        error(
           form,
           'Failed to construct the field `%s`: field is not a child of the <Form> component.',
           this.__fieldPath.join('.'),
@@ -109,7 +108,7 @@ export default function connectField(options) {
          * are composed at this moment. There is no need to wait for the next
          * re-rendering to access them.
          */
-        this.contextProps = this.register()
+        this.contextProps = form && this.register()
       }
 
       /* Registers the current field within the parent form's state */
@@ -373,6 +372,7 @@ export default function connectField(options) {
 
       render() {
         const { props, contextProps } = this
+        if (!contextProps) return null
 
         /* Reference to the enforced props from the HOC options */
         const enforcedProps = hocOptions.enforceProps({ props, contextProps })
