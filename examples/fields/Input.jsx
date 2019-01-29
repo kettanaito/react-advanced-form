@@ -18,6 +18,7 @@ class Input extends React.Component {
   render() {
     const { fieldProps, fieldState, id, name, label, hint } = this.props
     const {
+      focused,
       touched,
       pristine,
       required,
@@ -33,6 +34,7 @@ class Input extends React.Component {
 
     const inputClassNames = [
       'form-control',
+      focused && 'is-focused',
       touched && 'is-touched',
       pristine && 'is-pristine',
       validating && 'is-validating',
