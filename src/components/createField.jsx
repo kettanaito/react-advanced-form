@@ -374,7 +374,7 @@ export default function connectField(options) {
             'Failed to render the field `%s`: expected to be a child ' +
               'of a Form component. Please render fields as children of ' +
               'Form, since formless fields are not currently supported.',
-            props.name,
+              this.__fieldPath.join('.'),
           )
           return null
         }
