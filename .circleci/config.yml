@@ -43,6 +43,10 @@ jobs:
           command: npm run build
 
       - run:
+          name: Checking bundle size
+          command: bundlesize
+
+      - run:
           name: Building Storybook
           command: npm run build:storybook
 
