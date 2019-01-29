@@ -1,6 +1,6 @@
 {
   "name": "react-advanced-form",
-  "version": "1.6.6",
+  "version": "1.6.7",
   "description": "Functional reactive forms in React. Multi-layer validation, field grouping, reactive props, and much more.",
   "main": "lib/index.js",
   "license": "MIT",
@@ -51,6 +51,12 @@
     "test": "npm run test:unit",
     "prepublishOnly": "npm run build && npm test"
   },
+  "bundlesize": [
+    {
+      "path": "lib/index.js",
+      "maxSize": "90 kB"
+    }
+  ],
   "peerDependencies": {
     "react": "^15.0.0"
   },
@@ -109,6 +115,7 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
+    "bundlesize": "^0.17.1",
     "hoist-non-react-statics": "^3.1.0",
     "invariant": "^2.2.4",
     "ramda": "^0.26.0",

@@ -92,8 +92,8 @@ export default class Form extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-    const { rules: explicitRules, messages: explicitMessages } = props
-    const { debounceTime, rules: contextRules, messages } = context
+    const { rules: formRules, messages: explicitMessages } = props
+    const { debounceTime, rules: providerRules, messages } = context
 
     if (this.props.hasOwnProperty('withImmutable')) {
       console.warn(
@@ -134,16 +134,23 @@ export default class Form extends React.Component {
     this.state = {
       dirty: false,
       fields: {},
-      rules: formUtils.mergeRules(explicitRules, contextRules),
+      rules: formUtils.mergeRules(formRules, providerRules),
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { rules: prevRules } = this.props
-    const { rules: nextRules } = nextProps
+  componentWillReceiveProps(nextProps, nextContext) {
+    const { rules: prevFormRules } = this.props
+    const { rules: nextFormRules } = nextProps
+    const { rules: prevProviderRules } = this.context
+    const { rules: nextProviderRules } = nextContext
 
-    if (!R.equals(prevRules, nextRules)) {
-      const updatedRules = formUtils.mergeRules(nextRules, this.context.rules)
+    const shouldUpdateState = !(
+      R.equals(nextFormRules, prevFormRules) &&
+      R.equals(nextProviderRules, prevProviderRules)
+    )
+
+    if (shouldUpdateState) {
+      const nextRules = formUtils.mergeRules(nextFormRules, nextProviderRules)
 
       /**
        * Reset the validity and validation state of all fields
@@ -151,7 +158,7 @@ export default class Form extends React.Component {
        * schema from the next props.
        * @todo A good optimization place. May be refined.
        */
-      const resetFields = R.compose(
+      const nextFields = R.compose(
         fieldUtils.stitchFields,
         R.map(
           R.compose(
@@ -163,8 +170,8 @@ export default class Form extends React.Component {
       )(this.state.fields)
 
       this.setState({
-        fields: resetFields,
-        rules: updatedRules,
+        fields: nextFields,
+        rules: nextRules,
       })
     }
   }
@@ -493,6 +500,7 @@ export default class Form extends React.Component {
     let fieldProps = forceProps
       ? explicitFieldProps
       : R.path(explicitFieldProps.fieldPath, fields)
+
     fieldProps = fieldProps || explicitFieldProps
 
     /* Perform the validation */
@@ -522,6 +530,8 @@ export default class Form extends React.Component {
    */
   validate = async (predicate = R.T) => {
     const { fields } = this.state
+    const { onInvalid } = this.props
+
     const flattenedFields = getLeavesWhich(
       R.allPass([R.is(Object), R.has('fieldPath'), predicate]),
       fields,
@@ -535,8 +545,6 @@ export default class Form extends React.Component {
     /* Await for all validation promises to resolve before returning */
     const validatedFields = await Promise.all(pendingValidations)
     const isFormValid = validatedFields.every(R.propEq('expected', true))
-
-    const { onInvalid } = this.props
 
     if (!isFormValid && onInvalid) {
       const { fields: nextFields } = this.state

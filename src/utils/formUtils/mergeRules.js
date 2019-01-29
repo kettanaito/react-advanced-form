@@ -3,18 +3,18 @@ import * as R from 'ramda'
 /**
  * Returns form rules based on the provided proprietary rules
  * and the inherited context rules.
- * @param {Object} validationSchema
+ * @param {Object} formRules
  * @param {Object} contextRules
  * @returns {Object}
  */
-export default function mergeRules(validationSchema, contextRules = {}) {
-  if (!validationSchema) {
+export default function mergeRules(formRules, contextRules = {}) {
+  if (!formRules) {
     return contextRules
   }
 
-  const closestRules = validationSchema || contextRules
+  const closestRules = formRules || contextRules
 
-  return closestRules.extend
+  return closestRules.extend && contextRules
     ? R.mergeDeepRight(closestRules, contextRules)
     : closestRules
 }

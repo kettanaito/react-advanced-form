@@ -1,5 +1,6 @@
-const useFirstSchema = () => cy.get('#btn-one').click()
-const useSecondSchema = () => cy.get('#btn-two').click()
+const toggleProviderSchema = () => cy.get('#provider-one').click()
+const userFirstFormSchema = () => cy.get('#form-one').click()
+const useSecondFormSchema = () => cy.get('#form-two').click()
 
 describe('Conditional schema', function() {
   before(() => {
@@ -23,20 +24,55 @@ describe('Conditional schema', function() {
       .expected(false)
   })
 
-  it('Properly validates after schema is changed on runtime', () => {
-    useSecondSchema()
-    cy.getField('fieldOne')
+  it('Properly validates when FormProvider.props.rules changes', () => {
+    cy.getField('fieldThree')
+      .valid(false)
+      .invalid(false)
+      .clear()
+      .typeIn('foo')
+      .valid(false)
+      .invalid(false)
+      .clear()
+      .typeIn('123')
+      .valid(false)
+      .invalid(false)
+      .blur()
+      .wait(250)
+
+    toggleProviderSchema()
+    cy.getField('fieldThree')
+      .valid(false)
+      .invalid(false)
+      .clear()
+      .typeIn('foo')
       .expected()
+      .clear()
+      .typeIn('123')
+      .expected(false)
+  })
+
+  it('Properly validates when Form.props.rules changes', () => {
+    useSecondFormSchema()
+    cy.getField('fieldOne')
+      .valid(false)
+      .invalid(false)
       .clear()
       .type('foo')
       .expected(false)
+      .blur()
+      .wait(250)
 
-    useFirstSchema()
-    cy.getField('fieldOne').expected()
+    userFirstFormSchema()
+    cy.getField('fieldOne')
+      .valid(false)
+      .invalid(false)
+      .focus()
+      .blur()
+      .expected()
   })
 
   it('Resets validation state of fields not present in next schema', () => {
-    useSecondSchema()
+    useSecondFormSchema()
     cy.getField('fieldTwo')
       .valid(false)
       .invalid(false)

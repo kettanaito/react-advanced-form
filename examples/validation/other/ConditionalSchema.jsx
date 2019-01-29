@@ -1,16 +1,22 @@
 import React from 'react'
-import { Form } from 'react-advanced-form'
+import { FormProvider, Form } from 'react-advanced-form'
 import { Input } from '@examples/fields'
 import Button from '@examples/shared/Button'
 
-const schemaOne = {
+const providerRulesOne = {
+  name: {
+    fieldThree: ({ value }) => value !== '123',
+  },
+}
+
+const formRulesOne = {
   name: {
     fieldOne: ({ value }) => value === 'foo',
     fieldTwo: ({ value }) => value !== 'bar',
   },
 }
 
-const schemaTwo = {
+const formRulesTwo = {
   name: {
     fieldOne: ({ value }) => value === 'bar',
   },
@@ -19,17 +25,24 @@ const schemaTwo = {
 export default class ConditionalSchema extends React.Component {
   state = {
     flag: true,
+    formRules: formRulesOne,
+    providerRules: null,
+  }
+
+  toggleProviderRules = () => {
+    this.setState(({ providerRules }) => ({
+      providerRules: providerRules ? null : providerRulesOne,
+    }))
   }
 
   render() {
-    const { flag } = this.state
-    const rules = flag ? schemaOne : schemaTwo
+    const { providerRules, formRules } = this.state
 
     return (
-      <React.Fragment>
+      <FormProvider rules={providerRules}>
         <h1>Conditional schema</h1>
 
-        <Form rules={rules}>
+        <Form rules={{ extend: true, ...formRules }}>
           <Input
             name="fieldOne"
             label="Field one"
@@ -41,22 +54,32 @@ export default class ConditionalSchema extends React.Component {
             required
           />
 
-          <Input name="fieldTwo" initialValue="bar" />
-
-          <Button
-            id="btn-one"
-            onClick={() => this.setState(({ flag }) => ({ flag: true }))}
-          >
-            Use first schema
-          </Button>
-          <Button
-            id="btn-two"
-            onClick={() => this.setState(({ flag }) => ({ flag: false }))}
-          >
-            Use second schema
-          </Button>
+          <Input name="fieldTwo" label="Field two" initialValue="bar" />
+          <Input
+            name="fieldThree"
+            label="Field three"
+            initialValue="123"
+            hint={providerRules && 'Uses rules from FormProvider'}
+          />
         </Form>
-      </React.Fragment>
+
+        <Button id="provider-one" onClick={this.toggleProviderRules}>
+          Toggle provider rules
+        </Button>
+
+        <Button
+          id="form-one"
+          onClick={() => this.setState({ formRules: formRulesOne })}
+        >
+          Use first schema
+        </Button>
+        <Button
+          id="form-two"
+          onClick={() => this.setState({ formRules: formRulesTwo })}
+        >
+          Use second schema
+        </Button>
+      </FormProvider>
     )
   }
 }
