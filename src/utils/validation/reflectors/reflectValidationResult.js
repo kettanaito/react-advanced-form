@@ -3,7 +3,10 @@ import camelize from '../../camelize'
 import * as recordUtils from '../../recordUtils'
 import getMessages from '../messages/getMessages'
 
-export default function reflectValidationResult(resolverArgs, shouldValidate = true) {
+export default function reflectValidationResult(
+  resolverArgs,
+  shouldValidate = true,
+) {
   return (validationResult) => {
     const {
       fieldProps,
