@@ -3,13 +3,21 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-function logSerialized({ serialized }) {
-  return action('serialized')(serialized)
+function logSubmit({ serialized }) {
+  return action('Submit')(serialized)
+}
+
+function logInvalid({ invalidFields }) {
+  return action('Invalid')(invalidFields)
 }
 
 function addComponent(Component) {
   return () => (
-    <Component.type {...Component.props} onSubmitStart={logSerialized} />
+    <Component.type
+      {...Component.props}
+      onInvalid={logInvalid}
+      onSubmitStart={logSubmit}
+    />
   )
 }
 
