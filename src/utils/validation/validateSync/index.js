@@ -25,7 +25,11 @@ export default async function validateSync(resolverArgs, rules, force) {
    * Avoid repeating the logic, prefer reusing the output.
    * Review if this comment is relative.
    */
-  const should = shouldValidateSync(resolverArgs, relevantFormRules, force)
+  const shouldValidate = shouldValidateSync(
+    resolverArgs,
+    relevantFormRules,
+    force,
+  )
 
   /**
    * @todo Rewrite listOf composition to be pure.
@@ -36,10 +40,10 @@ export default async function validateSync(resolverArgs, rules, force) {
     addWhen(relevantFormRules, hasFormRules, applyFormRules),
   )(resolverArgs)
 
-  const result =
-    should && rulesList.length > 0
+  const syncValidationResult =
+    shouldValidate && rulesList.length > 0
       ? await reduceWhileExpected(rulesList)(resolverArgs)
       : null
 
-  return createValidatorResult('sync', result)
+  return createValidatorResult('sync', syncValidationResult)
 }

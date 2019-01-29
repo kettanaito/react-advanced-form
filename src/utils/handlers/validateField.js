@@ -14,6 +14,7 @@ export default async function validateField(resolverArgs) {
      * When a field needed no validation, return its state as-is
      * but set "expected" to "true" since its default value is "false",
      * to prevent field from blocking the submit.
+     *
      * @todo Maybe all fields should be treated as "expected", since
      * their validation necessity is defined by "validatedABC" props,
      * and will re-write the value of "expected" when needed.
