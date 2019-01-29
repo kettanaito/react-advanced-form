@@ -3,7 +3,6 @@
  * component. Used for custom field styling, implementing fields with custom logic, and
  * third-party field components integration.
  */
-import invariant from 'invariant'
 import * as R from 'ramda'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -15,7 +14,7 @@ import {
   getComponentName,
   recordUtils,
   rxUtils,
-  error,
+  warning,
 } from '../utils'
 
 /* Default options for `connectField()` HOC */
@@ -96,11 +95,6 @@ export default function connectField(options) {
 
         /* Compose the field path */
         this.__fieldPath = fieldGroup ? [...fieldGroup, name] : [name]
-        error(
-          form,
-          'Failed to construct the field `%s`: field is not a child of the <Form> component.',
-          this.__fieldPath.join('.'),
-        )
 
         /**
          * Register the field in the parent Form's state and store its internal record
@@ -372,7 +366,18 @@ export default function connectField(options) {
 
       render() {
         const { props, contextProps } = this
-        if (!contextProps) return null
+        
+        /* Render null and log warning in case of formless field */
+        if (!contextProps) {
+          warning(
+            false,
+            'Failed to render the field `%s`: expected to be a child ' +
+              'of a Form component. Please render fields as children of ' +
+              'Form, since formless fields are not currently supported.',
+            props.name,
+          )
+          return null
+        }
 
         /* Reference to the enforced props from the HOC options */
         const enforcedProps = hocOptions.enforceProps({ props, contextProps })

@@ -1,7 +1,6 @@
 /* Primitives */
 export isset from './isset'
 export warning from './warning'
-export error from './error'
 export camelize from './camelize'
 export debounce from './debounce'
 export dispatch from './dispatch'
