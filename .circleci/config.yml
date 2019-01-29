@@ -44,7 +44,7 @@ jobs:
 
       - run:
           name: Checking bundle size
-          command: bundlesize
+          command: node_modules/.bin/bundlesize
 
       - run:
           name: Building Storybook
