@@ -351,7 +351,7 @@ export default function connectField(options) {
         const { props, fieldState } = this
 
         /* Render null and log warning in case of formless field */
-        if (!contextProps) {
+        if (!fieldState) {
           warning(
             false,
             'Failed to render the field `%s`: expected to be a child ' +
