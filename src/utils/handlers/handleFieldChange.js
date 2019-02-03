@@ -75,7 +75,7 @@ export default async function handleFieldChange(
     ? fieldProps.debounceValidate
     : validateField
 
-  const validatedFieldProps = await appropriateValidation({
+  const validatedFieldState = await appropriateValidation({
     chain: [validateSync],
     fieldProps: updatedFieldState,
 
@@ -104,7 +104,7 @@ export default async function handleFieldChange(
    * making the "fields" instance passed to "handleFieldChange" function
    * outdated.
    */
-  // const nextFields = recordUtils.updateCollectionWith(nextFieldProps: validatedFieldProps, fields)
+  // const nextFields = recordUtils.updateCollectionWith(nextFieldProps: validatedFieldState, fields)
 
   /**
    * Call custom "onChange" handler for uncontrolled fields only.
@@ -115,5 +115,5 @@ export default async function handleFieldChange(
    * dispatch the handler method once more.
    */
 
-  return validatedFieldProps
+  return validatedFieldState
 }

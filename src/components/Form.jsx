@@ -443,7 +443,7 @@ export default class Form extends React.Component {
     } = args
     const { fields, dirty } = this.state
 
-    const fieldStatePatch = await handlers.handleFieldChange(
+    const validatedFieldState = await handlers.handleFieldChange(
       args,
       fields,
       this,
@@ -471,8 +471,8 @@ export default class Form extends React.Component {
      * Change handler for controlled fields does not return the next field props
      * record, therefore, need to explicitly ensure the payload was returned.
      */
-    if (fieldStatePatch) {
-      this.emit('applyStatePatch', fieldPath, fieldStatePatch)
+    if (validatedFieldState) {
+      this.emit('applyStatePatch', fieldPath, validatedFieldState)
     }
 
     /* Mark form as dirty if it's not already */
@@ -544,7 +544,7 @@ export default class Form extends React.Component {
     fieldProps = fieldProps || explicitFieldProps
 
     /* Perform the validation */
-    const fieldStatePatch = await validate({
+    const validatedFieldState = await validate({
       chain,
       force,
       fieldProps,
@@ -554,11 +554,10 @@ export default class Form extends React.Component {
 
     /* Update the field in the state to reflect the changes */
     if (shouldUpdateFields) {
-      this.emit('applyStatePatch', fieldProps.fieldPath, fieldStatePatch)
+      this.emit('applyStatePatch', fieldProps.fieldPath, validatedFieldState)
     }
 
-    /* Return the whole next field state */
-    return R.mergeDeepLeft(fieldStatePatch, fieldProps)
+    return validatedFieldState
   }
 
   /**
