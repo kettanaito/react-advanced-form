@@ -1,20 +1,22 @@
+const reset = () => cy.get('#default-reset').click()
+
 describe('Touched', () => {
   before(() => {
-    cy.loadStory(['Basics', 'Interaction', 'Form submit'])
+    cy.loadStory(['Basics', 'Interaction', 'Reset'])
   })
 
-  it('Asserts a field is untouched by default', () => {
-    cy.getField('email')
+  it('Field becomes touched upon blur', () => {
+    cy.getField('username')
       .touched(false)
       .focus()
       .touched(false)
-      .blur()
-  })
-
-  it('A field becomes touched after focus and blur', () => {
-    cy.getField('email')
-      .focus()
-      .blur()
+      .wait(50)
+      .blur({ force: true })
       .touched()
+  })
+
+  it('Field is untouched after reset', () => {
+    reset()
+    cy.getField('username').touched(false)
   })
 })

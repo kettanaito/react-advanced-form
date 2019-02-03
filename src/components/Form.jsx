@@ -25,8 +25,8 @@ import {
   formUtils,
   rxUtils,
 } from '../utils'
-import * as handlers from '../utils/handlers'
-import validate from '../utils/handlers/validateField'
+import handleFieldChange from '../utils/handlers/handleFieldChange'
+import validateField from '../utils/handlers/validateField'
 import getLeavesWhich from '../utils/getLeavesWhich'
 import deriveDeepWith from '../utils/deriveDeepWith'
 import stitchWith from '../utils/stitchWith'
@@ -443,29 +443,24 @@ export default class Form extends React.Component {
     } = args
     const { fields, dirty } = this.state
 
-    const validatedFieldState = await handlers.handleFieldChange(
-      args,
-      fields,
-      this,
-      {
-        onUpdateValue: (intermediateStatePatch) => {
-          this.applyStatePatch([
-            [
-              fieldPath,
-              intermediateStatePatch,
-              (fieldState, nextFields) =>
-                dispatch(fieldState.onChange, {
-                  prevValue,
-                  nextValue,
-                  fieldProps: fieldState,
-                  fields: nextFields,
-                  form: this,
-                }),
-            ],
-          ])
-        },
+    const validatedFieldState = await handleFieldChange(args, fields, this, {
+      onUpdateValue: (intermediateStatePatch) => {
+        this.applyStatePatch([
+          [
+            fieldPath,
+            intermediateStatePatch,
+            (fieldState, nextFields) =>
+              dispatch(fieldState.onChange, {
+                prevValue,
+                nextValue,
+                fieldProps: fieldState,
+                fields: nextFields,
+                form: this,
+              }),
+          ],
+        ])
       },
-    )
+    })
 
     /**
      * Change handler for controlled fields does not return the next field props
@@ -488,31 +483,23 @@ export default class Form extends React.Component {
    */
   handleFieldBlur = this.withRegisteredField(async (args) => {
     const { fieldProps } = args
-    const { fields } = this.state
-    const fieldStatePatch = await handlers.handleFieldBlur(args, fields, this)
-
-    /**
-     * @todo
-     * There are two events happening here:
-     * a) field blur (sets "focused" and "touched" next values),
-     * b) validates field.
-     * Right now there is a single call to "applyStatePatch" that
-     * includes the state chunk of field validation and blur together.
-     * Those two events should be dispatched separately, taking
-     * concurrency into account.
-     */
 
     this.emit(
       'applyStatePatch',
       fieldProps.fieldPath,
-      fieldStatePatch,
-      (fieldState, nextFields) =>
-        dispatch(fieldState.onBlur, {
-          fieldProps: fieldState,
-          fields: nextFields,
-          form: this,
-        }),
+      R.compose(
+        recordUtils.setTouched(true),
+        recordUtils.setFocused(true),
+      )({}),
     )
+
+    this.validateField({ fieldProps }).then((nextFieldState) => {
+      dispatch(nextFieldState.onBlur, {
+        fieldProps: nextFieldState,
+        fields: this.state.fields,
+        form: this,
+      })
+    })
   })
 
   /**
@@ -544,7 +531,7 @@ export default class Form extends React.Component {
     fieldProps = fieldProps || explicitFieldProps
 
     /* Perform the validation */
-    const validatedFieldState = await validate({
+    const validatedFieldState = await validateField({
       chain,
       force,
       fieldProps,
