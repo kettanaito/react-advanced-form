@@ -89,7 +89,7 @@ export default function makeObservable(
      * validate to prevent invalid fields at initial form render.
      */
     const shouldValidate = !!recordUtils.getValue(subscriberProps)
-    const isTargetRegistered = R.path(targetFieldPath, fields)
+    const isTargetRegistered = R.hasPath(targetFieldPath, fields)
 
     if (isTargetRegistered) {
       const subscription = createObserver({

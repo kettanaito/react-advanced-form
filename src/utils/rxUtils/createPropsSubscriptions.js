@@ -49,8 +49,8 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         const nextPropValue = dispatch(resolver, nextResolverArgs)
         const nextSubscriberStateChunk = R.compose(
           /**
-           * Reset validity and validation state on the reactive fields
-           * so it triggers validation regardless of its previous status.
+           * Reset validity and validation state on a reactive field
+           * so it triggers validation regardless of its previous validity status.
            */
           recordUtils.resetValidityState,
           recordUtils.resetValidationState,
@@ -68,27 +68,17 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
           nextFields,
         )
 
-        console.warn('prop subscription')
-        console.log(
-          'resolving prop subscription "%s"',
-          nextSubscriberState,
-          propName,
-          nextPropValue,
-        )
-        console.log({ nextSubscriberStateChunk })
-        console.log({ nextSubscriberState })
-
         if (shouldValidate) {
           /**
            * Dispatch field validation in parallel with reactive prop update
-           * because due to chunked nature of updates, the next field state chunks
+           * because due to patched nature of updates, the next field state chunks
            * produces by these two actions do not intersect, and can be merged
            * simultaneously.
            */
           form.validateField({
             /**
              * Forcing validation that originates from reactive subscription
-             * shouldn't be force if a field's validity and validation state are reset,
+             * shouldn't be forced if a field's validity and validation state are reset,
              * and the reset field state is being validated.
              * @see https://github.com/kettanaito/react-advanced-form/issues/344
              */
@@ -102,7 +92,7 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         }
 
         form.eventEmitter.emit(
-          'updateStateChunk',
+          'applyStatePatch',
           subscriberFieldPath,
           nextSubscriberStateChunk,
         )
