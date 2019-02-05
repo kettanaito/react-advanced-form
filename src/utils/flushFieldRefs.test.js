@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import * as recordUtils from './recordUtils'
 import flushFieldRefs from './flushFieldRefs'
 
@@ -14,10 +15,10 @@ const fieldTwo = recordUtils.createField({
   value: 'bar',
 })
 
-const fields = recordUtils.updateCollectionWith(
-  fieldOne,
-  recordUtils.updateCollectionWith(fieldTwo, {}),
-)
+const fields = R.compose(
+  R.assocPath(fieldTwo.fieldPath, fieldTwo),
+  R.assocPath(fieldOne.fieldPath, fieldOne),
+)({})
 
 const method = ({ value, get }) => {
   expect(value).toEqual('foo')

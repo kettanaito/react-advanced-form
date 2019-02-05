@@ -41,11 +41,6 @@ describe('recordUtils', () => {
     expect(checkboxField).toHaveProperty('touched', false)
   })
 
-  it('updateCollectionWith', () => {
-    const nextCollection = recordUtils.updateCollectionWith(inputField, {})
-    expect(R.path(inputField.fieldPath, nextCollection)).toEqual(inputField)
-  })
-
   it('getValue', () => {
     const value = recordUtils.getValue(inputField)
     expect(value).toEqual('foo')

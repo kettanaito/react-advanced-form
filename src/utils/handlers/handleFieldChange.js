@@ -32,6 +32,14 @@ export default async function handleFieldChange(
       onChange,
     )
 
+    /**
+     * Call custom "onChange" handler for uncontrolled fields only.
+     * "onChange" callback method acts as an updated function for controlled fields,
+     * and as a callback function for uncontrolled fields. The value update of
+     * uncontrolled fields is handled by the Form. Controlled fields dispatch
+     * "onChange" handler at the beginning of this method. There is no need to
+     * dispatch the handler method once more.
+     */
     dispatch(onChange, {
       event,
       nextValue,
@@ -97,23 +105,6 @@ export default async function handleFieldChange(
     // fields: form.state.fields,
     form,
   })
-
-  /**
-   * Composition of the next field is irrelevant here.
-   * Because "onUpdateValue" hook creates a side-effect fields update,
-   * making the "fields" instance passed to "handleFieldChange" function
-   * outdated.
-   */
-  // const nextFields = recordUtils.updateCollectionWith(nextFieldProps: validatedFieldState, fields)
-
-  /**
-   * Call custom "onChange" handler for uncontrolled fields only.
-   * "onChange" callback method acts as an updated function for controlled fields,
-   * and as a callback function for uncontrolled fields. The value update of
-   * uncontrolled fields is handled by the Form. Controlled fields dispatch
-   * "onChange" handler at the beginning of this method. There is no need to
-   * dispatch the handler method once more.
-   */
 
   return validatedFieldState
 }

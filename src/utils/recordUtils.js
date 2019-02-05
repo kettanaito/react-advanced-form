@@ -1,8 +1,8 @@
 /**
  * Record utils.
- * A collection of pure helper functions which perform field record updates.
- * Each function takes a field record and additional parameters and returns
- * the next state of the field record.
+ * A collection of pure helper functions which perform field state updates.
+ * Each function takes a field state and additional parameters and returns
+ * the next field state patch.
  */
 import * as R from 'ramda'
 import invariant from 'invariant'
@@ -63,16 +63,6 @@ export const createField = (initialState) => {
     ...initialState,
   }
 }
-
-/**
- * Updates the given collection with the given field props.
- * @param {Object} fieldState
- * @param {Object} collection
- */
-export const updateCollectionWith = R.curry((fieldState, collection) => {
-  console.error('(recordUtils) Deprecate `updateCollectionWith`')
-  return R.assocPath(fieldState.fieldPath, fieldState, collection)
-})
 
 /**
  * Returns the value of the given field.
