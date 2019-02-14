@@ -44,9 +44,9 @@
     "build": "npm run clean && cross-env NODE_ENV=production webpack",
     "build:storybook": "cross-env NODE_ENV=production build-storybook",
     "test:unit": "cross-env NODE_ENV=production jest",
-    "cypress": "$(npm bin)/cypress open -e envName=dev",
-    "cypress:cli": "$(npm bin)/cypress run --spec 'cypress/integration/index.js' --browser chrome",
-    "test:integration:dev": "$(npm bin)/cypress run -e envName=dev --spec cypress/integration/index.js --headed --no-exit",
+    "cypress": "node_modules/.bin/cypress open -e envName=dev",
+    "cypress:cli": "node_modules/.bin/cypress run --spec 'cypress/integration/index.js' --browser chrome",
+    "test:integration:dev": "node_modules/.bin/cypress run -e envName=dev --spec cypress/integration/index.js --headed --no-exit",
     "test:integration": "npm run cypress:cli",
     "test": "npm run test:unit",
     "prepublishOnly": "npm run build && npm test"
