@@ -120,9 +120,57 @@ describe('recordUtils', () => {
     expect(nextRecord).toHaveProperty('validAsync', false)
   })
 
+  it('updateValidityState: Resolves idle', () => {
+    const nextState = recordUtils.updateValidityState(
+      {
+        ...inputField,
+        value: '',
+      },
+      {
+        validated: false,
+        expected: true,
+      },
+    )
+
+    expect(nextState).toHaveProperty('valid', false)
+    expect(nextState).toHaveProperty('invalid', false)
+  })
+
+  it('updateValidityState: Resolves on expected value', () => {
+    const nextState = recordUtils.updateValidityState(
+      {
+        ...inputField,
+        value: 'foo',
+      },
+      {
+        validated: true,
+        expected: true,
+      },
+    )
+
+    expect(nextState).toHaveProperty('valid', true)
+    expect(nextState).toHaveProperty('invalid', false)
+  })
+
+  it('updateValidityState: Rejects on unexpected value', () => {
+    const nextState = recordUtils.updateValidityState(
+      {
+        ...inputField,
+        value: 'foo',
+      },
+      {
+        validated: true,
+        expected: false,
+      },
+    )
+
+    expect(nextState).toHaveProperty('valid', false)
+    expect(nextState).toHaveProperty('invalid', true)
+  })
+
   it('setTouched', () => {
-    const nextFieldState = recordUtils.setTouched(true, inputField)
-    expect(nextFieldState).toHaveProperty('touched', true)
+    const nextState = recordUtils.setTouched(true, inputField)
+    expect(nextState).toHaveProperty('touched', true)
   })
 
   it('setPristine', () => {

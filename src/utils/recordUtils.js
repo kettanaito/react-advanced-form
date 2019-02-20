@@ -74,8 +74,8 @@ export const getValue = (fieldState) => {
 
   invariant(
     fieldPath,
-    'Failed to get field value: provided object is not a field: %s',
-    Object.keys(fieldState).join(),
+    'Failed to get field value: provided object is not a field: %o',
+    fieldState,
   )
 
   invariant(
@@ -138,34 +138,21 @@ export const setErrors = R.curry((errors, acc) => {
 
 /**
  * Sets the validity state props (valid/invalid) on the given field.
- * @param {boolean} shouldValidate
  * @param {Object} fieldState
  * @returns {Object}
  */
-export const updateValidityState = R.curry(
-  (shouldValidate, fieldState, acc) => {
-    if (!shouldValidate) {
-      return resetValidityState(acc /* {} */)
-    }
+export const updateValidityState = R.curry((fieldState, acc) => {
+  const { validated, expected } = acc
+  const value = getValue(fieldState)
 
-    const { validated, expected, errors } = fieldState
-    const value = getValue(fieldState)
-    const nextValid = !!value && validated && expected
-    const nextInvalid = validated && !expected
-    const nextErrors = expected ? null : errors
-
-    return R.mergeDeepLeft(
-      {
-        errors: nextErrors,
-        expected,
-        validated,
-        valid: nextValid,
-        invalid: nextInvalid,
-      },
-      acc,
-    )
-  },
-)
+  return R.mergeDeepLeft(
+    {
+      valid: !!value && !!validated && !!expected,
+      invalid: !!validated && !expected,
+    },
+    acc,
+  )
+})
 
 /**
  * Resets the validity state (valid/invalid) of the given field.
