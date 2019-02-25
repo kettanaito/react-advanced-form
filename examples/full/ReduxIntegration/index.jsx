@@ -2,46 +2,30 @@ import React from 'react'
 import { createStore } from 'redux'
 import { Provider, connect } from 'react-redux'
 import { Form, createField, fieldPresets } from 'react-advanced-form'
+import { PlainInput } from '@examples/fields/Input'
 import { setVatRequired } from './reducers/actions'
 import vatReducer from './reducers/vatReducer'
 
 const store = createStore(vatReducer)
 
-class Input extends React.Component {
-  render() {
-    const { fieldProps, fieldState, label, isVatRequired } = this.props
-    const { required } = fieldState
-
-    return (
-      <div>
-        {label && (
-          <p>
-            {label}
-            {required && ' *'}
-          </p>
-        )}
-        <input {...fieldProps} />
-      </div>
-    )
-  }
-}
+const RafInput = createField({
+  ...fieldPresets.input,
+  mapState: (state, props) => ({
+    required: props.isVatRequired,
+  }),
+})(PlainInput)
 
 const SubscribedInput = connect((state) => ({
   isVatRequired: state.isVatRequired,
-}))(Input)
-const RafInput = createField({
-  ...fieldPresets.input,
-  mapState: (props, state) => ({
-    required: props.isVatRequired,
-  }),
-})(SubscribedInput)
+}))(RafInput)
 
 const RegistrationForm = (props) => {
   const { setVatRequired, isVatRequired } = props
 
   return (
     <Form>
-      <RafInput name="vatNumber" />
+      <SubscribedInput name="vatNumber" label="VAT" />
+
       <button onClick={() => setVatRequired(!isVatRequired)}>
         Toggle VAT required
       </button>
