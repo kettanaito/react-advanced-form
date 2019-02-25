@@ -85,6 +85,12 @@ storiesOf('Behavior', module).add(
 )
 
 /* Basics */
+import ReduxIntegration from './full/ReduxIntegration'
+storiesOf('Redux integration', module).add(
+  'Redux',
+  addComponent(<ReduxIntegration />),
+)
+
 storiesOf('Basics|Interaction', module)
   .add('Field unmounting', addComponent(<FieldUnmounting />))
   .add('Initial values', addComponent(<InitialValues />))
