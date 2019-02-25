@@ -6,7 +6,9 @@ import Button from '@examples/shared/Button'
 const formMessages = {
   name: {
     fieldOne: {
-      invalid: ({ value }) => `Does "${value}" look like a number to you?`,
+      invalid: ({ value }) => {
+        return `Does "${value}" look like a number to you?`
+      },
     },
     fieldTwo: {
       invalid: ({ value }) =>

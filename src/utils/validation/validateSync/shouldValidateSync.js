@@ -1,7 +1,11 @@
-import allPass from 'ramda/src/allPass'
-import anyPass from 'ramda/src/anyPass'
+import * as R from 'ramda'
 import * as recordUtils from '../../recordUtils'
 
+/**
+ * Validation may be forced when originated from an external source.
+ * For example, a validation request originated from the reactive
+ * prop resolver.
+ */
 const isForced = (resolverArgs, rules, force) => {
   return force
 }
@@ -40,8 +44,8 @@ const hasFormRules = (resolverArgs, formRules) => {
 /**
  * Determines if synchronous validation is necessary.
  */
-export default anyPass([
+export default R.anyPass([
   isForced,
   isRequiredField,
-  allPass([notValidSync, hasValue, anyPass([hasFieldRule, hasFormRules])]),
+  R.allPass([notValidSync, hasValue, R.anyPass([hasFieldRule, hasFormRules])]),
 ])

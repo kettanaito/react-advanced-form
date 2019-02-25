@@ -3,7 +3,6 @@ import { fromEvent } from 'rxjs/internal/observable/fromEvent'
 import { map } from 'rxjs/internal/operators/map'
 import { filter } from 'rxjs/internal/operators/filter'
 import camelize from '../camelize'
-import enforceArray from '../enforceArray'
 
 /**
  * Default predicate function that determines whether there has been
@@ -46,7 +45,7 @@ export default function createPropsObserver({
   eventEmitter,
 }) {
   const propsChangeEventName = camelize(...targetFieldPath, 'props', 'change')
-  const propsList = enforceArray(props)
+  const propsList = [].concat(props)
 
   return fromEvent(eventEmitter, propsChangeEventName).pipe(
     map((eventPayload) => {

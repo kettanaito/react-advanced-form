@@ -6,7 +6,7 @@ import validateSync from '../validation/validateSync'
 import validateField from './validateField'
 
 export default async function handleFieldChange(
-  { event, prevValue, nextValue, fieldProps },
+  { event, prevValue, nextValue, fieldProps: fieldState },
   fields,
   form,
   { onUpdateValue },
@@ -21,14 +21,14 @@ export default async function handleFieldChange(
    */
   const eventInstance = event && (event.nativeEvent || event)
   const { isForcedUpdate } = eventInstance || {}
-  const { controlled: isControlled, onChange } = fieldProps
+  const { controlled: isControlled, onChange } = fieldState
 
   if (!isForcedUpdate && isControlled) {
     invariant(
       onChange,
       'Cannot update the controlled field `%s`. Expected custom `onChange` handler, ' +
         'but got: %s.',
-      fieldProps.fieldPath.join('.'),
+      fieldState.fieldPath.join('.'),
       onChange,
     )
 
@@ -44,7 +44,7 @@ export default async function handleFieldChange(
       event,
       nextValue,
       prevValue,
-      fieldProps,
+      fieldProps: fieldState,
       fields,
       form,
     })
@@ -55,15 +55,15 @@ export default async function handleFieldChange(
   /* Update field's value */
   const fieldStatePatch = R.compose(
     recordUtils.setPristine(false),
-    recordUtils.setValue(nextValue, fieldProps),
+    recordUtils.setValue(nextValue, fieldState),
     recordUtils.resetValidityState,
     recordUtils.resetValidationState,
   )({})
 
-  const updatedFieldState = R.mergeDeepLeft(fieldStatePatch, fieldProps)
+  const updatedFieldState = R.mergeDeepLeft(fieldStatePatch, fieldState)
 
   /* Cancel any pending async validation */
-  const { pendingAsyncValidation } = fieldProps
+  const { pendingAsyncValidation } = fieldState
 
   if (pendingAsyncValidation) {
     pendingAsyncValidation.cancel()
@@ -80,29 +80,14 @@ export default async function handleFieldChange(
    */
   const shouldDebounce = !!prevValue && !!nextValue
   const appropriateValidation = shouldDebounce
-    ? fieldProps.debounceValidate
+    ? fieldState.debounceValidate
     : validateField
 
   const validatedFieldState = await appropriateValidation({
+    /* Prevent state update since "Form.handleFieldChange" updates state after validation */
+    shouldUpdateFields: false,
     chain: [validateSync],
     fieldProps: updatedFieldState,
-
-    /**
-     * Explicitly force field props, since "Form.validateField" will grab
-     * the actual field props by field name from its state. This works unexpected
-     * with concurrent validations (value updates).
-     */
-    // forceProps: true,
-
-    //
-    // NOTE
-    // When passed explicitly here, the state of the fields
-    // may be outdated.
-    // I think it has to do with the debounce nature of this function call.
-    // Internally, "validateField" referenced to the very same fields,
-    // but at that moment their entries are up-to-date.
-    //
-    // fields: form.state.fields,
     form,
   })
 

@@ -5,6 +5,14 @@ describe('Controlled fields', function() {
     cy.loadStory(['Basics', 'Interaction', 'Controlled fields'])
   })
 
+  afterEach(() => {
+    cy.log('Reset form')
+      .window()
+      .then(($window) => {
+        $window.form.reset()
+      })
+  })
+
   it('Mounts with proper initial state', () => {
     cy.window().should(($window) => {
       const serialized = $window.form.serialize()
@@ -40,19 +48,38 @@ describe('Controlled fields', function() {
       .clear()
       .typeIn('another')
 
-    cy.window().then(($window) => {
-      const serialized = $window.form.serialize()
+    cy.getField('inputOne').hasValue('first value')
+    cy.getField('inputTwo').hasValue('second value')
+    cy.getField('radio').hasValue('cucumber')
+    cy.getField('checkbox1').hasValue(true)
+    cy.getField('checkbox2').hasValue(false)
+    cy.getField('select').hasValue('three')
+    cy.getField('textareaOne').hasValue('foo')
+    cy.getField('textareaTwo').hasValue('another')
 
-      return expect(serialized).to.deep.equal({
-        inputOne: 'first value',
-        inputTwo: 'second value',
-        radio: 'cucumber',
-        checkbox1: true,
-        checkbox2: false,
-        select: 'three',
-        textareaOne: 'foo',
-        textareaTwo: 'another',
-      })
-    })
+    // cy.window().then(($window) => {
+    //   const serialized = $window.form.serialize()
+
+    //   return expect(serialized).to.deep.equal({
+    //     inputOne: 'first value',
+    //     inputTwo: 'second value',
+    //     radio: 'cucumber',
+    //     checkbox1: true,
+    //     checkbox2: false,
+    //     select: 'three',
+    //     textareaOne: 'foo',
+    //     textareaTwo: 'another',
+    //   })
+    // })
+  })
+
+  it.only('Supports value update derived from state update', () => {
+    cy.get('#update-button').click()
+
+    cy.getField('inputOne').hasValue('foo')
+    cy.getField('inputTwo').hasValue('bar')
+    cy.getField('checkbox1').should('be.checked')
+    cy.getField('checkbox2').should('not.ßbe.checked')
+    cy.getField('textareaOne').hasValue('third')
   })
 })

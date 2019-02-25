@@ -4,7 +4,6 @@ export warning from './warning'
 export camelize from './camelize'
 export debounce from './debounce'
 export dispatch from './dispatch'
-export evolveP from './evolveP'
 export flushFieldRefs from './flushFieldRefs'
 export makeCancelable from './makeCancelable'
 

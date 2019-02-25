@@ -1,8 +1,11 @@
 // @flow
 import * as R from 'ramda'
 
-type PropPath = string[]
-type CreatePropGetterCallback = (propPath: PropPath, propValue: mixed) => void
+type PropKeyPath = string[]
+type CreatePropGetterCallback = (
+  propKeyPath: PropKeyPath,
+  propValue: mixed,
+) => void
 
 /**
  * A thunk to generate a field prop getter function.
@@ -13,11 +16,11 @@ export default function createPropGetter(
   fields: Object,
   callback: CreatePropGetterCallback,
 ) {
-  return (propPath: PropPath): mixed => {
-    const propValue = R.path(propPath, fields)
+  return (propKeyPath: PropKeyPath): mixed => {
+    const propValue = R.path(propKeyPath, fields)
 
     if (callback) {
-      callback(propPath, propValue)
+      callback(propKeyPath, propValue)
     }
 
     return propValue

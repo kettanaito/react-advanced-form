@@ -29,15 +29,27 @@ export default class FieldUnmounting extends React.Component {
         <h1>Field unmounting</h1>
 
         <Form ref={(form) => (window.form = form)}>
-          <Input name="fieldOne" initialValue="foo" required />
+          <Input
+            name="fieldOne"
+            label="Field one"
+            initialValue="foo"
+            required
+          />
 
           {(shouldDisplayFirst || shouldDisplaySecond) && (
             <Field.Group name="groupName">
               {shouldDisplayFirst && (
-                <Input name="fieldTwo" initialValue="bar" required />
+                <Input
+                  name="fieldTwo"
+                  label="Field two"
+                  initialValue="bar"
+                  required
+                />
               )}
 
-              {shouldDisplaySecond && <Input name="fieldThree" required />}
+              {shouldDisplaySecond && (
+                <Input name="fieldThree" label="Field three" required />
+              )}
             </Field.Group>
           )}
 

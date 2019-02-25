@@ -19,7 +19,6 @@ import {
   isset,
   camelize,
   dispatch,
-  evolveP,
   recordUtils,
   fieldUtils,
   formUtils,
@@ -209,6 +208,10 @@ export default class Form extends React.Component {
     })
   }
 
+  /**
+   * @todo Get rid of state update upon cWRP.
+   * @see https://github.com/kettanaito/react-advanced-form/issues/324
+   */
   componentWillReceiveProps(nextProps, nextContext) {
     const { rules: prevFormRules } = this.props
     const { rules: nextFormRules } = nextProps
@@ -345,20 +348,17 @@ export default class Form extends React.Component {
     })
 
     this.setState({ fields: nextFields }, () => {
-      const fieldRegisteredEvent = camelize(...fieldPath, 'registered')
-      eventEmitter.emit(fieldRegisteredEvent, fieldProps)
+      eventEmitter.emit(camelize(...fieldPath, 'registered'), fieldProps)
 
       if (fieldOptions.shouldValidateOnMount) {
         this.validateField({
-          fieldProps,
-
           /**
            * Enforce the validation function to use the "fieldProps"
            * provided directly. By default, it will try to grab the
            * field record from the state, which does not exist at
            * the point of new field mounting.
            */
-          forceProps: true,
+          fieldProps,
         })
       }
 
@@ -394,16 +394,16 @@ export default class Form extends React.Component {
    * @param {Object} fieldProps
    */
   handleFirstChange = ({ event, prevValue, nextValue, fieldProps }) => {
-    dispatch(this.props.onFirstChange, {
-      event,
-      prevValue,
-      nextValue,
-      fieldProps,
-      fields: this.state.fields,
-      form: this,
+    return this.promiseState({ dirty: true }).then((nextState) => {
+      dispatch(this.props.onFirstChange, {
+        event,
+        prevValue,
+        nextValue,
+        fieldProps,
+        fields: nextState.fields,
+        form: this,
+      })
     })
-
-    return this.promiseState({ dirty: true })
   }
 
   /**
@@ -419,12 +419,13 @@ export default class Form extends React.Component {
       'applyStatePatch',
       fieldProps.fieldPath,
       nextFieldPatch,
-      (fieldState, nextFields) =>
-        dispatch(fieldState.onFocus, {
+      (nextFieldState, nextFields) => {
+        dispatch(nextFieldState.onFocus, {
           fieldProps: fieldProps,
           fields: nextFields,
           form: this,
-        }),
+        })
+      },
     )
   })
 
@@ -449,11 +450,11 @@ export default class Form extends React.Component {
           [
             fieldPath,
             intermediateStatePatch,
-            (fieldState, nextFields) =>
-              dispatch(fieldState.onChange, {
+            (nextFieldState, nextFields) =>
+              dispatch(nextFieldState.onChange, {
                 prevValue,
                 nextValue,
-                fieldProps: fieldState,
+                fieldProps: nextFieldState,
                 fields: nextFields,
                 form: this,
               }),
@@ -482,18 +483,19 @@ export default class Form extends React.Component {
    * @param {Object} fieldProps
    */
   handleFieldBlur = this.withRegisteredField(async (args) => {
-    const { fieldProps } = args
+    const { fieldProps: fieldState } = args
+    const { fieldPath } = fieldState
 
     this.emit(
       'applyStatePatch',
-      fieldProps.fieldPath,
+      fieldPath,
       R.compose(
         recordUtils.setTouched(true),
         recordUtils.setFocused(true),
       )({}),
     )
 
-    this.validateField({ fieldProps }).then((nextFieldState) => {
+    this.validateField({ fieldPath }).then((nextFieldState) => {
       dispatch(nextFieldState.onBlur, {
         fieldProps: nextFieldState,
         fields: this.state.fields,
@@ -506,42 +508,49 @@ export default class Form extends React.Component {
    * Validates the provided field with the additional options.
    * @param {Array<ValidatorFunc>} chain Chain of validators to apply.
    * @param {boolean} force Whether to validate even if validation is unnecessary.
+   * @param {string[]} fieldPath
    * @param {Object} fieldProps Explicit field props to use.
-   * @param {Object} fields Explicit fields to use.
-   * @param {boolean} forceProps Forces given "fieldProps" instead of grabbing
-   * field props from the state by "fieldProps.fieldPath" key.
    * @param {boolean} shouldUpdateFields Whether to update the state after validation.
    */
   validateField = async (args) => {
     const {
       chain,
       force = false,
-      fieldProps: explicitFieldProps,
-      fields: explicitFields,
-      forceProps = false,
+      fieldPath,
+      fieldProps: explicitFieldState,
       shouldUpdateFields = true,
     } = args
+    const { fields } = this.state
 
-    const fields = explicitFields || this.state.fields
+    /**
+     * When only `fieldPath` is provided, grab the field state by path.
+     * When the explicit `fieldState` is provided, use it instead.
+     */
+    const fieldState = fieldPath
+      ? R.path(fieldPath, fields)
+      : explicitFieldState
 
-    let fieldProps = forceProps
-      ? explicitFieldProps
-      : R.path(explicitFieldProps.fieldPath, fields)
-
-    fieldProps = fieldProps || explicitFieldProps
+    /**
+     * Providing explicit `fieldState` implies that the state has mutated, but has not
+     * been reflected in the form's state yet. Merge the explicit state with the prev state.
+     * Otherwise use fields state as-is.
+     */
+    const nextFields = explicitFieldState
+      ? R.assocPath(fieldState.fieldPath, fieldState, fields)
+      : fields
 
     /* Perform the validation */
     const validatedFieldState = await validateField({
       chain,
       force,
-      fieldProps,
-      fields,
+      fieldProps: fieldState,
+      fields: nextFields,
       form: this,
     })
 
     /* Update the field in the state to reflect the changes */
     if (shouldUpdateFields) {
-      this.emit('applyStatePatch', fieldProps.fieldPath, validatedFieldState)
+      this.emit('applyStatePatch', fieldState.fieldPath, validatedFieldState)
     }
 
     return validatedFieldState
@@ -566,8 +575,8 @@ export default class Form extends React.Component {
     )
 
     /* Map pending field validations into a list */
-    const pendingValidations = flattenedFields.map((fieldProps) =>
-      this.validateField({ fieldProps }),
+    const pendingValidations = flattenedFields.map(({ fieldPath }) =>
+      this.validateField({ fieldPath }),
     )
 
     /* Await for all validation promises to resolve before returning */
@@ -672,7 +681,6 @@ export default class Form extends React.Component {
           (nextFieldState) => {
             this.emit('validateField', {
               fieldProps: nextFieldState,
-              forceProps: true,
             })
           },
         )
@@ -701,7 +709,6 @@ export default class Form extends React.Component {
         const fieldStatePatch = R.compose(
           recordUtils.setErrors(errors),
           recordUtils.updateValidityState(
-            true,
             R.compose(
               R.assoc('expected', !errors),
               R.assoc('validated', true),

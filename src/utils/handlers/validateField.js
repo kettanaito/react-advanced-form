@@ -1,12 +1,14 @@
 import * as R from 'ramda'
 import validate from '../validation'
+import createRuleResolverArgs from '../validation/createRuleResolverArgs'
 import reflectValidationResult from '../validation/reflectors/reflectValidationResult'
 
 /**
  * Validates the given field and returns the fieldProps with validation reflected.
  */
-export default async function validateField(resolverArgs) {
-  const { fieldProps } = resolverArgs
+export default async function validateField(payload) {
+  const { fieldProps } = payload
+  const resolverArgs = createRuleResolverArgs(payload)
   const validationResult = await validate(resolverArgs)
 
   if (validationResult.expected === null) {

@@ -16,8 +16,8 @@ import applyFormRules from './applyFormRules'
  */
 const hasFormRules = R.allPass([R.complement(R.isNil), R.keys])
 
-export default async function validateSync(resolverArgs, rules, force) {
-  const { fieldProps, form } = resolverArgs
+export default async function validateSync(payload, rules, force) {
+  const { fieldProps, form } = payload
   const relevantFormRules = getFieldRules(fieldProps, rules)
 
   /**
@@ -25,11 +25,7 @@ export default async function validateSync(resolverArgs, rules, force) {
    * Avoid repeating the logic, prefer reusing the output.
    * Review if this comment is relative.
    */
-  const shouldValidate = shouldValidateSync(
-    resolverArgs,
-    relevantFormRules,
-    force,
-  )
+  const shouldValidate = shouldValidateSync(payload, relevantFormRules, force)
 
   /**
    * @todo Rewrite listOf composition to be pure.
@@ -38,11 +34,11 @@ export default async function validateSync(resolverArgs, rules, force) {
     addWhen(fieldProps.required, (required) => required, ensureValue),
     addWhen(fieldProps.rule, isset, applyFieldRule),
     addWhen(relevantFormRules, hasFormRules, applyFormRules),
-  )(resolverArgs)
+  )(payload)
 
   const syncValidationResult =
     shouldValidate && rulesList.length > 0
-      ? await reduceWhileExpected(rulesList)(resolverArgs)
+      ? await reduceWhileExpected(rulesList)(payload)
       : null
 
   return createValidatorResult('sync', syncValidationResult)

@@ -17,9 +17,9 @@ type MessageResolvable = MessageResolver | string
  */
 export default function resolveMessage(
   resolvable: MessageResolvable,
-  resolverArgs: MessageResolverArgs,
+  payload: MessageResolverArgs,
 ): string {
   return typeof resolvable === 'function'
-    ? dispatch(resolvable, resolverArgs)
+    ? dispatch(resolvable, payload)
     : resolvable
 }

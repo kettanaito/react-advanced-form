@@ -73,7 +73,6 @@ export default function makeObservable(
 ) {
   const { fieldProps: subscriberProps, fields, form } = methodArgs
   const { refs, initialValue } = flushFieldRefs(method, methodArgs)
-
   const formattedTargetRefs = formatRefs(refs)
 
   R.toPairs(formattedTargetRefs).forEach(([joinedFieldPath, props]) => {

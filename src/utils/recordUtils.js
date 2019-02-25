@@ -6,7 +6,6 @@
  */
 import * as R from 'ramda'
 import invariant from 'invariant'
-import enforceArray from './enforceArray'
 
 /**
  * Creates a new field based on its initial state.
@@ -132,12 +131,15 @@ export const hasValue = (fieldState) => {
  */
 export const setErrors = R.curry((errors, acc) => {
   return typeof errors !== 'undefined'
-    ? R.assoc('errors', errors && enforceArray(errors), acc)
+    ? R.assoc('errors', errors && [].concat(errors), acc)
     : acc
 })
 
 /**
  * Sets the validity state props (valid/invalid) on the given field.
+ * "validated" and "expected" properties are not taken from a field state,
+ * since within the function composition it's most likely obsolete, and
+ * the next accumulated state contains the up-to-date values.
  * @param {Object} fieldState
  * @returns {Object}
  */
@@ -197,7 +199,7 @@ export const reset = R.curry((nextValueGetter, fieldState) =>
 )
 
 /**
- * Sets the focus of the given field to the next value.
+ * Updates the value of the "focused" property of a field.
  * @param {boolean} isFocused
  * @param {Object} fieldState
  * @returns {Object}
@@ -205,7 +207,7 @@ export const reset = R.curry((nextValueGetter, fieldState) =>
 export const setFocused = R.assoc('focused')
 
 /**
- * Marks the given field as touched.
+ * Updates the value of the "touched" property of a field.
  * @param {boolean} touched
  * @param {Object} fieldState
  * @returns {Object}
@@ -213,7 +215,7 @@ export const setFocused = R.assoc('focused')
 export const setTouched = R.assoc('touched')
 
 /**
- * Sets the next value of a field's "pristine" property.
+ * Updates the value of the "pristine" property of a field.
  * @param {boolean} pristine
  * @param {Object} fieldState
  * @returns {Object}

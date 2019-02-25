@@ -47,10 +47,10 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
          * with the updated arguments.
          */
         const nextPropValue = dispatch(resolver, nextResolverArgs)
-        const nextSubscriberStateChunk = R.compose(
+        const nextSubscriberStatePatch = R.compose(
           /**
            * Reset validity and validation state on a reactive field
-           * so it triggers validation regardless of its previous validity status.
+           * so it triggers validation regardless of its previous validity state.
            */
           recordUtils.resetValidityState,
           recordUtils.resetValidationState,
@@ -58,14 +58,8 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         )({})
 
         const nextSubscriberState = R.mergeDeepLeft(
-          nextSubscriberStateChunk,
+          nextSubscriberStatePatch,
           prevSubscriberState,
-        )
-
-        const fieldsWithSubscriber = R.assocPath(
-          subscriberFieldPath,
-          nextSubscriberState,
-          nextFields,
         )
 
         if (shouldValidate) {
@@ -83,10 +77,7 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
              * @see https://github.com/kettanaito/react-advanced-form/issues/344
              */
             // force: true,
-            forceProps: true,
             fieldProps: nextSubscriberState,
-            /** @todo Is this explicit fields value needed? */
-            fields: fieldsWithSubscriber,
             form,
           })
         }
@@ -94,7 +85,7 @@ export default function createPropsSubscriptions({ fieldProps, fields, form }) {
         form.eventEmitter.emit(
           'applyStatePatch',
           subscriberFieldPath,
-          nextSubscriberStateChunk,
+          nextSubscriberStatePatch,
         )
       },
     })

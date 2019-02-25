@@ -1,6 +1,5 @@
 import * as R from 'ramda'
 import { reduceWhileExpected } from '../reduceWhile'
-import createRuleResolverArgs from './createRuleResolverArgs'
 import validateSync from './validateSync'
 import validateAsync from './validateAsync'
 import filterSchemaByField from '../formUtils/filterSchemaByField'
@@ -13,9 +12,8 @@ const defaultValidatorsList = [validateSync, validateAsync]
  * Performs validation of the given field with the given parameters.
  * Returns the validation result.
  */
-export default async function validate(args) {
-  const { force, chain, fieldProps, form } = args
-  const resolverArgs = createRuleResolverArgs(args)
+export default async function validate(resolverArgs) {
+  const { force, chain, fieldProps, form } = resolverArgs
 
   /**
    * Get the list of relevant rules for the validated field.

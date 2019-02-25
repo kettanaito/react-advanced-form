@@ -3,21 +3,38 @@ import { Form } from 'react-advanced-form'
 import { Input, Radio, Checkbox, Select, Textarea } from '@examples/fields'
 import Button from '@examples/shared/Button'
 
+const initialState = {
+  inputOne: '',
+  inputTwo: 'foo',
+  radio: 'potato',
+  checkbox1: false,
+  checkbox2: true,
+  select: 'two',
+  textareaOne: '',
+  textareaTwo: 'something',
+}
+
 export default class ControlledFields extends React.Component {
-  state = {
-    inputOne: '',
-    inputTwo: 'foo',
-    radio: 'potato',
-    checkbox1: false,
-    checkbox2: true,
-    select: 'two',
-    textareaOne: '',
-    textareaTwo: 'something',
+  state = initialState
+
+  handleFormReset = () => {
+    console.log('form reset')
+    this.setState(initialState)
   }
 
   handleFieldChange = ({ nextValue, fieldProps }) => {
     this.setState({
       [fieldProps.name]: nextValue,
+    })
+  }
+
+  updateValues = () => {
+    this.setState({
+      inputOne: 'foo',
+      inputTwo: 'bar',
+      checkbox1: true,
+      checkbox2: false,
+      textareaOne: 'third',
     })
   }
 
@@ -40,6 +57,7 @@ export default class ControlledFields extends React.Component {
         <Form
           id="form"
           ref={(form) => (window.form = form)}
+          onReset={this.handleFormReset}
           onSubmitStart={this.props.onSubmitStart}
         >
           {/* Inputs */}
@@ -131,7 +149,15 @@ export default class ControlledFields extends React.Component {
             onChange={this.handleFieldChange}
           />
 
-          <Button>Submit</Button>
+          <Button>
+            <strong>Submit</strong>
+          </Button>
+          <Button type="button" onClick={() => window.form.reset()}>
+            Reset
+          </Button>
+          <Button id="update-button" type="button" onClick={this.updateValues}>
+            Update values
+          </Button>
         </Form>
       </React.Fragment>
     )

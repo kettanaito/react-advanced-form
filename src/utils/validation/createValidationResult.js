@@ -1,15 +1,14 @@
 // @flow
 import type { TRejectedRule } from './createRejectedRule'
-import enforceArray from '../enforceArray'
 
-type TExtraParams = {
+type ExtraParams = {
   [paramName: string]: any,
 }
 
 export type TValidationResult = {
   expected: boolean,
   rejectedRules: TRejectedRule[],
-  extra?: TExtraParams,
+  extra?: ExtraParams,
 }
 
 /**
@@ -21,11 +20,11 @@ export type TValidationResult = {
 export default function createValidationResult(
   expected: boolean,
   rejectedRules: TRejectedRule[],
-  extra: TExtraParams,
+  extra: ExtraParams,
 ): TValidationResult {
   return {
     expected,
-    rejectedRules: rejectedRules && enforceArray(rejectedRules),
+    rejectedRules: rejectedRules && [].concat(rejectedRules),
     extra,
   }
 }
