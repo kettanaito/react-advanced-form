@@ -17,7 +17,7 @@ export const createField = (initialState) => {
   const valuePropName = initialState.valuePropName || 'value'
   const value = initialState[valuePropName]
 
-  return initialState.getNextState({
+  const [fieldState] = initialState.getNextState({
     /* Internal */
     fieldGroup: null,
     fieldPath: null,
@@ -62,6 +62,8 @@ export const createField = (initialState) => {
 
     ...initialState,
   })
+
+  return fieldState
 }
 
 /**

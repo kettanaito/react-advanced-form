@@ -332,8 +332,7 @@ export default class Form extends React.Component {
    * @param {Object} nextFieldState
    * @returns {Promise<Fields>} Updated fields
    */
-  updateFieldsWith = (nextFieldStateDraft) => {
-    const nextFieldState = nextFieldStateDraft.getNextState(nextFieldStateDraft)
+  updateFieldsWith = (nextFieldState) => {
     const { fields: prevFields } = this.state
     const prevFieldState = R.path(nextFieldState.fieldPath, prevFields)
     const nextFields = recordUtils.updateCollectionWith(
@@ -359,13 +358,13 @@ export default class Form extends React.Component {
           })
 
           /**
+           * @todo Remove this.
            * Force update of the updated field.
            * When a field component is wrapped in another HoC, the latter
            * may block the field's update caused by form's state update.
            * To ensure form state update always results into fields update
            * there is this force.
            */
-
           const fieldRef = nextFieldState.getRef()
           fieldRef.forceUpdate()
 

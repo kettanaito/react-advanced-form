@@ -168,11 +168,12 @@ export default function connectField(options) {
           onBlur: prunedProps.onBlur,
 
           /* Internal methods */
-          getNextState: (fieldState) =>
-            R.mergeDeepLeft(
-              hocOptions.mapState(fieldState, this.props),
-              fieldState,
-            ),
+          getNextState: (fieldState, props = this.props) => {
+            console.warn('getNextState', fieldState, this.props)
+
+            const [nextState, ...rest] = hocOptions.mapState(fieldState, props)
+            return [R.mergeDeepLeft(nextState, fieldState), ...rest]
+          },
           mapValue: hocOptions.mapValue,
           assertValue: hocOptions.assertValue,
           serialize: hocOptions.serialize,
@@ -244,6 +245,24 @@ export default function connectField(options) {
             prevValue,
             fieldProps: contextProps,
           })
+        }
+
+        /**
+         * @todo Remove this.
+         * Temporary solution to be able to derive field's state from the
+         * prop injected by high-order components (i.e. Redux).
+         */
+        const [nextFieldState, subscribedProps] = contextProps.getNextState(
+          recordUtils.resetValidityState(contextProps),
+          nextProps,
+        )
+
+        if (
+          subscribedProps.some(
+            (propName) => !R.equals(prevProps[propName], nextProps[propName]),
+          )
+        ) {
+          this.context.form.updateFieldsWith(nextFieldState)
         }
       }
 

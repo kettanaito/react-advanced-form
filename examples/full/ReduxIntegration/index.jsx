@@ -10,9 +10,12 @@ const store = createStore(vatReducer)
 
 const RafInput = createField({
   ...fieldPresets.input,
-  mapState: (state, props) => ({
-    required: props.isVatRequired,
-  }),
+  mapState: (state, props) => [
+    {
+      required: props.isVatRequired,
+    },
+    ['isVatRequired'],
+  ],
 })(PlainInput)
 
 const SubscribedInput = connect((state) => ({
@@ -23,12 +26,13 @@ const RegistrationForm = (props) => {
   const { setVatRequired, isVatRequired } = props
 
   return (
-    <Form>
+    <Form onSubmitStart={console.log}>
       <SubscribedInput name="vatNumber" label="VAT" />
 
-      <button onClick={() => setVatRequired(!isVatRequired)}>
+      <button type="button" onClick={() => setVatRequired(!isVatRequired)}>
         Toggle VAT required
       </button>
+      <button type="submit">Submit</button>
     </Form>
   )
 }
