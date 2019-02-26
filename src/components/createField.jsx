@@ -38,7 +38,7 @@ const defaultOptions = {
     return {}
   },
   mapState: (state, props) => {
-    return {}
+    return [{}, []]
   },
   mapValue(nextValue) {
     return nextValue
@@ -169,10 +169,11 @@ export default function connectField(options) {
 
           /* Internal methods */
           getNextState: (fieldState, props = this.props) => {
-            console.warn('getNextState', fieldState, this.props)
-
-            const [nextState, ...rest] = hocOptions.mapState(fieldState, props)
-            return [R.mergeDeepLeft(nextState, fieldState), ...rest]
+            const [nextState, propSubscriptions] = hocOptions.mapState(
+              fieldState,
+              props,
+            )
+            return [R.mergeDeepLeft(nextState, fieldState), propSubscriptions]
           },
           mapValue: hocOptions.mapValue,
           assertValue: hocOptions.assertValue,
