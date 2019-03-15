@@ -601,7 +601,7 @@ export default class Form extends React.Component {
       fieldUtils.flattenFields,
     )(this.state.fields)
 
-    this.setState({ fields: nextFields }, () => {
+    this.setState({ fields: nextFields, dirty: false }, () => {
       /**
        * Invoke form validation with the predicate that omits empty fields,
        * regardless of their required status. That is to prevent having

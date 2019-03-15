@@ -8,6 +8,6 @@ describe('Basics', function() {
   require('./ControlledFields.spec')
   require('./UncontrolledFields.spec')
   require('./Submit.spec')
-
   require('./DebouncedChange.spec')
+  require('./FirstChange.spec')
 })
