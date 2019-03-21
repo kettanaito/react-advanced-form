@@ -37,6 +37,9 @@ const defaultOptions = {
   enforceProps() {
     return {}
   },
+  mapState: (state, props) => {
+    return [{}, []]
+  },
   mapValue(nextValue) {
     return nextValue
   },
@@ -165,6 +168,13 @@ export default function connectField(options) {
           onBlur: prunedProps.onBlur,
 
           /* Internal methods */
+          getNextState: (fieldState, props = this.props) => {
+            const [nextState, propSubscriptions] = hocOptions.mapState(
+              fieldState,
+              props,
+            )
+            return [R.mergeDeepLeft(nextState, fieldState), propSubscriptions]
+          },
           mapValue: hocOptions.mapValue,
           assertValue: hocOptions.assertValue,
           serialize: hocOptions.serialize,
@@ -201,6 +211,7 @@ export default function connectField(options) {
 
       componentWillReceiveProps(nextProps) {
         const { props: prevProps, contextProps } = this
+
         if (!contextProps) {
           return
         }
@@ -235,6 +246,24 @@ export default function connectField(options) {
             prevValue,
             fieldProps: contextProps,
           })
+        }
+
+        /**
+         * @todo Remove this.
+         * Temporary solution to be able to derive field's state from the
+         * prop injected by high-order components (i.e. Redux).
+         */
+        const [nextFieldState, subscribedProps] = contextProps.getNextState(
+          recordUtils.resetValidityState(contextProps),
+          nextProps,
+        )
+
+        if (
+          subscribedProps.some(
+            (propName) => !R.equals(prevProps[propName], nextProps[propName]),
+          )
+        ) {
+          this.context.form.updateFieldsWith(nextFieldState)
         }
       }
 
@@ -366,7 +395,7 @@ export default function connectField(options) {
 
       render() {
         const { props, contextProps } = this
-        
+
         /* Render null and log warning in case of formless field */
         if (!contextProps) {
           warning(
@@ -374,7 +403,7 @@ export default function connectField(options) {
             'Failed to render the field `%s`: expected to be a child ' +
               'of a Form component. Please render fields as children of ' +
               'Form, since formless fields are not currently supported.',
-              this.__fieldPath.join('.'),
+            this.__fieldPath.join('.'),
           )
           return null
         }

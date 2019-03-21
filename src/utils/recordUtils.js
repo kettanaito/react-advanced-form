@@ -17,7 +17,13 @@ export const createField = (initialState) => {
   const valuePropName = initialState.valuePropName || 'value'
   const value = initialState[valuePropName]
 
-  return {
+  const getNextState =
+    initialState.getNextState ||
+    function(state) {
+      return [state]
+    }
+
+  const [fieldState] = getNextState({
     /* Internal */
     fieldGroup: null,
     fieldPath: null,
@@ -61,7 +67,9 @@ export const createField = (initialState) => {
     onBlur: null,
 
     ...initialState,
-  }
+  })
+
+  return fieldState
 }
 
 /**

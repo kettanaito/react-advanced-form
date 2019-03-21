@@ -357,6 +357,17 @@ export default class Form extends React.Component {
             nextFields: updatedFields,
           })
 
+          /**
+           * @todo Remove this.
+           * Force update of the updated field.
+           * When a field component is wrapped in another HoC, the latter
+           * may block the field's update caused by form's state update.
+           * To ensure form state update always results into fields update
+           * there is this force.
+           */
+          const fieldRef = nextFieldState.getRef()
+          fieldRef.forceUpdate()
+
           resolve(updatedFields)
         })
       } catch (error) {

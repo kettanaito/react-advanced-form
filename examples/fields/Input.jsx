@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { createField, fieldPresets } from 'react-advanced-form'
 
-class Input extends React.Component {
+export class PlainInput extends React.Component {
   static propTypes = {
     /* General */
     id: PropTypes.string,
@@ -75,4 +75,4 @@ class Input extends React.Component {
   }
 }
 
-export default createField(fieldPresets.input)(Input)
+export default createField(fieldPresets.input)(PlainInput)
