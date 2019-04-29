@@ -2,6 +2,7 @@ import React from 'react'
 import { fieldPresets, createField, Form, Field } from 'react-advanced-form'
 import { Input } from '@examples/fields'
 import { Select } from '@examples/fields/Select'
+import { Checkbox } from '@examples/fields/Checkbox'
 import Button from '@examples/shared/Button'
 
 export const initialValues = {
@@ -12,6 +13,7 @@ export const initialValues = {
   },
   deliveryAddress: {
     street: 'Sunwell ave.',
+    equalToBilling: true
   },
 }
 
@@ -45,6 +47,11 @@ export default class InitialValues extends React.Component {
           </Field.Group>
 
           <Field.Group name="deliveryAddress">
+            <Checkbox
+              id="equalToBilling"
+              name="equalToBilling"
+              label="Is equal to billing address"
+            />
             <Input
               id="delivery-street"
               name="street"
