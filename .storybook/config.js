@@ -1,16 +1,16 @@
-import { configure, addDecorator } from '@storybook/react';
-import { setOptions } from '@storybook/addon-options';
-import centered from '@storybook/addon-centered';
+import { configure, addDecorator } from '@storybook/react'
+import { withOptions } from '@storybook/addon-options'
+import centered from '@storybook/addon-centered/react'
 
-setOptions({
+withOptions({
   hierarchySeparator: /\/|\./,
-  hierarchyRootSeparator: /\|/
-});
+  hierarchyRootSeparator: /\|/,
+})
 
-addDecorator(centered);
+addDecorator(centered)
 
 function loadStories() {
-  require('../examples');
+  require('../examples')
 }
 
-configure(loadStories, module);
+configure(loadStories, module)
