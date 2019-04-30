@@ -1,9 +1,8 @@
 const fs = require('fs-extra')
 const path = require('path')
 const chalk = require('chalk')
-const webpack = require('webpack')
 const webpackPreprocessor = require('@cypress/webpack-preprocessor')
-const storybookWebpackConfig = require('../../.storybook/webpack.config')
+const aliases = require('../../.storybook/webpack.alias')
 const babelConfig = require('../../babel.config')
 
 const webpackOptions = {
@@ -17,13 +16,16 @@ const webpackOptions = {
       },
       {
         test: /\.css$/i,
-        // exclude: /node_modules/,
         use: ['style-loader', 'raw-loader'],
       },
     ],
   },
   resolve: {
-    alias: storybookWebpackConfig.resolve.alias,
+    // Get this fucking webpack config from storybook
+    // because somebody smart assumed it's fucking genious
+    // to hide plain objects in getter functions requiring
+    // extension of existing config. Fuck.
+    alias: aliases,
     extensions: ['.group.spec.js', '.spec.jsx', '.spec.js', '.jsx', '.js'],
   },
 }

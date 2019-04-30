@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime'
 import * as recordUtils from './recordUtils'
 import validateSync from './validation/validateSync'
 import createRuleResolverArgs from './validation/createRuleResolverArgs'
