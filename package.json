@@ -83,6 +83,7 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-ramda": "^2.0.0",
     "bootstrap": "^4.3.1",
+    "bundlesize": "^0.17.1",
     "chai": "^4.2.0",
     "create-react-class": "^15.6.3",
     "cross-env": "^5.2.0",
@@ -117,7 +118,6 @@
     "webpack-cli": "^3.3.1"
   },
   "dependencies": {
-    "bundlesize": "^0.17.1",
     "hoist-non-react-statics": "^3.3.0",
     "invariant": "^2.2.4",
     "rxjs": "^6.5.1"
