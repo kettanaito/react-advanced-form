@@ -9,8 +9,6 @@ const createResolveIterator = (
   resolverArgs,
   messagesSchema,
 ) => {
-  console.log({ resolverArgs })
-
   const { fieldProps } = resolverArgs
   const messageResolverArgs = {
     ...resolverArgs,
