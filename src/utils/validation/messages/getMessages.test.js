@@ -30,6 +30,7 @@ const messagesSchema = {
 
 const fieldOne = recordUtils.createField({
   name: 'fieldOne',
+  fieldPath: ['fieldOne'],
   type: 'email',
   value: 'foo',
 })

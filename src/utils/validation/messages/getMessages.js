@@ -1,4 +1,5 @@
 import * as R from 'ramda'
+import { getValue } from '../../recordUtils'
 import getResolvePaths from './getResolvePaths'
 import resolveMessage from './resolveMessage'
 import pruneMessages from './pruneMessages'
@@ -8,8 +9,12 @@ const createResolveIterator = (
   resolverArgs,
   messagesSchema,
 ) => {
+  console.log({ resolverArgs })
+
+  const { fieldProps } = resolverArgs
   const messageResolverArgs = {
     ...resolverArgs,
+    [fieldProps.valuePropName]: getValue(fieldProps),
     ...validationResult.extra,
   }
 
