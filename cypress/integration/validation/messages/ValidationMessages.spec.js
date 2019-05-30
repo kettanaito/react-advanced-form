@@ -100,7 +100,7 @@ describe('Validation messages', function() {
       cy.getField('nameTwo')
         .typeIn('bar')
         .blur()
-        .hasError(messages.name.nameTwo.invalid)
+        .hasError('The name "bar" is invalid.')
 
       cy.getField('nameTwo')
         .clear()

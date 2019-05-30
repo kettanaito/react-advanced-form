@@ -30,7 +30,7 @@ export const messages = {
     },
     nameTwo: {
       missing: 'Please provide name two',
-      invalid: 'The name two is invalid',
+      invalid: ({ value }) => `The name "${value}" is invalid.`,
     },
   },
 }
