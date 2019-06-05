@@ -98,7 +98,7 @@
     "ncp": "^2.0.0",
     "prop-types": "^15.7.2",
     "ramda": "^0.26.1",
-    "raw-loader": "^2.0.0",
+    "raw-loader": "^3.0.0",
     "react": "^16.8.6",
     "react-datepicker": "^2.5.0",
     "react-dom": "^16.8.6",
