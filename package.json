@@ -83,7 +83,7 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-ramda": "^2.0.0",
     "bootstrap": "^4.3.1",
-    "bundlesize": "^0.17.1",
+    "bundlesize": "^0.18.0",
     "chai": "^4.2.0",
     "create-react-class": "^15.6.3",
     "cross-env": "^5.2.0",
