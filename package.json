@@ -73,7 +73,7 @@
     "@cypress/webpack-preprocessor": "^4.0.3",
     "@storybook/addon-actions": "^5.1.11",
     "@storybook/addon-centered": "^5.1.11",
-    "@storybook/addon-links": "^5.0.11",
+    "@storybook/addon-links": "^5.1.11",
     "@storybook/addon-options": "^5.0.11",
     "@storybook/addons": "^5.0.11",
     "@storybook/react": "^5.0.11",
