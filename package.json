@@ -100,7 +100,7 @@
     "ramda": "^0.26.1",
     "raw-loader": "^3.0.0",
     "react": "^16.8.6",
-    "react-datepicker": "^2.5.0",
+    "react-datepicker": "^2.9.1",
     "react-dom": "^16.8.6",
     "react-rangeslider": "^2.2.0",
     "react-select": "^2.4.3",
