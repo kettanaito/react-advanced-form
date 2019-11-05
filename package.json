@@ -69,7 +69,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.7.0",
     "@babel/preset-env": "^7.7.0",
     "@babel/preset-flow": "^7.0.0",
-    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-react": "^7.7.0",
     "@cypress/webpack-preprocessor": "^4.0.3",
     "@storybook/addon-actions": "^5.0.11",
     "@storybook/addon-centered": "^5.0.11",
